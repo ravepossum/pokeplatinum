@@ -98,3 +98,4 @@ __pycache__
 .venv/
 
 compile_commands.json
+tools/main.nef.xMAP
