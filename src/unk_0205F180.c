@@ -2220,10 +2220,10 @@ static int sub_020613D8 (int param0)
 int sub_020613FC (UnkStruct_0205E884 * param0, u16 param1)
 {
     if ((param1 & PAD_BUTTON_B)) {
-        return 0;
+        return FALSE;
     }
 
-    return 1;
+    return TRUE;
 }
 
 int sub_0206140C (UnkStruct_0205E884 * param0)
