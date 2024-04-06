@@ -1410,7 +1410,8 @@ static s32 Healthbar_DrawGauge(Healthbar *healthbar, enum HealthbarGaugeType gau
     s32 fillOffset;
 
     if (gaugeType == HEALTHBAR_GAUGE_HP) {
-        result = UpdateGauge(healthbar->maxHP, healthbar->curHP, healthbar->damage, &healthbar->hpTemp, 6, 1);
+        //ravetodo this seems like it updates the HP bar faster most of the time, but not all of the time, not sure why atm
+        result = UpdateGauge(healthbar->maxHP, healthbar->curHP, healthbar->damage, &healthbar->hpTemp, 6, 8);
     } else {
         fillOffset = CalcGaugeFill(healthbar->curExp, healthbar->expReward, healthbar->maxExp, 12);
 
