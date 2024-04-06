@@ -3,7 +3,6 @@
 
 #include "core_sys.h"
 
-#include "struct_decls/struct_020067E8_decl.h"
 #include "struct_decls/struct_02018340_decl.h"
 
 #include "struct_defs/struct_02099F80.h"
@@ -21,7 +20,7 @@
 
 #include "unk_02002F38.h"
 #include "unk_02005474.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "narc.h"
 #include "unk_020093B4.h"
 #include "unk_0200C6E4.h"
@@ -36,8 +35,8 @@
 #include "gx_layers.h"
 #include "unk_02020020.h"
 #include "unk_02024220.h"
-#include "unk_020329E0.h"
-#include "unk_02034198.h"
+#include "communication_information.h"
+#include "communication_system.h"
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_020393C8.h"
@@ -83,9 +82,9 @@ static void ov116_022604C4 (UnkStruct_ov116_0226139C * param0)
     }
 
     {
-        int v2 = sub_02032E64();
+        int v2 = CommInfo_CountReceived();
 
-        param0->unk_44 = sub_0203608C();
+        param0->unk_44 = CommSys_CurNetId();
         ov116_022604A8(param0);
 
         if (ov116_022617C4(param0) == 1) {
@@ -238,15 +237,15 @@ static void ov116_022604C4 (UnkStruct_ov116_0226139C * param0)
     }
 }
 
-int ov116_022609B4 (UnkStruct_020067E8 * param0, int * param1)
+int ov116_022609B4 (OverlayManager * param0, int * param1)
 {
     UnkStruct_ov116_0226139C * v0;
 
     Heap_Create(3, 106, 0x65000);
-    v0 = sub_0200681C(param0, sizeof(UnkStruct_ov116_0226139C), 106);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov116_0226139C), 106);
     memset(v0, 0, sizeof(UnkStruct_ov116_0226139C));
 
-    v0->unk_80 = sub_02006840(param0);
+    v0->unk_80 = OverlayManager_Args(param0);
 
     {
         int v1;
@@ -255,7 +254,7 @@ int ov116_022609B4 (UnkStruct_020067E8 * param0, int * param1)
         for (v1 = 0; v1 < 4; v1++) {
             v0->unk_B4[v1] = 0xFF;
 
-            if (sub_02032EE8(v1) != NULL) {
+            if (CommInfo_TrainerInfo(v1) != NULL) {
                 v0->unk_B4[v2] = v1;
                 v2++;
             }
@@ -431,9 +430,9 @@ static BOOL ov116_02260B6C (UnkStruct_ov116_02262A8C * param0)
     return 0;
 }
 
-int ov116_02260CF4 (UnkStruct_020067E8 * param0, int * param1)
+int ov116_02260CF4 (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov116_0226139C * v0 = sub_0200682C(param0);
+    UnkStruct_ov116_0226139C * v0 = OverlayManager_Data(param0);
     BOOL v1 = 0;
     u32 v2;
 
@@ -494,7 +493,7 @@ int ov116_02260CF4 (UnkStruct_020067E8 * param0, int * param1)
         if (v1) {
             if (ov116_022617C4(v0) == 1) {
                 v0->unk_14.unk_04 = v0->unk_78;
-                sub_020359DC(22, &v0->unk_14, sizeof(UnkStruct_ov116_0226048C));
+                CommSys_SendData(22, &v0->unk_14, sizeof(UnkStruct_ov116_0226048C));
             }
         }
 
@@ -533,7 +532,7 @@ int ov116_02260CF4 (UnkStruct_020067E8 * param0, int * param1)
             if (ov116_022617C4(v0) == 1) {
                 if (ov116_02262A74(v0->unk_00) == 0) {
                     sub_020057A4(1393, 0);
-                    sub_020359DC(23, NULL, 0);
+                    CommSys_SendData(23, NULL, 0);
                 }
             }
             ov116_02263B30(v0->unk_04);
@@ -563,7 +562,7 @@ int ov116_02260CF4 (UnkStruct_020067E8 * param0, int * param1)
             v0->unk_1C.unk_00 = 1;
         }
 
-        sub_020359DC(25, &v0->unk_1C, sizeof(UnkStruct_ov116_02260494));
+        CommSys_SendData(25, &v0->unk_1C, sizeof(UnkStruct_ov116_02260494));
         ov116_0226178C(v0, v1, 14, param1);
         break;
     case 14:
@@ -732,19 +731,19 @@ static void ov116_02261244 (UnkStruct_ov116_0226139C * param0)
     memset(&param0->unk_24, 0, sizeof(UnkStruct_ov116_02260498));
 }
 
-int ov116_0226126C (UnkStruct_020067E8 * param0, int * param1)
+int ov116_0226126C (OverlayManager * param0, int * param1)
 {
     switch (*param1) {
     case 0:
     {
         u32 v0;
-        UnkStruct_ov116_0226139C * v1 = sub_0200682C(param0);
+        UnkStruct_ov116_0226139C * v1 = OverlayManager_Data(param0);
 
         v0 = ov116_022617E4(v1);
 
-        sub_02006830(param0);
+        OverlayManager_FreeData(param0);
         Heap_Destroy(106);
-        sub_020388F4(0, 1);
+        CommMan_SetErrorHandling(0, 1);
 
         if (v0 != 0) {
             return 1;
@@ -755,7 +754,7 @@ int ov116_0226126C (UnkStruct_020067E8 * param0, int * param1)
     }
     break;
     default:
-        if ((sub_02036540(999) == 1) || (sub_02035E18() < sub_02032E64())) {
+        if ((sub_02036540(999) == 1) || (CommSys_ConnectedCount() < CommInfo_CountReceived())) {
             return 1;
         }
         break;

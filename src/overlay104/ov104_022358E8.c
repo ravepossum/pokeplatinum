@@ -8,7 +8,6 @@
 
 #include "constdata/const_020EA358.h"
 
-#include "struct_defs/struct_0208BE5C.h"
 #include "overlay006/battle_params.h"
 #include "overlay104/struct_ov104_0222E930_t.h"
 #include "overlay104/struct_ov104_02230BE4.h"
@@ -20,7 +19,7 @@
 #include "heap.h"
 #include "unk_020302D0.h"
 #include "unk_0203061C.h"
-#include "unk_02034198.h"
+#include "communication_system.h"
 #include "unk_02051D8C.h"
 #include "unk_0205DFC4.h"
 #include "pokemon.h"
@@ -117,7 +116,7 @@ BOOL ov104_0223597C (UnkStruct_ov104_0222E930 * param0)
 
     FS_EXTERN_OVERLAY(overlay107);
 
-    static const UnkStruct_0208BE5C v4 = {
+    static const OverlayManagerTemplate v4 = {
         ov107_02241AE0,
         ov107_02241BD4,
         ov107_02241D2C,
@@ -145,7 +144,7 @@ BOOL ov104_022359D0 (UnkStruct_ov104_0222E930 * param0)
 
     FS_EXTERN_OVERLAY(overlay107);
 
-    static const UnkStruct_0208BE5C v4 = {
+    static const OverlayManagerTemplate v4 = {
         NULL,
         NULL,
         NULL,
@@ -221,7 +220,7 @@ BOOL ov104_02235AE8 (UnkStruct_ov104_0222E930 * param0)
 
     FS_EXTERN_OVERLAY(overlay107);
 
-    static const UnkStruct_0208BE5C v4 = {
+    static const OverlayManagerTemplate v4 = {
         ov107_02245EB0,
         ov107_02245FD0,
         ov107_02246130,
@@ -403,11 +402,11 @@ BOOL ov104_02235BC0 (UnkStruct_ov104_0222E930 * param0)
         v10 = 0;
 
         if (v3->unk_A1B >= 6) {
-            if (sub_0203608C() != 0) {
+            if (CommSys_CurNetId() != 0) {
                 v10 = 1;
             }
         } else {
-            if (sub_0203608C() == 0) {
+            if (CommSys_CurNetId() == 0) {
                 v10 = 1;
             }
         }
@@ -423,11 +422,11 @@ BOOL ov104_02235BC0 (UnkStruct_ov104_0222E930 * param0)
 
         if (ov104_0223BA14(v3->unk_10) == 1) {
             if (v3->unk_A1B >= 6) {
-                if (sub_0203608C() == 0) {
+                if (CommSys_CurNetId() == 0) {
                     *v17 = 1;
                 }
             } else {
-                if (sub_0203608C() != 0) {
+                if (CommSys_CurNetId() != 0) {
                     *v17 = 1;
                 }
             }

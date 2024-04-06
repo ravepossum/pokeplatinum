@@ -3,26 +3,24 @@
 
 #include "core_sys.h"
 
-#include "struct_decls/struct_020067E8_decl.h"
 #include "struct_decls/struct_02018340_decl.h"
-#include "struct_decls/struct_0203CDB0_sub1_decl.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "field/field_system_sub1_decl.h"
+#include "savedata.h"
 #include "overlay025/struct_ov25_02253CE0_decl.h"
 
 #include "overlay005/const_ov5_021F89B0.h"
 #include "overlay077/const_ov77_021D742C.h"
 
 #include "struct_defs/struct_0203CC84.h"
-#include "struct_defs/struct_0203CDB0.h"
-#include "struct_defs/struct_0203CDB0_sub2_t.h"
-#include "struct_defs/struct_0208BE5C.h"
+#include "field/field_system.h"
+#include "field/field_system_sub2_t.h"
 #include "overlay005/struct_ov5_021D1CAC.h"
 
 #include "unk_02000C88.h"
 #include "game_overlay.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "heap.h"
-#include "unk_02034198.h"
+#include "communication_system.h"
 #include "unk_02039C80.h"
 #include "unk_0203A378.h"
 #include "unk_0203A6DC.h"
@@ -45,23 +43,23 @@
 FS_EXTERN_OVERLAY(overlay5);
 FS_EXTERN_OVERLAY(overlay77);
 
-typedef struct UnkStruct_0203CDB0_sub1_t {
-    UnkStruct_020067E8 * unk_00;
-    UnkStruct_020067E8 * unk_04;
+typedef struct FieldSystem_sub1_t {
+    OverlayManager * unk_00;
+    OverlayManager * unk_04;
     BOOL unk_08;
     BOOL unk_0C;
 };
 
-static UnkStruct_0203CDB0 * sub_0203CDB0(UnkStruct_020067E8 * param0);
-static BOOL sub_0203CEEC(UnkStruct_0203CDB0 * param0);
-static void sub_0203CE6C(UnkStruct_020067E8 * param0);
-static void sub_0203CF5C(UnkStruct_0203CDB0 * param0);
+static FieldSystem * sub_0203CDB0(OverlayManager * param0);
+static BOOL sub_0203CEEC(FieldSystem * param0);
+static void sub_0203CE6C(OverlayManager * param0);
+static void sub_0203CF5C(FieldSystem * param0);
 
-static UnkStruct_0203CDB0 * Unk_021C07DC;
+static FieldSystem * Unk_021C07DC;
 
-static int sub_0203CC84 (UnkStruct_020067E8 * param0, int * param1)
+static int sub_0203CC84 (OverlayManager * param0, int * param1)
 {
-    UnkStruct_0203CC84 * v0 = sub_02006840(param0);
+    UnkStruct_0203CC84 * v0 = OverlayManager_Args(param0);
 
     Unk_021C07DC = sub_0203CDB0(param0);
 
@@ -75,16 +73,16 @@ static int sub_0203CC84 (UnkStruct_020067E8 * param0, int * param1)
     return 1;
 }
 
-static int sub_0203CCB4 (UnkStruct_020067E8 * param0, int * param1)
+static int sub_0203CCB4 (OverlayManager * param0, int * param1)
 {
     Unk_021C07DC = sub_0203CDB0(param0);
     sub_020535CC(Unk_021C07DC);
     return 1;
 }
 
-static int sub_0203CCCC (UnkStruct_020067E8 * param0, int * param1)
+static int sub_0203CCCC (OverlayManager * param0, int * param1)
 {
-    UnkStruct_0203CDB0 * v0 = sub_0200682C(param0);
+    FieldSystem * v0 = OverlayManager_Data(param0);
 
     if (sub_0203CEEC(v0)) {
         return 1;
@@ -93,28 +91,28 @@ static int sub_0203CCCC (UnkStruct_020067E8 * param0, int * param1)
     }
 }
 
-static int sub_0203CCE4 (UnkStruct_020067E8 * param0, int * param1)
+static int sub_0203CCE4 (OverlayManager * param0, int * param1)
 {
     sub_0203CE6C(param0);
     sub_02000EC4(FS_OVERLAY_ID(overlay77), &Unk_ov77_021D742C);
     return 1;
 }
 
-const UnkStruct_0208BE5C Unk_020EA10C = {
+const OverlayManagerTemplate Unk_020EA10C = {
     sub_0203CCB4,
     sub_0203CCCC,
     sub_0203CCE4,
     0xffffffff
 };
 
-const UnkStruct_0208BE5C Unk_020EA11C = {
+const OverlayManagerTemplate Unk_020EA11C = {
     sub_0203CC84,
     sub_0203CCCC,
     sub_0203CCE4,
     0xffffffff
 };
 
-void sub_0203CD00 (UnkStruct_0203CDB0 * param0)
+void sub_0203CD00 (FieldSystem * param0)
 {
     GF_ASSERT(param0->unk_00->unk_04 == NULL);
     GF_ASSERT(param0->unk_00->unk_00 == NULL);
@@ -122,20 +120,20 @@ void sub_0203CD00 (UnkStruct_0203CDB0 * param0)
 
     param0->unk_68 = 0;
     param0->unk_00->unk_08 = 0;
-    param0->unk_00->unk_00 = sub_020067E8(&Unk_ov5_021F89B0, param0, 11);
+    param0->unk_00->unk_00 = OverlayManager_New(&Unk_ov5_021F89B0, param0, 11);
 }
 
-void sub_0203CD44 (UnkStruct_0203CDB0 * param0)
+void sub_0203CD44 (FieldSystem * param0)
 {
     param0->unk_68 = 0;
 }
 
-BOOL sub_0203CD4C (UnkStruct_0203CDB0 * param0)
+BOOL sub_0203CD4C (FieldSystem * param0)
 {
     return param0->unk_00->unk_00 != NULL;
 }
 
-BOOL sub_0203CD5C (UnkStruct_0203CDB0 * param0)
+BOOL sub_0203CD5C (FieldSystem * param0)
 {
     if ((param0->unk_00->unk_00 != NULL) && param0->unk_68) {
         return 1;
@@ -144,37 +142,37 @@ BOOL sub_0203CD5C (UnkStruct_0203CDB0 * param0)
     }
 }
 
-BOOL sub_0203CD74 (UnkStruct_0203CDB0 * param0)
+BOOL sub_0203CD74 (FieldSystem * param0)
 {
     return param0->unk_00->unk_04 != NULL;
 }
 
-void sub_0203CD84 (UnkStruct_0203CDB0 * param0, const UnkStruct_0208BE5C * param1, void * param2)
+void sub_0203CD84 (FieldSystem * param0, const OverlayManagerTemplate * param1, void * param2)
 {
     GF_ASSERT(param0->unk_00->unk_04 == NULL);
     sub_0203CD44(param0);
-    param0->unk_00->unk_04 = sub_020067E8(param1, param2, 11);
+    param0->unk_00->unk_04 = OverlayManager_New(param1, param2, 11);
 }
 
-static UnkStruct_0203CDB0 * sub_0203CDB0 (UnkStruct_020067E8 * param0)
+static FieldSystem * sub_0203CDB0 (OverlayManager * param0)
 {
     UnkStruct_0203CC84 * v0;
-    UnkStruct_0203CDB0 * v1;
+    FieldSystem * v1;
 
     Heap_Create(3, 11, 0x1c000);
     Heap_Create(3, 32, 0x4000);
     Heap_Create(0, 91, 0x300);
 
-    v1 = sub_0200681C(param0, sizeof(UnkStruct_0203CDB0), 11);
-    MI_CpuClear8(v1, sizeof(UnkStruct_0203CDB0));
+    v1 = OverlayManager_NewData(param0, sizeof(FieldSystem), 11);
+    MI_CpuClear8(v1, sizeof(FieldSystem));
 
-    v1->unk_00 = Heap_AllocFromHeap(11, sizeof(UnkStruct_0203CDB0_sub1));
+    v1->unk_00 = Heap_AllocFromHeap(11, sizeof(FieldSystem_sub1));
     v1->unk_00->unk_00 = NULL;
     v1->unk_00->unk_04 = NULL;
     v1->unk_00->unk_08 = 0;
     v1->unk_00->unk_0C = 0;
 
-    v0 = sub_02006840(param0);
+    v0 = OverlayManager_Args(param0);
 
     v1->unk_0C = v0->unk_08;
     v1->unk_10 = NULL;
@@ -194,9 +192,9 @@ static UnkStruct_0203CDB0 * sub_0203CDB0 (UnkStruct_020067E8 * param0)
     return v1;
 }
 
-static void sub_0203CE6C (UnkStruct_020067E8 * param0)
+static void sub_0203CE6C (OverlayManager * param0)
 {
-    UnkStruct_0203CDB0 * v0 = sub_0200682C(param0);
+    FieldSystem * v0 = OverlayManager_Data(param0);
 
     sub_02039DE4(v0->unk_2C);
     sub_0203A398(v0);
@@ -206,23 +204,23 @@ static void sub_0203CE6C (UnkStruct_020067E8 * param0)
     sub_0209C388(v0->unk_BC);
 
     Heap_FreeToHeap(v0->unk_00);
-    sub_02006830(param0);
+    OverlayManager_FreeData(param0);
     Heap_Destroy(91);
     Heap_Destroy(11);
     Heap_Destroy(32);
 }
 
-static void sub_0203CECC (UnkStruct_020067E8 ** param0)
+static void sub_0203CECC (OverlayManager ** param0)
 {
     if (*param0) {
-        if (sub_02006844(*param0)) {
-            sub_02006814(*param0);
+        if (OverlayManager_Exec(*param0)) {
+            OverlayManager_Free(*param0);
             *param0 = NULL;
         }
     }
 }
 
-BOOL sub_0203CEEC (UnkStruct_0203CDB0 * param0)
+BOOL sub_0203CEEC (FieldSystem * param0)
 {
     BOOL v0;
 
@@ -250,7 +248,7 @@ BOOL sub_0203CEEC (UnkStruct_0203CDB0 * param0)
     return 0;
 }
 
-void sub_0203CF5C (UnkStruct_0203CDB0 * param0)
+void sub_0203CF5C (FieldSystem * param0)
 {
     int v0;
     UnkStruct_ov5_021D1CAC v1;
@@ -382,11 +380,11 @@ struct UnkStruct_ov25_02253CE0_t * sub_0203D158 (void)
 
 BGL * sub_0203D170 (void * param0)
 {
-    UnkStruct_0203CDB0 * v0 = (UnkStruct_0203CDB0 *)param0;
+    FieldSystem * v0 = (FieldSystem *)param0;
     return v0->unk_08;
 }
 
 SaveData * sub_0203D174 (void * param0)
 {
-    return ((UnkStruct_0203CDB0 *)param0)->unk_0C;
+    return ((FieldSystem *)param0)->unk_0C;
 }

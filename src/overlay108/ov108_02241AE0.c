@@ -5,7 +5,6 @@
 
 #include "struct_decls/struct_02001AF4_decl.h"
 #include "struct_decls/struct_02002F38_decl.h"
-#include "struct_decls/struct_020067E8_decl.h"
 #include "struct_decls/struct_02006C24_decl.h"
 #include "message.h"
 #include "struct_decls/struct_0200B358_decl.h"
@@ -18,7 +17,7 @@
 #include "struct_decls/struct_0203068C_decl.h"
 #include "pokemon.h"
 #include "struct_decls/struct_party_decl.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 #include "overlay108/struct_ov108_02241DB0_decl.h"
 #include "overlay108/struct_ov108_02243594_decl.h"
 
@@ -37,7 +36,7 @@
 #include "unk_02002F38.h"
 #include "unk_02005474.h"
 #include "game_overlay.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "narc.h"
 #include "unk_02006E3C.h"
 #include "unk_020093B4.h"
@@ -57,7 +56,7 @@
 #include "unk_02025E08.h"
 #include "unk_02030494.h"
 #include "unk_0203061C.h"
-#include "unk_02034198.h"
+#include "communication_system.h"
 #include "unk_020363E8.h"
 #include "unk_020393C8.h"
 #include "pokemon.h"
@@ -167,7 +166,7 @@ static const u8 Unk_ov108_0224367C[] = {
 
 
 struct UnkStruct_ov108_02241DB0_t {
-    UnkStruct_020067E8 * unk_00;
+    OverlayManager * unk_00;
     UnkStruct_0203068C * unk_04;
     u8 unk_08;
     u8 unk_09;
@@ -237,9 +236,9 @@ struct UnkStruct_ov108_02241DB0_t {
     u32 unk_42C;
 };
 
-int ov108_02241AE0(UnkStruct_020067E8 * param0, int * param1);
-int ov108_02241C38(UnkStruct_020067E8 * param0, int * param1);
-int ov108_02241D70(UnkStruct_020067E8 * param0, int * param1);
+int ov108_02241AE0(OverlayManager * param0, int * param1);
+int ov108_02241C38(OverlayManager * param0, int * param1);
+int ov108_02241D70(OverlayManager * param0, int * param1);
 static BOOL ov108_02241DB0(UnkStruct_ov108_02241DB0 * param0);
 static BOOL ov108_02241F28(UnkStruct_ov108_02241DB0 * param0);
 static BOOL ov108_02242104(UnkStruct_ov108_02241DB0 * param0);
@@ -289,7 +288,7 @@ static const UnkUnion_020225E0 Unk_ov108_02243687[] = {
     {0xff, 0x0, 0x0, 0x0}
 };
 
-int ov108_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
+int ov108_02241AE0 (OverlayManager * param0, int * param1)
 {
     int v0;
     UnkStruct_ov108_02241DB0 * v1;
@@ -299,13 +298,13 @@ int ov108_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
     ov108_02242344();
     Heap_Create(3, 103, 0x20000);
 
-    v1 = sub_0200681C(param0, sizeof(UnkStruct_ov108_02241DB0), 103);
+    v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov108_02241DB0), 103);
     memset(v1, 0, sizeof(UnkStruct_ov108_02241DB0));
 
     v1->unk_90 = sub_02018340(103);
     v1->unk_00 = param0;
 
-    v2 = (UnkStruct_ov104_02238240 *)sub_02006840(param0);
+    v2 = (UnkStruct_ov104_02238240 *)OverlayManager_Args(param0);
 
     v1->unk_DC = v2->unk_00;
     v1->unk_E0 = sub_020304A0(v1->unk_DC);
@@ -355,9 +354,9 @@ int ov108_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
     return 1;
 }
 
-int ov108_02241C38 (UnkStruct_020067E8 * param0, int * param1)
+int ov108_02241C38 (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov108_02241DB0 * v0 = sub_0200682C(param0);
+    UnkStruct_ov108_02241DB0 * v0 = OverlayManager_Data(param0);
 
     if (v0->unk_0E != 0xff) {
         switch (*param1) {
@@ -417,16 +416,16 @@ int ov108_02241C38 (UnkStruct_020067E8 * param0, int * param1)
     return 0;
 }
 
-int ov108_02241D70 (UnkStruct_020067E8 * param0, int * param1)
+int ov108_02241D70 (OverlayManager * param0, int * param1)
 {
     int v0;
-    UnkStruct_ov108_02241DB0 * v1 = sub_0200682C(param0);
+    UnkStruct_ov108_02241DB0 * v1 = OverlayManager_Data(param0);
 
     *(v1->unk_3C4) = v1->unk_0D;
 
     sub_0201DC3C();
     ov108_02242238(v1);
-    sub_02006830(param0);
+    OverlayManager_FreeData(param0);
     SetMainCallback(NULL, NULL);
     Heap_Destroy(103);
     Overlay_UnloadByID(FS_OVERLAY_ID(overlay104));
@@ -611,7 +610,7 @@ static BOOL ov108_02241F28 (UnkStruct_ov108_02241DB0 * param0)
     case 6:
         ov108_02242964(param0, gCoreSys.pressedKeys);
 
-        if (sub_0203608C() == 0) {
+        if (CommSys_CurNetId() == 0) {
             if (param0->unk_18 > 0) {
                 param0->unk_18--;
             }
@@ -874,7 +873,7 @@ static void ov108_0224237C (UnkStruct_ov108_02241DB0 * param0)
     ov108_02242F38(param0);
     param0->unk_3BC = ov108_0224351C(&param0->unk_E8, 0, 0, 0, 2, 128, 96, 0, 0, 1);
 
-    if (sub_02035E38()) {
+    if (CommSys_IsInitialized()) {
         sub_0200966C(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
         sub_02009704(NNS_G2D_VRAM_TYPE_2DMAIN);
         sub_02039734();
@@ -1180,7 +1179,7 @@ BOOL ov108_02242A38 (UnkStruct_ov108_02241DB0 * param0, u16 param1, u16 param2)
         break;
     }
 
-    if (sub_020359DC(v1, param0->unk_3D4, 40) == 1) {
+    if (CommSys_SendData(v1, param0->unk_3D4, 40) == 1) {
         v0 = 1;
     } else {
         v0 = 0;
@@ -1195,7 +1194,7 @@ void ov108_02242A7C (UnkStruct_ov108_02241DB0 * param0, u16 param1)
     TrainerInfo * v2;
 
     v1 = 0;
-    v2 = sub_02025E38(param0->unk_DC);
+    v2 = SaveData_GetTrainerInfo(param0->unk_DC);
 
     param0->unk_3D4[v1] = param1;
 
@@ -1222,14 +1221,14 @@ void ov108_02242AB0 (int param0, int param1, void * param2, void * param3)
     v1 = 0;
     v2->unk_0F++;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 
     v1 += 1;
     v1 += 1;
 
-    if (sub_0203608C() != 0) {
+    if (CommSys_CurNetId() != 0) {
         for (v0 = 0; v0 < (4 * 4); v0++) {
             v2->unk_34[v0] = (u8)v3[v1 + v0];
         }
@@ -1253,7 +1252,7 @@ void ov108_02242AE8 (UnkStruct_ov108_02241DB0 * param0, u16 param1, u16 param2)
     param0->unk_3D4[0] = param1;
     param0->unk_3D4[1] = param2;
 
-    if (sub_0203608C() == 0) {
+    if (CommSys_CurNetId() == 0) {
         if (param0->unk_0E == 0xff) {
             param0->unk_0E = param2;
         }
@@ -1279,13 +1278,13 @@ void ov108_02242B24 (int param0, int param1, void * param2, void * param3)
     v1 = 0;
     v2->unk_0F++;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 
     v2->unk_425 = v3[1];
 
-    if (sub_0203608C() == 0) {
+    if (CommSys_CurNetId() == 0) {
         if (v2->unk_0E != 0xff) {
             v2->unk_425 = 0;
         } else {
@@ -1318,7 +1317,7 @@ void ov108_02242B84 (int param0, int param1, void * param2, void * param3)
     UnkStruct_ov108_02241DB0 * v0 = param3;
     const u16 * v1 = param2;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 

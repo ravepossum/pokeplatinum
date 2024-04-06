@@ -3,8 +3,12 @@
 
 enum HeapId {
     HEAP_ID_SYSTEM = 0,
-    
+    HEAP_ID_SAVE,
+    HEAP_ID_DEBUG,
+    HEAP_ID_APPLICATION,
+
     HEAP_ID_BATTLE = 5,
+    HEAP_ID_COMMUNICATION = 15,
 };
 
 #endif // POKEPLATINUM_CONSTANTS_HEAP_H

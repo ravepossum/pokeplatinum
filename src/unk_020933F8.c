@@ -16,15 +16,14 @@
 #include "struct_decls/struct_020507E4_decl.h"
 #include "struct_decls/struct_020508D4_decl.h"
 #include "pokemon.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 
 #include "constdata/const_020F55EC.h"
 #include "constdata/const_020F560C.h"
 #include "constdata/const_020F561C.h"
 #include "constdata/const_020F55DC.h"
 
-#include "struct_defs/struct_0203CDB0.h"
-#include "struct_defs/struct_0208BE5C.h"
+#include "field/field_system.h"
 #include "struct_defs/struct_02093800.h"
 #include "struct_defs/struct_02093BBC.h"
 #include "struct_defs/struct_02094A58.h"
@@ -47,8 +46,8 @@
 #include "unk_0202CC64.h"
 #include "unk_0202CD50.h"
 #include "unk_0202F108.h"
-#include "unk_020329E0.h"
-#include "unk_02034198.h"
+#include "communication_information.h"
+#include "communication_system.h"
 #include "unk_020363E8.h"
 #include "unk_020507CC.h"
 #include "unk_020508D4.h"
@@ -101,35 +100,35 @@ static int sub_02093B2C(Pokemon * param0, int param1);
 static void sub_020939E0(UnkStruct_02095C48 * param0, int param1, int param2);
 
 
-const UnkStruct_0208BE5C Unk_020F560C = {
+const OverlayManagerTemplate Unk_020F560C = {
     ov17_0223B140,
     ov17_0223B444,
     ov17_0223B580,
     FS_OVERLAY_ID(overlay17)
 };
 
-const UnkStruct_0208BE5C Unk_020F561C = {
+const OverlayManagerTemplate Unk_020F561C = {
     ov17_0223DAD0,
     ov17_0223DDD4,
     ov17_0223DF0C,
     FS_OVERLAY_ID(overlay17)
 };
 
-const UnkStruct_0208BE5C Unk_020F55EC = {
+const OverlayManagerTemplate Unk_020F55EC = {
     ov17_0223CB1C,
     ov17_0223CDDC,
     ov17_0223CF8C,
     FS_OVERLAY_ID(overlay17)
 };
 
-const UnkStruct_0208BE5C Unk_020F55DC = {
+const OverlayManagerTemplate Unk_020F55DC = {
     ov17_0224F4D4,
     ov17_0224F754,
     ov17_0224F86C,
     FS_OVERLAY_ID(overlay17)
 };
 
-const UnkStruct_0208BE5C Unk_020F55FC = {
+const OverlayManagerTemplate Unk_020F55FC = {
     ov22_02256174,
     ov22_022562EC,
     ov22_02256600,
@@ -177,7 +176,7 @@ void sub_020933F8 (UnkStruct_020508D4 * param0, UnkStruct_02095C48 * param1)
 
 static BOOL sub_02093448 (UnkStruct_020508D4 * param0)
 {
-    UnkStruct_0203CDB0 * v0 = sub_02050A60(param0);
+    FieldSystem * v0 = sub_02050A60(param0);
     UnkStruct_020933F8 * v1 = sub_02050A64(param0);
 
     switch (v1->unk_04) {
@@ -267,7 +266,7 @@ static BOOL sub_02093448 (UnkStruct_020508D4 * param0)
 
 static BOOL sub_020935EC (UnkStruct_020508D4 * param0)
 {
-    UnkStruct_0203CDB0 * v0 = sub_02050A60(param0);
+    FieldSystem * v0 = sub_02050A60(param0);
     UnkStruct_020933F8 * v1 = sub_02050A64(param0);
 
     switch (v1->unk_04) {
@@ -765,7 +764,7 @@ static void sub_02093C6C (SysTask * param0, void * param1)
                 const TrainerInfo * v2;
 
                 for (v1 = 0; v1 < v0->unk_00.unk_117; v1++) {
-                    v2 = sub_02032EE8(v1);
+                    v2 = CommInfo_TrainerInfo(v1);
                     Strbuf_Clear(v0->unk_00.unk_D8[v1]);
                     TrainerInfo_NameStrbuf(v2, v0->unk_00.unk_D8[v1]);
                 }
@@ -952,7 +951,7 @@ static void sub_02093C6C (SysTask * param0, void * param1)
         const TrainerInfo * v6;
 
         for (v5 = 0; v5 < v0->unk_00.unk_117; v5++) {
-            v6 = sub_02032EE8(v5);
+            v6 = CommInfo_TrainerInfo(v5);
             v0->unk_00.unk_F8[v5] = TrainerInfo_Gender(v6);
         }
 
@@ -980,21 +979,21 @@ BOOL sub_020943B0 (UnkStruct_02095C48 * param0)
 {
     int v0, v1;
 
-    if (sub_02035E38() == 0) {
+    if (CommSys_IsInitialized() == 0) {
         return 0;
     }
 
     param0->unk_155 = 1;
 
-    v0 = sub_02035E18();
-    v1 = sub_0203608C();
+    v0 = CommSys_ConnectedCount();
+    v1 = CommSys_CurNetId();
 
     {
         int v2;
         TrainerInfo * v3;
 
         for (v2 = 0; v2 < v0; v2++) {
-            v3 = sub_02032EE8(v2);
+            v3 = CommInfo_TrainerInfo(v2);
             GF_ASSERT(v3 != NULL);
 
             if (TrainerInfo_IsMainStoryCleared(v3) == 0) {
@@ -1009,7 +1008,7 @@ BOOL sub_020943B0 (UnkStruct_02095C48 * param0)
         }
 
         for (v2 = 0; v2 < v0; v2++) {
-            v3 = sub_02032EE8(v2);
+            v3 = CommInfo_TrainerInfo(v2);
             GF_ASSERT(v3 != NULL);
 
             if (TrainerInfo_HasNationalDex(v3) == 0) {
@@ -1026,7 +1025,7 @@ BOOL sub_020943B0 (UnkStruct_02095C48 * param0)
         sub_020939E0(param0, param0->unk_197D, param0->unk_197E);
 
         for (v2 = 0; v2 < v0; v2++) {
-            v3 = sub_02032EE8(v2);
+            v3 = CommInfo_TrainerInfo(v2);
 
             if (TrainerInfo_GameCode(v3) == 0) {
                 param0->unk_15B++;

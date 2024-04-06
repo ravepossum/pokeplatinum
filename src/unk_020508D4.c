@@ -1,9 +1,8 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_defs/struct_0203CDB0.h"
+#include "field/field_system.h"
 #include "functypes/funcptr_02050904.h"
-#include "struct_defs/struct_0208BE5C.h"
 #include "overlay005/struct_ov5_021D219C.h"
 
 #include "heap.h"
@@ -17,17 +16,17 @@ typedef struct UnkStruct_020508D4_t {
     void * unk_0C;
     int unk_10;
     void * unk_14;
-    UnkStruct_0203CDB0 * unk_18;
+    FieldSystem * unk_18;
     UnkStruct_ov5_021D219C * unk_1C;
 } UnkStruct_020508D4;
 
 typedef struct {
     int unk_00;
-    const UnkStruct_0208BE5C * unk_04;
+    const OverlayManagerTemplate * unk_04;
     void * unk_08;
 } UnkStruct_020509F0;
 
-static UnkStruct_020508D4 * sub_020508D4 (UnkStruct_0203CDB0 * param0, UnkFuncPtr_02050904 param1, void * param2)
+static UnkStruct_020508D4 * sub_020508D4 (FieldSystem * param0, UnkFuncPtr_02050904 param1, void * param2)
 {
     UnkStruct_020508D4 * v0;
 
@@ -44,7 +43,7 @@ static UnkStruct_020508D4 * sub_020508D4 (UnkStruct_0203CDB0 * param0, UnkFuncPt
     return v0;
 }
 
-UnkStruct_020508D4 * sub_02050904 (UnkStruct_0203CDB0 * param0, UnkFuncPtr_02050904 param1, void * param2)
+UnkStruct_020508D4 * sub_02050904 (FieldSystem * param0, UnkFuncPtr_02050904 param1, void * param2)
 {
     UnkStruct_020508D4 * v0;
 
@@ -81,7 +80,7 @@ UnkStruct_020508D4 * sub_02050944 (UnkStruct_020508D4 * param0, UnkFuncPtr_02050
     return v0;
 }
 
-BOOL sub_02050958 (UnkStruct_0203CDB0 * param0)
+BOOL sub_02050958 (FieldSystem * param0)
 {
     if (param0->unk_10 == NULL) {
         return 0;
@@ -109,12 +108,12 @@ BOOL sub_02050958 (UnkStruct_0203CDB0 * param0)
     return 0;
 }
 
-BOOL sub_020509A4 (UnkStruct_0203CDB0 * param0)
+BOOL sub_020509A4 (FieldSystem * param0)
 {
     return param0->unk_10 != NULL;
 }
 
-BOOL sub_020509B4 (UnkStruct_0203CDB0 * param0)
+BOOL sub_020509B4 (FieldSystem * param0)
 {
     if (sub_0203CD4C(param0) || sub_0203CD74(param0)) {
         return 1;
@@ -123,12 +122,12 @@ BOOL sub_020509B4 (UnkStruct_0203CDB0 * param0)
     }
 }
 
-void sub_020509D4 (UnkStruct_0203CDB0 * param0)
+void sub_020509D4 (FieldSystem * param0)
 {
     sub_0203CD00(param0);
 }
 
-BOOL sub_020509DC (UnkStruct_0203CDB0 * param0)
+BOOL sub_020509DC (FieldSystem * param0)
 {
     if (sub_0203CD5C(param0)) {
         return 1;
@@ -139,7 +138,7 @@ BOOL sub_020509DC (UnkStruct_0203CDB0 * param0)
 
 static BOOL sub_020509F0 (UnkStruct_020508D4 * param0)
 {
-    UnkStruct_0203CDB0 * v0 = sub_02050A60(param0);
+    FieldSystem * v0 = sub_02050A60(param0);
     UnkStruct_020509F0 * v1 = sub_02050A64(param0);
 
     switch (v1->unk_00) {
@@ -159,7 +158,7 @@ static BOOL sub_020509F0 (UnkStruct_020508D4 * param0)
     return 0;
 }
 
-void sub_02050A38 (UnkStruct_020508D4 * param0, const UnkStruct_0208BE5C * param1, void * param2)
+void sub_02050A38 (UnkStruct_020508D4 * param0, const OverlayManagerTemplate * param1, void * param2)
 {
     UnkStruct_020509F0 * v0 = Heap_AllocFromHeapAtEnd(32, sizeof(UnkStruct_020509F0));
 
@@ -170,7 +169,7 @@ void sub_02050A38 (UnkStruct_020508D4 * param0, const UnkStruct_0208BE5C * param
     sub_02050944(param0, sub_020509F0, v0);
 }
 
-UnkStruct_0203CDB0 * sub_02050A60 (UnkStruct_020508D4 * param0)
+FieldSystem * sub_02050A60 (UnkStruct_020508D4 * param0)
 {
     return param0->unk_18;
 }

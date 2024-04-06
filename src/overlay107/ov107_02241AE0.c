@@ -6,7 +6,6 @@
 #include "struct_decls/struct_0200112C_decl.h"
 #include "struct_decls/struct_02001AF4_decl.h"
 #include "struct_decls/struct_02002F38_decl.h"
-#include "struct_decls/struct_020067E8_decl.h"
 #include "struct_decls/struct_02006C24_decl.h"
 #include "message.h"
 #include "struct_decls/struct_0200B358_decl.h"
@@ -20,7 +19,7 @@
 #include "struct_decls/struct_0203068C_decl.h"
 #include "pokemon.h"
 #include "struct_decls/struct_party_decl.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 #include "overlay107/struct_ov107_02241D6C_decl.h"
 #include "overlay107/struct_ov107_02249B8C_decl.h"
 
@@ -41,7 +40,7 @@
 #include "unk_02002F38.h"
 #include "unk_02005474.h"
 #include "game_overlay.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "narc.h"
 #include "unk_02006E3C.h"
 #include "unk_020093B4.h"
@@ -65,8 +64,8 @@
 #include "unk_020279FC.h"
 #include "unk_020302D0.h"
 #include "unk_0203061C.h"
-#include "unk_020329E0.h"
-#include "unk_02034198.h"
+#include "communication_information.h"
+#include "communication_system.h"
 #include "unk_020363E8.h"
 #include "unk_020393C8.h"
 #include "unk_0205DFC4.h"
@@ -229,7 +228,7 @@ const u16 Unk_ov107_02249E12[] = {
 
 
 struct UnkStruct_ov107_02241D6C_t {
-    UnkStruct_020067E8 * unk_00;
+    OverlayManager * unk_00;
     UnkStruct_0203068C * unk_04;
     u8 unk_08;
     u8 unk_09;
@@ -298,9 +297,9 @@ struct UnkStruct_ov107_02241D6C_t {
     u32 unk_49C;
 };
 
-int ov107_02241AE0(UnkStruct_020067E8 * param0, int * param1);
-int ov107_02241BD4(UnkStruct_020067E8 * param0, int * param1);
-int ov107_02241D2C(UnkStruct_020067E8 * param0, int * param1);
+int ov107_02241AE0(OverlayManager * param0, int * param1);
+int ov107_02241BD4(OverlayManager * param0, int * param1);
+int ov107_02241D2C(OverlayManager * param0, int * param1);
 static BOOL ov107_02241D6C(UnkStruct_ov107_02241D6C * param0);
 static void ov107_02241E70(UnkStruct_ov107_02241D6C * param0);
 static BOOL ov107_02241EC8(UnkStruct_ov107_02241D6C * param0);
@@ -467,7 +466,7 @@ static const UnkStruct_ov84_02240FA8 Unk_ov107_02249EE4 = {
     NULL
 };
 
-int ov107_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
+int ov107_02241AE0 (OverlayManager * param0, int * param1)
 {
     int v0;
     UnkStruct_ov107_02241D6C * v1;
@@ -477,12 +476,12 @@ int ov107_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
     ov107_02242F24();
     Heap_Create(3, 100, 0x25000);
 
-    v1 = sub_0200681C(param0, sizeof(UnkStruct_ov107_02241D6C), 100);
+    v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov107_02241D6C), 100);
     memset(v1, 0, sizeof(UnkStruct_ov107_02241D6C));
 
     v1->unk_4C = sub_02018340(100);
     v1->unk_00 = param0;
-    v2 = (UnkStruct_ov104_0223597C *)sub_02006840(param0);
+    v2 = (UnkStruct_ov104_0223597C *)OverlayManager_Args(param0);
     v1->unk_1CC = v2->unk_00;
     v1->unk_1D0 = sub_020302DC(v1->unk_1CC);
     v1->unk_1D4 = sub_0203041C(v1->unk_1CC);
@@ -518,9 +517,9 @@ int ov107_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
     return 1;
 }
 
-int ov107_02241BD4 (UnkStruct_020067E8 * param0, int * param1)
+int ov107_02241BD4 (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov107_02241D6C * v0 = sub_0200682C(param0);
+    UnkStruct_ov107_02241D6C * v0 = OverlayManager_Data(param0);
 
     if (v0->unk_496 == 1) {
         switch (*param1) {
@@ -594,17 +593,17 @@ int ov107_02241BD4 (UnkStruct_020067E8 * param0, int * param1)
     return 0;
 }
 
-int ov107_02241D2C (UnkStruct_020067E8 * param0, int * param1)
+int ov107_02241D2C (OverlayManager * param0, int * param1)
 {
     int v0;
-    UnkStruct_ov107_02241D6C * v1 = sub_0200682C(param0);
+    UnkStruct_ov107_02241D6C * v1 = OverlayManager_Data(param0);
 
     *(v1->unk_438) = v1->unk_0D;
 
     sub_0201DC3C();
     ov107_02242E14(v1);
 
-    sub_02006830(param0);
+    OverlayManager_FreeData(param0);
     SetMainCallback(NULL, NULL);
     Heap_Destroy(100);
     Overlay_UnloadByID(FS_OVERLAY_ID(overlay104));
@@ -1533,7 +1532,7 @@ static void ov107_02242F5C (UnkStruct_ov107_02241D6C * param0)
     param0->unk_434 = ov107_02249B1C(&param0->unk_1D8, 0, 0, 0, 3, 20, 20, 1, NULL);
     ov107_02249BAC(param0->unk_434, 0);
 
-    if (sub_02035E38()) {
+    if (CommSys_IsInitialized()) {
         sub_0200966C(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
         sub_02009704(NNS_G2D_VRAM_TYPE_2DMAIN);
         sub_02039734();
@@ -2860,7 +2859,7 @@ static void ov107_02244A8C (UnkStruct_ov107_02241D6C * param0, u32 param1, BoxPo
 
 static void ov107_02244A98 (UnkStruct_ov107_02241D6C * param0, u32 param1)
 {
-    sub_0200B498(param0->unk_24, param1, sub_02025E38(param0->unk_1CC));
+    sub_0200B498(param0->unk_24, param1, SaveData_GetTrainerInfo(param0->unk_1CC));
     return;
 }
 
@@ -2870,7 +2869,7 @@ static void ov107_02244AB4 (UnkStruct_ov107_02241D6C * param0, Window * param1, 
     const TrainerInfo * v1;
     Strbuf* v2;
 
-    v1 = sub_02025E38(param0->unk_1CC);
+    v1 = SaveData_GetTrainerInfo(param0->unk_1CC);
     v2 = Strbuf_Init((7 + 1), 100);
 
     Strbuf_CopyChars(v2, TrainerInfo_Name(v1));
@@ -2893,7 +2892,7 @@ static void ov107_02244B24 (UnkStruct_ov107_02241D6C * param0, Window * param1, 
     TrainerInfo * v0;
     u32 v1;
 
-    v0 = sub_02032EE8((sub_0203608C() ^ 1));
+    v0 = CommInfo_TrainerInfo((CommSys_CurNetId() ^ 1));
 
     if (TrainerInfo_Gender(v0) == 0) {
         v1 = ((u32)(((7 & 0xff) << 16) | ((8 & 0xff) << 8) | (((0 & 0xff) << 0))));
@@ -3413,7 +3412,7 @@ BOOL ov107_0224529C (UnkStruct_ov107_02241D6C * param0, u16 param1, u16 param2)
         break;
     }
 
-    if (sub_020359DC(v1, param0->unk_444, 40) == 1) {
+    if (CommSys_SendData(v1, param0->unk_444, 40) == 1) {
         v0 = 1;
     } else {
         v0 = 0;
@@ -3428,7 +3427,7 @@ void ov107_022452F4 (UnkStruct_ov107_02241D6C * param0, u16 param1)
     TrainerInfo * v2;
 
     v1 = 0;
-    v2 = sub_02025E38(param0->unk_1CC);
+    v2 = SaveData_GetTrainerInfo(param0->unk_1CC);
 
     param0->unk_444[v1] = param1;
     v1 += 1;
@@ -3454,7 +3453,7 @@ void ov107_02245338 (int param0, int param1, void * param2, void * param3)
     v1 = 0;
     v2->unk_0F++;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 
@@ -3475,7 +3474,7 @@ void ov107_02245368 (UnkStruct_ov107_02241D6C * param0, u16 param1, u16 param2)
     param0->unk_444[0] = param1;
     param0->unk_444[1] = param2;
 
-    if (sub_0203608C() == 0) {
+    if (CommSys_CurNetId() == 0) {
         if (param0->unk_12 == 0xff) {
             param0->unk_12 = param2;
         }
@@ -3497,13 +3496,13 @@ void ov107_022453A0 (int param0, int param1, void * param2, void * param3)
     v1 = 0;
     v2->unk_0F++;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 
     v2->unk_495 = v3[1];
 
-    if (sub_0203608C() == 0) {
+    if (CommSys_CurNetId() == 0) {
         if (v2->unk_12 != 0xff) {
             v2->unk_495 = 0;
         } else {
@@ -3533,7 +3532,7 @@ void ov107_02245408 (int param0, int param1, void * param2, void * param3)
     UnkStruct_ov107_02241D6C * v0 = param3;
     const u16 * v1 = param2;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 
@@ -3554,7 +3553,7 @@ void ov107_02245438 (int param0, int param1, void * param2, void * param3)
     UnkStruct_ov107_02241D6C * v0 = param3;
     const u16 * v1 = param2;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 
@@ -3579,7 +3578,7 @@ static void ov107_02245464 (UnkStruct_ov107_02241D6C * param0, Window * param1)
         v1 = v3 + 0;
         ov107_02244AB4(param0, param1, v0, v1, 0);
     } else {
-        if (sub_0203608C() == 0) {
+        if (CommSys_CurNetId() == 0) {
             v0 = v2 + 0;
             v1 = v3 + 0;
 
@@ -3800,7 +3799,7 @@ asm static void ov107_02245780 (UnkStruct_ov107_02241D6C * param0, Window * para
     strb r0, [r5, #0xa]
     b _022459C2
  _0224581A:
-    bl sub_0203608C
+    bl CommSys_CurNetId
     cmp r0, #0
     add r1, sp, #0x28
     bne _022458F4
@@ -4027,7 +4026,7 @@ static void ov107_022459D0 (UnkStruct_ov107_02241D6C * param0, u8 param1, u8 par
         break;
     }
 
-    if (sub_0203608C() == 0) {
+    if (CommSys_CurNetId() == 0) {
         if (param1 < v1) {
             ov107_02244A98(param0, 5);
             ov104_0223BC2C(param0->unk_04, param0->unk_09, v2);
@@ -4163,7 +4162,7 @@ static void ov107_02245C94 (UnkStruct_ov107_02241D6C * param0, u8 param1, u8 par
     v0 = param0->unk_15;
     v1 = ov107_02249C9C(v0, param1);
 
-    if (sub_0203608C() == 0) {
+    if (CommSys_CurNetId() == 0) {
         if (param1 < v0) {
             ov107_02244A98(param0, 5);
 

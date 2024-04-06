@@ -7,7 +7,6 @@
 
 #include "struct_decls/struct_0200112C_decl.h"
 #include "struct_decls/struct_02001AF4_decl.h"
-#include "struct_decls/struct_020067E8_decl.h"
 #include "struct_decls/struct_02006C24_decl.h"
 #include "message.h"
 #include "struct_decls/struct_0200B358_decl.h"
@@ -33,7 +32,7 @@
 #include "unk_02002328.h"
 #include "unk_02002B7C.h"
 #include "unk_02005474.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "narc.h"
 #include "unk_02006E3C.h"
 #include "unk_0200A784.h"
@@ -51,7 +50,7 @@
 #include "unk_0201E3D8.h"
 #include "gx_layers.h"
 #include "strbuf.h"
-#include "unk_020244AC.h"
+#include "savedata.h"
 #include "unk_02025CB0.h"
 #include "unk_02025E08.h"
 #include "unk_020279FC.h"
@@ -116,9 +115,9 @@ typedef struct {
     u32 unk_04;
 } UnkStruct_ov98_02249BDC;
 
-int ov98_022471C8(UnkStruct_020067E8 * param0, int * param1);
-int ov98_022473D8(UnkStruct_020067E8 * param0, int * param1);
-int ov98_02247440(UnkStruct_020067E8 * param0, int * param1);
+int ov98_022471C8(OverlayManager * param0, int * param1);
+int ov98_022473D8(OverlayManager * param0, int * param1);
+int ov98_02247440(OverlayManager * param0, int * param1);
 static void ov98_022474E8(void * param0);
 static void ov98_02247510(BGL * param0);
 static void ov98_022476D0(BGL * param0);
@@ -296,7 +295,7 @@ static const UnkStruct_ov61_0222C884 Unk_ov98_02249BC4 = {
     0x0
 };
 
-int ov98_022471C8 (UnkStruct_020067E8 * param0, int * param1)
+int ov98_022471C8 (OverlayManager * param0, int * param1)
 {
     UnkStruct_ov98_02247704 * v0;
 
@@ -313,10 +312,10 @@ int ov98_022471C8 (UnkStruct_020067E8 * param0, int * param1)
     G2S_BlendNone();
 
     Heap_Create(3, 109, 0x70000);
-    v0 = sub_0200681C(param0, sizeof(UnkStruct_ov98_02247704), 109);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov98_02247704), 109);
     MI_CpuClear8(v0, sizeof(UnkStruct_ov98_02247704));
 
-    v0->unk_00 = sub_02006840(param0);
+    v0->unk_00 = OverlayManager_Args(param0);
     v0->unk_04 = sub_02018340(109);
 
     sub_0201DBEC(64, 109);
@@ -379,9 +378,9 @@ int ov98_022471C8 (UnkStruct_020067E8 * param0, int * param1)
     return 1;
 }
 
-int ov98_022473D8 (UnkStruct_020067E8 * param0, int * param1)
+int ov98_022473D8 (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov98_02247704 * v0 = sub_0200682C(param0);
+    UnkStruct_ov98_02247704 * v0 = OverlayManager_Data(param0);
     int v1, v2;
 
     switch (*param1) {
@@ -416,9 +415,9 @@ int ov98_022473D8 (UnkStruct_020067E8 * param0, int * param1)
     return 0;
 }
 
-int ov98_02247440 (UnkStruct_020067E8 * param0, int * param1)
+int ov98_02247440 (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov98_02247704 * v0 = sub_0200682C(param0);
+    UnkStruct_ov98_02247704 * v0 = OverlayManager_Data(param0);
 
     inline_ov61_0222C160(&v0->unk_EC);
 
@@ -442,7 +441,7 @@ int ov98_02247440 (UnkStruct_020067E8 * param0, int * param1)
     sub_02002AE4(0);
     sub_02002B20(0);
     sub_02039794();
-    sub_02006830(param0);
+    OverlayManager_FreeData(param0);
     Heap_Destroy(109);
 
     return 1;
@@ -2123,10 +2122,10 @@ static int ov98_02249238 (UnkStruct_ov98_02247704 * param0)
     {
         int v0;
 
-        v0 = sub_020246E0(param0->unk_00->unk_04);
+        v0 = SaveData_Save(param0->unk_00->unk_04);
 
         if (v0 == 2) {
-            sub_0200B498(param0->unk_20, 0, sub_02025E38(param0->unk_00->unk_04));
+            sub_0200B498(param0->unk_20, 0, SaveData_GetTrainerInfo(param0->unk_00->unk_04));
             ov98_02249714(param0, param0->unk_34, 33, 0, 0xf0f);
             Sound_PlayEffect(1563);
         } else {

@@ -9,7 +9,7 @@
 #include "struct_decls/struct_0202B4A0_decl.h"
 #include "pokemon.h"
 #include "struct_decls/struct_020797DC_decl.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 
 #include "struct_defs/trainer_data.h"
 
@@ -188,7 +188,7 @@ void sub_0200B4BC (StringFormatter * param0, u32 param1, const SaveData * param2
 
 void sub_0200B4E4 (StringFormatter * param0, u32 param1, const SaveData * param2)
 {
-    const TrainerInfo * v0 = sub_02025E38((SaveData *)param2);
+    const TrainerInfo * v0 = SaveData_GetTrainerInfo((SaveData *)param2);
     MessageLoader * v1;
 
     v1 = MessageLoader_Init(1, 26, 553, param0->unk_04);

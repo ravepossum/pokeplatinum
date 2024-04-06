@@ -5,7 +5,6 @@
 
 #include "struct_decls/struct_02001AF4_decl.h"
 #include "struct_decls/struct_02002F38_decl.h"
-#include "struct_decls/struct_020067E8_decl.h"
 #include "struct_decls/struct_02006C24_decl.h"
 #include "struct_decls/struct_02007768_decl.h"
 #include "struct_decls/sprite_decl.h"
@@ -13,7 +12,7 @@
 #include "struct_decls/struct_02013A04_decl.h"
 #include "struct_decls/struct_02018340_decl.h"
 #include "struct_decls/struct_party_decl.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 #include "overlay105/struct_ov105_02241FF4_decl.h"
 #include "overlay105/struct_ov105_02245E1C_decl.h"
 #include "overlay105/struct_ov105_02245EA8_decl.h"
@@ -38,7 +37,7 @@
 #include "unk_02002F38.h"
 #include "unk_02005474.h"
 #include "game_overlay.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "narc.h"
 #include "unk_02006E3C.h"
 #include "unk_0200762C.h"
@@ -60,8 +59,8 @@
 #include "unk_02025E08.h"
 #include "trainer_info.h"
 #include "unk_020279FC.h"
-#include "unk_020329E0.h"
-#include "unk_02034198.h"
+#include "communication_information.h"
+#include "communication_system.h"
 #include "unk_020363E8.h"
 #include "unk_020393C8.h"
 #include "pokemon.h"
@@ -82,8 +81,8 @@
 FS_EXTERN_OVERLAY(overlay104);
 
 struct UnkStruct_ov105_02241FF4_t {
-    UnkStruct_020067E8 * unk_00;
-    UnkStruct_020067E8 * unk_04;
+    OverlayManager * unk_00;
+    OverlayManager * unk_04;
     u8 unk_08;
     u8 unk_09;
     u8 unk_0A;
@@ -144,9 +143,9 @@ struct UnkStruct_ov105_02241FF4_t {
     u32 unk_3C0;
 };
 
-int ov105_02241AE0(UnkStruct_020067E8 * param0, int * param1);
-int ov105_02241BD8(UnkStruct_020067E8 * param0, int * param1);
-int ov105_02241F54(UnkStruct_020067E8 * param0, int * param1);
+int ov105_02241AE0(OverlayManager * param0, int * param1);
+int ov105_02241BD8(OverlayManager * param0, int * param1);
+int ov105_02241F54(OverlayManager * param0, int * param1);
 static BOOL ov105_02241FF4(UnkStruct_ov105_02241FF4 * param0);
 static BOOL ov105_022421F0(UnkStruct_ov105_02241FF4 * param0);
 static BOOL ov105_02242698(UnkStruct_ov105_02241FF4 * param0);
@@ -360,7 +359,7 @@ static const u8 Unk_ov105_022462DC[] = {
     0x8
 };
 
-int ov105_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
+int ov105_02241AE0 (OverlayManager * param0, int * param1)
 {
     int v0;
     UnkStruct_ov105_02241FF4 * v1;
@@ -370,14 +369,14 @@ int ov105_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
     ov105_022452E4();
     Heap_Create(3, 93, 0x20000);
 
-    v1 = sub_0200681C(param0, sizeof(UnkStruct_ov105_02241FF4), 93);
+    v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov105_02241FF4), 93);
     memset(v1, 0, sizeof(UnkStruct_ov105_02241FF4));
 
     v1->unk_124 = sub_02024220(93, 0, 2, 0, 2, ov105_02245CD0);
     v1->unk_4C = sub_02018340(93);
     v1->unk_00 = param0;
 
-    v2 = (UnkStruct_ov104_02234130 *)sub_02006840(param0);
+    v2 = (UnkStruct_ov104_02234130 *)OverlayManager_Args(param0);
 
     v1->unk_13C = v2->unk_00;
     v1->unk_09 = v2->unk_04;
@@ -414,9 +413,9 @@ int ov105_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
     return 1;
 }
 
-int ov105_02241BD8 (UnkStruct_020067E8 * param0, int * param1)
+int ov105_02241BD8 (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov105_02241FF4 * v0 = sub_0200682C(param0);
+    UnkStruct_ov105_02241FF4 * v0 = OverlayManager_Data(param0);
 
     if (v0->unk_3B4 == 1) {
         switch (*param1) {
@@ -591,10 +590,10 @@ int ov105_02241BD8 (UnkStruct_020067E8 * param0, int * param1)
     return 0;
 }
 
-int ov105_02241F54 (UnkStruct_020067E8 * param0, int * param1)
+int ov105_02241F54 (OverlayManager * param0, int * param1)
 {
     int v0;
-    UnkStruct_ov105_02241FF4 * v1 = sub_0200682C(param0);
+    UnkStruct_ov105_02241FF4 * v1 = OverlayManager_Data(param0);
 
     if (ov105_022454F8(v1, 0) == 1) {
         for (v0 = 0; v0 < ov105_02245508(v1->unk_09); v0++) {
@@ -613,7 +612,7 @@ int ov105_02241F54 (UnkStruct_020067E8 * param0, int * param1)
 
     ov105_022451B4(v1);
 
-    sub_02006830(param0);
+    OverlayManager_FreeData(param0);
     SetMainCallback(NULL, NULL);
     Heap_Destroy(93);
     Overlay_UnloadByID(FS_OVERLAY_ID(overlay104));
@@ -874,7 +873,7 @@ static BOOL ov105_02242698 (UnkStruct_ov105_02241FF4 * param0)
     switch (param0->unk_08) {
     case 0:
 
-        if (sub_02006844(param0->unk_04) == 1) {
+        if (OverlayManager_Exec(param0->unk_04) == 1) {
             param0->unk_334 = param0->unk_140->pos;
             Heap_FreeToHeap(param0->unk_140);
             Heap_FreeToHeap(param0->unk_04);
@@ -985,7 +984,7 @@ static BOOL ov105_022426E0 (UnkStruct_ov105_02241FF4 * param0)
         if (ScreenWipe_Done() == 1) {
             ov105_02245464(param0);
             ov105_022451B4(param0);
-            param0->unk_04 = sub_020067E8(&Unk_020F410C, param0->unk_140, 93);
+            param0->unk_04 = OverlayManager_New(&Unk_020F410C, param0->unk_140, 93);
             param0->unk_13_1 = 1;
             return 1;
         }
@@ -1502,7 +1501,7 @@ static BOOL ov105_022434BC (UnkStruct_ov105_02241FF4 * param0)
         if (ScreenWipe_Done() == 1) {
             ov105_02245464(param0);
             ov105_022451B4(param0);
-            param0->unk_04 = sub_020067E8(&Unk_020F410C, param0->unk_140, 93);
+            param0->unk_04 = OverlayManager_New(&Unk_020F410C, param0->unk_140, 93);
             param0->unk_13_1 = 1;
             return 1;
         }
@@ -2652,7 +2651,7 @@ static void ov105_02244F0C (UnkStruct_ov105_02241FF4 * param0, Window * param1, 
     const TrainerInfo * v1;
     Strbuf* v2;
 
-    v1 = sub_02025E38(param0->unk_13C);
+    v1 = SaveData_GetTrainerInfo(param0->unk_13C);
     v2 = Strbuf_Init((7 + 1), 93);
 
     BGL_FillWindow(param1, 0);
@@ -2677,7 +2676,7 @@ static void ov105_02244F84 (UnkStruct_ov105_02241FF4 * param0, Window * param1, 
     Strbuf* v1;
     TrainerInfo * v2;
 
-    v2 = sub_02032EE8(1 - sub_0203608C());
+    v2 = CommInfo_TrainerInfo(1 - CommSys_CurNetId());
     v1 = Strbuf_Init((7 + 1), 93);
 
     BGL_FillWindow(param1, 0);
@@ -2865,7 +2864,7 @@ static void ov105_0224531C (UnkStruct_ov105_02241FF4 * param0)
 
     param0->unk_128 = sub_0200762C(93);
 
-    if (sub_02035E38()) {
+    if (CommSys_IsInitialized()) {
         sub_0200966C(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
         sub_02009704(NNS_G2D_VRAM_TYPE_2DMAIN);
         sub_02039734();
@@ -2914,7 +2913,7 @@ static void ov105_02245464 (UnkStruct_ov105_02241FF4 * param0)
     param0->unk_140->contest = 0;
 
     PokemonSummary_FlagVisiblePages(param0->unk_140, Unk_ov105_022462DC);
-    PokemonSummary_SetPlayerProfile(param0->unk_140, sub_02025E38(param0->unk_13C));
+    PokemonSummary_SetPlayerProfile(param0->unk_140, SaveData_GetTrainerInfo(param0->unk_13C));
 
     return;
 }
@@ -3056,7 +3055,7 @@ BOOL ov105_02245620 (UnkStruct_ov105_02241FF4 * param0, u16 param1, u16 param2)
         break;
     }
 
-    if (sub_020359DC(v1, param0->unk_33C, 60) == 1) {
+    if (CommSys_SendData(v1, param0->unk_33C, 60) == 1) {
         v0 = 1;
     } else {
         v0 = 0;
@@ -3069,7 +3068,7 @@ void ov105_02245684 (UnkStruct_ov105_02241FF4 * param0, u16 param1)
 {
     TrainerInfo * v0;
 
-    v0 = sub_02025E38(param0->unk_13C);
+    v0 = SaveData_GetTrainerInfo(param0->unk_13C);
     param0->unk_33C[0] = param1;
 
     return;
@@ -3083,7 +3082,7 @@ void ov105_0224569C (int param0, int param1, void * param2, void * param3)
 
     v1 = 0;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 
@@ -3131,7 +3130,7 @@ void ov105_02245744 (int param0, int param1, void * param2, void * param3)
     v1 = 0;
     v2 = ov104_0223AA50(v3->unk_09);
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 
@@ -3211,13 +3210,13 @@ void ov105_022458A4 (int param0, int param1, void * param2, void * param3)
     v1 = 0;
     v2->unk_3BE++;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 
     v2->unk_3B4 = (u8)v3[1];
 
-    if (sub_0203608C() == 0) {
+    if (CommSys_CurNetId() == 0) {
         if (v2->unk_13_3 == 1) {
             v2->unk_3B4 = 0;
         } else {

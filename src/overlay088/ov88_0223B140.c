@@ -6,7 +6,6 @@
 
 #include "constants/species.h"
 
-#include "struct_decls/struct_020067E8_decl.h"
 #include "struct_decls/struct_02006C24_decl.h"
 #include "message.h"
 #include "struct_decls/struct_0200B358_decl.h"
@@ -21,7 +20,7 @@
 #include "pokemon.h"
 #include "struct_decls/struct_party_decl.h"
 #include "struct_decls/struct_02095E80_decl.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 
 #include "constdata/const_020F410C.h"
 
@@ -47,7 +46,7 @@
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
 #include "unk_02006224.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "narc.h"
 #include "unk_02006E3C.h"
 #include "unk_020093B4.h"
@@ -83,8 +82,8 @@
 #include "unk_0202D778.h"
 #include "unk_0202F180.h"
 #include "unk_0203061C.h"
-#include "unk_020329E0.h"
-#include "unk_02034198.h"
+#include "communication_information.h"
+#include "communication_system.h"
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_02038ED4.h"
@@ -110,7 +109,7 @@ static void ov88_0223C0E0(void * param0);
 static void ov88_0223C15C(void);
 static void ov88_0223C17C(BGL * param0);
 static void ov88_0223C63C(void);
-static void ov88_0223C370(UnkStruct_02095E80 * param0, UnkStruct_020067E8 * param1);
+static void ov88_0223C370(UnkStruct_02095E80 * param0, OverlayManager * param1);
 static void ov88_0223C44C(BGL * param0);
 static void ov88_0223C4E0(BGL * param0, int param1, int param2);
 static void ov88_0223C504(UnkStruct_02095E80 * param0, NARC * param1);
@@ -289,7 +288,7 @@ static const u8 Unk_ov88_0223F004[][4][6] = {
     }
 };
 
-int ov88_0223B140 (UnkStruct_020067E8 * param0, int * param1)
+int ov88_0223B140 (OverlayManager * param0, int * param1)
 {
     UnkStruct_02095E80 * v0;
     NARC * v1;
@@ -305,7 +304,7 @@ int ov88_0223B140 (UnkStruct_020067E8 * param0, int * param1)
     Heap_Create(3, 26, 0x50000 + 0x20000 + 2000);
 
     v1 = NARC_ctor(NARC_INDEX_DATA__TRADELIST, 26);
-    v0 = sub_0200681C(param0, sizeof(UnkStruct_02095E80), 26);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_02095E80), 26);
 
     MI_CpuClearFast(v0, sizeof(UnkStruct_02095E80));
 
@@ -364,8 +363,8 @@ static void ov88_0223B320 (UnkStruct_02095E80 * param0)
     Strbuf* v0, * v1, * v2;
     TrainerInfo * v3, * v4;
 
-    v3 = sub_02032EE8(sub_0203608C());
-    v4 = sub_02032EE8(sub_0203608C() ^ 1);
+    v3 = CommInfo_TrainerInfo(CommSys_CurNetId());
+    v4 = CommInfo_TrainerInfo(CommSys_CurNetId() ^ 1);
     v0 = TrainerInfo_NameNewStrbuf(v3, 26);
     v1 = TrainerInfo_NameNewStrbuf(v4, 26);
     v2 = MessageLoader_GetNewStrbuf(param0->unk_184, 50);
@@ -428,9 +427,9 @@ static void ov88_0223B4F0 (UnkStruct_02095E80 * param0)
     ov88_0223C4E0(param0->unk_174, Party_GetCurrentCount(param0->unk_2270), Party_GetCurrentCount(param0->unk_2274));
 }
 
-int ov88_0223B57C (UnkStruct_020067E8 * param0, int * param1)
+int ov88_0223B57C (OverlayManager * param0, int * param1)
 {
-    UnkStruct_02095E80 * v0 = sub_0200682C(param0);
+    UnkStruct_02095E80 * v0 = OverlayManager_Data(param0);
     int v1 = 0;
 
     switch (*param1) {
@@ -471,8 +470,8 @@ int ov88_0223B57C (UnkStruct_020067E8 * param0, int * param1)
             }
             break;
         case 5:
-            if (sub_02006844(v0->unk_40)) {
-                sub_02006814(v0->unk_40);
+            if (OverlayManager_Exec(v0->unk_40)) {
+                OverlayManager_Free(v0->unk_40);
                 ov88_0223B3C0(v0);
 
                 v0->unk_44 = 0;
@@ -610,8 +609,8 @@ static int ov88_0223B914 (UnkStruct_02095E80 * param0)
                 param0->unk_4C = 2;
             }
 
-            if (sub_0203608C() == 0) {
-                ov88_0223D044(sub_0203608C(), 31, inline_020564D0(60) + 3);
+            if (CommSys_CurNetId() == 0) {
+                ov88_0223D044(CommSys_CurNetId(), 31, inline_020564D0(60) + 3);
             }
 
             ov88_0223D0C0(param0->unk_04);
@@ -654,8 +653,8 @@ static int ov88_0223B914 (UnkStruct_02095E80 * param0)
         param0->unk_54 = 0;
         param0->unk_58 = 0;
 
-        if (sub_0203608C() == 1) {
-            ov88_0223D098(sub_0203608C(), param0->unk_2270, param0->unk_50);
+        if (CommSys_CurNetId() == 1) {
+            ov88_0223D098(CommSys_CurNetId(), param0->unk_2270, param0->unk_50);
             param0->unk_50++;
         }
 
@@ -693,7 +692,7 @@ static int ov88_0223B914 (UnkStruct_02095E80 * param0)
         param0->unk_4C++;
         break;
     case 12:
-        ov88_0223D0D4(sub_02032EE8(sub_0203608C()), param0->unk_227C, &param0->unk_2280);
+        ov88_0223D0D4(CommInfo_TrainerInfo(CommSys_CurNetId()), param0->unk_227C, &param0->unk_2280);
         param0->unk_4C++;
         break;
     case 13:
@@ -884,10 +883,10 @@ static void ov88_0223BFD8 (UnkStruct_02095E80 * param0)
     }
 }
 
-int ov88_0223C03C (UnkStruct_020067E8 * param0, int * param1)
+int ov88_0223C03C (OverlayManager * param0, int * param1)
 {
-    UnkStruct_02095E80 * v0 = sub_0200682C(param0);
-    UnkStruct_ov88_0223C370 * v1 = sub_02006840(param0);
+    UnkStruct_02095E80 * v0 = OverlayManager_Data(param0);
+    UnkStruct_ov88_0223C370 * v1 = OverlayManager_Args(param0);
     int v2;
 
     v1->unk_28 = v0->unk_5C;
@@ -907,7 +906,7 @@ int ov88_0223C03C (UnkStruct_020067E8 * param0, int * param1)
     sub_0200B3F0(v0->unk_17C);
     sub_0200B3F0(v0->unk_178);
     Strbuf_Free(v0->unk_18C);
-    sub_02006830(param0);
+    OverlayManager_FreeData(param0);
     SetMainCallback(NULL, NULL);
     Heap_Destroy(26);
 
@@ -1136,9 +1135,9 @@ static void ov88_0223C17C (BGL * param0)
     GX_SetVisibleWnd(GX_WNDMASK_NONE);
 }
 
-static void ov88_0223C370 (UnkStruct_02095E80 * param0, UnkStruct_020067E8 * param1)
+static void ov88_0223C370 (UnkStruct_02095E80 * param0, OverlayManager * param1)
 {
-    UnkStruct_ov88_0223C370 * v0 = sub_02006840(param1);
+    UnkStruct_ov88_0223C370 * v0 = OverlayManager_Args(param1);
 
     param0->unk_08 = v0;
     param0->unk_6CC = 4;
@@ -1642,13 +1641,13 @@ static int ov88_0223CFF4 (u32 * param0, int * param1, GraphicElementData * param
 void ov88_0223D044 (int param0, int param1, int param2)
 {
     u8 v0 = param2;
-    sub_020359DC(param1, &v0, 1);
+    CommSys_SendData(param1, &v0, 1);
 }
 
 void ov88_0223D058 (UnkStruct_02095E80 * param0, int param1, int param2)
 {
     if ((param2 != param0->unk_36F8) || (param1 != param0->unk_36FC)) {
-        ov88_0223D044(sub_0203608C(), param1, param2);
+        ov88_0223D044(CommSys_CurNetId(), param1, param2);
         param0->unk_36F8 = param2;
         param0->unk_36FC = param1;
     }
@@ -1663,7 +1662,7 @@ static void * ov88_0223D08C (Party * param0, int param1)
 
 void ov88_0223D098 (int param0, Party * param1, int param2)
 {
-    if (sub_02035D78(param0)) {
+    if (CommSys_IsPlayerConnected(param0)) {
         u8 v0 = param2;
 
         sub_0203597C(22, ov88_0223D08C(param1, param2), (236 * 6 + 4 * 2));
@@ -1675,7 +1674,7 @@ static void ov88_0223D0C0 (SaveData * param0)
     u8 * v0 = sub_0202D79C(param0);
     int v1;
 
-    sub_020359DC(32, v0, 14);
+    CommSys_SendData(32, v0, 14);
 }
 
 static void ov88_0223D0D4 (TrainerInfo * param0, UnkStruct_02027F8C * param1, UnkStruct_02027F8C * param2)
@@ -1749,12 +1748,12 @@ static void ov88_0223D1EC (UnkStruct_02095E80 * param0, int param1)
         param0->unk_0C.max = Party_GetCurrentCount(param0->unk_08->unk_08);
 
         param0->unk_0C.chatotCry = NULL;
-        PokemonSummary_SetPlayerProfile(&param0->unk_0C, sub_02032EE8(sub_0203608C()));
+        PokemonSummary_SetPlayerProfile(&param0->unk_0C, CommInfo_TrainerInfo(CommSys_CurNetId()));
     } else {
         param0->unk_0C.monData = param0->unk_2274;
         param0->unk_0C.max = Party_GetCurrentCount(param0->unk_2274);
-        param0->unk_0C.chatotCry = (ChatotCry *)param0->unk_2E6C[sub_0203608C() ^ 1];
-        PokemonSummary_SetPlayerProfile(&param0->unk_0C, sub_02032EE8(sub_0203608C() ^ 1));
+        param0->unk_0C.chatotCry = (ChatotCry *)param0->unk_2E6C[CommSys_CurNetId() ^ 1];
+        PokemonSummary_SetPlayerProfile(&param0->unk_0C, CommInfo_TrainerInfo(CommSys_CurNetId() ^ 1));
     }
 
     param0->unk_0C.dataType = 1;
@@ -1768,7 +1767,7 @@ static void ov88_0223D1EC (UnkStruct_02095E80 * param0, int param1)
 
     PokemonSummary_FlagVisiblePages(&param0->unk_0C, Unk_ov88_0223F13C);
 
-    param0->unk_40 = sub_020067E8(&Unk_020F410C, &param0->unk_0C, 26);
+    param0->unk_40 = OverlayManager_New(&Unk_020F410C, &param0->unk_0C, 26);
     param0->unk_3C = param1;
 }
 
@@ -1862,7 +1861,7 @@ static int ov88_0223D514 (UnkStruct_02095E80 * param0)
         param0->unk_226C = ov88_0223D854;
         break;
     case 0xfffffffe:
-        v0 = sub_02032EE8(param0->unk_36C4);
+        v0 = CommInfo_TrainerInfo(param0->unk_36C4);
         sub_0200B498(param0->unk_36CC, 0, v0);
         ov88_0223D49C(param0, 59);
         param0->unk_226C = ov88_0223D4C4;
@@ -1886,7 +1885,7 @@ static int ov88_0223D5B8 (UnkStruct_02095E80 * param0)
         return 0;
     case 0xfffffffe:
         Sound_PlayEffect(1500);
-        v1 = sub_02032EE8(param0->unk_36C4);
+        v1 = CommInfo_TrainerInfo(param0->unk_36C4);
         sub_0200B498(param0->unk_36CC, 0, v1);
         ov88_0223D49C(param0, 59);
         param0->unk_226C = ov88_0223D4C4;
@@ -1956,7 +1955,7 @@ static int ov88_0223D740 (UnkStruct_02095E80 * param0)
         param0->unk_226C = ov88_0223D69C;
         break;
     case 0xfffffffe:
-        v0 = sub_02032EE8(param0->unk_36C4);
+        v0 = CommInfo_TrainerInfo(param0->unk_36C4);
         sub_0200B498(param0->unk_36CC, 0, v0);
         ov88_0223D49C(param0, 59);
         param0->unk_226C = ov88_0223D4C4;
@@ -2016,7 +2015,7 @@ static int ov88_0223D854 (UnkStruct_02095E80 * param0)
 
     param0->unk_36C4 = -1;
 
-    for (v0 = 0; v0 < sub_02035E18(); v0++) {
+    for (v0 = 0; v0 < CommSys_ConnectedCount(); v0++) {
         if (param0->unk_3644[v0] == 2) {
             param0->unk_36C4 = v0;
             param0->unk_3644[v0] = 0;
@@ -2034,7 +2033,7 @@ static int ov88_0223D854 (UnkStruct_02095E80 * param0)
     }
 
     if (sub_0207D688(sub_0207D990(param0->unk_04), 437, 1, 26) == 1) {
-        v1 = sub_02032EE8(param0->unk_36C4);
+        v1 = CommInfo_TrainerInfo(param0->unk_36C4);
         sub_0200B498(param0->unk_36CC, 0, v1);
         ov88_0223D49C(param0, 57);
         param0->unk_226C = ov88_0223D7AC;
@@ -2432,7 +2431,7 @@ static int ov88_0223E41C (UnkStruct_02095E80 * param0)
 
 static int ov88_0223E478 (UnkStruct_02095E80 * param0)
 {
-    sub_020331E0(param0->unk_04, 1);
+    CommInfo_SetTradeResult(param0->unk_04, 1);
     ov88_0223E694(param0->unk_2270, param0->unk_2274, param0->unk_88[0], param0->unk_88[1] - 6, param0->unk_08);
     param0->unk_226C = ov88_0223D3E0;
     return 2;
@@ -2521,11 +2520,11 @@ static void ov88_0223E694 (Party * param0, Party * param1, int param2, int param
         Pokemon_SetValue(v1, 9, &v3);
     }
 
-    sub_0209304C(v1, sub_02032EE8(sub_0203608C()), 5, 0, 11);
+    sub_0209304C(v1, CommInfo_TrainerInfo(CommSys_CurNetId()), 5, 0, 11);
     sub_0207893C(v1);
     Pokemon_Copy(v0, param4->unk_3C);
     Pokemon_Copy(v1, param4->unk_40);
-    TrainerInfo_Copy(sub_02032EE8(sub_0203608C() ^ 1), param4->unk_38);
+    TrainerInfo_Copy(CommInfo_TrainerInfo(CommSys_CurNetId() ^ 1), param4->unk_38);
 
     param4->unk_2C = param2;
 
@@ -2546,7 +2545,7 @@ static void ov88_0223E694 (Party * param0, Party * param1, int param2, int param
 static void ov88_0223E7F0 (UnkStruct_0202B628 * param0, Pokemon * param1)
 {
     void * v0;
-    TrainerInfo * v1 = sub_02032EE8(sub_0203608C() ^ 1);
+    TrainerInfo * v1 = CommInfo_TrainerInfo(CommSys_CurNetId() ^ 1);
     u16 v2[10 + 1];
 
     Pokemon_GetValue(param1, MON_DATA_NICKNAME, v2);

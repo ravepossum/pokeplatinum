@@ -2,10 +2,9 @@
 #include <string.h>
 
 #include "struct_decls/struct_0202B628_decl.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 
-#include "struct_defs/struct_0203CDB0.h"
-#include "struct_defs/struct_0208BE5C.h"
+#include "field/field_system.h"
 #include "overlay082/struct_ov82_0223B164.h"
 
 #include "heap.h"
@@ -18,8 +17,8 @@
 FS_EXTERN_OVERLAY(overlay82);
 
 UnkStruct_ov82_0223B164 * sub_02099604(int param0, SaveData * param1, int param2, UnkStruct_0202B628 * param3);
-UnkStruct_ov82_0223B164 * sub_02099674(UnkStruct_0203CDB0 * param0, int param1, int param2);
-UnkStruct_ov82_0223B164 * sub_020996A0(UnkStruct_0203CDB0 * param0, int param1, BOOL param2);
+UnkStruct_ov82_0223B164 * sub_02099674(FieldSystem * param0, int param1, int param2);
+UnkStruct_ov82_0223B164 * sub_020996A0(FieldSystem * param0, int param1, BOOL param2);
 
 UnkStruct_ov82_0223B164 * sub_02099604 (int param0, SaveData * param1, int param2, UnkStruct_0202B628 * param3)
 {
@@ -30,7 +29,7 @@ UnkStruct_ov82_0223B164 * sub_02099604 (int param0, SaveData * param1, int param
 
     v0->unk_0C = param1;
     v0->unk_08 = Poffin_GetSavedataBlock(param1);
-    v0->unk_10 = sub_02025E38(param1);
+    v0->unk_10 = SaveData_GetTrainerInfo(param1);
     v0->unk_14 = sub_0207D990(param1);
     v0->unk_18 = sub_02025E44(param1);
     v0->unk_1C = param3;
@@ -40,12 +39,12 @@ UnkStruct_ov82_0223B164 * sub_02099604 (int param0, SaveData * param1, int param
     return v0;
 }
 
-static void sub_0209964C (UnkStruct_0203CDB0 * param0, UnkStruct_ov82_0223B164 * param1)
+static void sub_0209964C (FieldSystem * param0, UnkStruct_ov82_0223B164 * param1)
 {
     FS_EXTERN_OVERLAY(overlay82);
 
     {
-        UnkStruct_0208BE5C v0 = {
+        OverlayManagerTemplate v0 = {
             ov82_0223B164,
             ov82_0223B1D4,
             ov82_0223B24C,
@@ -56,7 +55,7 @@ static void sub_0209964C (UnkStruct_0203CDB0 * param0, UnkStruct_ov82_0223B164 *
     }
 }
 
-UnkStruct_ov82_0223B164 * sub_02099674 (UnkStruct_0203CDB0 * param0, int param1, int param2)
+UnkStruct_ov82_0223B164 * sub_02099674 (FieldSystem * param0, int param1, int param2)
 {
     UnkStruct_ov82_0223B164 * v0;
 
@@ -66,7 +65,7 @@ UnkStruct_ov82_0223B164 * sub_02099674 (UnkStruct_0203CDB0 * param0, int param1,
     return v0;
 }
 
-UnkStruct_ov82_0223B164 * sub_020996A0 (UnkStruct_0203CDB0 * param0, int param1, BOOL param2)
+UnkStruct_ov82_0223B164 * sub_020996A0 (FieldSystem * param0, int param1, BOOL param2)
 {
     UnkStruct_ov82_0223B164 * v0;
 

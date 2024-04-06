@@ -1,15 +1,15 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 
-#include "struct_defs/struct_0203CDB0.h"
+#include "field/field_system.h"
 #include "struct_defs/struct_02049FA8.h"
 #include "struct_defs/struct_020556C4.h"
 #include "struct_defs/struct_0205EC34.h"
 #include "struct_defs/struct_02061D3C.h"
 
-#include "unk_020244AC.h"
+#include "savedata.h"
 #include "unk_0203A6DC.h"
 #include "unk_0203A7D8.h"
 #include "unk_020556C4.h"
@@ -159,7 +159,7 @@ UnkStruct_0203A790 * sub_0203A790 (SaveData * param0)
 {
     UnkStruct_0203A790 * v0;
 
-    v0 = SaveData_Get(param0, 6);
+    v0 = SaveData_SaveTable(param0, 6);
     return v0;
 }
 
@@ -167,11 +167,11 @@ UnkStruct_0203A79C * sub_0203A79C (SaveData * param0)
 {
     UnkStruct_0203A79C * v0;
 
-    v0 = SaveData_Get(param0, 11);
+    v0 = SaveData_SaveTable(param0, 11);
     return v0;
 }
 
-void sub_0203A7A8 (UnkStruct_0203CDB0 * param0)
+void sub_0203A7A8 (FieldSystem * param0)
 {
     UnkStruct_02061D3C * v0;
 
@@ -179,7 +179,7 @@ void sub_0203A7A8 (UnkStruct_0203CDB0 * param0)
     sub_02061CA8(param0, param0->unk_38, v0, 64);
 }
 
-void sub_0203A7C0 (UnkStruct_0203CDB0 * param0)
+void sub_0203A7C0 (FieldSystem * param0)
 {
     UnkStruct_02061D3C * v0;
 

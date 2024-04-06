@@ -1,8 +1,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_defs/struct_0203CDB0.h"
-#include "struct_defs/struct_0208BE5C.h"
+#include "field/field_system.h"
 #include "struct_defs/struct_02098C44.h"
 #include "struct_defs/pokemon_summary.h"
 #include "struct_defs/struct_0209C194.h"
@@ -29,14 +28,14 @@ typedef struct {
     int unk_04;
     UnkStruct_0209C194_1 unk_08;
     UnkStruct_0209C194 * unk_28;
-    UnkStruct_0203CDB0 * unk_2C;
+    FieldSystem * unk_2C;
     PartyManagementData * unk_30;
     PokemonSummary * unk_34;
 } UnkStruct_0209C1EC;
 
 static BOOL(*const Unk_020F951C[6])(UnkStruct_0209C1EC *);
-static const UnkStruct_0208BE5C Unk_020F94FC;
-static const UnkStruct_0208BE5C Unk_020F950C;
+static const OverlayManagerTemplate Unk_020F94FC;
+static const OverlayManagerTemplate Unk_020F950C;
 
 UnkStruct_0209C194 * sub_0209C194 (UnkStruct_0209C194_1 * param0, u32 param1)
 {
@@ -62,7 +61,7 @@ BOOL sub_0209C1E8 (UnkStruct_0209C194 * param0)
     return param0->unk_10;
 }
 
-void * sub_0209C1EC (UnkStruct_0203CDB0 * param0)
+void * sub_0209C1EC (FieldSystem * param0)
 {
     UnkStruct_0209C1EC * v0;
 
@@ -107,7 +106,7 @@ static BOOL sub_0209C280 (UnkStruct_0209C1EC * param0)
         if (sub_0209C1E8(param0->unk_28) == 0) {
             param0->unk_00 = 5;
         } else {
-            sub_020388F4(1, 1);
+            CommMan_SetErrorHandling(1, 1);
 
             param0->unk_30 = sub_0203D644(param0->unk_2C, param0->unk_04);
             param0->unk_28->unk_00 = 1;
@@ -178,14 +177,14 @@ static BOOL(*const Unk_020F951C[6])(UnkStruct_0209C1EC *) = {
 };
 
 
-static const UnkStruct_0208BE5C Unk_020F94FC = {
+static const OverlayManagerTemplate Unk_020F94FC = {
     ov109_021D3D50,
     ov109_021D3EB0,
     ov109_021D3F9C,
     FS_OVERLAY_ID(overlay109)
 };
 
-static const UnkStruct_0208BE5C Unk_020F950C = {
+static const OverlayManagerTemplate Unk_020F950C = {
     ov109_021D0D80,
     ov109_021D0F2C,
     ov109_021D0EB4,

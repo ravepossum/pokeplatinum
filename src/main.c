@@ -5,19 +5,17 @@
 #include "core_sys.h"
 #include "assert.h"
 
-#include "struct_decls/struct_020067E8_decl.h"
 
 #include "overlay077/const_ov77_021D742C.h"
 #include "overlay057/const_ov57_021D0F70.h"
 
 #include "struct_defs/struct_0203CC84.h"
-#include "struct_defs/struct_0208BE5C.h"
 
 #include "unk_02000C88.h"
 #include "unk_02002B7C.h"
 #include "unk_02003B60.h"
 #include "game_overlay.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "unk_0200A9DC.h"
 #include "unk_0200F174.h"
 #include "rtc.h"
@@ -28,10 +26,10 @@
 #include "unk_0201E3D8.h"
 #include "unk_02022844.h"
 #include "unk_0202419C.h"
-#include "unk_020244AC.h"
+#include "savedata.h"
 #include "unk_02025E08.h"
 #include "unk_0202CC64.h"
-#include "unk_02034198.h"
+#include "communication_system.h"
 #include "unk_020366A0.h"
 #include "unk_02038FFC.h"
 #include "unk_02039814.h"
@@ -45,9 +43,9 @@ FS_EXTERN_OVERLAY(overlay77);
 
 typedef struct {
     FSOverlayID unk_00;
-    UnkStruct_020067E8 * unk_04;
+    OverlayManager * unk_04;
     FSOverlayID unk_08;
-    const UnkStruct_0208BE5C * unk_0C;
+    const OverlayManagerTemplate * unk_0C;
     UnkStruct_0203CC84 unk_10;
 } UnkStruct_02101D28;
 
@@ -64,7 +62,7 @@ static UnkStruct_02101D28 Unk_02101D28;
 // repeatedly try to restore the backlight to its saved state.
 static PMBackLightSwitch sSavedBacklightState;
 BOOL gIgnoreCartridgeForWake;
-extern const UnkStruct_0208BE5C Unk_ov77_021D788C;
+extern const OverlayManagerTemplate Unk_ov77_021D788C;
 
 void NitroMain (void)
 {
@@ -84,7 +82,7 @@ void NitroMain (void)
     sub_02002BB8(3, 3);
 
     Unk_02101D28.unk_10.unk_00 = -1;
-    Unk_02101D28.unk_10.unk_08 = sub_020244AC();
+    Unk_02101D28.unk_10.unk_08 = SaveData_Init();
 
     sub_02003B60(GetChatotCryDataFromSave(Unk_02101D28.unk_10.unk_08), sub_02025E44(Unk_02101D28.unk_10.unk_08));
     sub_02022844();
@@ -93,7 +91,7 @@ void NitroMain (void)
         sub_02039A64(3, 0);
     }
 
-    if (sub_020247B8(Unk_02101D28.unk_10.unk_08) == 0) {
+    if (SaveData_BackupExists(Unk_02101D28.unk_10.unk_08) == 0) {
         sub_0209A74C(0);
     } else {
         switch (OS_GetResetParameter()) {
@@ -188,15 +186,15 @@ static void sub_02000E54 (void)
         }
 
         Unk_02101D28.unk_00 = Unk_02101D28.unk_08;
-        Unk_02101D28.unk_04 = sub_020067E8(Unk_02101D28.unk_0C, &Unk_02101D28.unk_10, 0);
+        Unk_02101D28.unk_04 = OverlayManager_New(Unk_02101D28.unk_0C, &Unk_02101D28.unk_10, 0);
         Unk_02101D28.unk_08 = 0xffffffff;
         Unk_02101D28.unk_0C = NULL;
     }
 
-    v0 = sub_02006844(Unk_02101D28.unk_04);
+    v0 = OverlayManager_Exec(Unk_02101D28.unk_04);
 
     if (v0) {
-        sub_02006814(Unk_02101D28.unk_04);
+        OverlayManager_Free(Unk_02101D28.unk_04);
         Unk_02101D28.unk_04 = NULL;
 
         if (Unk_02101D28.unk_00 != 0xffffffff) {
@@ -205,7 +203,7 @@ static void sub_02000E54 (void)
     }
 }
 
-void sub_02000EC4 (FSOverlayID param0, const UnkStruct_0208BE5C * param1)
+void sub_02000EC4 (FSOverlayID param0, const OverlayManagerTemplate * param1)
 {
     GF_ASSERT(Unk_02101D28.unk_0C == NULL);
 
@@ -261,7 +259,7 @@ static void SoftReset (int param0)
     sub_0200F344(1, 0x7fff);
 
     if (sub_02037DB0()) {
-        sub_02024850(sub_020245A4());
+        SaveData_SaveStateCancel(SaveData_Ptr());
     }
 
     while (TRUE) {

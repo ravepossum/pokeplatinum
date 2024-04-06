@@ -3,7 +3,6 @@
 
 #include "core_sys.h"
 
-#include "struct_decls/struct_020067E8_decl.h"
 #include "overlay114/struct_ov114_0225D678_decl.h"
 #include "overlay114/struct_ov114_0225E854_decl.h"
 #include "overlay115/struct_ov115_02260BE4_decl.h"
@@ -18,14 +17,14 @@
 #include "overlay115/struct_ov115_02265AD0.h"
 #include "overlay115/struct_ov115_02265AD4.h"
 
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "unk_02006E3C.h"
 #include "unk_0200F174.h"
 #include "unk_02017728.h"
 #include "heap.h"
 #include "unk_0201DBEC.h"
-#include "unk_020329E0.h"
-#include "unk_02034198.h"
+#include "communication_information.h"
+#include "communication_system.h"
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_020393C8.h"
@@ -65,15 +64,15 @@ static void ov115_02260B30(UnkStruct_ov115_0226095C * param0);
 static void ov115_02260B44(UnkStruct_ov115_0226095C * param0, UnkStruct_ov115_02260440 * param1);
 static BOOL ov115_02260BA0(UnkStruct_ov115_0226095C * param0, int param1, const void * param2, int param3);
 
-int ov115_02260440 (UnkStruct_020067E8 * param0, int * param1)
+int ov115_02260440 (OverlayManager * param0, int * param1)
 {
     UnkStruct_ov115_0226095C * v0;
-    UnkStruct_ov115_02260440 * v1 = sub_02006840(param0);
+    UnkStruct_ov115_02260440 * v1 = OverlayManager_Args(param0);
     BOOL v2;
 
     Heap_Create(3, 99, 0x60000);
 
-    v0 = sub_0200681C(param0, sizeof(UnkStruct_ov115_0226095C), 99);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov115_0226095C), 99);
     memset(v0, 0, sizeof(UnkStruct_ov115_0226095C));
 
     ov114_0225C700(&v0->unk_08, v1->unk_39, v1->unk_34, v1->unk_38, &v1->unk_00);
@@ -82,10 +81,10 @@ int ov115_02260440 (UnkStruct_020067E8 * param0, int * param1)
     return 1;
 }
 
-int ov115_0226048C (UnkStruct_020067E8 * param0, int * param1)
+int ov115_0226048C (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov115_0226095C * v0 = sub_0200682C(param0);
-    UnkStruct_ov115_02260440 * v1 = sub_02006840(param0);
+    UnkStruct_ov115_0226095C * v0 = OverlayManager_Data(param0);
+    UnkStruct_ov115_02260440 * v1 = OverlayManager_Args(param0);
     BOOL v2;
     u32 v3;
 
@@ -148,11 +147,11 @@ int ov115_0226048C (UnkStruct_020067E8 * param0, int * param1)
         ov115_02265A24(v0);
 
         v0->unk_80 = 1;
-        v0->unk_74 = sub_02032E64();
+        v0->unk_74 = CommInfo_CountReceived();
 
         GF_ASSERT(v0->unk_74 > 1);
 
-        v0->unk_44 = sub_0203608C();
+        v0->unk_44 = CommSys_CurNetId();
         v0->unk_46 = ov114_0225C76C(&v0->unk_08, v0->unk_44);
 
         if (v0->unk_44 == 0) {
@@ -208,7 +207,7 @@ int ov115_0226048C (UnkStruct_020067E8 * param0, int * param1)
 
         if (ScreenWipe_Done()) {
             if (v0->unk_44 == 0) {
-                v2 = sub_020359DC(22, NULL, 0);
+                v2 = CommSys_SendData(22, NULL, 0);
 
                 if (v2) {
                     (*param1)++;
@@ -237,7 +236,7 @@ int ov115_0226048C (UnkStruct_020067E8 * param0, int * param1)
             u32 v5;
 
             v5 = ov115_02261274(v0->unk_34);
-            v2 = sub_020359DC(25, &v5, sizeof(u32));
+            v2 = CommSys_SendData(25, &v5, sizeof(u32));
 
             if (v2) {
                 (*param1)++;
@@ -279,7 +278,7 @@ int ov115_0226048C (UnkStruct_020067E8 * param0, int * param1)
                 UnkStruct_ov115_02265AD4 v8;
 
                 ov115_02260CBC(v0->unk_30, &v8);
-                v2 = sub_020359DC(26, &v8, sizeof(UnkStruct_ov115_02265AD4));
+                v2 = CommSys_SendData(26, &v8, sizeof(UnkStruct_ov115_02265AD4));
 
                 if (v2) {
                     (*param1)++;
@@ -370,10 +369,10 @@ int ov115_0226048C (UnkStruct_020067E8 * param0, int * param1)
     return 0;
 }
 
-int ov115_022608E4 (UnkStruct_020067E8 * param0, int * param1)
+int ov115_022608E4 (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov115_0226095C * v0 = sub_0200682C(param0);
-    UnkStruct_ov115_02260440 * v1 = sub_02006840(param0);
+    UnkStruct_ov115_0226095C * v0 = OverlayManager_Data(param0);
+    UnkStruct_ov115_02260440 * v1 = OverlayManager_Args(param0);
     BOOL v2;
 
     switch (*param1) {
@@ -382,9 +381,9 @@ int ov115_022608E4 (UnkStruct_020067E8 * param0, int * param1)
 
         ov115_02260B30(v0);
 
-        sub_02006830(param0);
+        OverlayManager_FreeData(param0);
         Heap_Destroy(99);
-        sub_020388F4(0, 1);
+        CommMan_SetErrorHandling(0, 1);
 
         if (v2 == 1) {
             return 1;
@@ -394,7 +393,7 @@ int ov115_022608E4 (UnkStruct_020067E8 * param0, int * param1)
         (*param1)++;
         break;
     case 1:
-        if (sub_02036540(4) || (sub_02035E18() < sub_02032E64())) {
+        if (sub_02036540(4) || (CommSys_ConnectedCount() < CommInfo_CountReceived())) {
             return 1;
         }
         break;
@@ -479,7 +478,7 @@ void ov115_022609E4 (UnkStruct_ov115_0226095C * param0, u32 param1, u32 param2)
 
         if (v2 == 1) {
             param0->unk_7C++;
-            sub_020359DC(29, NULL, 0);
+            CommSys_SendData(29, NULL, 0);
         }
     }
 }
@@ -584,5 +583,5 @@ static BOOL ov115_02260BA0 (UnkStruct_ov115_0226095C * param0, int param1, const
         return 0;
     }
 
-    return sub_020359DC(param1, param2, param3);
+    return CommSys_SendData(param1, param2, param3);
 }

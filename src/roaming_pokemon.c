@@ -5,7 +5,7 @@
 
 #include "constants/species.h"
 
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 
 #include "struct_defs/struct_0202D7B0.h"
 #include "struct_defs/struct_0206C638.h"
@@ -288,7 +288,7 @@ void RoamingPokemon_ActivateSlot (SaveData * saveData, const u8 slot)
     sub_0202D980(v1, 4, species);
     sub_0202D980(v1, 6, level);
 
-    v4 = sub_02025E38(saveData);
+    v4 = SaveData_GetTrainerInfo(saveData);
     v0 = Pokemon_New(4);
 
     Pokemon_Init(v0);

@@ -4,7 +4,6 @@
 #include "core_sys.h"
 #include "enums.h"
 
-#include "struct_decls/struct_020067E8_decl.h"
 #include "struct_decls/struct_02006C24_decl.h"
 #include "struct_decls/struct_02018340_decl.h"
 #include "struct_decls/sys_task.h"
@@ -31,7 +30,7 @@
 #include "unk_02002B7C.h"
 #include "unk_02002F38.h"
 #include "unk_02005474.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "narc.h"
 #include "unk_02006E3C.h"
 #include "unk_020093B4.h"
@@ -56,7 +55,7 @@
 #include "unk_0202419C.h"
 #include "unk_02024220.h"
 #include "trainer_info.h"
-#include "unk_02034198.h"
+#include "communication_system.h"
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_020393C8.h"
@@ -185,7 +184,7 @@ static const struct {
     {0x1F, 0x2B, 0x2C, 0x2D, 0x2E}
 };
 
-int ov117_02260668 (UnkStruct_020067E8 * param0, int * param1)
+int ov117_02260668 (OverlayManager * param0, int * param1)
 {
     UnkStruct_ov117_02261280 * v0;
 
@@ -199,12 +198,12 @@ int ov117_02260668 (UnkStruct_020067E8 * param0, int * param1)
     G2_SetBlendAlpha(GX_BLEND_PLANEMASK_BG0, GX_BLEND_ALL, 16, 16);
     G2S_SetBlendAlpha((GX_BLEND_PLANEMASK_BG3), (GX_BLEND_BGALL | GX_BLEND_PLANEMASK_OBJ), 13, 3);
 
-    v0 = sub_0200681C(param0, sizeof(UnkStruct_ov117_02261280), 110);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov117_02261280), 110);
     MI_CpuClear8(v0, sizeof(UnkStruct_ov117_02261280));
     Heap_FndInitAllocatorForExpHeap(&v0->unk_A8, 110, 32);
 
     v0->unk_98 = ov117_02260E14(110);
-    v0->unk_00 = sub_02006840(param0);
+    v0->unk_00 = OverlayManager_Args(param0);
     ov117_022665FC(v0);
     v0->unk_8C = sub_02002F38(110);
 
@@ -298,9 +297,9 @@ int ov117_02260668 (UnkStruct_020067E8 * param0, int * param1)
     return 1;
 }
 
-int ov117_0226098C (UnkStruct_020067E8 * param0, int * param1)
+int ov117_0226098C (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov117_02261280 * v0 = sub_0200682C(param0);
+    UnkStruct_ov117_02261280 * v0 = OverlayManager_Data(param0);
     int v1;
 
     if (v0->unk_00->unk_3D == 1) {
@@ -431,9 +430,9 @@ int ov117_0226098C (UnkStruct_020067E8 * param0, int * param1)
     return 0;
 }
 
-int ov117_02260C10 (UnkStruct_020067E8 * param0, int * param1)
+int ov117_02260C10 (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov117_02261280 * v0 = sub_0200682C(param0);
+    UnkStruct_ov117_02261280 * v0 = OverlayManager_Data(param0);
     int v1;
 
     v0->unk_00->unk_10.unk_14 = v0->unk_2FD0;
@@ -486,7 +485,7 @@ int ov117_02260C10 (UnkStruct_020067E8 * param0, int * param1)
 
     ov117_02260EB8(v0->unk_98);
     sub_0201E530();
-    sub_02006830(param0);
+    OverlayManager_FreeData(param0);
     sub_02002AC8(0);
     sub_02002AE4(0);
     sub_02002B20(0);
@@ -872,7 +871,7 @@ static void ov117_022613EC (UnkStruct_ov117_02261280 * param0)
     u32 v5;
     int v6, v7;
 
-    v4 = sub_0203608C();
+    v4 = CommSys_CurNetId();
 
     for (v0 = 0; v0 < param0->unk_00->unk_30; v0++) {
         if (v4 != param0->unk_00->unk_2C[v0]) {
@@ -1351,7 +1350,7 @@ static void ov117_02261C2C (UnkStruct_ov117_02261280 * param0, NARC * param1)
     int v4;
     void * v5 = NULL;
 
-    v4 = ov117_0226235C(param0, sub_0203608C());
+    v4 = ov117_0226235C(param0, CommSys_CurNetId());
 
     sub_020170D8(&v2->unk_00, param1, Unk_ov117_022669F0[v4].unk_00, 110);
     sub_02017258(&v2->unk_10, &v2->unk_00);
@@ -1480,7 +1479,7 @@ void ov117_02261FA4 (UnkStruct_ov117_02261280 * param0)
 
 BOOL ov117_02261FF4 (UnkStruct_ov117_02261280 * param0)
 {
-    if (param0->unk_04 == sub_0203608C()) {
+    if (param0->unk_04 == CommSys_CurNetId()) {
         return 1;
     }
 
@@ -1693,7 +1692,7 @@ int ov117_022622C4 (UnkStruct_ov117_02261280 * param0, int param1)
     int v7;
     const u8 * v8;
 
-    v6 = sub_0203608C();
+    v6 = CommSys_CurNetId();
     v3 = 0xff;
     v4 = 0xff;
 

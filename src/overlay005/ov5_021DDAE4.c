@@ -3,8 +3,8 @@
 
 #include "struct_decls/struct_020508D4_decl.h"
 
-#include "struct_defs/struct_0203CDB0.h"
-#include "struct_defs/struct_0203CDB0_sub2_t.h"
+#include "field/field_system.h"
+#include "field/field_system_sub2_t.h"
 
 #include "game_overlay.h"
 #include "unk_0200A784.h"
@@ -25,7 +25,7 @@ typedef struct {
 
 static BOOL ov5_021DDAE4 (UnkStruct_020508D4 * param0)
 {
-    UnkStruct_0203CDB0 * v0 = sub_02050A60(param0);
+    FieldSystem * v0 = sub_02050A60(param0);
     UnkStruct_ov5_021DDBC8 * v1 = sub_02050A64(param0);
 
     switch (v1->unk_00) {
@@ -45,7 +45,7 @@ static BOOL ov5_021DDAE4 (UnkStruct_020508D4 * param0)
 
             Overlay_UnloadByID(FS_OVERLAY_ID(overlay24));
             Overlay_LoadByID(FS_OVERLAY_ID(overlay25), 2);
-            sub_020567D0(v2);
+            PoketchData_Enable(v2);
             ov25_02253CE8(v0, &v0->unk_04->unk_14, v0->unk_0C, v0->unk_08, sub_0200A914(1));
             v1->unk_00++;
         }

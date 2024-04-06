@@ -33,7 +33,7 @@
 #include "unk_02002328.h"
 #include "unk_02002F38.h"
 #include "unk_02005474.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "narc.h"
 #include "unk_02006E3C.h"
 #include "unk_0200762C.h"
@@ -419,7 +419,7 @@ static void sub_0207B180 (UnkStruct_0207AE68 * param0)
                 sub_0202736C(param0->unk_48, param0->unk_28);
                 sub_0202CF28(param0->unk_50, (1 + 11));
                 sub_0202CFEC(param0->unk_50, 22);
-                sub_02056A48(param0->unk_54, Pokemon_GetBoxPokemon(param0->unk_28));
+                PoketchData_PokemonHistoryEnqueue(param0->unk_54, Pokemon_GetBoxPokemon(param0->unk_28));
 
                 if (Pokemon_GetValue(param0->unk_28, MON_DATA_HAS_NICKNAME, NULL) == 0) {
                     Pokemon_SetValue(param0->unk_28, 179, NULL);
@@ -521,8 +521,8 @@ static void sub_0207B180 (UnkStruct_0207AE68 * param0)
         }
         break;
     case 23:
-        if (sub_02006844(param0->unk_38)) {
-            sub_02006814(param0->unk_38);
+        if (OverlayManager_Exec(param0->unk_38)) {
+            OverlayManager_Free(param0->unk_38);
             sub_0207C1CC(param0, param0->unk_00);
             sub_0200E060(param0->unk_04, 0, 1, 10);
             sub_02007DEC(param0->unk_1C[0], 6, 0);
@@ -751,7 +751,7 @@ static void sub_0207C028 (UnkStruct_0207AE68 * param0)
                 sub_0202736C(param0->unk_48, v1);
                 sub_0202CF28(param0->unk_50, (1 + 11));
                 sub_0202CFEC(param0->unk_50, 22);
-                sub_02056A48(param0->unk_54, Pokemon_GetBoxPokemon(v1));
+                PoketchData_PokemonHistoryEnqueue(param0->unk_54, Pokemon_GetBoxPokemon(v1));
                 Heap_FreeToHeap(v1);
                 Bag_SubtractItem(param0->unk_4C, 4, 1, param0->unk_5C);
             }
@@ -1023,5 +1023,5 @@ static BOOL sub_0207C5CC (UnkStruct_0201D738 * param0, u16 param1)
 
 static void sub_0207C624 (UnkStruct_0207AE68 * param0)
 {
-    param0->unk_38 = sub_020067E8(&Unk_020F410C, param0->unk_3C, param0->unk_5C);
+    param0->unk_38 = OverlayManager_New(&Unk_020F410C, param0->unk_3C, param0->unk_5C);
 }

@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "struct_decls/struct_party_decl.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 
 #include "unk_02017038.h"
 #include "heap.h"
@@ -35,7 +35,7 @@ BOOL sub_020548B0 (int param0, SaveData * param1, u16 param2, u8 param3, u16 par
     Party * v3;
     TrainerInfo * v4;
 
-    v4 = sub_02025E38(param1);
+    v4 = SaveData_GetTrainerInfo(param1);
     v3 = Party_GetFromSavedata(param1);
     v1 = Pokemon_New(param0);
 
@@ -60,7 +60,7 @@ BOOL sub_02054930 (int param0, SaveData * param1, u16 param2, u8 param3, int par
 {
     int v0;
     BOOL v1;
-    TrainerInfo * v2 = sub_02025E38(param1);
+    TrainerInfo * v2 = SaveData_GetTrainerInfo(param1);
     Party * v3 = Party_GetFromSavedata(param1);
     Pokemon * v4 = Pokemon_New(32);
 

@@ -5,14 +5,13 @@
 #include "assert.h"
 
 #include "struct_decls/struct_0200112C_decl.h"
-#include "struct_decls/struct_020067E8_decl.h"
 #include "message.h"
 #include "struct_decls/struct_0200B358_decl.h"
 #include "struct_decls/struct_02018340_decl.h"
 #include "struct_decls/struct_02022550_decl.h"
 #include "strbuf.h"
 #include "pokemon.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 
 #include "struct_defs/archived_sprite.h"
 #include "struct_defs/struct_0202DF40.h"
@@ -28,7 +27,7 @@
 
 #include "unk_02002B7C.h"
 #include "unk_02005474.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "unk_02006E3C.h"
 #include "unk_020093B4.h"
 #include "unk_02009714.h"
@@ -50,7 +49,7 @@
 #include "gx_layers.h"
 #include "unk_020218BC.h"
 #include "strbuf.h"
-#include "unk_020244AC.h"
+#include "savedata.h"
 #include "unk_02033200.h"
 #include "constants/species.h"
 #include "pokemon.h"
@@ -91,12 +90,12 @@ void ov97_02237694 (int param0)
     v0->unk_08 = param0;
 }
 
-void * ov97_022376C4 (UnkStruct_020067E8 * param0, int param1, int param2, int param3)
+void * ov97_022376C4 (OverlayManager * param0, int param1, int param2, int param3)
 {
     void * v0;
 
     Heap_Create(3, param1, param3);
-    v0 = sub_0200681C(param0, param2, param1);
+    v0 = OverlayManager_NewData(param0, param2, param1);
 
     memset(v0, 0, param2);
 
@@ -852,11 +851,11 @@ int ov97_0223847C (void)
     switch (v1->unk_14) {
     case 0:
         ResetLock(4);
-        sub_02024814(v1->unk_18, 2);
+        SaveData_SaveStateInit(v1->unk_18, 2);
         v1->unk_14++;
         break;
     case 1:
-        v0 = sub_02024828(v1->unk_18);
+        v0 = SaveData_SaveStateMain(v1->unk_18);
 
         if (v0 == 3) {
             v1->unk_14 = 3;
@@ -896,7 +895,7 @@ void ov97_0223850C (void)
 {
     UnkStruct_ov97_0223F550 * v0 = &Unk_ov97_0223F550;
 
-    sub_02024850(v0->unk_18);
+    SaveData_SaveStateCancel(v0->unk_18);
     v0->unk_14 = 3;
     ResetUnlock(4);
 }

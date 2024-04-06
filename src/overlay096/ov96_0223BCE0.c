@@ -33,7 +33,7 @@
 #include "gx_layers.h"
 #include "unk_020218BC.h"
 #include "strbuf.h"
-#include "unk_020244AC.h"
+#include "savedata.h"
 #include "unk_02025CB0.h"
 #include "unk_020279FC.h"
 #include "unk_0202D05C.h"
@@ -1342,7 +1342,7 @@ static int ov96_0223D398 (UnkStruct_ov96_0223BF40 * param0)
 
 static int ov96_0223D3A0 (UnkStruct_ov96_0223BF40 * param0)
 {
-    sub_02024814(param0->unk_00->unk_0C, 2);
+    SaveData_SaveStateInit(param0->unk_00->unk_0C, 2);
     param0->unk_1C = 40;
 
     return 3;
@@ -1350,7 +1350,7 @@ static int ov96_0223D3A0 (UnkStruct_ov96_0223BF40 * param0)
 
 static int ov96_0223D3B8 (UnkStruct_ov96_0223BF40 * param0)
 {
-    if (sub_02024828(param0->unk_00->unk_0C) == 2) {
+    if (SaveData_SaveStateMain(param0->unk_00->unk_0C) == 2) {
         param0->unk_1C = param0->unk_20;
         ov96_0223D99C(param0);
     }

@@ -3,7 +3,7 @@
 
 #include "struct_decls/struct_0200112C_decl.h"
 #include "struct_decls/struct_02001AF4_decl.h"
-#include "struct_decls/struct_020067E8_decl.h"
+#include "overlay_manager.h"
 #include "struct_defs/archived_sprite.h"
 #include "struct_decls/struct_02009714_decl.h"
 #include "struct_decls/struct_02009DC8_decl.h"
@@ -20,13 +20,13 @@
 #include "struct_decls/struct_02027F8C_decl.h"
 #include "struct_decls/struct_0202B370_decl.h"
 #include "struct_defs/chatot_cry.h"
-#include "struct_decls/struct_0203CDB0_decl.h"
+#include "field/field_system_decl.h"
 #include "struct_defs/struct_0205AA50.h"
 #include "struct_decls/struct_party_decl.h"
 #include "struct_decls/struct_02095E80_decl.h"
 #include "struct_defs/struct_02095E80_sub1.h"
 #include "struct_defs/pokemon_summary.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 #include "overlay019/struct_ov19_021DA864.h"
 #include "overlay088/struct_ov88_0223C370.h"
 #include "overlay088/struct_ov88_0223C8AC.h"
@@ -35,12 +35,12 @@
 #include <nitro/fx/fx.h>
 
 struct UnkStruct_02095E80_t {
-    UnkStruct_0203CDB0 * unk_00;
+    FieldSystem * unk_00;
     SaveData * unk_04;
     UnkStruct_ov88_0223C370 * unk_08;
     PokemonSummary unk_0C;
     int unk_3C;
-    UnkStruct_020067E8 * unk_40;
+    OverlayManager * unk_40;
     int unk_44;
     int unk_48;
     int unk_4C;

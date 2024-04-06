@@ -2,10 +2,9 @@
 #include <string.h>
 
 #include "struct_decls/struct_020508D4_decl.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 
-#include "struct_defs/struct_0203CDB0.h"
-#include "struct_defs/struct_0208BE5C.h"
+#include "field/field_system.h"
 #include "struct_defs/struct_020985E4.h"
 #include "struct_defs/struct_0209862C.h"
 
@@ -30,7 +29,7 @@ void sub_020985E4 (UnkStruct_020508D4 * param0, SaveData * param1)
     v1 = Heap_AllocFromHeap(11, sizeof(UnkStruct_020985E4));
 
     v1->unk_04 = sub_02025E44(param1);
-    v1->unk_08 = sub_02025E38(param1);
+    v1->unk_08 = SaveData_GetTrainerInfo(param1);
     v1->unk_00 = TrainerInfo_Gender(v1->unk_08);
 
     v0->unk_00 = 0;
@@ -41,7 +40,7 @@ void sub_020985E4 (UnkStruct_020508D4 * param0, SaveData * param1)
 
 BOOL sub_0209862C (UnkStruct_020508D4 * param0)
 {
-    UnkStruct_0203CDB0 * v0;
+    FieldSystem * v0;
     UnkStruct_0209862C * v1;
 
     v0 = sub_02050A60(param0);
@@ -57,7 +56,7 @@ BOOL sub_0209862C (UnkStruct_020508D4 * param0)
         }
 
         {
-            static const UnkStruct_0208BE5C v2 = {
+            static const OverlayManagerTemplate v2 = {
                 ov100_021D0D80,
                 ov100_021D0EA8,
                 ov100_021D0F44,

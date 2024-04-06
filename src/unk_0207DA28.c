@@ -5,9 +5,8 @@
 #include "struct_decls/struct_0202CD88_decl.h"
 #include "struct_decls/struct_020508D4_decl.h"
 
-#include "struct_defs/struct_0203CDB0.h"
+#include "field/field_system.h"
 #include "struct_defs/struct_0207DE04.h"
-#include "struct_defs/struct_0208BE5C.h"
 #include "overlay066/struct_ov66_02231134.h"
 #include "overlay098/struct_ov98_02247168.h"
 #include "overlay115/struct_ov115_02260440.h"
@@ -16,7 +15,7 @@
 #include "game_overlay.h"
 #include "heap.h"
 #include "unk_0202CD50.h"
-#include "unk_02034198.h"
+#include "communication_system.h"
 #include "unk_02038FFC.h"
 #include "unk_0203CC84.h"
 #include "unk_0203D1B8.h"
@@ -53,24 +52,24 @@ typedef struct {
 
 void sub_02099570(void);
 static BOOL sub_0207DA28(UnkStruct_020508D4 * param0);
-static void sub_0207DE04(UnkStruct_0207DE40 * param0, UnkStruct_0203CDB0 * param1, u32 param2, u32 param3);
+static void sub_0207DE04(UnkStruct_0207DE40 * param0, FieldSystem * param1, u32 param2, u32 param3);
 static u32 sub_0207DE40(UnkStruct_0207DE40 * param0);
-static UnkStruct_ov115_02260440 * sub_0207DE90(UnkStruct_0203CDB0 * param0, u32 param1, u32 param2);
+static UnkStruct_ov115_02260440 * sub_0207DE90(FieldSystem * param0, u32 param1, u32 param2);
 static void sub_0207DED8(UnkStruct_ov115_02260440 * param0);
-static UnkStruct_ov66_02231134 * sub_0207DEEC(UnkStruct_0203CDB0 * param0, u32 param1, u32 param2);
+static UnkStruct_ov66_02231134 * sub_0207DEEC(FieldSystem * param0, u32 param1, u32 param2);
 static void sub_0207DF2C(UnkStruct_ov66_02231134 * param0);
-static UnkStruct_ov117_02260440 * sub_0207DF40(UnkStruct_0203CDB0 * param0, u32 param1, u32 param2);
+static UnkStruct_ov117_02260440 * sub_0207DF40(FieldSystem * param0, u32 param1, u32 param2);
 static void sub_0207DF88(UnkStruct_ov115_02260440 * param0);
-static void sub_0207DF9C(UnkStruct_0203CDB0 * param0);
+static void sub_0207DF9C(FieldSystem * param0);
 
-static const UnkStruct_0208BE5C Unk_020F1B98 = {
+static const OverlayManagerTemplate Unk_020F1B98 = {
     ov65_0222E2A8,
     ov65_0222E3FC,
     ov65_0222E548,
     FS_OVERLAY_ID(overlay65)
 };
 
-static const UnkStruct_0208BE5C Unk_020F1B88 = {
+static const OverlayManagerTemplate Unk_020F1B88 = {
     ov65_0223648C,
     ov65_02236548,
     ov65_0223668C,
@@ -87,7 +86,7 @@ static const u8 Unk_020F1B64[4] = {
 static BOOL sub_0207DA28 (UnkStruct_020508D4 * param0)
 {
     int v0;
-    UnkStruct_0203CDB0 * v1 = sub_02050A60(param0);
+    FieldSystem * v1 = sub_02050A60(param0);
     UnkStruct_0207DE40 * v2 = sub_02050A64(param0);
 
     switch (v2->unk_04) {
@@ -325,7 +324,7 @@ void sub_0207DDE0 (UnkStruct_020508D4 * param0, u16 * param1)
     sub_02050944(param0, sub_0207DA28, v0);
 }
 
-static void sub_0207DE04 (UnkStruct_0207DE40 * param0, UnkStruct_0203CDB0 * param1, u32 param2, u32 param3)
+static void sub_0207DE04 (UnkStruct_0207DE40 * param0, FieldSystem * param1, u32 param2, u32 param3)
 {
     UnkStruct_0207DE04 * v0;
 
@@ -372,7 +371,7 @@ static u32 sub_0207DE40 (UnkStruct_0207DE40 * param0)
     return param0->unk_04;
 }
 
-static UnkStruct_ov115_02260440 * sub_0207DE90 (UnkStruct_0203CDB0 * param0, u32 param1, u32 param2)
+static UnkStruct_ov115_02260440 * sub_0207DE90 (FieldSystem * param0, u32 param1, u32 param2)
 {
     UnkStruct_ov115_02260440 * v0;
 
@@ -380,7 +379,7 @@ static UnkStruct_ov115_02260440 * sub_0207DE90 (UnkStruct_0203CDB0 * param0, u32
     FS_EXTERN_OVERLAY(overlay114);
 
     {
-        static const UnkStruct_0208BE5C v1 = {
+        static const OverlayManagerTemplate v1 = {
             ov115_02260440, ov115_0226048C, ov115_022608E4, FS_OVERLAY_ID(overlay115),
         };
 
@@ -405,14 +404,14 @@ static void sub_0207DED8 (UnkStruct_ov115_02260440 * param0)
     Overlay_UnloadByID(FS_OVERLAY_ID(overlay114));
 }
 
-static UnkStruct_ov66_02231134 * sub_0207DEEC (UnkStruct_0203CDB0 * param0, u32 param1, u32 param2)
+static UnkStruct_ov66_02231134 * sub_0207DEEC (FieldSystem * param0, u32 param1, u32 param2)
 {
     UnkStruct_ov66_02231134 * v0;
 
     FS_EXTERN_OVERLAY(overlay116);
     FS_EXTERN_OVERLAY(overlay114);
     {
-        static const UnkStruct_0208BE5C v1 = {
+        static const OverlayManagerTemplate v1 = {
             ov116_022609B4, ov116_02260CF4, ov116_0226126C, FS_OVERLAY_ID(overlay116),
         };
 
@@ -436,7 +435,7 @@ static void sub_0207DF2C (UnkStruct_ov66_02231134 * param0)
     Overlay_UnloadByID(FS_OVERLAY_ID(overlay114));
 }
 
-static UnkStruct_ov117_02260440 * sub_0207DF40 (UnkStruct_0203CDB0 * param0, u32 param1, u32 param2)
+static UnkStruct_ov117_02260440 * sub_0207DF40 (FieldSystem * param0, u32 param1, u32 param2)
 {
     UnkStruct_ov117_02260440 * v0;
 
@@ -444,7 +443,7 @@ static UnkStruct_ov117_02260440 * sub_0207DF40 (UnkStruct_0203CDB0 * param0, u32
     FS_EXTERN_OVERLAY(overlay114);
 
     {
-        static const UnkStruct_0208BE5C v1 = {
+        static const OverlayManagerTemplate v1 = {
             ov117_02260440, ov117_02260474, ov117_022605C0, FS_OVERLAY_ID(overlay117),
         };
 
@@ -470,7 +469,7 @@ static void sub_0207DF88 (UnkStruct_ov115_02260440 * param0)
     Overlay_UnloadByID(FS_OVERLAY_ID(overlay114));
 }
 
-static void sub_0207DF9C (UnkStruct_0203CDB0 * param0)
+static void sub_0207DF9C (FieldSystem * param0)
 {
     UnkStruct_0202CD88 * v0;
 

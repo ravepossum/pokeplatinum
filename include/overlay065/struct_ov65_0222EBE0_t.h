@@ -3,7 +3,7 @@
 
 #include "struct_decls/struct_0200112C_decl.h"
 #include "struct_decls/struct_02001AF4_decl.h"
-#include "struct_decls/struct_020067E8_decl.h"
+#include "overlay_manager.h"
 #include "struct_decls/struct_02009714_decl.h"
 #include "message.h"
 #include "struct_decls/struct_0200B358_decl.h"
@@ -17,7 +17,7 @@
 #include "struct_decls/struct_0202B370_decl.h"
 #include "struct_defs/struct_0205AA50.h"
 #include "struct_defs/struct_0207DFAC.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 #include "overlay061/struct_ov61_0222C3B0.h"
 #include "overlay065/struct_ov65_0222E99C.h"
 #include "overlay065/struct_ov65_02234E50.h"
@@ -71,7 +71,7 @@ struct UnkStruct_ov65_0222EBE0_t {
     u8 unk_3C4;
     u8 unk_3C5;
     BOOL unk_3C8;
-    UnkStruct_020067E8 * unk_3CC;
+    OverlayManager * unk_3CC;
     int unk_3D0;
     u16 unk_3D4;
     u16 unk_3D6[3];

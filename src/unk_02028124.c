@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "struct_decls/struct_party_decl.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 
 #include "struct_defs/sentence.h"
 #include "struct_defs/struct_0202818C.h"
@@ -12,7 +12,7 @@
 #include "unk_020021B0.h"
 #include "unk_02014A84.h"
 #include "heap.h"
-#include "unk_020244AC.h"
+#include "savedata.h"
 #include "unk_02025E08.h"
 #include "trainer_info.h"
 #include "unk_02028124.h"
@@ -100,7 +100,7 @@ void sub_020281AC (UnkStruct_0202818C * param0, u8 param1, u8 param2, SaveData *
 
     param0->unk_07 = param1;
     v9 = Party_GetFromSavedata(param3);
-    v8 = sub_02025E38(param3);
+    v8 = SaveData_GetTrainerInfo(param3);
 
     GF_strcpy(param0->unk_08, TrainerInfo_Name(v8));
 
@@ -236,7 +236,7 @@ void sub_0202841C (UnkStruct_0202818C * param0, Sentence * param1, u8 param2)
 
 UnkStruct_02028430 * sub_02028430 (SaveData * param0)
 {
-    return SaveData_Get(param0, 15);
+    return SaveData_SaveTable(param0, 15);
 }
 
 int Mail_SaveSize (void)

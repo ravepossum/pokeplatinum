@@ -1,7 +1,6 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_020067E8_decl.h"
 #include "trainer_info.h"
 #include "struct_decls/struct_0202CD88_decl.h"
 #include "struct_decls/struct_020508D4_decl.h"
@@ -10,15 +9,14 @@
 #include "constdata/const_020F2DAC.h"
 #include "constdata/const_020F67FC.h"
 
-#include "struct_defs/struct_0203CDB0.h"
+#include "field/field_system.h"
 #include "struct_defs/struct_0203E2FC.h"
-#include "struct_defs/struct_0208BE5C.h"
 #include "struct_defs/struct_0209843C.h"
 #include "overlay119/struct_ov119_021D0FD0.h"
 
 #include "unk_02002F38.h"
 #include "unk_02005474.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "narc.h"
 #include "unk_0200762C.h"
 #include "unk_0200F174.h"
@@ -47,19 +45,19 @@
 
 FS_EXTERN_OVERLAY(overlay119);
 
-static int sub_02098218(UnkStruct_020067E8 * param0, int * param1);
-static int sub_02098304(UnkStruct_020067E8 * param0, int * param1);
-static int sub_02098388(UnkStruct_020067E8 * param0, int * param1);
+static int sub_02098218(OverlayManager * param0, int * param1);
+static int sub_02098304(OverlayManager * param0, int * param1);
+static int sub_02098388(OverlayManager * param0, int * param1);
 
 
-const UnkStruct_0208BE5C Unk_020F67FC = {
+const OverlayManagerTemplate Unk_020F67FC = {
     sub_02098218,
     sub_02098304,
     sub_02098388,
     FS_OVERLAY_ID(overlay119)
 };
 
-static int sub_02098218 (UnkStruct_020067E8 * param0, int * param1)
+static int sub_02098218 (OverlayManager * param0, int * param1)
 {
     UnkStruct_0209843C * v0;
     UnkStruct_ov119_021D0FD0 * v1;
@@ -68,10 +66,10 @@ static int sub_02098218 (UnkStruct_020067E8 * param0, int * param1)
     DisableHBlank();
     Heap_Create(3, 71, 0x40000);
 
-    v1 = sub_0200681C(param0, sizeof(UnkStruct_ov119_021D0FD0), 71);
+    v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov119_021D0FD0), 71);
     memset(v1, 0, sizeof(UnkStruct_ov119_021D0FD0));
 
-    v0 = sub_02006840(param0);
+    v0 = OverlayManager_Args(param0);
 
     v1->unk_00 = v0;
     v1->unk_04.unk_0C = sub_02027AC0(v1->unk_00->unk_0C.unk_04);
@@ -105,11 +103,11 @@ static int sub_02098218 (UnkStruct_020067E8 * param0, int * param1)
     return 1;
 }
 
-static int sub_02098304 (UnkStruct_020067E8 * param0, int * param1)
+static int sub_02098304 (OverlayManager * param0, int * param1)
 {
     UnkStruct_ov119_021D0FD0 * v0;
 
-    v0 = sub_0200682C(param0);
+    v0 = OverlayManager_Data(param0);
 
     switch (*param1) {
     case 0:
@@ -157,11 +155,11 @@ static int sub_02098304 (UnkStruct_020067E8 * param0, int * param1)
     return 0;
 }
 
-static int sub_02098388 (UnkStruct_020067E8 * param0, int * param1)
+static int sub_02098388 (OverlayManager * param0, int * param1)
 {
     UnkStruct_ov119_021D0FD0 * v0;
 
-    v0 = sub_0200682C(param0);
+    v0 = OverlayManager_Data(param0);
 
     sub_020242C4(v0->unk_04.unk_34);
 
@@ -189,7 +187,7 @@ static int sub_02098388 (UnkStruct_020067E8 * param0, int * param1)
 
     ov119_021D1844(&v0->unk_04);
 
-    sub_02006830(param0);
+    OverlayManager_FreeData(param0);
     Heap_Destroy(71);
 
     SetMainCallback(NULL, NULL);
@@ -214,11 +212,11 @@ static BOOL sub_0209843C (UnkStruct_020508D4 * param0)
         break;
     case 2:
     {
-        UnkStruct_0203CDB0 * v1 = sub_02050A60(param0);
+        FieldSystem * v1 = sub_02050A60(param0);
 
         {
             Pokemon * v2 = v0->unk_0C.unk_00;
-            TrainerInfo * v3 = sub_02025E38(sub_0203D174(v1));
+            TrainerInfo * v3 = SaveData_GetTrainerInfo(sub_0203D174(v1));
             int v4 = 6;
             int v5 = MapHeader_GetMapLabelTextID(v1->unk_1C->unk_00);
             int v6 = 11;
@@ -242,7 +240,7 @@ static BOOL sub_0209843C (UnkStruct_020508D4 * param0)
     break;
     case 3:
     {
-        UnkStruct_0203CDB0 * v8 = sub_02050A60(param0);
+        FieldSystem * v8 = sub_02050A60(param0);
         int v9;
 
         v9 = Pokemon_GetValue(v0->unk_0C.unk_00, MON_DATA_SPECIES, 0);
@@ -259,7 +257,7 @@ static BOOL sub_0209843C (UnkStruct_020508D4 * param0)
             Pokemon_SetValue(v0->unk_0C.unk_00, 120, v0->unk_08->unk_18);
 
             {
-                UnkStruct_0203CDB0 * v10 = sub_02050A60(param0);
+                FieldSystem * v10 = sub_02050A60(param0);
                 UnkStruct_0202CD88 * v11 = sub_0202CD88(sub_0203D174(v10));
 
                 sub_0202CF28(v11, (1 + 48));

@@ -5,14 +5,13 @@
 
 #include "struct_decls/struct_02001AF4_decl.h"
 #include "struct_decls/struct_02002F38_decl.h"
-#include "struct_decls/struct_020067E8_decl.h"
 #include "struct_decls/struct_02006C24_decl.h"
 #include "struct_decls/struct_0200B358_decl.h"
 #include "struct_decls/struct_0200C440_decl.h"
 #include "struct_decls/struct_02013A04_decl.h"
 #include "struct_decls/struct_02018340_decl.h"
 #include "struct_decls/struct_party_decl.h"
-#include "struct_decls/struct_021C0794_decl.h"
+#include "savedata.h"
 #include "overlay106/struct_ov106_02243118_decl.h"
 #include "overlay106/struct_ov106_02243650_decl.h"
 
@@ -34,7 +33,7 @@
 #include "unk_02002F38.h"
 #include "unk_02005474.h"
 #include "game_overlay.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "narc.h"
 #include "unk_02006E3C.h"
 #include "unk_020093B4.h"
@@ -56,7 +55,7 @@
 #include "trainer_info.h"
 #include "unk_020279FC.h"
 #include "unk_02030108.h"
-#include "unk_02034198.h"
+#include "communication_system.h"
 #include "unk_020363E8.h"
 #include "unk_020393C8.h"
 #include "pokemon.h"
@@ -74,8 +73,8 @@
 FS_EXTERN_OVERLAY(overlay104);
 
 struct UnkStruct_ov106_02243118_t {
-    UnkStruct_020067E8 * unk_00;
-    UnkStruct_020067E8 * unk_04;
+    OverlayManager * unk_00;
+    OverlayManager * unk_04;
     u8 unk_08;
     u8 unk_09;
     u8 unk_0A;
@@ -128,9 +127,9 @@ struct UnkStruct_ov106_02243118_t {
     u32 unk_2FC;
 };
 
-int ov106_02241AE0(UnkStruct_020067E8 * param0, int * param1);
-int ov106_02241B9C(UnkStruct_020067E8 * param0, int * param1);
-int ov106_02241CF0(UnkStruct_020067E8 * param0, int * param1);
+int ov106_02241AE0(OverlayManager * param0, int * param1);
+int ov106_02241B9C(OverlayManager * param0, int * param1);
+int ov106_02241CF0(OverlayManager * param0, int * param1);
 static BOOL ov106_02241D28(UnkStruct_ov106_02243118 * param0);
 static BOOL ov106_02241E14(UnkStruct_ov106_02243118 * param0);
 static void ov106_02241DD4(UnkStruct_ov106_02243118 * param0);
@@ -196,7 +195,7 @@ static const u8 Unk_ov106_02243798[] = {
     0x8
 };
 
-int ov106_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
+int ov106_02241AE0 (OverlayManager * param0, int * param1)
 {
     int v0;
     UnkStruct_ov106_02243118 * v1;
@@ -206,13 +205,13 @@ int ov106_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
     ov106_022424C8();
     Heap_Create(3, 98, 0x20000);
 
-    v1 = sub_0200681C(param0, sizeof(UnkStruct_ov106_02243118), 98);
+    v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov106_02243118), 98);
     memset(v1, 0, sizeof(UnkStruct_ov106_02243118));
 
     v1->unk_48 = sub_02018340(98);
     v1->unk_00 = param0;
 
-    v2 = (UnkStruct_ov104_02235208 *)sub_02006840(param0);
+    v2 = (UnkStruct_ov104_02235208 *)OverlayManager_Args(param0);
 
     v1->unk_B8 = v2->unk_00;
     v1->unk_09 = v2->unk_04;
@@ -238,9 +237,9 @@ int ov106_02241AE0 (UnkStruct_020067E8 * param0, int * param1)
     return 1;
 }
 
-int ov106_02241B9C (UnkStruct_020067E8 * param0, int * param1)
+int ov106_02241B9C (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov106_02243118 * v0 = sub_0200682C(param0);
+    UnkStruct_ov106_02243118 * v0 = OverlayManager_Data(param0);
 
     if (v0->unk_18 != 0xff) {
         switch (*param1) {
@@ -318,16 +317,16 @@ int ov106_02241B9C (UnkStruct_020067E8 * param0, int * param1)
     return 0;
 }
 
-int ov106_02241CF0 (UnkStruct_020067E8 * param0, int * param1)
+int ov106_02241CF0 (OverlayManager * param0, int * param1)
 {
     int v0;
-    UnkStruct_ov106_02243118 * v1 = sub_0200682C(param0);
+    UnkStruct_ov106_02243118 * v1 = OverlayManager_Data(param0);
 
     *(v1->unk_28C) = v1->unk_0D;
 
     ov106_022423E8(v1);
 
-    sub_02006830(param0);
+    OverlayManager_FreeData(param0);
     SetMainCallback(NULL, NULL);
     Heap_Destroy(98);
     Overlay_UnloadByID(FS_OVERLAY_ID(overlay104));
@@ -392,7 +391,7 @@ static BOOL ov106_02241E14 (UnkStruct_ov106_02243118 * param0)
     switch (param0->unk_08) {
     case 0:
 
-        if (sub_02006844(param0->unk_04) == 1) {
+        if (OverlayManager_Exec(param0->unk_04) == 1) {
             param0->unk_288 = param0->unk_BC->pos;
             Heap_FreeToHeap(param0->unk_BC);
             Heap_FreeToHeap(param0->unk_04);
@@ -528,7 +527,7 @@ static BOOL ov106_02241E5C (UnkStruct_ov106_02243118 * param0)
         if (ScreenWipe_Done() == 1) {
             ov106_02242CA4(param0);
             ov106_022423E8(param0);
-            param0->unk_04 = sub_020067E8(&Unk_020F410C, param0->unk_BC, 98);
+            param0->unk_04 = OverlayManager_New(&Unk_020F410C, param0->unk_BC, 98);
             param0->unk_0B = 1;
             return 1;
         }
@@ -567,13 +566,13 @@ static BOOL ov106_02242108 (UnkStruct_ov106_02243118 * param0)
         param0->unk_16 = 0;
 
         if (param0->unk_18 < (4 * 5)) {
-            if (sub_0203608C() == 0) {
+            if (CommSys_CurNetId() == 0) {
                 param0->unk_08 = 2;
             } else {
                 param0->unk_08 = 3;
             }
         } else {
-            if (sub_0203608C() == 0) {
+            if (CommSys_CurNetId() == 0) {
                 param0->unk_08 = 3;
             } else {
                 param0->unk_08 = 2;
@@ -841,7 +840,7 @@ static void ov106_02242500 (UnkStruct_ov106_02243118 * param0)
 
     ov106_022436CC(param0->unk_284, Party_GetPokemonBySlotIndex(param0->unk_290, 0));
 
-    if (sub_02035E38()) {
+    if (CommSys_IsInitialized()) {
         sub_0200966C(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
         sub_02009704(NNS_G2D_VRAM_TYPE_2DMAIN);
         sub_02039734();
@@ -1235,7 +1234,7 @@ static void ov106_02242CA4 (UnkStruct_ov106_02243118 * param0)
     param0->unk_BC->contest = PokemonSummary_ShowContestData(param0->unk_B8);
 
     PokemonSummary_FlagVisiblePages(param0->unk_BC, Unk_ov106_02243798);
-    PokemonSummary_SetPlayerProfile(param0->unk_BC, sub_02025E38(param0->unk_B8));
+    PokemonSummary_SetPlayerProfile(param0->unk_BC, SaveData_GetTrainerInfo(param0->unk_B8));
 
     return;
 }
@@ -1509,7 +1508,7 @@ BOOL ov106_022430B4 (UnkStruct_ov106_02243118 * param0, u16 param1, u16 param2)
         break;
     }
 
-    if (sub_020359DC(v1, param0->unk_2A0, 44) == 1) {
+    if (CommSys_SendData(v1, param0->unk_2A0, 44) == 1) {
         v0 = 1;
     } else {
         v0 = 0;
@@ -1522,7 +1521,7 @@ void ov106_02243118 (UnkStruct_ov106_02243118 * param0, u16 param1)
 {
     TrainerInfo * v0;
 
-    v0 = sub_02025E38(param0->unk_B8);
+    v0 = SaveData_GetTrainerInfo(param0->unk_B8);
     param0->unk_2A0[0] = param1;
 
     return;
@@ -1536,7 +1535,7 @@ void ov106_02243130 (int param0, int param1, void * param2, void * param3)
 
     v1 = 0;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 
@@ -1554,7 +1553,7 @@ void ov106_0224313C (UnkStruct_ov106_02243118 * param0, u16 param1, u16 param2)
     param0->unk_2A0[0] = param1;
     param0->unk_2A0[1] = param2;
 
-    if (sub_0203608C() == 0) {
+    if (CommSys_CurNetId() == 0) {
         if (param0->unk_18 == 0xff) {
             param0->unk_18 = param2;
         }
@@ -1576,13 +1575,13 @@ void ov106_02243180 (int param0, int param1, void * param2, void * param3)
     v1 = 0;
     v2->unk_16++;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 
     v2->unk_2F8 = v3[1];
 
-    if (sub_0203608C() == 0) {
+    if (CommSys_CurNetId() == 0) {
         if (v2->unk_18 != 0xff) {
             v2->unk_2F8 = 0;
         } else {
@@ -1612,7 +1611,7 @@ void ov106_022431E0 (int param0, int param1, void * param2, void * param3)
 
     v1 = 0;
 
-    if (sub_0203608C() == param0) {
+    if (CommSys_CurNetId() == param0) {
         return;
     }
 

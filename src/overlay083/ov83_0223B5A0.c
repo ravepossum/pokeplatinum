@@ -3,7 +3,6 @@
 
 #include "core_sys.h"
 
-#include "struct_decls/struct_020067E8_decl.h"
 #include "struct_decls/struct_0202440C_decl.h"
 #include "struct_decls/struct_0202B370_decl.h"
 #include "struct_decls/struct_0202CD88_decl.h"
@@ -15,7 +14,7 @@
 
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
-#include "unk_020067E8.h"
+#include "overlay_manager.h"
 #include "unk_0200F174.h"
 #include "unk_02017728.h"
 #include "heap.h"
@@ -28,8 +27,8 @@
 #include "unk_0202ACE0.h"
 #include "unk_0202B604.h"
 #include "unk_0202CD50.h"
-#include "unk_020329E0.h"
-#include "unk_02034198.h"
+#include "communication_information.h"
+#include "communication_system.h"
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_0203909C.h"
@@ -51,9 +50,9 @@ typedef struct {
     int unk_04;
 } UnkStruct_ov83_0224024C;
 
-int ov83_0223B5B0(UnkStruct_020067E8 * param0, int * param1);
-int ov83_0223B65C(UnkStruct_020067E8 * param0, int * param1);
-int ov83_0223B710(UnkStruct_020067E8 * param0, int * param1);
+int ov83_0223B5B0(OverlayManager * param0, int * param1);
+int ov83_0223B65C(OverlayManager * param0, int * param1);
+int ov83_0223B710(OverlayManager * param0, int * param1);
 static int ov83_0223C344(UnkStruct_ov83_0223C344 * param0, UnkStruct_ov83_0223B784 * param1, int * param2);
 static int ov83_0223B78C(UnkStruct_ov83_0223C344 * param0, UnkStruct_ov83_0223B784 * param1, int * param2);
 static int ov83_0223B920(UnkStruct_ov83_0223C344 * param0, UnkStruct_ov83_0223B784 * param1, int * param2);
@@ -103,13 +102,13 @@ static void ov83_0223B5A0 (void * param0)
     sub_0201DCAC();
 }
 
-int ov83_0223B5B0 (UnkStruct_020067E8 * param0, int * param1)
+int ov83_0223B5B0 (OverlayManager * param0, int * param1)
 {
-    UnkStruct_ov83_0223C344 * v0 = sub_02006840(param0);
+    UnkStruct_ov83_0223C344 * v0 = OverlayManager_Args(param0);
     UnkStruct_ov83_0223B784 * v1;
 
     Heap_Create(3, 56, 0x20000);
-    v1 = sub_0200681C(param0, sizeof(UnkStruct_ov83_0223B784), 56);
+    v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov83_0223B784), 56);
     memset(v1, 0, sizeof(UnkStruct_ov83_0223B784));
 
     v0->unk_18 = v1;
@@ -140,11 +139,11 @@ int ov83_0223B5B0 (UnkStruct_020067E8 * param0, int * param1)
     return 1;
 }
 
-int ov83_0223B65C (UnkStruct_020067E8 * param0, int * param1)
+int ov83_0223B65C (OverlayManager * param0, int * param1)
 {
     int v0, v1;
-    UnkStruct_ov83_0223C344 * v2 = sub_02006840(param0);
-    UnkStruct_ov83_0223B784 * v3 = (UnkStruct_ov83_0223B784 *)sub_0200682C(param0);
+    UnkStruct_ov83_0223C344 * v2 = OverlayManager_Args(param0);
+    UnkStruct_ov83_0223B784 * v3 = (UnkStruct_ov83_0223B784 *)OverlayManager_Data(param0);
     const UnkStruct_ov83_0224024C * v4;
 
     v0 = v3->unk_0C;
@@ -205,16 +204,16 @@ int ov83_0223B65C (UnkStruct_020067E8 * param0, int * param1)
     }
 }
 
-int ov83_0223B710 (UnkStruct_020067E8 * param0, int * param1)
+int ov83_0223B710 (OverlayManager * param0, int * param1)
 {
     int v0;
-    UnkStruct_ov83_0223C344 * v1 = sub_02006840(param0);
-    UnkStruct_ov83_0223B784 * v2 = (UnkStruct_ov83_0223B784 *)sub_0200682C(param0);
+    UnkStruct_ov83_0223C344 * v1 = OverlayManager_Args(param0);
+    UnkStruct_ov83_0223B784 * v2 = (UnkStruct_ov83_0223B784 *)OverlayManager_Data(param0);
 
     v0 = v2->unk_00;
 
     if (v1->unk_26) {
-        if (sub_0203608C() == 0) {
+        if (CommSys_CurNetId() == 0) {
             ov4_021D25FC();
         }
     }
@@ -225,7 +224,7 @@ int ov83_0223B710 (UnkStruct_020067E8 * param0, int * param1)
     DisableHBlank();
     sub_0201DC3C();
     MI_CpuClear8(v2, sizeof(UnkStruct_ov83_0223B784));
-    sub_02006830(param0);
+    OverlayManager_FreeData(param0);
 
     v1->unk_18 = NULL;
 
@@ -474,7 +473,7 @@ static int ov83_0223BB40 (UnkStruct_ov83_0223C344 * param0, UnkStruct_ov83_0223B
                     int v2;
 
                     for (v2 = 1; v2 < (7 + 1); v2++) {
-                        if (sub_02035D78(v2)) {
+                        if (CommSys_IsPlayerConnected(v2)) {
                             if (param1->unk_165C[v2] == 0) {
                                 v1 = 0;
                             }
@@ -486,7 +485,7 @@ static int ov83_0223BB40 (UnkStruct_ov83_0223C344 * param0, UnkStruct_ov83_0223B
                         param1->unk_15DC = 0;
 
                         for (v2 = 1; v2 < (7 + 1); v2++) {
-                            if (sub_02035D78(v2)) {
+                            if (CommSys_IsPlayerConnected(v2)) {
                                 param1->unk_165C[v2]--;
                             }
                         }
@@ -581,7 +580,7 @@ static int ov83_0223BCEC (UnkStruct_ov83_0223C344 * param0, UnkStruct_ov83_0223B
 
             for (v4 = 0; v4 < param1->unk_1488; v4++) {
                 v5 = param1->unk_1494.unk_130[v4];
-                v8 = sub_02032F1C(v5);
+                v8 = CommInfo_DWCFriendData(v5);
                 v6 = sub_0203909C(param0->unk_10->unk_0C, v8, &v7);
 
                 switch (v6) {
