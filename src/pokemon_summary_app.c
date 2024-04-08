@@ -767,12 +767,13 @@ static int sub_0208CD44 (PokemonSummaryApp * param0)
         Sound_PlayEffect(1501);
 
         if (param0->cursor != 4) {
-            if ((Item_IsHMMove(param0->monData.moves[param0->cursor]) == 1) && (param0->data->move != 0)) {
-                SpriteActor_DrawSprite(param0->unk_41C[18], 0);
-                sub_0208E46C(param0);
-                sub_020914F8(param0);
-                return 10;
-            }
+            //ravenote: allow overwriting HMs
+            //if ((Item_IsHMMove(param0->monData.moves[param0->cursor]) == 1) && (param0->data->move != 0)) {
+            //     SpriteActor_DrawSprite(param0->unk_41C[18], 0);
+            //     sub_0208E46C(param0);
+            //     sub_020914F8(param0);
+            //     return 10;
+            // }
         }
 
         param0->data->selectedSlot = param0->cursor;

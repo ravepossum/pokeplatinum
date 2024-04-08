@@ -2219,10 +2219,13 @@ static int sub_020613D8 (int param0)
 
 int sub_020613FC (PlayerAvatar * param0, u16 param1)
 {
+    //ravenote: change to invert running
     if ((param1 & PAD_BUTTON_B)) {
+        // return TRUE;
         return FALSE;
     }
 
+    // return FALSE;
     return TRUE;
 }
 

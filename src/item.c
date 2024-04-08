@@ -962,11 +962,11 @@ const u16 Item_MoveForTMHM(u16 item)
 
 u8 Item_IsHMMove(u16 move)
 {
-    // for (u8 i = 0; i < 8; i++) {
-    //     if (sTMHMMoves[92 + i] == move) {
-    //         return TRUE;
-    //     }
-    // }
+    for (u8 i = 0; i < 8; i++) {
+        if (sTMHMMoves[92 + i] == move) {
+            return TRUE;
+        }
+    }
 
     return FALSE;
 }

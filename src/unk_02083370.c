@@ -867,6 +867,8 @@ static void sub_02084808 (GameWindowLayout * param0, int * param1)
     u32 v1;
     u32 v2;
 
+    //ravenote: of interest maybe, determines eligibility
+    // of using HM from party menu
     v0 = (UnkFuncPtr_02084808)sub_0207070C(
         1, param0->unk_5A4->unk_23 - 11);
 

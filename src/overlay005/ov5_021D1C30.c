@@ -710,6 +710,8 @@ static BOOL ov5_021D2504 (FieldSystem * param0, const UnkStruct_ov5_021D1CAC * p
 
 u16 ov5_021D271C (FieldSystem * param0, u8 param1)
 {
+    //ravenote: this seems to run checks when you press A
+    //to interact with a metatile
     int v0 = Player_Dir(param0->playerAvatar);
 
     if (sub_0205DBE4(param1) && (v0 == 0)) {

@@ -1712,15 +1712,17 @@ u8 ov13_022219AC (UnkStruct_ov13_022213F0 * param0, u8 param1)
 
 static u8 ov13_022219DC (UnkStruct_ov13_022213F0 * param0)
 {
-    u16 v0;
+    //ravenote: allow overwriting HMs in battle
+    return FALSE;
+    // u16 v0;
 
-    if (param0->unk_00->unk_34 == 4) {
-        v0 = param0->unk_00->unk_24;
-    } else {
-        v0 = param0->unk_04[param0->unk_00->unk_11].unk_30[param0->unk_00->unk_34].unk_00;
-    }
+    // if (param0->unk_00->unk_34 == 4) {
+    //     v0 = param0->unk_00->unk_24;
+    // } else {
+    //     v0 = param0->unk_04[param0->unk_00->unk_11].unk_30[param0->unk_00->unk_34].unk_00;
+    // }
 
-    return Item_IsHMMove(v0);
+    //return Item_IsHMMove(v0);
 }
 
 static void ov13_02221A04 (UnkStruct_ov13_022213F0 * param0)

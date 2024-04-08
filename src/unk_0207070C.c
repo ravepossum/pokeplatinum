@@ -349,6 +349,9 @@ static void sub_020709CC (UnkStruct_020709CC * param0, const UnkStruct_02070950 
 
 static int sub_02070A24 (const UnkStruct_02070950 * param0)
 {
+    //ravenote:
+    //this checks conditions like badges to see if you should be able to use a field move
+
     if (inline_02070AF0(param0) == 0) {
         return 1;
     }

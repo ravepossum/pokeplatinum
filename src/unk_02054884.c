@@ -13,6 +13,7 @@
 #include "pokemon.h"
 #include "party.h"
 #include "overlay005/ov5_021E622C.h"
+#include "item.h"
 
 BOOL sub_02054884 (Pokemon * param0)
 {
@@ -80,7 +81,8 @@ void sub_02054988 (Party * param0, int param1, int param2, u16 param3)
     Pokemon_ResetMoveSlot(Party_GetPokemonBySlotIndex(param0, param1), param3, param2);
 }
 
-int sub_020549A0 (Party * param0, u16 param1)
+//ravenote: this checks to find the mon in your party with a field move
+int sub_020549A0 (Party *param0, u16 param1)
 {
     int v0, v1;
     Pokemon * v2;
@@ -98,6 +100,12 @@ int sub_020549A0 (Party * param0, u16 param1)
             return v0;
             break;
         }
+    }
+
+    //ravenote: default to returning first mon if it's an HM it's checking for
+    // this is currently buggy as hell and shows a bad egg and crashes if you open the bag
+    if (Item_IsHMMove(param1)) {
+        return 0;
     }
 
     return 0xff;
