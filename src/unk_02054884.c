@@ -104,9 +104,9 @@ int sub_020549A0 (Party *param0, u16 param1)
 
     //ravenote: default to returning first mon if it's an HM it's checking for
     // this is currently buggy as hell and shows a bad egg and crashes if you open the bag
-    if (Item_IsHMMove(param1)) {
-        return 0;
-    }
+    // if (Item_IsHMMove(param1)) {
+    //     return 0;
+    // }
 
     return 0xff;
 }
