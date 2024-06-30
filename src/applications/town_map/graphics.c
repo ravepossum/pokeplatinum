@@ -1141,7 +1141,7 @@ static BOOL CanFlyToHoveredLocation(TownMapAppData *appData)
 
     flyLocation = TownMap_GetFlyLocationAtPos(graphicsMan->flyLocations, graphicsMan->hoveredLocationMapHeader, graphicsMan->cursorX, graphicsMan->cursorZ);
 
-    if ((flyLocation == NULL) || (flyLocation->isUnlocked == FALSE)) {
+    if ((flyLocation == NULL || flyLocation->isUnlocked == FALSE) && appData->context->debugActive == FALSE) {
         return FALSE;
     }
 

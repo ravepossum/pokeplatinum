@@ -49,6 +49,7 @@ typedef struct TownMapContext {
     u8 numDescChecks;
     u8 padding_13B;
     u16 unlockedHiddenLocations;
+    BOOL debugActive;
 } TownMapContext;
 
 void TownMapContext_Init(FieldSystem *fieldSystem, TownMapContext *townMapCtx, enum TownMapMode townMapMode);

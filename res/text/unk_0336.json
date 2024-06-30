@@ -146,271 +146,271 @@
       "en_US": "{STRVAR_1 52, 0, 0}"
     },
     {
-      "id": "pl_msg_00000336_00036",
-      "en_US": "Class"
+      "id": "dmm_label_species",
+      "en_US": "Species"
     },
     {
-      "id": "pl_msg_00000336_00037",
+      "id": "dmm_label_level",
       "en_US": "Level"
     },
     {
-      "id": "pl_msg_00000336_00038",
+      "id": "dmm_label_exp_points",
       "en_US": "Exp. Points"
     },
     {
-      "id": "pl_msg_00000336_00039",
-      "en_US": "ID"
+      "id": "dmm_label_ot_id",
+      "en_US": "OT ID"
     },
     {
-      "id": "pl_msg_00000336_00040",
-      "en_US": "Random value"
+      "id": "dmm_label_personality",
+      "en_US": "Personality"
     },
     {
-      "id": "pl_msg_00000336_00041",
+      "id": "dmm_label_gender",
       "en_US": "Gender"
     },
     {
-      "id": "pl_msg_00000336_00042",
+      "id": "dmm_label_nature",
       "en_US": "Nature"
     },
     {
-      "id": "pl_msg_00000336_00043",
+      "id": "dmm_label_move_1",
       "en_US": "Move 1"
     },
     {
-      "id": "pl_msg_00000336_00044",
+      "id": "dmm_label_move_2",
       "en_US": "Move 2"
     },
     {
-      "id": "pl_msg_00000336_00045",
+      "id": "dmm_label_move_3",
       "en_US": "Move 3"
     },
     {
-      "id": "pl_msg_00000336_00046",
+      "id": "dmm_label_move_4",
       "en_US": "Move 4"
     },
     {
-      "id": "pl_msg_00000336_00047",
+      "id": "dmm_label_held_item",
       "en_US": "Held item"
     },
     {
-      "id": "pl_msg_00000336_00048",
-      "en_US": "Special ability"
+      "id": "dmm_label_ability",
+      "en_US": "Ability"
     },
     {
-      "id": "pl_msg_00000336_00049",
-      "en_US": "HP rnd"
+      "id": "dmm_label_hp_iv",
+      "en_US": "HP IV"
     },
     {
-      "id": "pl_msg_00000336_00050",
-      "en_US": "HP exp"
+      "id": "dmm_label_hp_ev",
+      "en_US": "HP EV"
     },
     {
-      "id": "pl_msg_00000336_00051",
-      "en_US": "Attack rnd"
+      "id": "dmm_label_attack_iv",
+      "en_US": "Attack IV"
     },
     {
-      "id": "pl_msg_00000336_00052",
-      "en_US": "Attack exp"
+      "id": "dmm_label_attack_ev",
+      "en_US": "Attack EV"
     },
     {
-      "id": "pl_msg_00000336_00053",
-      "en_US": "Defense rnd"
+      "id": "dmm_label_defense_iv",
+      "en_US": "Defense IV"
     },
     {
-      "id": "pl_msg_00000336_00054",
-      "en_US": "Defense exp"
+      "id": "dmm_label_defense_ev",
+      "en_US": "Defense EV"
     },
     {
-      "id": "pl_msg_00000336_00055",
-      "en_US": "Speed rnd"
+      "id": "dmm_label_speed_iv",
+      "en_US": "Speed IV"
     },
     {
-      "id": "pl_msg_00000336_00056",
-      "en_US": "Speed exp"
+      "id": "dmm_label_speed_ev",
+      "en_US": "Speed EV"
     },
     {
-      "id": "pl_msg_00000336_00057",
-      "en_US": "Sp. Atk rnd"
+      "id": "dmm_label_sp_attack_iv",
+      "en_US": "Sp. Atk IV"
     },
     {
-      "id": "pl_msg_00000336_00058",
-      "en_US": "Sp. Atk exp"
+      "id": "dmm_label_sp_attack_ev",
+      "en_US": "Sp. Atk EV"
     },
     {
-      "id": "pl_msg_00000336_00059",
-      "en_US": "Sp. Def rnd"
+      "id": "dmm_label_sp_defense_iv",
+      "en_US": "Sp. Def IV"
     },
     {
-      "id": "pl_msg_00000336_00060",
-      "en_US": "Sp. Def exp"
+      "id": "dmm_label_sp_defense_ev",
+      "en_US": "Sp. Def EV"
     },
     {
-      "id": "pl_msg_00000336_00061",
-      "en_US": "Coolness"
+      "id": "dmm_label_cool",
+      "en_US": "Cool"
     },
     {
-      "id": "pl_msg_00000336_00062",
+      "id": "dmm_label_beauty",
       "en_US": "Beauty"
     },
     {
-      "id": "pl_msg_00000336_00063",
-      "en_US": "Cuteness"
+      "id": "dmm_label_cute",
+      "en_US": "Cute"
     },
     {
-      "id": "pl_msg_00000336_00064",
-      "en_US": "Smartness"
+      "id": "dmm_label_smart",
+      "en_US": "Smart"
     },
     {
-      "id": "pl_msg_00000336_00065",
-      "en_US": "Toughness"
+      "id": "dmm_label_tough",
+      "en_US": "Tough"
     },
     {
-      "id": "pl_msg_00000336_00066",
-      "en_US": "Luster"
+      "id": "dmm_label_sheen",
+      "en_US": "Sheen"
     },
     {
-      "id": "pl_msg_00000336_00067",
-      "en_US": "Tameness"
+      "id": "dmm_label_friendship",
+      "en_US": "Friendship"
     },
     {
-      "id": "pl_msg_00000336_00068",
+      "id": "dmm_label_pokerus",
       "en_US": "POKéRUS"
     },
     {
-      "id": "pl_msg_00000336_00069",
+      "id": "dmm_label_egg",
       "en_US": "Egg"
     },
     {
-      "id": "pl_msg_00000336_00070",
+      "id": "dmm_label_status",
       "en_US": "Status"
     },
     {
-      "id": "pl_msg_00000336_00071",
+      "id": "dmm_label_hp",
       "en_US": "HP"
     },
     {
-      "id": "pl_msg_00000336_00072",
+      "id": "dmm_label_attack",
       "en_US": "Attack"
     },
     {
-      "id": "pl_msg_00000336_00073",
+      "id": "dmm_label_defense",
       "en_US": "Defense"
     },
     {
-      "id": "pl_msg_00000336_00074",
+      "id": "dmm_label_speed",
       "en_US": "Speed"
     },
     {
-      "id": "pl_msg_00000336_00075",
-      "en_US": "Special Attack"
+      "id": "dmm_label_sp_attack",
+      "en_US": "Sp. Atk"
     },
     {
-      "id": "pl_msg_00000336_00076",
-      "en_US": "Special Defense"
+      "id": "dmm_label_sp_defense",
+      "en_US": "Sp. Def"
     },
     {
-      "id": "pl_msg_00000336_00077",
-      "en_US": "Event distribution"
+      "id": "dmm_label_fateful_encounter",
+      "en_US": "Fateful Enc."
     },
     {
-      "id": "pl_msg_00000336_00078",
-      "en_US": "Area 1"
+      "id": "dmm_label_egg_location",
+      "en_US": "Egg Location"
     },
     {
-      "id": "pl_msg_00000336_00079",
-      "en_US": "Captured level"
+      "id": "dmm_label_met_level",
+      "en_US": "Met Level"
     },
     {
-      "id": "pl_msg_00000336_00080",
-      "en_US": "Captured cassette"
+      "id": "dmm_label_met_game",
+      "en_US": "Met Game"
     },
     {
-      "id": "pl_msg_00000336_00081",
-      "en_US": "Captured Ball"
+      "id": "dmm_label_pokeball",
+      "en_US": "Pokeball"
     },
     {
       "id": "pl_msg_00000336_00082",
       "en_US": "Country code"
     },
     {
-      "id": "pl_msg_00000336_00083",
-      "en_US": "Form No."
+      "id": "dmm_label_form",
+      "en_US": "Form"
     },
     {
-      "id": "pl_msg_00000336_00084",
-      "en_US": "Area 2"
+      "id": "dmm_label_met_location",
+      "en_US": "Met Location"
     },
     {
-      "id": "pl_msg_00000336_00085",
-      "en_US": "year"
+      "id": "dmm_label_year",
+      "en_US": "Year"
     },
     {
-      "id": "pl_msg_00000336_00086",
-      "en_US": "month"
+      "id": "dmm_label_month",
+      "en_US": "Month"
     },
     {
-      "id": "pl_msg_00000336_00087",
-      "en_US": "date"
+      "id": "dmm_label_day",
+      "en_US": "Day"
     },
     {
-      "id": "pl_msg_00000336_00088",
-      "en_US": "nickname"
+      "id": "dmm_label_nickname",
+      "en_US": "Nickname"
     },
     {
-      "id": "pl_msg_00000336_00089",
+      "id": "dmm_label_status_normal",
       "en_US": "Normal"
     },
     {
-      "id": "pl_msg_00000336_00090",
+      "id": "dmm_label_status_sleep",
       "en_US": "Sleep"
     },
     {
-      "id": "pl_msg_00000336_00091",
+      "id": "dmm_label_status_poison",
       "en_US": "Poison"
     },
     {
-      "id": "pl_msg_00000336_00092",
+      "id": "dmm_label_status_burned",
       "en_US": "Burned"
     },
     {
-      "id": "pl_msg_00000336_00093",
+      "id": "dmm_label_status_frozen",
       "en_US": "Frozen"
     },
     {
-      "id": "pl_msg_00000336_00094",
+      "id": "dmm_label_status_paralysed",
       "en_US": "Paralysed"
     },
     {
-      "id": "pl_msg_00000336_00095",
+      "id": "dmm_label_status_badly_poisoned",
       "en_US": "Badly poisoned"
     },
     {
-      "id": "pl_msg_00000336_00096",
+      "id": "dmm_none",
       "en_US": "None"
     },
     {
-      "id": "pl_msg_00000336_00097",
+      "id": "dmm_symbol_male",
       "en_US": "㊚"
     },
     {
-      "id": "pl_msg_00000336_00098",
+      "id": "dmm_symbol_female",
       "en_US": "㊛"
     },
     {
-      "id": "pl_msg_00000336_00099",
+      "id": "dmm_hyphen",
       "en_US": "-"
     },
     {
-      "id": "pl_msg_00000336_00100",
+      "id": "dmm_on",
       "en_US": "ON"
     },
     {
-      "id": "pl_msg_00000336_00101",
+      "id": "dmm_off",
       "en_US": "OFF"
     },
     {
-      "id": "pl_msg_00000336_00102",
+      "id": "dmm_template_number",
       "en_US": "{STRVAR_1 59, 0, 0}"
     },
     {
@@ -418,42 +418,42 @@
       "en_US": "{STRVAR_1 0, 0, 0}"
     },
     {
-      "id": "pl_msg_00000336_00104",
+      "id": "dmm_template_move_name",
       "en_US": "{STRVAR_1 6, 0, 0}"
     },
     {
-      "id": "pl_msg_00000336_00105",
+      "id": "dmm_template_held_item",
       "en_US": "{STRVAR_1 8, 0, 0}"
     },
     {
-      "id": "pl_msg_00000336_00106",
+      "id": "dmm_template_ability",
       "en_US": "{STRVAR_1 5, 0, 0}"
     },
     {
-      "id": "pl_msg_00000336_00107",
+      "id": "dmm_template_nature",
       "en_US": "{STRVAR_1 7, 0, 0}"
     },
     {
-      "id": "pl_msg_00000336_00108",
+      "id": "dmm_mon_added_to_party",
       "en_US": "Added a Pokémon to your party."
     },
     {
-      "id": "pl_msg_00000336_00109",
-      "en_US": "Added a Pokémon to the Box."
+      "id": "dmm_mon_added_to_pc",
+      "en_US": "Added a Pokémon to a PC box."
     },
     {
-      "id": "pl_msg_00000336_00110",
+      "id": "dmm_instructions_create_mon",
       "en_US": [
-        "Create Pokémon\n",
-        "  LR: Switch   START: Add"
+        "Create Pokémon      XY: View Memo\n",
+        " LR: Switch Page    START: Create Mon"
       ]
     },
     {
-      "id": "pl_msg_00000336_00111",
-      "en_US": "ＤＢＰｏｋｅ1"
+      "id": "dmm_debug_ot",
+      "en_US": "DebugOT"
     },
     {
-      "id": "pl_msg_00000336_00112",
+      "id": "dmm_debug_egg_name",
       "en_US": "Egg"
     },
     {
@@ -464,12 +464,15 @@
       ]
     },
     {
-      "id": "pl_msg_00000336_00114",
-      "en_US": "Diamond"
+      "id": "dmm_instructions_edit_mon",
+      "en_US": [
+        "Edit Pokémon          XY: Switch Party Slot\n",
+        "  LR: Switch Page    START: Save Mon"
+      ]
     },
     {
-      "id": "pl_msg_00000336_00115",
-      "en_US": "Pearl"
+      "id": "dmm_mon_edited",
+      "en_US": "Edited a Pokémon in your party."
     },
     {
       "id": "pl_msg_00000336_00116",

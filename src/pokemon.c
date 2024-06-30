@@ -5355,3 +5355,9 @@ void sub_02078E0C(UnkStruct_02078B40 *param0, Pokemon *mon)
     mon->box.checksum = Pokemon_GetDataChecksum(&mon->box.dataBlocks, sizeof(PokemonDataBlock) * 4);
     Pokemon_EncryptData(&mon->box.dataBlocks, sizeof(PokemonDataBlock) * 4, mon->box.checksum);
 }
+
+void Pokemon_SetDefaultMoves(Pokemon *mon)
+{
+    BoxPokemon *boxMon = Pokemon_GetBoxPokemon(mon);
+    BoxPokemon_SetDefaultMoves(boxMon);
+}
