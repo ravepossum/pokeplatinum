@@ -17,6 +17,7 @@
 #include "field/field_system_sub2_t.h"
 #include "overlay005/daycare.h"
 #include "overlay005/honey_tree.h"
+#include "overlay005/debug_menu.h"
 #include "overlay005/ov5_021DFB54.h"
 #include "overlay005/ov5_021E1154.h"
 #include "overlay005/ov5_021EA714.h"
@@ -106,10 +107,10 @@ static void FieldInput_Clear(FieldInput *input)
     input->mapTransition = FALSE;
     input->movement = FALSE;
     input->dummy1 = FALSE;
-    input->dummy2 = FALSE;
+    input->debugMenu = FALSE;
     input->dummy3 = FALSE;
     input->dummy4 = FALSE;
-    input->dummy5 = FALSE;
+    input->debugKey = FALSE;
     input->playerDir = DIR_NONE;
     input->transitionDir = DIR_NONE;
 }
@@ -170,16 +171,30 @@ void FieldInput_Update(FieldInput *input, FieldSystem *fieldSystem, u16 pressedK
     }
 
     input->playerDir = sub_02061308(fieldSystem->playerAvatar, pressedKeys, heldKeys);
+
+    // start debug menu
+    if (heldKeys & DEBUG_KEY) {
+        input->debugKey = TRUE;
+
+        input->movement = FALSE;
+        input->endMovement = FALSE;
+        input->sign = FALSE;
+        input->mapTransition = FALSE;
+
+        if (input->menu) {
+            input->menu = FALSE;
+            input->debugMenu = TRUE;
+        }
+    }
 }
 
 BOOL FieldInput_Process(const FieldInput *input, FieldSystem *fieldSystem)
 {
-    if (input->dummy5 == FALSE && FieldSystem_RunInitScript(fieldSystem, INIT_SCRIPT_ON_FRAME_TABLE) == TRUE) {
+    if (input->debugKey == FALSE && FieldSystem_RunInitScript(fieldSystem, INIT_SCRIPT_ON_FRAME_TABLE) == TRUE) {
         return TRUE;
     }
 
-    // dummy5 will always be false, so this branch will always be taken, but it doesn't match without the condition
-    if (input->dummy5 == FALSE) {
+    if (input->debugKey == FALSE) {
         BOOL hasTwoAliveMons = Party_HasTwoAliveMons(SaveData_GetParty(fieldSystem->saveData));
 
         if (SystemFlag_CheckHasPartner(SaveData_GetVarsFlags(fieldSystem->saveData)) == TRUE) {
@@ -204,7 +219,7 @@ BOOL FieldInput_Process(const FieldInput *input, FieldSystem *fieldSystem)
         }
     }
 
-    if (input->dummy5 == FALSE) {
+    if (input->debugKey == FALSE) {
         int playerEvent = PLAYER_EVENT_NONE;
         int direction = sub_02061308(fieldSystem->playerAvatar, input->pressedKeys, input->heldKeys);
 
@@ -335,6 +350,12 @@ BOOL FieldInput_Process(const FieldInput *input, FieldSystem *fieldSystem)
         return TRUE;
     }
 
+    if (input->debugMenu) {
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        DebugMenu_Init(fieldSystem);
+        return TRUE;
+    }
+
     return FALSE;
 }
 
@@ -359,7 +380,7 @@ static BOOL Field_CheckSign(FieldSystem *fieldSystem)
 
 BOOL FieldInput_Process_Underground(FieldInput *input, FieldSystem *fieldSystem)
 {
-    if (input->dummy5 == FALSE && FieldSystem_RunInitScript(fieldSystem, INIT_SCRIPT_ON_FRAME_TABLE) == TRUE) {
+    if (input->debugKey == FALSE && FieldSystem_RunInitScript(fieldSystem, INIT_SCRIPT_ON_FRAME_TABLE) == TRUE) {
         return TRUE;
     }
 
@@ -380,6 +401,12 @@ BOOL FieldInput_Process_Underground(FieldInput *input, FieldSystem *fieldSystem)
     }
 
     if (ov23_02242458()) {
+        return FALSE;
+    }
+
+    if (input->debugMenu) {
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        DebugMenu_Init(fieldSystem);
         return FALSE;
     }
 
@@ -422,6 +449,12 @@ BOOL FieldInput_Process_Colosseum(FieldInput *input, FieldSystem *fieldSystem)
         Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
         sub_0203AABC(fieldSystem);
         return TRUE;
+    }
+
+    if (input->debugMenu) {
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        DebugMenu_Init(fieldSystem);
+        return FALSE;
     }
 
     return FALSE;
@@ -483,12 +516,18 @@ BOOL FieldInput_Process_UnionRoom(const FieldInput *input, FieldSystem *fieldSys
         return TRUE;
     }
 
+    if (input->debugMenu) {
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        DebugMenu_Init(fieldSystem);
+        return TRUE;
+    }
+
     return FALSE;
 }
 
 int FieldInput_Process_BattleTower(const FieldInput *input, FieldSystem *fieldSystem)
 {
-    if (input->dummy5 == FALSE && FieldSystem_RunInitScript(fieldSystem, INIT_SCRIPT_ON_FRAME_TABLE) == TRUE) {
+    if (input->debugKey == FALSE && FieldSystem_RunInitScript(fieldSystem, INIT_SCRIPT_ON_FRAME_TABLE) == TRUE) {
         return TRUE;
     }
 
@@ -535,6 +574,12 @@ int FieldInput_Process_BattleTower(const FieldInput *input, FieldSystem *fieldSy
     if (input->menu) {
         Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
         StartMenu_Init(fieldSystem);
+        return TRUE;
+    }
+
+    if (input->debugMenu) {
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        DebugMenu_Init(fieldSystem);
         return TRUE;
     }
 

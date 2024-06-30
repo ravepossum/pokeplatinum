@@ -11,27 +11,27 @@
     },
     {
       "id": "pl_msg_00000328_00002",
-      "en_US": "Jump"
+      "en_US": "Fly"
     },
     {
       "id": "pl_msg_00000328_00003",
-      "en_US": "Out-of-range drawing"
+      "en_US": "Create Mon"
     },
     {
       "id": "pl_msg_00000328_00004",
-      "en_US": "Create data"
+      "en_US": "Edit Mon"
     },
     {
       "id": "pl_msg_00000328_00005",
-      "en_US": "System"
+      "en_US": "Toggle Collision"
     },
     {
       "id": "pl_msg_00000328_00006",
-      "en_US": "Enter value"
+      "en_US": "Adjust Camera"
     },
     {
       "id": "pl_msg_00000328_00007",
-      "en_US": "Forced-saving process"
+      "en_US": "Debug Function"
     },
     {
       "id": "pl_msg_00000328_00008",
