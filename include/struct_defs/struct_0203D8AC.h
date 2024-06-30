@@ -21,6 +21,7 @@ typedef struct {
     u8 unk_13A;
     u8 padding_13B;
     u16 unk_13C;
+    BOOL debugActive;
 } UnkStruct_0203D8AC;
 
 #endif // POKEPLATINUM_STRUCT_0203D8AC_H

@@ -1205,7 +1205,8 @@ static int ov80_021D29BC(UnkStruct_ov80_021D2A08 *param0)
 
     v1 = ov80_021D2C5C(v0->unk_9C, v0->unk_20, v0->unk_18, v0->unk_1C);
 
-    if ((v1 == NULL) || (v1->unk_14 == 0)) {
+    // skip the check to disallow flying to undiscovered maps if flying from the debug menu
+    if ((v1 == NULL || v1->unk_14 == 0) && param0->unk_2C->debugActive == FALSE) {
         return 0;
     }
 
