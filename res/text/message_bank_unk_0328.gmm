@@ -15,11 +15,11 @@
 	</row>
 	<row id="pl_msg_00000328_00003" index="3">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Give Mon</language>
+		<language name="English">Create Mon</language>
 	</row>
 	<row id="pl_msg_00000328_00004" index="4">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Create data</language>
+		<language name="English">Edit Mon</language>
 	</row>
 	<row id="pl_msg_00000328_00005" index="5">
 		<attribute name="window_context_name">used</attribute>

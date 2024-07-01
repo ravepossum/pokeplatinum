@@ -33,7 +33,8 @@ typedef struct DebugMenuItem {
 enum DebugItems {
     DEBUG_HEADER = 1,
     DEBUG_FLY,
-    DEBUG_GIVE_MON
+    DEBUG_CREATE_MON,
+    DEBUG_EDIT_MON,
 };
 
 typedef struct DebugFly {

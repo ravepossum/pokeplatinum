@@ -439,11 +439,11 @@
 	</row>
 	<row id="pl_msg_00000336_00109" index="109">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Added a Pokémon to the Box.</language>
+		<language name="English">Added a Pokémon to a PC box.</language>
 	</row>
 	<row id="pl_msg_00000336_00110" index="110">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Create Pokémon\n  LR: Switch Page  START: Create Mon</language>
+		<language name="English">Create Pokémon      XY: View Memo\n  LR: Switch Page    START: Create/Save Mon</language>
 	</row>
 	<row id="pl_msg_00000336_00111" index="111">
 		<attribute name="window_context_name">used</attribute>

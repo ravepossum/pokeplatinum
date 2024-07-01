@@ -201,7 +201,7 @@ static const DebugMonMenuPage sDebugMonMenuPages[DEBUG_MON_MENU_MAX_PAGES] = {
     {sDebugMonPage8, 8}
 };
 
-void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
+void DebugMonMenu_HandleInput (DebugMonMenu *monMenu)
 {
     u8 result;
 
@@ -219,7 +219,7 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
     }
 
     if (gCoreSys.pressedKeys & PAD_BUTTON_START) {
-        if (monMenu->mode != DEBUG_MON_MENU_MODE_CHANGE) {
+        if (monMenu->mode != DEBUG_MON_MENU_MODE_EDIT) {
             DebugMon_CalcFullStats(monMenu, &monMenu->mon);
         } else {
             DebugMon_SetMonDataFromStats(&monMenu->mon);
@@ -275,7 +275,7 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
     }
 }
 
-void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu)
+void DebugMonMenu_HandleValueInput (DebugMonMenu *monMenu)
 {
     u8 statID = sDebugMonMenuPages[monMenu->mon.page].page[monMenu->mon.cursor];
 
@@ -315,23 +315,23 @@ void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu)
     }
 }
 
-void DebugMonMenu_WaitButtonPress(DebugMonMenu *monMenu)
+void DebugMonMenu_WaitButtonPress (DebugMonMenu *monMenu)
 {
     if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
         monMenu->state = 0;
     }
 }
 
-void DebugMonMenu_Init(DebugMonMenu *monMenu)
+void DebugMonMenu_Init (DebugMonMenu *monMenu)
 {
     BGL_FillWindow(&monMenu->titleWindow, 15);
     DebugMonMenu_PrintString(&monMenu->titleWindow, monMenu->msgLoader, DMV_INFO_02, 0, 0, 0, DMM_COLOR_BLACK);
 
     monMenu->mon.monData = Pokemon_New(HEAP_ID_APPLICATION);
 
-    if (monMenu->mode == DEBUG_MON_MENU_MODE_GIVE) {
+    if (monMenu->mode == DEBUG_MON_MENU_MODE_CREATE) {
         DebugMon_InitStats(&monMenu->mon);
-    } else if (monMenu->mode == DEBUG_MON_MENU_MODE_CHANGE) {
+    } else if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
         Party* party = Party_GetFromSavedata(monMenu->sys->saveData);
         Pokemon* changeMon = Party_GetPokemonBySlotIndex(party, 0);
 
@@ -344,7 +344,7 @@ void DebugMonMenu_Init(DebugMonMenu *monMenu)
     monMenu->mon.cursor = 0;
 }
 
-void DebugMonMenu_Free(DebugMonMenu *monMenu)
+void DebugMonMenu_Free (DebugMonMenu *monMenu)
 {
     Heap_FreeToHeap(monMenu->mon.monData);
 
@@ -363,7 +363,7 @@ void DebugMonMenu_Free(DebugMonMenu *monMenu)
     sub_02014A20(monMenu->cursor);
 }
 
-static void DebugMonMenu_PrintString(Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonMenu_PrintString (Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
 {
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, entryID);
 
@@ -379,9 +379,9 @@ static void DebugMonMenu_PrintString(Window *window, MessageLoader *msgLoader, u
 }                                                                                                               \
 }
 
-static void DebugMonMenu_SetTrainerMemo(DebugMonMenu *monMenu, BOOL playerIsOT)
+static void DebugMonMenu_SetTrainerMemo (DebugMonMenu *monMenu, BOOL playerIsOT)
 {
-    if (monMenu->mode != DEBUG_MON_MENU_MODE_CHANGE) {
+    if (monMenu->mode != DEBUG_MON_MENU_MODE_EDIT) {
         DebugMon_CalcFullStats(monMenu, &monMenu->mon);
     } else {
         DebugMon_SetMonDataFromStats(&monMenu->mon);
@@ -402,7 +402,7 @@ static void DebugMonMenu_SetTrainerMemo(DebugMonMenu *monMenu, BOOL playerIsOT)
     sub_0209282C(infoDisplay);
 }
 
-static void DebugMonMenu_DisplayCursor(DebugMonMenu *monMenu, u8 mode)
+static void DebugMonMenu_DisplayCursor (DebugMonMenu *monMenu, u8 mode)
 {
     DebugMon *mon = &monMenu->mon;
 
@@ -439,7 +439,7 @@ static void DebugMonMenu_DisplayCursor(DebugMonMenu *monMenu, u8 mode)
     }
 }
 
-static void DebugMonMenu_ChangeValue(DebugMon *mon, u8 mode)
+static void DebugMonMenu_ChangeValue (DebugMon *mon, u8 mode)
 {
     u32 currentValue = DebugMonValue_Get(mon, sDebugMonMenuPages[mon->page].page[mon->cursor]);
     u32 minValue = sDebugMonValueList[sDebugMonMenuPages[mon->page].page[mon->cursor]].value->min;
@@ -478,14 +478,14 @@ static void DebugMonMenu_ChangeValue(DebugMon *mon, u8 mode)
     DebugMonValue_Set(mon, currentValue, sDebugMonMenuPages[mon->page].page[mon->cursor]);
 }
 
-void DebugMonMenu_DisplayPageAndCursor(DebugMonMenu *monMenu)
+void DebugMonMenu_DisplayPageAndCursor (DebugMonMenu *monMenu)
 {
     DebugMonMenu_DisplayPage(monMenu);
     DebugMonMenu_DisplayCursor(monMenu, DMMD_BOTH);
     monMenu->state = 1;
 }
 
-static void DebugMonMenu_DisplayPage(DebugMonMenu *monMenu)
+static void DebugMonMenu_DisplayPage (DebugMonMenu *monMenu)
 {
     DebugMon *mon = &monMenu->mon;
 
@@ -501,7 +501,7 @@ static void DebugMonMenu_DisplayPage(DebugMonMenu *monMenu)
     sub_0201ACCC(&monMenu->mainWindow);
 }
 
-static void DebugMonMenu_DisplayValues(DebugMonMenu * monMenu)
+static void DebugMonMenu_DisplayValues (DebugMonMenu * monMenu)
 {
     DebugMon *mon = &monMenu->mon;
     BGL_FillWindow(&monMenu->mainWindow, 15);
@@ -522,11 +522,11 @@ static void DebugMonMenu_DisplayValues(DebugMonMenu * monMenu)
     sub_0201ACCC(&monMenu->mainWindow);
 }
 
-static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu)
+static u8 DebugMonMenu_AddMon (DebugMonMenu *monMenu)
 {
     Party *party;
 
-    if (monMenu->mode == DEBUG_MON_MENU_MODE_GIVE) {
+    if (monMenu->mode == DEBUG_MON_MENU_MODE_CREATE) {
         party = Party_GetFromSavedata(monMenu->sys->saveData);
 
         if (Party_AddPokemon(party, monMenu->mon.monData) == TRUE) {
@@ -538,7 +538,7 @@ static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu)
 
         return 1;
 
-    } else if (monMenu->mode == DEBUG_MON_MENU_MODE_CHANGE) {
+    } else if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
         party = Party_GetFromSavedata(monMenu->sys->saveData);
 
         Strbuf *buf;
@@ -566,7 +566,7 @@ static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu)
     return 0;
 }
 
-static void DebugMon_InitStats(DebugMon *mon)
+static void DebugMon_InitStats (DebugMon *mon)
 {
     for (u32 i = 0; i < DEBUG_MON_MENU_STATS_SIZE; i++) {
         mon->stats[i] = 0;
@@ -591,7 +591,7 @@ static void DebugMon_InitStats(DebugMon *mon)
     DebugMon_CalcInitialStats(mon);
 }
 
-static void DebugMon_CalcInitialStats(DebugMon *mon)
+static void DebugMon_CalcInitialStats (DebugMon *mon)
 {
     u32	monIVs = ((mon->stats[DEBUG_MON_HP_IV] & 0x0000001f) << 0)
                     | ((mon->stats[DEBUG_MON_ATK_IV] & 0x0000001f) << 5)
@@ -617,7 +617,7 @@ static void DebugMon_CalcInitialStats(DebugMon *mon)
     mon->stats[DEBUG_MON_SP_DEF] = Pokemon_GetValue(mon->monData, MON_DATA_SP_DEF, NULL);
 }
 
-static void DebugMon_CalcFullStats(DebugMonMenu *monMenu, DebugMon *mon)
+static void DebugMon_CalcFullStats (DebugMonMenu *monMenu, DebugMon *mon)
 {
     u32 monIVs = ((mon->stats[DEBUG_MON_HP_IV] & 0x0000001f) << 0)
                     | ((mon->stats[DEBUG_MON_ATK_IV] & 0x0000001f) << 5)
@@ -715,7 +715,7 @@ static void DebugMon_CalcFullStats(DebugMonMenu *monMenu, DebugMon *mon)
     Pokemon_CalcLevelAndStats(mon->monData);
 }
 
-static void DebugMon_CalcBaseStats(DebugMon *mon)
+static void DebugMon_CalcBaseStats (DebugMon *mon)
 {
     Pokemon_SetValue(mon->monData, MON_DATA_HP_IV, &mon->stats[DEBUG_MON_HP_IV]);
     Pokemon_SetValue(mon->monData, MON_DATA_HP_EV, &mon->stats[DEBUG_MON_HP_EV]);
@@ -740,7 +740,7 @@ static void DebugMon_CalcBaseStats(DebugMon *mon)
     mon->stats[DEBUG_MON_SP_DEF] = Pokemon_GetValue(mon->monData, MON_DATA_SP_DEF, NULL);
 }
 
-static void DebugMon_CalcStatsFromExp(DebugMon *mon)
+static void DebugMon_CalcStatsFromExp (DebugMon *mon)
 {
     u32	nullData = 0;
     Pokemon_SetValue(mon->monData, MON_DATA_EXP, &mon->stats[DEBUG_MON_EXP]);
@@ -768,7 +768,7 @@ static void DebugMon_CalcStatsFromExp(DebugMon *mon)
 
 #define DEBUG_MON_SET_STAT_FROM_MON_DATA(statID, monDataValue) {mon->stats[statID] = Pokemon_GetValue(mon->monData, monDataValue, NULL);}
 
-static void DebugMon_SetStatsFromMonData(DebugMon * mon)
+static void DebugMon_SetStatsFromMonData (DebugMon * mon)
 {
     DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_SPECIES, MON_DATA_SPECIES)
     DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_LEVEL, MON_DATA_LEVEL)
@@ -847,7 +847,7 @@ static void DebugMon_SetStatsFromMonData(DebugMon * mon)
 #define DEBUG_MON_CLEAR_STAT(statID) {mon->stats[statID] = 0;}
 #define DEBUG_MON_SET_MON_DATA_FROM_STAT(statID, monDataValue) {Pokemon_SetValue(mon->monData, monDataValue, &mon->stats[statID]);}
 
-static void DebugMon_SetMonDataFromStats(DebugMon *mon)
+static void DebugMon_SetMonDataFromStats (DebugMon *mon)
 {
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_SPECIES, MON_DATA_SPECIES)
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_LEVEL, MON_DATA_LEVEL)
@@ -936,14 +936,14 @@ static void DebugMon_SetMonDataFromStats(DebugMon *mon)
     Pokemon_CalcLevelAndStats(mon->monData);
 }
 
-static void DebugMon_SetMoveAtPosition(Pokemon *mon, u16 moveID, u16 movePos)
+static void DebugMon_SetMoveAtPosition (Pokemon *mon, u16 moveID, u16 movePos)
 {
     u8 pp = MoveTable_LoadParam(moveID, MOVEATTRIBUTE_PP);
     Pokemon_SetValue(mon, MON_DATA_MOVE1 + movePos, &moveID);
     Pokemon_SetValue(mon, MON_DATA_MOVE1_CUR_PP + movePos, &pp);
 }
 
-static u8 DebugMonValue_Display(DebugMonMenu *monMenu, u8 statID, u32 color, u8 y)
+static u8 DebugMonValue_Display (DebugMonMenu *monMenu, u8 statID, u32 color, u8 y)
 {
     DebugMon *mon = &monMenu->mon;
 
@@ -1081,7 +1081,7 @@ static u8 DebugMonValue_Display(DebugMonMenu *monMenu, u8 statID, u32 color, u8 
     return 0;
 }
 
-static void DebugMonValue_PrintStr(Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonValue_PrintStr (Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
 {
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, entryID);
 
@@ -1090,7 +1090,7 @@ static void DebugMonValue_PrintStr(Window *window, MessageLoader *msgLoader, u32
     Strbuf_Free(buf);
 }
 
-static void DebugMonValue_PrintStrExpanded(Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonValue_PrintStrExpanded (Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
 {
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, entryID);
     Strbuf *bufExp = Strbuf_Init(128, HEAP_ID_APPLICATION);
@@ -1104,7 +1104,7 @@ static void DebugMonValue_PrintStrExpanded(Window *window, MessageLoader *msgLoa
     Strbuf_Free(bufExp);
 }
 
-static void DebugMonValue_PrintNum(Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, DebugMon *mon, u32 num, u32 digits, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonValue_PrintNum (Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, DebugMon *mon, u32 num, u32 digits, u32 x, u32 y, u32 delay, u32 color)
 {
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, DMV_STRING_06);
     Strbuf *bufExp = Strbuf_Init(32, HEAP_ID_APPLICATION);
@@ -1140,7 +1140,7 @@ static void DebugMonValue_PrintNum(Window *window, MessageLoader *msgLoader, Str
 }
 
 // ravetodo better name probably
-static u32 DebugMonValue_GetColor(DebugMon *mon, u8 digit, u32 color)
+static u32 DebugMonValue_GetColor (DebugMon *mon, u8 digit, u32 color)
 {
     if (color == DMM_COLOR_RED) {
         if (digit == mon->value) {
@@ -1152,7 +1152,7 @@ static u32 DebugMonValue_GetColor(DebugMon *mon, u8 digit, u32 color)
     return DMM_COLOR_BLACK;
 }
 
-static void DebugMonValue_PrintSpeciesName(Window *window, u32 species, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonValue_PrintSpeciesName (Window *window, u32 species, u32 x, u32 y, u32 delay, u32 color)
 {
     MessageLoader *msgLoader = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, 412, HEAP_ID_APPLICATION);
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, species);
@@ -1164,12 +1164,12 @@ static void DebugMonValue_PrintSpeciesName(Window *window, u32 species, u32 x, u
     MessageLoader_Free(msgLoader);
 }
 
-static u32 DebugMonValue_Get(DebugMon *mon, u8 statID)
+static u32 DebugMonValue_Get (DebugMon *mon, u8 statID)
 {
     return mon->stats[statID];
 }
 
-static void DebugMonValue_Set(DebugMon *mon, u32 value, u8 statID)
+static void DebugMonValue_Set (DebugMon *mon, u32 value, u8 statID)
 {
     switch(statID) {
     case DEBUG_MON_SPECIES:

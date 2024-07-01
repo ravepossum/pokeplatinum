@@ -14,20 +14,20 @@
 #define DEBUG_MON_MENU_STATS_SIZE	64
 #define	DEBUG_MON_MENU_MAX_PAGES	8
 
-#define TEXT_COLOR_MASK	    0xFF
-#define LETTER_COLOR_SHIFT  16
-#define SHADOW_COLOR_SHIFT  8
-#define GROUND_COLOR_SHIFT  0
+#define TEXT_COLOR_MASK	            0xFF
+#define TEXT_FG_COLOR_SHIFT         16
+#define TEXT_SHADOW_COLOR_SHIFT     8
+#define TEXT_BG_COLOR_SHIFT         0
 
-#define  TEXT_COLOR_ENTRY(letter, shadow, ground) (u32)(((letter & TEXT_COLOR_MASK) << LETTER_COLOR_SHIFT) |    \
-                                                        ((shadow & TEXT_COLOR_MASK) << SHADOW_COLOR_SHIFT) |    \
-                                                        ((ground & TEXT_COLOR_MASK) << GROUND_COLOR_SHIFT))
+#define DEBUG_TEXT_COLOR(fgColor, shadowColor, bgColor) (u32)(((fgColor & TEXT_COLOR_MASK) << TEXT_FG_COLOR_SHIFT) |            \
+                                                                ((shadowColor & TEXT_COLOR_MASK) << TEXT_SHADOW_COLOR_SHIFT) |  \
+                                                                ((bgColor & TEXT_COLOR_MASK) << TEXT_BG_COLOR_SHIFT))
 
-#define	DMM_COLOR_BLACK TEXT_COLOR_ENTRY(1, 2, 15)
-#define	DMM_COLOR_BLUE  TEXT_COLOR_ENTRY(3, 4, 15)
-#define	DMM_COLOR_RED   TEXT_COLOR_ENTRY(5, 6, 15)
-#define	DMM_COLOR_PINK  TEXT_COLOR_ENTRY(7, 8, 15)
-#define	DMM_COLOR_GREEN TEXT_COLOR_ENTRY(9, 10, 15)
+#define	DMM_COLOR_BLACK             DEBUG_TEXT_COLOR(1, 2, 15)
+#define	DMM_COLOR_BLUE              DEBUG_TEXT_COLOR(3, 4, 15)
+#define	DMM_COLOR_RED               DEBUG_TEXT_COLOR(5, 6, 15)
+#define	DMM_COLOR_PINK              DEBUG_TEXT_COLOR(7, 8, 15)
+#define	DMM_COLOR_GREEN             DEBUG_TEXT_COLOR(9, 10, 15)
 
 typedef struct DebugMon {
     Pokemon *monData;
@@ -69,8 +69,8 @@ typedef struct DebugMonMenuPage {
 } DebugMonMenuPage;
 
 enum DebugMonMenuMode {
-    DEBUG_MON_MENU_MODE_GIVE = 0,
-    DEBUG_MON_MENU_MODE_CHANGE,
+    DEBUG_MON_MENU_MODE_CREATE = 0,
+    DEBUG_MON_MENU_MODE_EDIT,
 };
 
 enum DebugMonMenuDirection {
