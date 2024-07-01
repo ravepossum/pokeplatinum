@@ -5108,6 +5108,6 @@ void sub_02078E0C(UnkStruct_02078B40 *param0, Pokemon *mon)
 
 void Pokemon_SetDefaultMoves(Pokemon *mon)
 {
-	BoxPokemon *boxMon = Pokemon_GetBoxPokemon(mon);
-	BoxPokemon_SetDefaultMoves(boxMon);
+    BoxPokemon *boxMon = Pokemon_GetBoxPokemon(mon);
+    BoxPokemon_SetDefaultMoves(boxMon);
 }
