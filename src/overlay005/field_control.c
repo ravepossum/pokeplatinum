@@ -175,18 +175,18 @@ void FieldInput_Update (FieldInput *input, FieldSystem *fieldSystem, u16 pressed
 
     // start debug menu
     if (heldKeys & DEBUG_KEY) {
-		input->debugKey = TRUE;
-		
-		input->movement = FALSE;
-		input->endMovement = FALSE;
-		input->sign = FALSE;
-		input->mapTransition = FALSE;
+        input->debugKey = TRUE;
+        
+        input->movement = FALSE;
+        input->endMovement = FALSE;
+        input->sign = FALSE;
+        input->mapTransition = FALSE;
 
-		if (input->menu) {
-			input->menu = FALSE;
-			input->debugMenu = TRUE;
-		}
-	}
+        if (input->menu) {
+            input->menu = FALSE;
+            input->debugMenu = TRUE;
+        }
+    }
 }
 
 BOOL FieldInput_Process (const FieldInput *input, FieldSystem *fieldSystem)
@@ -353,9 +353,9 @@ BOOL FieldInput_Process (const FieldInput *input, FieldSystem *fieldSystem)
 
     if (input->debugMenu) {
         Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
-		DebugMenu_Init(fieldSystem);
-		return TRUE;
-	}
+        DebugMenu_Init(fieldSystem);
+        return TRUE;
+    }
 
     return FALSE;
 }
@@ -407,9 +407,9 @@ BOOL FieldInput_Process_Underground (FieldInput *input, FieldSystem *fieldSystem
 
     if (input->debugMenu) {
         Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
-		DebugMenu_Init(fieldSystem);
-		return FALSE;
-	}
+        DebugMenu_Init(fieldSystem);
+        return FALSE;
+    }
 
     return FALSE;
 }
@@ -454,9 +454,9 @@ BOOL FieldInput_Process_Colosseum (FieldInput *input, FieldSystem *fieldSystem)
 
     if (input->debugMenu) {
         Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
-		DebugMenu_Init(fieldSystem);
-		return FALSE;
-	}
+        DebugMenu_Init(fieldSystem);
+        return FALSE;
+    }
 
     return FALSE;
 }
@@ -519,9 +519,9 @@ BOOL FieldInput_Process_UnionRoom (const FieldInput *input, FieldSystem *fieldSy
 
     if (input->debugMenu) {
         Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
-		DebugMenu_Init(fieldSystem);
-		return TRUE;
-	}
+        DebugMenu_Init(fieldSystem);
+        return TRUE;
+    }
 
     return FALSE;
 }
@@ -580,9 +580,9 @@ int FieldInput_Process_BattleTower (const FieldInput *input, FieldSystem *fieldS
         
     if (input->debugMenu) {
         Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
-		DebugMenu_Init(fieldSystem);
-		return TRUE;
-	}
+        DebugMenu_Init(fieldSystem);
+        return TRUE;
+    }
 
     return FALSE;
 }
