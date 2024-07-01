@@ -1,5 +1,5 @@
-#ifndef POKEPLATINUM_DEBUG_H
-#define POKEPLATINUM_DEBUG_H
+#ifndef POKEPLATINUM_DEBUG_MENU_H
+#define POKEPLATINUM_DEBUG_MENU_H
 
 #include "field/field_system_decl.h"
 #include "struct_decls/struct_0200112C_decl.h"
@@ -46,4 +46,4 @@ typedef struct DebugFly {
 
 void DebugMenu_Init(FieldSystem *sys);
 
-#endif // POKEPLATINUM_DEBUG_H
+#endif // POKEPLATINUM_DEBUG_MENU_H

@@ -66,7 +66,7 @@
 #include "overlay005/ov5_021EF4BC.h"
 #include "overlay005/ov5_021EFB0C.h"
 #include "overlay005/ov5_021F8370.h"
-#include "overlay005/debug.h"
+#include "overlay005/debug_menu.h"
 #include "overlay006/ov6_02240C9C.h"
 #include "overlay006/ov6_02246BF4.h"
 #include "overlay008/ov8_02249960.h"
