@@ -1078,5 +1078,6 @@ void PokeSprite_LoadShadowSize(NARC *narc, u8 *shadowSize, u16 species);
 BOOL Pokemon_SetBallSeal(int param0, Pokemon *mon, int heapID);
 void sub_02078B40(Pokemon *mon, UnkStruct_02078B40 *param1);
 void sub_02078E0C(UnkStruct_02078B40 *param0, Pokemon *mon);
+void Pokemon_SetDefaultMoves(Pokemon *mon);
 
 #endif // POKEPLATINUM_POKEMON_H

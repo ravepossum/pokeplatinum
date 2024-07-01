@@ -560,6 +560,7 @@ Overlay overlay5
 	Object main.nef.p/src_overlay005_ov5_021F8370.c.o
 	Object main.nef.p/src_overlay005_ov5_021F8560.c.o
 	Object main.nef.p/src_overlay005_debug.c.o
+	Object main.nef.p/src_overlay005_debug_mon_menu.c.o
 }
 
 Overlay overlay6
