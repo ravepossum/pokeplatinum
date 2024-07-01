@@ -53,8 +53,8 @@ static void DebugMon_SetMonDataFromStats(DebugMon *mon);
 static void DebugMon_SetMoveAtPosition(Pokemon *mon, u16 moveID, u16 movePos);
 
 static u8 DebugMonValue_Display(DebugMonMenu *monMenu, u8 statID, u32 color, u8 y);
-static void DebugMonValue_PrintStr(Window *window, MessageLoader *msgLoader, u32 id, u32 x, u32 y, u32 delay, u32 color);
-static void DebugMonValue_PrintStrExpanded(Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, u32 id, u32 x, u32 y, u32 delay, u32 color);
+static void DebugMonValue_PrintStr(Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color);
+static void DebugMonValue_PrintStrExpanded(Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, u32 entryID, u32 x, u32 y, u32 delay, u32 color);
 static void DebugMonValue_PrintNum(Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, DebugMon *mon, u32 num, u32 digits, u32 x, u32 y, u32 delay, u32 color);
 static u32 DebugMonValue_GetColor(DebugMon *mon, u8 digit, u32 color);
 static void DebugMonValue_PrintSpeciesName(Window *window, u32 species, u32 x, u32 y, u32 delay, u32 color);
@@ -151,7 +151,7 @@ static const u8 sDebugMonPage1[] = {
 
 static const u8 sDebugMonPage2[] = {
     DEBUG_MON_STATUS_CONDITION, DEBUG_MON_FRIENDSHIP, DEBUG_MON_POKERUS,
-    DEBUG_MON_IS_EGG, DEBUG_MON_FATEFUL_ENCOUNTER, DEBUG_MON_NICKNAME,
+    DEBUG_MON_IS_EGG, DEBUG_MON_FATEFUL_ENCOUNTER, DEBUG_MON_HAS_NICKNAME,
     DEBUG_MON_END
 };
 
@@ -671,7 +671,7 @@ static void DebugMon_CalcFullStats(DebugMonMenu *monMenu, DebugMon *mon)
     Pokemon_SetValue(mon->monData, MON_DATA_ABILITY, &ability);
 
     Pokemon_SetValue(mon->monData, MON_DATA_FATEFUL_ENCOUNTER, &mon->stats[DEBUG_MON_FATEFUL_ENCOUNTER]);
-    Pokemon_SetValue(mon->monData, MON_DATA_NICKNAME_AND_FLAG, &mon->stats[DEBUG_MON_NICKNAME]);
+    Pokemon_SetValue(mon->monData, MON_DATA_HAS_NICKNAME, &mon->stats[DEBUG_MON_HAS_NICKNAME]);
     Pokemon_SetValue(mon->monData, MON_DATA_MET_LEVEL, &mon->stats[DEBUG_MON_MET_LEVEL]);
     Pokemon_SetValue(mon->monData, MON_DATA_MET_GAME, &mon->stats[DEBUG_MON_MET_GAME]);
     Pokemon_SetValue(mon->monData, MON_DATA_POKEBALL, &mon->stats[DEBUG_MON_POKEBALL]);
@@ -828,7 +828,7 @@ static void DebugMon_SetStatsFromMonData(DebugMon * mon)
     DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_SP_ATK, MON_DATA_SP_ATK)
     DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_SP_DEF, MON_DATA_SP_DEF)
     DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_FATEFUL_ENCOUNTER, MON_DATA_FATEFUL_ENCOUNTER)
-    DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_NICKNAME, MON_DATA_NICKNAME_AND_FLAG)
+    DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_HAS_NICKNAME, MON_DATA_HAS_NICKNAME)
     DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_MET_LEVEL, MON_DATA_MET_LEVEL)
     DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_MET_GAME, MON_DATA_MET_GAME)
     DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_POKEBALL, MON_DATA_POKEBALL)
@@ -905,7 +905,7 @@ static void DebugMon_SetMonDataFromStats(DebugMon *mon)
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_SP_ATK, MON_DATA_SP_ATK)
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_SP_DEF, MON_DATA_SP_DEF)
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_FATEFUL_ENCOUNTER, MON_DATA_FATEFUL_ENCOUNTER)
-    DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_NICKNAME, MON_DATA_NICKNAME_AND_FLAG)
+    DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_HAS_NICKNAME, MON_DATA_HAS_NICKNAME)
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_MET_LEVEL, MON_DATA_MET_LEVEL)
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_MET_GAME, MON_DATA_MET_GAME)
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_POKEBALL, MON_DATA_POKEBALL)
@@ -1061,7 +1061,7 @@ static u8 DebugMonValue_Display(DebugMonMenu *monMenu, u8 statID, u32 color, u8 
 
     case DEBUG_MON_IS_EGG:
     case DEBUG_MON_FATEFUL_ENCOUNTER:
-    case DEBUG_MON_NICKNAME:
+    case DEBUG_MON_HAS_NICKNAME:
         if(mon->stats[statID]) {
             DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_STRING_04, 12 + 72 + 24, y, 0xFF, DMM_COLOR_BLACK);
         } else {
@@ -1081,18 +1081,18 @@ static u8 DebugMonValue_Display(DebugMonMenu *monMenu, u8 statID, u32 color, u8 
     return 0;
 }
 
-static void DebugMonValue_PrintStr(Window *window, MessageLoader *msgLoader, u32 id, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonValue_PrintStr(Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
 {
-    Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, id);
+    Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, entryID);
 
     // print color string
     sub_0201D78C(window, 0, buf, x, y, delay, color, NULL);
     Strbuf_Free(buf);
 }
 
-static void DebugMonValue_PrintStrExpanded(Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, u32 id, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonValue_PrintStrExpanded(Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
 {
-    Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, id);
+    Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, entryID);
     Strbuf *bufExp = Strbuf_Init(128, HEAP_ID_APPLICATION);
 
     StringTemplate_Format(strTemplate, bufExp, buf);

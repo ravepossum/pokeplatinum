@@ -147,7 +147,7 @@
 	</row>
 	<row id="pl_msg_00000336_00036" index="36">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Class</language>
+		<language name="English">Species</language>
 	</row>
 	<row id="pl_msg_00000336_00037" index="37">
 		<attribute name="window_context_name">used</attribute>
@@ -159,11 +159,11 @@
 	</row>
 	<row id="pl_msg_00000336_00039" index="39">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">ID</language>
+		<language name="English">OT ID</language>
 	</row>
 	<row id="pl_msg_00000336_00040" index="40">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Random value</language>
+		<language name="English">Personality</language>
 	</row>
 	<row id="pl_msg_00000336_00041" index="41">
 		<attribute name="window_context_name">used</attribute>
@@ -195,7 +195,7 @@
 	</row>
 	<row id="pl_msg_00000336_00048" index="48">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Special ability</language>
+		<language name="English">Ability</language>
 	</row>
 	<row id="pl_msg_00000336_00049" index="49">
 		<attribute name="window_context_name">used</attribute>
@@ -303,19 +303,19 @@
 	</row>
 	<row id="pl_msg_00000336_00075" index="75">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Special Attack</language>
+		<language name="English">Sp. Atk</language>
 	</row>
 	<row id="pl_msg_00000336_00076" index="76">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Special Defense</language>
+		<language name="English">Sp. Def</language>
 	</row>
 	<row id="pl_msg_00000336_00077" index="77">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Event distribution</language>
+		<language name="English">Fateful Enc.</language>
 	</row>
 	<row id="pl_msg_00000336_00078" index="78">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Area 1</language>
+		<language name="English">Met Location</language>
 	</row>
 	<row id="pl_msg_00000336_00079" index="79">
 		<attribute name="window_context_name">used</attribute>
@@ -339,23 +339,23 @@
 	</row>
 	<row id="pl_msg_00000336_00084" index="84">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Area 2</language>
+		<language name="English">Hatch Location</language>
 	</row>
 	<row id="pl_msg_00000336_00085" index="85">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">year</language>
+		<language name="English">Year</language>
 	</row>
 	<row id="pl_msg_00000336_00086" index="86">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">month</language>
+		<language name="English">Month</language>
 	</row>
 	<row id="pl_msg_00000336_00087" index="87">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">date</language>
+		<language name="English">Date</language>
 	</row>
 	<row id="pl_msg_00000336_00088" index="88">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">nickname</language>
+		<language name="English">Nickname</language>
 	</row>
 	<row id="pl_msg_00000336_00089" index="89">
 		<attribute name="window_context_name">used</attribute>
@@ -443,11 +443,11 @@
 	</row>
 	<row id="pl_msg_00000336_00110" index="110">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Create Pokémon\n  LR: Switch   START: Add</language>
+		<language name="English">Create Pokémon\n  LR: Switch Page  START: Create Mon</language>
 	</row>
 	<row id="pl_msg_00000336_00111" index="111">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">ＤＢＰｏｋｅ1</language>
+		<language name="English">DebugOT</language>
 	</row>
 	<row id="pl_msg_00000336_00112" index="112">
 		<attribute name="window_context_name">used</attribute>
