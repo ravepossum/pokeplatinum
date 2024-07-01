@@ -199,55 +199,55 @@
 	</row>
 	<row id="pl_msg_00000336_00049" index="49">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">HP rnd</language>
+		<language name="English">HP IV</language>
 	</row>
 	<row id="pl_msg_00000336_00050" index="50">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">HP exp</language>
+		<language name="English">HP EV</language>
 	</row>
 	<row id="pl_msg_00000336_00051" index="51">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Attack rnd</language>
+		<language name="English">Attack IV</language>
 	</row>
 	<row id="pl_msg_00000336_00052" index="52">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Attack exp</language>
+		<language name="English">Attack EV</language>
 	</row>
 	<row id="pl_msg_00000336_00053" index="53">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Defense rnd</language>
+		<language name="English">Defense IV</language>
 	</row>
 	<row id="pl_msg_00000336_00054" index="54">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Defense exp</language>
+		<language name="English">Defense EV</language>
 	</row>
 	<row id="pl_msg_00000336_00055" index="55">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Speed rnd</language>
+		<language name="English">Speed IV</language>
 	</row>
 	<row id="pl_msg_00000336_00056" index="56">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Speed exp</language>
+		<language name="English">Speed EV</language>
 	</row>
 	<row id="pl_msg_00000336_00057" index="57">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Sp. Atk rnd</language>
+		<language name="English">Sp. Atk IV</language>
 	</row>
 	<row id="pl_msg_00000336_00058" index="58">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Sp. Atk exp</language>
+		<language name="English">Sp. Atk EV</language>
 	</row>
 	<row id="pl_msg_00000336_00059" index="59">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Sp. Def rnd</language>
+		<language name="English">Sp. Def IV</language>
 	</row>
 	<row id="pl_msg_00000336_00060" index="60">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Sp. Def exp</language>
+		<language name="English">Sp. Def EV</language>
 	</row>
 	<row id="pl_msg_00000336_00061" index="61">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Coolness</language>
+		<language name="English">Cool</language>
 	</row>
 	<row id="pl_msg_00000336_00062" index="62">
 		<attribute name="window_context_name">used</attribute>
@@ -255,23 +255,23 @@
 	</row>
 	<row id="pl_msg_00000336_00063" index="63">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Cuteness</language>
+		<language name="English">Cute</language>
 	</row>
 	<row id="pl_msg_00000336_00064" index="64">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Smartness</language>
+		<language name="English">Smart</language>
 	</row>
 	<row id="pl_msg_00000336_00065" index="65">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Toughness</language>
+		<language name="English">Tough</language>
 	</row>
 	<row id="pl_msg_00000336_00066" index="66">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Luster</language>
+		<language name="English">Sheen</language>
 	</row>
 	<row id="pl_msg_00000336_00067" index="67">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Tameness</language>
+		<language name="English">Friendship</language>
 	</row>
 	<row id="pl_msg_00000336_00068" index="68">
 		<attribute name="window_context_name">used</attribute>
@@ -319,23 +319,23 @@
 	</row>
 	<row id="pl_msg_00000336_00079" index="79">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Captured level</language>
+		<language name="English">Met Level</language>
 	</row>
 	<row id="pl_msg_00000336_00080" index="80">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Captured cassette</language>
+		<language name="English">Met Game</language>
 	</row>
 	<row id="pl_msg_00000336_00081" index="81">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Captured Ball</language>
+		<language name="English">Pokeball</language>
 	</row>
 	<row id="pl_msg_00000336_00082" index="82">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Country code</language>
+		<language name="English">Met Game Region</language>
 	</row>
 	<row id="pl_msg_00000336_00083" index="83">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Form No.</language>
+		<language name="English">Form</language>
 	</row>
 	<row id="pl_msg_00000336_00084" index="84">
 		<attribute name="window_context_name">used</attribute>
