@@ -1,4 +1,5 @@
 #include "overlay005/debug.h"
+#include "overlay005/debug_mon_menu.h"
 #include "strbuf.h"
 #include "message.h"
 #include "field_system.h"
@@ -17,13 +18,23 @@
 #include "unk_0203D1B8.h"
 #include "unk_0206B70C.h"
 #include "unk_020508D4.h"
+#include "unk_0200DA60.h"
+#include "unk_0201D670.h"
+#include "party.h"
 #include "field_map_change.h"
 #include "overlay006/ov6_02243258.h"
 #include "field/field_system.h"
 #include "core_sys.h"
 #include "constants/narc.h"
+#include "constants/pokemon.h"
+#include "consts/pokemon.h"
+#include "consts/species.h"
+#include "consts/moves.h"
+#include "consts/items.h"
+#include "struct_defs/struct_02090800.h"
+#include "unk_02092494.h"
+#include "move_table.h"
 
-// general static functions
 static void DebugMenu_Free(void *data);
 static void CB_DebugMenu_Exit(SysTask *task, void *data);
 static void DebugMenu_Exit(SysTask *task, void *data);
@@ -36,10 +47,14 @@ static DebugMenu* DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data);
 static void	CB_DebugMenu_ListHeader(BmpList* bmpList, u32 param, u8 y);
 
-// fly
+
 static void DebugMenu_Fly(SysTask *task, void *data);
 static void DebugMenu_Fly_CreateTask(FieldSystem *sys);
 static void Task_DebugMenu_Fly(SysTask *task, void *data);
+
+static void DebugMenu_GiveMon(SysTask *task, void *data);
+static void DebugMenu_GiveMon_CreateTask(FieldSystem *sys);
+static void Task_DebugMenu_GiveMon(SysTask *task, void *data);
 
 static const UnkStruct_ov61_0222C884 DebugMenu_List_WindowTemplate = {
 	3, // BG3
@@ -75,13 +90,14 @@ static const UnkStruct_ov84_02240FA8 DebugMenu_List_Header = {
 };
 
 static const DebugMenuItem DebugMenu_ItemList[] = {
-	{DEBUG_HEADER,	DEBUG_MENU_DUMMY_FUNCTION},
-	{DEBUG_FLY,		(u32)DebugMenu_Fly},
+	{DEBUG_HEADER,		DEBUG_MENU_DUMMY_FUNCTION},
+	{DEBUG_FLY,			(u32)DebugMenu_Fly},
+	{DEBUG_GIVE_MON,	(u32)DebugMenu_GiveMon},
 };
 
 void DebugMenu_Init (FieldSystem *sys)
 {
-	DebugMenu *menu = DebugMenu_CreateMultichoice(sys, 328, DebugMenu_ItemList, NELEMS(DebugMenu_ItemList), NULL);
+	DebugMenu *menu = DebugMenu_CreateMultichoice(sys, DEBUG_MENU_MESSAGE_BANK, DebugMenu_ItemList, NELEMS(DebugMenu_ItemList), NULL);
 	menu->callback = NULL;
 
 	// field system hold sequence
@@ -228,7 +244,7 @@ static void Task_DebugMenu_HandleInput (SysTask* task, void* data)
 	}
 }
 
-// fly section
+// Fly section
 
 static void DebugMenu_Fly (SysTask *task, void *data)
 {
@@ -327,4 +343,71 @@ static void Task_DebugMenu_Fly (SysTask *task, void *data)
 	}
 
 	fly->sequence++;
+}
+
+// GiveMon section
+
+static void DebugMenu_GiveMon (SysTask *task, void *data)
+{
+	DebugMenu *menu = (DebugMenu*)data;
+	CB_DebugMenu_Exit(task, data);
+	DebugMenu_GiveMon_CreateTask(menu->sys);
+}
+
+static void DebugMenu_GiveMon_CreateTask (FieldSystem *sys)
+{
+	DebugMonMenu *monMenu = (DebugMonMenu*) SysTask_GetParam(SysTask_StartAndAllocateParam(Task_DebugMenu_GiveMon, sizeof(DebugMonMenu), 0, HEAP_ID_APPLICATION));
+	monMenu->sys = sys;
+	monMenu->state = 0;
+	monMenu->mode = DEBUG_MON_MENU_MODE_GIVE;
+	monMenu->msgLoader = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, DEBUG_MON_MENU_MESSAGE_BANK, HEAP_ID_APPLICATION);
+	monMenu->strTemplate = StringTemplate_Default(HEAP_ID_APPLICATION);
+	// create cursor?
+	monMenu->cursor = sub_020149F0(HEAP_ID_APPLICATION);
+
+	// get BGL?
+	BGL *bgl = sub_0203D170(sys);
+
+	BGL_AddWindow(bgl, &monMenu->titleWindow, 3, 1, 1, 30, 4, 13, 1);
+	BGL_AddWindow(bgl, &monMenu->mainWindow, 3, 1, 7, 30, 16, 13, 1 + 30 * 4);
+
+	// set window gfx or something
+	sub_0200DAA4(bgl, 3, 1+30*4+30*18, 14, 0, HEAP_ID_APPLICATION);
+
+	Window_Show(&monMenu->titleWindow, 1, 1 + 30 * 4 + 30 * 18, 14);
+	Window_Show(&monMenu->mainWindow, 1, 1 + 30 * 4 + 30 * 18, 14);
+
+	DebugMonMenu_Init(monMenu);
+}
+
+static void Task_DebugMenu_GiveMon(SysTask *task, void *data)
+{
+	DebugMonMenu *monMenu = (DebugMonMenu*)data;
+
+	switch(monMenu->state) {
+	case 0:
+		DebugMonMenu_DisplayPageAndCursor(monMenu);
+		break;
+	case 1:
+		DebugMonMenu_HandleInput(monMenu);
+		break;
+	case 2:
+		DebugMonMenu_HandleValueInput(monMenu);
+		break;
+	case 3:
+		DebugMonMenu_WaitButtonPress(monMenu);
+		break;
+	case 4:
+		DebugMonMenu_Free(monMenu);
+		SysTask_FinishAndFreeParam(task);
+
+		// field system hold end
+		sub_0203D140();
+		break;
+	case 5:
+		if(gCoreSys.pressedKeys & (PAD_BUTTON_X | PAD_BUTTON_Y)) {
+			monMenu->state = 0;
+		}
+		break;
+	}
 }
