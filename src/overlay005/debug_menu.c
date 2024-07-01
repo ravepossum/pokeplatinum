@@ -52,9 +52,10 @@ static void DebugMenu_Fly(SysTask *task, void *data);
 static void DebugMenu_Fly_CreateTask(FieldSystem *sys);
 static void Task_DebugMenu_Fly(SysTask *task, void *data);
 
-static void DebugMenu_GiveMon(SysTask *task, void *data);
-static void DebugMenu_GiveMon_CreateTask(FieldSystem *sys);
-static void Task_DebugMenu_GiveMon(SysTask *task, void *data);
+static void DebugMenu_CreateMon(SysTask *task, void *data);
+static void DebugMenu_EditMon(SysTask *task, void *data);
+static void DebugMenu_CreateOrEditMon_CreateTask (FieldSystem *sys, enum DebugMonMenuMode mode);
+static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data);
 
 static const UnkStruct_ov61_0222C884 DebugMenu_List_WindowTemplate = {
     3, // BG3
@@ -92,7 +93,8 @@ static const UnkStruct_ov84_02240FA8 DebugMenu_List_Header = {
 static const DebugMenuItem DebugMenu_ItemList[] = {
     {DEBUG_HEADER,		DEBUG_MENU_DUMMY_FUNCTION},
     {DEBUG_FLY,			(u32)DebugMenu_Fly},
-    {DEBUG_GIVE_MON,	(u32)DebugMenu_GiveMon},
+    {DEBUG_CREATE_MON,	(u32)DebugMenu_CreateMon},
+    {DEBUG_EDIT_MON,	(u32)DebugMenu_EditMon},
 };
 
 void DebugMenu_Init (FieldSystem *sys)
@@ -345,27 +347,34 @@ static void Task_DebugMenu_Fly (SysTask *task, void *data)
     fly->sequence++;
 }
 
-// GiveMon section
+// CreateMon and EditMon section
 
-static void DebugMenu_GiveMon (SysTask *task, void *data)
+static void DebugMenu_CreateMon (SysTask *task, void *data)
 {
     DebugMenu *menu = (DebugMenu*)data;
     CB_DebugMenu_Exit(task, data);
-    DebugMenu_GiveMon_CreateTask(menu->sys);
+    DebugMenu_CreateOrEditMon_CreateTask(menu->sys, DEBUG_MON_MENU_MODE_CREATE);
 }
 
-static void DebugMenu_GiveMon_CreateTask (FieldSystem *sys)
+static void DebugMenu_EditMon (SysTask *task, void *data)
 {
-    DebugMonMenu *monMenu = (DebugMonMenu*) SysTask_GetParam(SysTask_StartAndAllocateParam(Task_DebugMenu_GiveMon, sizeof(DebugMonMenu), 0, HEAP_ID_APPLICATION));
+    DebugMenu *menu = (DebugMenu*)data;
+    CB_DebugMenu_Exit(task, data);
+    DebugMenu_CreateOrEditMon_CreateTask(menu->sys, DEBUG_MON_MENU_MODE_EDIT);
+}
+
+static void DebugMenu_CreateOrEditMon_CreateTask (FieldSystem *sys, enum DebugMonMenuMode mode)
+{
+    DebugMonMenu *monMenu = (DebugMonMenu*) SysTask_GetParam(SysTask_StartAndAllocateParam(Task_DebugMenu_CreateOrEditMon, sizeof(DebugMonMenu), 0, HEAP_ID_APPLICATION));
     monMenu->sys = sys;
     monMenu->state = 0;
-    monMenu->mode = DEBUG_MON_MENU_MODE_GIVE;
+    monMenu->mode = mode;
     monMenu->msgLoader = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, DEBUG_MON_MENU_MESSAGE_BANK, HEAP_ID_APPLICATION);
     monMenu->strTemplate = StringTemplate_Default(HEAP_ID_APPLICATION);
     // create cursor?
     monMenu->cursor = sub_020149F0(HEAP_ID_APPLICATION);
 
-    // get BGL?
+    // get bgl?
     BGL *bgl = sub_0203D170(sys);
 
     BGL_AddWindow(bgl, &monMenu->titleWindow, 3, 1, 1, 30, 4, 13, 1);
@@ -380,7 +389,7 @@ static void DebugMenu_GiveMon_CreateTask (FieldSystem *sys)
     DebugMonMenu_Init(monMenu);
 }
 
-static void Task_DebugMenu_GiveMon(SysTask *task, void *data)
+static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
 {
     DebugMonMenu *monMenu = (DebugMonMenu*)data;
 
