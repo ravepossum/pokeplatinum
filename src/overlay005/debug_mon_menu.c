@@ -1,4 +1,4 @@
-#include "overlay005/debug.h"
+#include "overlay005/debug_menu.h"
 #include "overlay005/debug_mon_menu.h"
 #include "strbuf.h"
 #include "message.h"
