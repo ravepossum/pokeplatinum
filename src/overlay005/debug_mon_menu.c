@@ -19,7 +19,7 @@
 #include "unk_0206B70C.h"
 #include "unk_020508D4.h"
 #include "unk_0200DA60.h"
-#include "unk_0201D670.h"
+#include "text.h"
 #include "party.h"
 #include "field_map_change.h"
 #include "overlay006/ov6_02243258.h"
@@ -368,15 +368,15 @@ static void DebugMonMenu_PrintString (Window *window, MessageLoader *msgLoader, 
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, entryID);
 
     // print color string to window?
-    sub_0201D78C(window, 0, buf, x, y, delay, color, NULL);
+    Text_AddPrinterWithParamsAndColor(window, 0, buf, x, y, delay, color, NULL);
 
     Strbuf_Free(buf);
 }
 
-#define	DISPLAYINFO_PRINT(info) {                                                                               \
-    if (info.unk_04 != NULL) {                                                                                  \
-        sub_0201D78C(&monMenu->mainWindow, 0, info.unk_04, 8, (info.unk_00 - 1) * 16, 0, DMM_COLOR_BLACK, NULL);\
-}                                                                                                               \
+#define	DISPLAYINFO_PRINT(info) {                                                                                                     \
+    if (info.unk_04 != NULL) {                                                                                                        \
+        Text_AddPrinterWithParamsAndColor(&monMenu->mainWindow, 0, info.unk_04, 8, (info.unk_00 - 1) * 16, 0, DMM_COLOR_BLACK, NULL); \
+}                                                                                                                                     \
 }
 
 static void DebugMonMenu_SetTrainerMemo (DebugMonMenu *monMenu, BOOL playerIsOT)
@@ -1086,7 +1086,7 @@ static void DebugMonValue_PrintStr (Window *window, MessageLoader *msgLoader, u3
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, entryID);
 
     // print color string
-    sub_0201D78C(window, 0, buf, x, y, delay, color, NULL);
+    Text_AddPrinterWithParamsAndColor(window, 0, buf, x, y, delay, color, NULL);
     Strbuf_Free(buf);
 }
 
@@ -1098,7 +1098,7 @@ static void DebugMonValue_PrintStrExpanded (Window *window, MessageLoader *msgLo
     StringTemplate_Format(strTemplate, bufExp, buf);
     
     // print color string
-    sub_0201D78C(window, 0, bufExp, x, y, delay, color, NULL);
+    Text_AddPrinterWithParamsAndColor(window, 0, bufExp, x, y, delay, color, NULL);
     
     Strbuf_Free(buf);
     Strbuf_Free(bufExp);
@@ -1122,12 +1122,12 @@ static void DebugMonValue_PrintNum (Window *window, MessageLoader *msgLoader, St
         StringTemplate_Format(strTemplate, bufExp, buf);
         
         // print color string
-        sub_0201D78C(window, 0, bufExp, x + size, y, 0xFF, DebugMonValue_GetColor(mon, i - 1, color), NULL);
+        Text_AddPrinterWithParamsAndColor(window, 0, bufExp, x + size, y, 0xFF, DebugMonValue_GetColor(mon, i - 1, color), NULL);
         num %= tmp;
         tmp /= 10;
 
         // get string font width?
-        size += sub_02002D7C(0, bufExp, 0);
+        size += Font_CalcStrbufWidth(0, bufExp, 0);
     }
 
     if (delay == 0) {
@@ -1158,7 +1158,7 @@ static void DebugMonValue_PrintSpeciesName (Window *window, u32 species, u32 x, 
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, species);
 
     // print color string
-    sub_0201D78C(window, 0, buf, x, y, delay, color, NULL);
+    Text_AddPrinterWithParamsAndColor(window, 0, buf, x, y, delay, color, NULL);
 
     Strbuf_Free(buf);
     MessageLoader_Free(msgLoader);

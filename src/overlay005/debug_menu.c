@@ -19,7 +19,7 @@
 #include "unk_0206B70C.h"
 #include "unk_020508D4.h"
 #include "unk_0200DA60.h"
-#include "unk_0201D670.h"
+#include "text.h"
 #include "party.h"
 #include "field_map_change.h"
 #include "overlay006/ov6_02243258.h"
@@ -335,7 +335,7 @@ static void Task_DebugMenu_Fly (SysTask *task, void *data)
         map = (UnkStruct_0203D8AC*)fly->data;
 
         // map change via fly
-        sub_02053AB4(fly->sys, map->unk_1C, (-1), map->unk_14*32+16, map->unk_18*32+16, DIR_SOUTH);
+        FieldTask_StartMapChangeFly(fly->sys, map->unk_1C, (-1), map->unk_14*32+16, map->unk_18*32+16, DIR_SOUTH);
         break;
     case 6:
         Heap_FreeToHeap(fly->data);
