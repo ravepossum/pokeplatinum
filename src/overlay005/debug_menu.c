@@ -1,39 +1,43 @@
 #include "overlay005/debug_menu.h"
-#include "overlay005/debug_mon_menu.h"
-#include "strbuf.h"
-#include "message.h"
-#include "field_system.h"
-#include "overlay084/struct_ov84_02240FA8.h"
-#include "overlay061/struct_ov61_0222C884.h"
-#include "struct_defs/struct_0203D8AC.h"
-#include "constants/heap.h"
+
 #include "constants/charcode.h"
+#include "constants/heap.h"
 #include "constants/map_object.h"
-#include "sys_task.h"
-#include "unk_02013A04.h"
-#include "unk_02018340.h"
-#include "unk_0200112C.h"
-#include "unk_020021B0.h"
-#include "unk_0200F174.h"
-#include "unk_0203D1B8.h"
-#include "unk_0206B70C.h"
-#include "unk_020508D4.h"
-#include "unk_0200DA60.h"
-#include "text.h"
-#include "party.h"
-#include "field_map_change.h"
-#include "overlay006/ov6_02243258.h"
-#include "field/field_system.h"
-#include "core_sys.h"
 #include "constants/narc.h"
 #include "constants/pokemon.h"
+#include "consts/items.h"
+#include "consts/moves.h"
 #include "consts/pokemon.h"
 #include "consts/species.h"
-#include "consts/moves.h"
-#include "consts/items.h"
+
+#include "struct_defs/struct_0203D8AC.h"
 #include "struct_defs/struct_02090800.h"
-#include "unk_02092494.h"
+
+#include "field/field_system.h"
+#include "overlay005/debug_mon_menu.h"
+#include "overlay006/ov6_02243258.h"
+#include "overlay061/struct_ov61_0222C884.h"
+#include "overlay084/struct_ov84_02240FA8.h"
+
+#include "core_sys.h"
+#include "field_map_change.h"
+#include "field_system.h"
+#include "message.h"
 #include "move_table.h"
+#include "party.h"
+#include "strbuf.h"
+#include "sys_task.h"
+#include "text.h"
+#include "unk_0200112C.h"
+#include "unk_020021B0.h"
+#include "unk_0200DA60.h"
+#include "unk_0200F174.h"
+#include "unk_02013A04.h"
+#include "unk_02018340.h"
+#include "unk_0203D1B8.h"
+#include "unk_020508D4.h"
+#include "unk_0206B70C.h"
+#include "unk_02092494.h"
 
 static void DebugMenu_Free(void *data);
 static void CB_DebugMenu_Exit(SysTask *task, void *data);
@@ -335,7 +339,7 @@ static void Task_DebugMenu_Fly (SysTask *task, void *data)
         map = (UnkStruct_0203D8AC*)fly->data;
 
         // map change via fly
-        FieldTask_StartMapChangeFly(fly->sys, map->unk_1C, (-1), map->unk_14*32+16, map->unk_18*32+16, DIR_SOUTH);
+        FieldTask_StartMapChangeFly(fly->sys, map->unk_1C, (-1), map->unk_14 * 32 + 16, map->unk_18 * 32 + 16, DIR_SOUTH);
         break;
     case 6:
         Heap_FreeToHeap(fly->data);
