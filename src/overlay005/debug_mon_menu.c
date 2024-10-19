@@ -1,39 +1,43 @@
-#include "overlay005/debug_menu.h"
 #include "overlay005/debug_mon_menu.h"
-#include "strbuf.h"
-#include "message.h"
-#include "field_system.h"
-#include "overlay084/struct_ov84_02240FA8.h"
-#include "overlay061/struct_ov61_0222C884.h"
-#include "struct_defs/struct_0203D8AC.h"
-#include "constants/heap.h"
+
 #include "constants/charcode.h"
+#include "constants/heap.h"
 #include "constants/map_object.h"
-#include "sys_task.h"
-#include "unk_02013A04.h"
-#include "unk_02018340.h"
-#include "unk_0200112C.h"
-#include "unk_020021B0.h"
-#include "unk_0200F174.h"
-#include "unk_0203D1B8.h"
-#include "unk_0206B70C.h"
-#include "unk_020508D4.h"
-#include "unk_0200DA60.h"
-#include "text.h"
-#include "party.h"
-#include "field_map_change.h"
-#include "overlay006/ov6_02243258.h"
-#include "field/field_system.h"
-#include "core_sys.h"
 #include "constants/narc.h"
 #include "constants/pokemon.h"
+#include "consts/items.h"
+#include "consts/moves.h"
 #include "consts/pokemon.h"
 #include "consts/species.h"
-#include "consts/moves.h"
-#include "consts/items.h"
+
+#include "struct_defs/struct_0203D8AC.h"
 #include "struct_defs/struct_02090800.h"
-#include "unk_02092494.h"
+
+#include "field/field_system.h"
+#include "overlay005/debug_menu.h"
+#include "overlay006/ov6_02243258.h"
+#include "overlay061/struct_ov61_0222C884.h"
+#include "overlay084/struct_ov84_02240FA8.h"
+
+#include "core_sys.h"
+#include "field_map_change.h"
+#include "field_system.h"
+#include "message.h"
 #include "move_table.h"
+#include "party.h"
+#include "strbuf.h"
+#include "sys_task.h"
+#include "text.h"
+#include "unk_0200112C.h"
+#include "unk_020021B0.h"
+#include "unk_0200DA60.h"
+#include "unk_0200F174.h"
+#include "unk_02013A04.h"
+#include "unk_02018340.h"
+#include "unk_0203D1B8.h"
+#include "unk_020508D4.h"
+#include "unk_0206B70C.h"
+#include "unk_02092494.h"
 
 static void DebugMonMenu_PrintString(Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color);
 static void DebugMonMenu_SetTrainerMemo(DebugMonMenu *monMenu, BOOL playerIsOT);
@@ -373,11 +377,12 @@ static void DebugMonMenu_PrintString (Window *window, MessageLoader *msgLoader, 
     Strbuf_Free(buf);
 }
 
-#define	DISPLAYINFO_PRINT(info) {                                                                                                     \
-    if (info.unk_04 != NULL) {                                                                                                        \
-        Text_AddPrinterWithParamsAndColor(&monMenu->mainWindow, 0, info.unk_04, 8, (info.unk_00 - 1) * 16, 0, DMM_COLOR_BLACK, NULL); \
-}                                                                                                                                     \
-}
+#define DISPLAYINFO_PRINT(info)                                                                                                           \
+    {                                                                                                                                     \
+        if (info.unk_04 != NULL) {                                                                                                        \
+            Text_AddPrinterWithParamsAndColor(&monMenu->mainWindow, 0, info.unk_04, 8, (info.unk_00 - 1) * 16, 0, DMM_COLOR_BLACK, NULL); \
+        }                                                                                                                                 \
+    }
 
 static void DebugMonMenu_SetTrainerMemo (DebugMonMenu *monMenu, BOOL playerIsOT)
 {
@@ -1099,7 +1104,7 @@ static void DebugMonValue_PrintStrExpanded (Window *window, MessageLoader *msgLo
     
     // print color string
     Text_AddPrinterWithParamsAndColor(window, 0, bufExp, x, y, delay, color, NULL);
-    
+
     Strbuf_Free(buf);
     Strbuf_Free(bufExp);
 }
