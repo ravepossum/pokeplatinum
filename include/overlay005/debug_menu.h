@@ -13,6 +13,7 @@
 #define DEBUG_KEY                   PAD_BUTTON_R
 #define DEBUG_MENU_DUMMY_FUNCTION   0xFFFFFFFD
 #define DEBUG_MENU_MESSAGE_BANK     328
+#define DEBUG_FLAG_NO_COLLISION     2549
 
 typedef struct DebugMenu {
     u8 data;
@@ -35,6 +36,7 @@ enum DebugItems {
     DEBUG_FLY,
     DEBUG_CREATE_MON,
     DEBUG_EDIT_MON,
+    DEBUG_TOGGLE_COLLISION,
 };
 
 typedef struct DebugFly {

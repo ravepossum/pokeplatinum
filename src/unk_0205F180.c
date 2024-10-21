@@ -10,10 +10,12 @@
 #include "struct_defs/struct_0205EC34.h"
 
 #include "field/field_system.h"
+#include "overlay005/debug_menu.h"
 #include "overlay005/ov5_021DFB54.h"
 #include "overlay005/struct_ov5_021E8F60_decl.h"
 #include "overlay009/ov9_02249960.h"
 
+#include "core_sys.h"
 #include "game_records.h"
 #include "inlines.h"
 #include "map_object.h"
@@ -787,6 +789,14 @@ static void inline_0205F180(PlayerAvatar *playerAvatar, const UnkStruct_ov5_021E
 static void inline_0205F180_sub(PlayerAvatar *playerAvatar, MapObject *mapObj, const UnkStruct_ov5_021E8F60 *param2, int param3, u16 param4, u16 param5)
 {
     int v0;
+    FieldSystem *fsys = MapObject_FieldSystem(mapObj);
+
+    // param5 = pressKey, param3 = dir
+    if (VarsFlags_CheckFlag(SaveData_GetVarsFlags(fsys->saveData), DEBUG_FLAG_NO_COLLISION) && (param5 & PAD_KEY)) {
+        int newAnim = sub_02065838(param3, 0x58); // set player to use run anim at run speed
+        sub_02060B64(playerAvatar, mapObj, newAnim, AVATAR_MOVE_STATE_MOVING); // set moving state
+        return;
+    }
 
     v0 = sub_0205FC48(playerAvatar, param3);
 
