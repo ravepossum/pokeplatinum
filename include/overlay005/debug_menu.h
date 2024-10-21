@@ -18,7 +18,7 @@
 #define DEBUG_FLAG_NO_COLLISION   2549
 
 typedef struct DebugMenu {
-    u8 data;
+    u16 data;
     u16 debugList;
     u16 cursor;
     BmpList *bmpList;
@@ -40,6 +40,8 @@ enum DebugItem {
     DEBUG_ITEM_CREATE_MON,
     DEBUG_ITEM_EDIT_MON,
     DEBUG_ITEM_TOGGLE_COLLISION,
+    DEBUG_ITEM_ADJUST_CAMERA,
+    DEBUG_ITEM_EXECUTE_FUNCTION,
 };
 
 typedef struct DebugFly {

@@ -27,11 +27,11 @@
 	</row>
 	<row id="pl_msg_00000328_00006" index="6">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Enter value</language>
+		<language name="English">Adjust Camera </language>
 	</row>
 	<row id="pl_msg_00000328_00007" index="7">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Forced-saving process</language>
+		<language name="English">Debug Function</language>
 	</row>
 	<row id="pl_msg_00000328_00008" index="8">
 		<attribute name="window_context_name">used</attribute>

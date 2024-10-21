@@ -20,6 +20,7 @@
 #include "overlay061/struct_ov61_0222C884.h"
 #include "overlay084/struct_ov84_02240FA8.h"
 
+#include "camera.h"
 #include "core_sys.h"
 #include "field_map_change.h"
 #include "field_system.h"
@@ -63,7 +64,12 @@ static void DebugMenu_EditMon(SysTask *task, void *data);
 static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *sys, enum DebugMonMenuMode mode);
 static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data);
 
+static void DebugMenu_AdjustCamera(SysTask *task, void *data);
+static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *sys, void *data);
+static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data);
+
 static void DebugMenu_ToggleCollision(SysTask *task, void *data);
+static void DebugMenu_ExecuteFunction(SysTask *task, void *data);
 
 static const UnkStruct_ov61_0222C884 DebugMenu_List_WindowTemplate = {
     3, // BG3
@@ -104,6 +110,8 @@ static const DebugMenuItem DebugMenu_ItemList[] = {
     { DEBUG_ITEM_CREATE_MON,       (u32)DebugMenu_CreateMon },
     { DEBUG_ITEM_EDIT_MON,         (u32)DebugMenu_EditMon },
     { DEBUG_ITEM_TOGGLE_COLLISION, (u32)DebugMenu_ToggleCollision },
+    { DEBUG_ITEM_ADJUST_CAMERA,    (u32)DebugMenu_AdjustCamera },
+    { DEBUG_ITEM_EXECUTE_FUNCTION, (u32)DebugMenu_ExecuteFunction },
 };
 
 void DebugMenu_Init(FieldSystem *sys)
@@ -437,7 +445,53 @@ static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
     }
 }
 
-// Toggle collisions
+// Adjust Camera section
+
+static void DebugMenu_AdjustCamera(SysTask *task, void *data)
+{
+    DebugMenu *menu = (DebugMenu *)data;
+    DebugMenu_AdjustCamera_CreateTask(menu->sys, data);
+    CB_DebugMenu_Exit(task, data);
+}
+
+static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *sys, void *data)
+{
+    DebugMenu *menu = (DebugMenu *)data;
+    menu->data = Camera_GetFOV(menu->sys->camera);
+    SysTask *camTask = SysTask_Start(Task_DebugMenu_AdjustCamera, data, 0);
+}
+
+static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data)
+{
+    DebugMenu *menu = (DebugMenu *)data;
+    Camera *cam = menu->sys->camera;
+    CameraAngle angle = { 0, 0, 0, 0 };
+
+    if (gCoreSys.heldKeys & PAD_KEY_UP) {
+        menu->data += 100;
+    } else if (gCoreSys.heldKeys & PAD_KEY_DOWN) {
+        menu->data -= 100;
+    }
+
+    if (gCoreSys.heldKeys & PAD_KEY_LEFT) {
+        angle.y = -800;
+        Camera_AdjustAngleAroundTarget(&angle, cam);
+    } else if (gCoreSys.heldKeys & PAD_KEY_RIGHT) {
+        angle.y = 800;
+        Camera_AdjustAngleAroundTarget(&angle, cam);
+    }
+
+    Camera_SetFOV(menu->data, cam);
+
+    if (gCoreSys.heldKeys & PAD_BUTTON_START) {
+        SysTask_Done(task);
+        // field end hold sequence
+        sub_0203D140();
+    }
+}
+
+// Smaller functionality
+
 static void DebugMenu_ToggleCollision(SysTask *task, void *data)
 {
     DebugMenu *menu = (DebugMenu *)data;
@@ -451,5 +505,15 @@ static void DebugMenu_ToggleCollision(SysTask *task, void *data)
         Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
     }
 
+    DebugMenu_Exit(task, data);
+}
+
+// shell function to run any arbitrary code you need
+static void DebugMenu_ExecuteFunction(SysTask *task, void *data)
+{
+    DebugMenu *menu = (DebugMenu *)data;
+    // debug function start
+
+    // debug function end
     DebugMenu_Exit(task, data);
 }
