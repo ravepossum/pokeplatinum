@@ -8,6 +8,7 @@
 #include "consts/items.h"
 #include "consts/moves.h"
 #include "consts/pokemon.h"
+#include "consts/sdat.h"
 #include "consts/species.h"
 
 #include "struct_defs/struct_0203D8AC.h"
@@ -39,6 +40,7 @@
 #include "unk_020508D4.h"
 #include "unk_0206B70C.h"
 #include "unk_02092494.h"
+#include "vars_flags.h"
 
 static void DebugMenu_Free(void *data);
 static void CB_DebugMenu_Exit(SysTask *task, void *data);
@@ -61,6 +63,8 @@ static void DebugMenu_CreateMon(SysTask *task, void *data);
 static void DebugMenu_EditMon(SysTask *task, void *data);
 static void DebugMenu_CreateOrEditMon_CreateTask (FieldSystem *sys, enum DebugMonMenuMode mode);
 static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data);
+
+static void DebugMenu_ToggleCollision(SysTask *task, void *data);
 
 static const UnkStruct_ov61_0222C884 DebugMenu_List_WindowTemplate = {
     3, // BG3
@@ -96,10 +100,11 @@ static const UnkStruct_ov84_02240FA8 DebugMenu_List_Header = {
 };
 
 static const DebugMenuItem DebugMenu_ItemList[] = {
-    {DEBUG_HEADER,		DEBUG_MENU_DUMMY_FUNCTION},
-    {DEBUG_FLY,			(u32)DebugMenu_Fly},
-    {DEBUG_CREATE_MON,	(u32)DebugMenu_CreateMon},
-    {DEBUG_EDIT_MON,	(u32)DebugMenu_EditMon},
+    {DEBUG_HEADER,		        DEBUG_MENU_DUMMY_FUNCTION},
+    {DEBUG_FLY,			        (u32)DebugMenu_Fly},
+    {DEBUG_CREATE_MON,	        (u32)DebugMenu_CreateMon},
+    {DEBUG_EDIT_MON,	        (u32)DebugMenu_EditMon},
+    {DEBUG_TOGGLE_COLLISION,	(u32)DebugMenu_ToggleCollision},
 };
 
 void DebugMenu_Init (FieldSystem *sys)
@@ -432,3 +437,21 @@ static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
         break;
     }
 }
+
+// Toggle collisions
+static void DebugMenu_ToggleCollision(SysTask *task, void *data)
+{
+    DebugMenu *menu = (DebugMenu *)data;
+    VarsFlags *varsFlags = SaveData_GetVarsFlags(menu->sys->saveData);
+
+    if (VarsFlags_CheckFlag(varsFlags, DEBUG_FLAG_NO_COLLISION)) {
+        VarsFlags_ClearFlag(varsFlags, DEBUG_FLAG_NO_COLLISION);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF);
+    } else {
+        VarsFlags_SetFlag(varsFlags, DEBUG_FLAG_NO_COLLISION);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
+    }
+
+    DebugMenu_Exit(task, data);
+}
+ 
