@@ -43,9 +43,9 @@
 #include "unk_02092494.h"
 #include "vars_flags.h"
 
-static void DebugMenu_Free(void *data);
-static void CB_DebugMenu_Exit(SysTask *task, void *data);
-static void DebugMenu_Exit(SysTask *task, void *data);
+static void DebugMenu_Free(DebugMenu *menu);
+static void CB_DebugMenu_Exit(SysTask *task, DebugMenu *menu);
+static void DebugMenu_Exit(SysTask *task, DebugMenu *menu);
 static void Task_DebugMenu_Exit(SysTask *task, void *data);
 static void DebugMenu_List_Init(DebugMenu *menu, const DebugMenuItem *list);
 static ResourceMetadata *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count);
@@ -55,21 +55,21 @@ static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data);
 static void CB_DebugMenu_ListHeader(BmpList *bmpList, u32 param, u8 y);
 
-static void DebugMenu_Fly(SysTask *task, void *data);
+static void DebugMenu_Fly(SysTask *task, DebugMenu *menu);
 static void DebugMenu_Fly_CreateTask(FieldSystem *sys);
 static void Task_DebugMenu_Fly(SysTask *task, void *data);
 
-static void DebugMenu_CreateMon(SysTask *task, void *data);
-static void DebugMenu_EditMon(SysTask *task, void *data);
+static void DebugMenu_CreateMon(SysTask *task, DebugMenu *menu);
+static void DebugMenu_EditMon(SysTask *task, DebugMenu *menu);
 static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *sys, enum DebugMonMenuMode mode);
 static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data);
 
-static void DebugMenu_AdjustCamera(SysTask *task, void *data);
-static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *sys, void *data);
+static void DebugMenu_AdjustCamera(SysTask *task, DebugMenu *menu);
+static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *sys, DebugMenu *menu);
 static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data);
 
-static void DebugMenu_ToggleCollision(SysTask *task, void *data);
-static void DebugMenu_ExecuteFunction(SysTask *task, void *data);
+static void DebugMenu_ToggleCollision(SysTask *task, DebugMenu *menu);
+static void DebugMenu_ExecuteFunction(SysTask *task, DebugMenu *menu);
 
 static const UnkStruct_ov61_0222C884 DebugMenu_List_WindowTemplate = {
     3, // BG3
@@ -123,10 +123,8 @@ void DebugMenu_Init(FieldSystem *sys)
     sub_0203D128();
 }
 
-static void DebugMenu_Free(void *data)
+static void DebugMenu_Free(DebugMenu *menu)
 {
-    DebugMenu *menu = (DebugMenu *)data;
-
     // window off
     sub_0201ACF4(menu->window);
 
@@ -140,16 +138,16 @@ static void DebugMenu_Free(void *data)
     Heap_FreeToHeap(menu->window);
 }
 
-static void CB_DebugMenu_Exit(SysTask *task, void *data)
+static void CB_DebugMenu_Exit(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu_Free(data);
-    Heap_FreeToHeap(data);
+    DebugMenu_Free(menu);
+    Heap_FreeToHeap(menu);
     SysTask_Done(task);
 }
 
-static void DebugMenu_Exit(SysTask *task, void *data)
+static void DebugMenu_Exit(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu_Free(data);
+    DebugMenu_Free(menu);
     SysTask_SetCallback(task, Task_DebugMenu_Exit);
 }
 
@@ -255,21 +253,20 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
     if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
         if (menu->callback != NULL) {
             void (*taskFunc)(FieldSystem *) = menu->callback;
-            CB_DebugMenu_Exit(task, data);
+            CB_DebugMenu_Exit(task, menu);
             taskFunc(menu->sys);
         } else {
-            DebugMenu_Exit(task, data);
+            DebugMenu_Exit(task, menu);
         }
     }
 }
 
 // Fly section
 
-static void DebugMenu_Fly(SysTask *task, void *data)
+static void DebugMenu_Fly(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu *menu = (DebugMenu *)data;
     DebugMenu_Fly_CreateTask(menu->sys);
-    CB_DebugMenu_Exit(task, data);
+    CB_DebugMenu_Exit(task, menu);
 }
 
 static void DebugMenu_Fly_CreateTask(FieldSystem *sys)
@@ -373,17 +370,15 @@ static void Task_DebugMenu_Fly(SysTask *task, void *data)
 
 // CreateMon and EditMon section
 
-static void DebugMenu_CreateMon(SysTask *task, void *data)
+static void DebugMenu_CreateMon(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu *menu = (DebugMenu *)data;
-    CB_DebugMenu_Exit(task, data);
+    CB_DebugMenu_Exit(task, menu);
     DebugMenu_CreateOrEditMon_CreateTask(menu->sys, DEBUG_MON_MENU_MODE_CREATE);
 }
 
-static void DebugMenu_EditMon(SysTask *task, void *data)
+static void DebugMenu_EditMon(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu *menu = (DebugMenu *)data;
-    CB_DebugMenu_Exit(task, data);
+    CB_DebugMenu_Exit(task, menu);
     DebugMenu_CreateOrEditMon_CreateTask(menu->sys, DEBUG_MON_MENU_MODE_EDIT);
 }
 
@@ -447,18 +442,16 @@ static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
 
 // Adjust Camera section
 
-static void DebugMenu_AdjustCamera(SysTask *task, void *data)
+static void DebugMenu_AdjustCamera(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu *menu = (DebugMenu *)data;
-    DebugMenu_AdjustCamera_CreateTask(menu->sys, data);
-    CB_DebugMenu_Exit(task, data);
+    DebugMenu_AdjustCamera_CreateTask(menu->sys, menu);
+    CB_DebugMenu_Exit(task, menu);
 }
 
-static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *sys, void *data)
+static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *sys, DebugMenu *menu)
 {
-    DebugMenu *menu = (DebugMenu *)data;
     menu->data = Camera_GetFOV(menu->sys->camera);
-    SysTask *camTask = SysTask_Start(Task_DebugMenu_AdjustCamera, data, 0);
+    SysTask *camTask = SysTask_Start(Task_DebugMenu_AdjustCamera, menu, 0);
 }
 
 static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data)
@@ -492,9 +485,8 @@ static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data)
 
 // Smaller functionality
 
-static void DebugMenu_ToggleCollision(SysTask *task, void *data)
+static void DebugMenu_ToggleCollision(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu *menu = (DebugMenu *)data;
     VarsFlags *varsFlags = SaveData_GetVarsFlags(menu->sys->saveData);
 
     if (VarsFlags_CheckFlag(varsFlags, DEBUG_FLAG_NO_COLLISION)) {
@@ -505,15 +497,14 @@ static void DebugMenu_ToggleCollision(SysTask *task, void *data)
         Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
     }
 
-    DebugMenu_Exit(task, data);
+    DebugMenu_Exit(task, menu);
 }
 
 // shell function to run any arbitrary code you need
-static void DebugMenu_ExecuteFunction(SysTask *task, void *data)
+static void DebugMenu_ExecuteFunction(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu *menu = (DebugMenu *)data;
     // debug function start
 
     // debug function end
-    DebugMenu_Exit(task, data);
+    DebugMenu_Exit(task, menu);
 }
