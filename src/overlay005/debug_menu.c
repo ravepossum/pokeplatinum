@@ -34,6 +34,7 @@
 #include "unk_0200F174.h"
 #include "unk_02013A04.h"
 #include "unk_02018340.h"
+#include "unk_0203A7D8.h"
 #include "unk_0203D1B8.h"
 #include "unk_020508D4.h"
 #include "unk_0206B70C.h"
@@ -338,8 +339,15 @@ static void Task_DebugMenu_Fly (SysTask *task, void *data)
         
         map = (UnkStruct_0203D8AC*)fly->data;
 
+        // get warp data for heal spot?
+        u16 warpID = sub_0203A8A0(map->unk_1C, map->unk_14, map->unk_18);
+
+        Location destloc;
+        // set location from warp?
+        sub_0203A7F0(warpID, &destloc);
+
         // map change via fly
-        FieldTask_StartMapChangeFly(fly->sys, map->unk_1C, (-1), map->unk_14 * 32 + 16, map->unk_18 * 32 + 16, DIR_SOUTH);
+        FieldTask_StartMapChangeFly(fly->sys, destloc.mapId, (-1), destloc.x, destloc.z, DIR_SOUTH);
         break;
     case 6:
         Heap_FreeToHeap(fly->data);
