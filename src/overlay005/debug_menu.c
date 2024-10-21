@@ -45,15 +45,14 @@
 static void DebugMenu_Free(void *data);
 static void CB_DebugMenu_Exit(SysTask *task, void *data);
 static void DebugMenu_Exit(SysTask *task, void *data);
-static void Task_DebugMenu_Exit (SysTask *task, void *data);
+static void Task_DebugMenu_Exit(SysTask *task, void *data);
 static void DebugMenu_List_Init(DebugMenu *menu, const DebugMenuItem *list);
-static ResourceMetadata* DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count);
-static ResourceMetadata* DebugMenu_CreateSubList(int count);
+static ResourceMetadata *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count);
+static ResourceMetadata *DebugMenu_CreateSubList(int count);
 static void DebugMenu_SetWindow(BGL *bgl);
-static DebugMenu* DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc);
+static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc);
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data);
-static void CB_DebugMenu_ListHeader(BmpList* bmpList, u32 param, u8 y);
-
+static void CB_DebugMenu_ListHeader(BmpList *bmpList, u32 param, u8 y);
 
 static void DebugMenu_Fly(SysTask *task, void *data);
 static void DebugMenu_Fly_CreateTask(FieldSystem *sys);
@@ -61,7 +60,7 @@ static void Task_DebugMenu_Fly(SysTask *task, void *data);
 
 static void DebugMenu_CreateMon(SysTask *task, void *data);
 static void DebugMenu_EditMon(SysTask *task, void *data);
-static void DebugMenu_CreateOrEditMon_CreateTask (FieldSystem *sys, enum DebugMonMenuMode mode);
+static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *sys, enum DebugMonMenuMode mode);
 static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data);
 
 static void DebugMenu_ToggleCollision(SysTask *task, void *data);
@@ -77,26 +76,26 @@ static const UnkStruct_ov61_0222C884 DebugMenu_List_WindowTemplate = {
 };
 
 static const UnkStruct_ov84_02240FA8 DebugMenu_List_Header = {
-    NULL,				
-    NULL,				
-    NULL,	
-    NULL,				
-    0,					
-    8,					
-    2,					
-    12,					
-    1,					
-    8,		
-    // font colors			
-    11, // white		
-    15, // black		
-    2, // black shadow	
-    0,					
-    0,					
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    0,
+    8,
+    2,
+    12,
+    1,
+    8,
+    // font colors
+    11, // white
+    15, // black
+    2, // black shadow
+    0,
+    0,
     1, // multichoice LR scroll
-    0, // system font			
-    0,					
-    NULL,				
+    0, // system font
+    0,
+    NULL,
 };
 
 static const DebugMenuItem DebugMenu_ItemList[] = {
@@ -107,7 +106,7 @@ static const DebugMenuItem DebugMenu_ItemList[] = {
     {DEBUG_TOGGLE_COLLISION,	(u32)DebugMenu_ToggleCollision},
 };
 
-void DebugMenu_Init (FieldSystem *sys)
+void DebugMenu_Init(FieldSystem *sys)
 {
     DebugMenu *menu = DebugMenu_CreateMultichoice(sys, DEBUG_MENU_MESSAGE_BANK, DebugMenu_ItemList, NELEMS(DebugMenu_ItemList), NULL);
     menu->callback = NULL;
@@ -116,9 +115,9 @@ void DebugMenu_Init (FieldSystem *sys)
     sub_0203D128();
 }
 
-static void DebugMenu_Free (void* data)
+static void DebugMenu_Free(void *data)
 {
-    DebugMenu *menu = (DebugMenu*)data;
+    DebugMenu *menu = (DebugMenu *)data;
 
     // window off
     sub_0201ACF4(menu->window);
@@ -133,20 +132,20 @@ static void DebugMenu_Free (void* data)
     Heap_FreeToHeap(menu->window);
 }
 
-static void CB_DebugMenu_Exit (SysTask *task, void *data)
+static void CB_DebugMenu_Exit(SysTask *task, void *data)
 {
     DebugMenu_Free(data);
     Heap_FreeToHeap(data);
     SysTask_Done(task);
 }
 
-static void DebugMenu_Exit (SysTask *task, void *data)
+static void DebugMenu_Exit(SysTask *task, void *data)
 {
     DebugMenu_Free(data);
     SysTask_SetCallback(task, Task_DebugMenu_Exit);
 }
 
-static void Task_DebugMenu_Exit (SysTask *task, void *data)
+static void Task_DebugMenu_Exit(SysTask *task, void *data)
 {
     Heap_FreeToHeap(data);
     SysTask_Done(task);
@@ -154,7 +153,7 @@ static void Task_DebugMenu_Exit (SysTask *task, void *data)
     sub_0203D140();
 }
 
-static DebugMenu* DebugMenu_CreateMultichoice (FieldSystem *sys, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc)
+static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc)
 {
     DebugMenu *menu = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(DebugMenu));
 
@@ -197,7 +196,7 @@ static DebugMenu* DebugMenu_CreateMultichoice (FieldSystem *sys, int arcID, cons
     return menu;
 }
 
-static ResourceMetadata* DebugMenu_CreateList (int arcID, const DebugMenuItem *list, int count)
+static ResourceMetadata *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count)
 {
     // create list
     ResourceMetadata *menuList = sub_02013A04(count, HEAP_ID_FIELD);
@@ -212,9 +211,9 @@ static ResourceMetadata* DebugMenu_CreateList (int arcID, const DebugMenuItem *l
     return menuList;
 }
 
-static void	DebugMenu_List_Init (DebugMenu *menu, const DebugMenuItem *list)
+static void DebugMenu_List_Init(DebugMenu *menu, const DebugMenuItem *list)
 {
-    if (menu->debugList == 0 
+    if (menu->debugList == 0
         && menu->cursor == 0
         && list != NULL
         && list[menu->debugList].function == DEBUG_MENU_DUMMY_FUNCTION) {
@@ -224,18 +223,18 @@ static void	DebugMenu_List_Init (DebugMenu *menu, const DebugMenuItem *list)
     }
 }
 
-static void DebugMenu_SetWindow (BGL *bgl)
+static void DebugMenu_SetWindow(BGL *bgl)
 {
     // set window gfx or something?
     sub_0200DAA4(bgl, 3, 473, 11, 0, HEAP_ID_FIELD);
 }
 
-static void Task_DebugMenu_HandleInput (SysTask* task, void* data)
+static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
 {
-    DebugMenu *menu = (DebugMenu*)data;
+    DebugMenu *menu = (DebugMenu *)data;
     // multichoice main?
     s32 choice = sub_02001288(menu->bmpList);
-    SysTaskFunc	taskFunc;
+    SysTaskFunc taskFunc;
 
     if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
         if (choice) {
@@ -247,7 +246,7 @@ static void Task_DebugMenu_HandleInput (SysTask* task, void* data)
 
     if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
         if (menu->callback != NULL) {
-            void (*taskFunc)(FieldSystem*) = menu->callback;
+            void (*taskFunc)(FieldSystem *) = menu->callback;
             CB_DebugMenu_Exit(task, data);
             taskFunc(menu->sys);
         } else {
@@ -258,14 +257,14 @@ static void Task_DebugMenu_HandleInput (SysTask* task, void* data)
 
 // Fly section
 
-static void DebugMenu_Fly (SysTask *task, void *data)
+static void DebugMenu_Fly(SysTask *task, void *data)
 {
-    DebugMenu *menu = (DebugMenu*)data;
-    DebugMenu_Fly_CreateTask(menu->sys);	
+    DebugMenu *menu = (DebugMenu *)data;
+    DebugMenu_Fly_CreateTask(menu->sys);
     CB_DebugMenu_Exit(task, data);
 }
 
-static void DebugMenu_Fly_CreateTask (FieldSystem *sys)
+static void DebugMenu_Fly_CreateTask(FieldSystem *sys)
 {
     DebugFly *fly = Heap_AllocFromHeap(HEAP_ID_APPLICATION, sizeof(DebugFly));
     MI_CpuClear8(fly, sizeof(DebugFly));
@@ -273,12 +272,12 @@ static void DebugMenu_Fly_CreateTask (FieldSystem *sys)
     SysTask_Start(Task_DebugMenu_Fly, fly, 0);
 }
 
-static void Task_DebugMenu_Fly (SysTask *task, void *data)
+static void Task_DebugMenu_Fly(SysTask *task, void *data)
 {
-    DebugFly *fly = (DebugFly*)data;
-    UnkStruct_0203D8AC* map;
+    DebugFly *fly = (DebugFly *)data;
+    UnkStruct_0203D8AC *map;
 
-    switch(fly->sequence) {
+    switch (fly->sequence) {
     case 0:
         fly->wipeFunc = 0;
         // screen wipe start
@@ -294,7 +293,7 @@ static void Task_DebugMenu_Fly (SysTask *task, void *data)
         // map data set
         sub_0206B70C(fly->sys, fly->data, 1);
 
-        map = (UnkStruct_0203D8AC*)fly->data;
+        map = (UnkStruct_0203D8AC *)fly->data;
         map->debugActive = TRUE;
 
         // map set process
@@ -313,26 +312,26 @@ static void Task_DebugMenu_Fly (SysTask *task, void *data)
         if (!sub_020509DC(fly->sys)) {
             return;
         }
-        
+
         fly->wipeFunc = 0;
         // start screen wipe
         sub_0200F174(0, 1, 1, 0x0000, 6, 1, HEAP_ID_APPLICATION);
         break;
     case 4:
-        if(!ScreenWipe_Done()){
+        if (!ScreenWipe_Done()) {
             return;
         }
-        
-        map = (UnkStruct_0203D8AC*)fly->data;
-        if(!map->unk_10){
+
+        map = (UnkStruct_0203D8AC *)fly->data;
+        if (!map->unk_10) {
             fly->sequence = 6;
             return;
         }
-        
+
         Pokemon *mon = Party_GetPokemonBySlotIndex(Party_GetFromSavedata(fly->sys->saveData), 0);
         // init cut in, get gender
         fly->taskCutIn = ov6_02243F88(fly->sys, 1, mon, PlayerAvatar_Gender(fly->sys->playerAvatar));
-        
+
         break;
     case 5:
         // check if cut in is finished
@@ -341,8 +340,8 @@ static void Task_DebugMenu_Fly (SysTask *task, void *data)
         }
         // end cut in
         ov6_02243FC8(fly->taskCutIn);
-        
-        map = (UnkStruct_0203D8AC*)fly->data;
+
+        map = (UnkStruct_0203D8AC *)fly->data;
 
         // get warp data for heal spot?
         u16 warpID = sub_0203A8A0(map->unk_1C, map->unk_14, map->unk_18);
@@ -366,23 +365,23 @@ static void Task_DebugMenu_Fly (SysTask *task, void *data)
 
 // CreateMon and EditMon section
 
-static void DebugMenu_CreateMon (SysTask *task, void *data)
+static void DebugMenu_CreateMon(SysTask *task, void *data)
 {
-    DebugMenu *menu = (DebugMenu*)data;
+    DebugMenu *menu = (DebugMenu *)data;
     CB_DebugMenu_Exit(task, data);
     DebugMenu_CreateOrEditMon_CreateTask(menu->sys, DEBUG_MON_MENU_MODE_CREATE);
 }
 
-static void DebugMenu_EditMon (SysTask *task, void *data)
+static void DebugMenu_EditMon(SysTask *task, void *data)
 {
-    DebugMenu *menu = (DebugMenu*)data;
+    DebugMenu *menu = (DebugMenu *)data;
     CB_DebugMenu_Exit(task, data);
     DebugMenu_CreateOrEditMon_CreateTask(menu->sys, DEBUG_MON_MENU_MODE_EDIT);
 }
 
-static void DebugMenu_CreateOrEditMon_CreateTask (FieldSystem *sys, enum DebugMonMenuMode mode)
+static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *sys, enum DebugMonMenuMode mode)
 {
-    DebugMonMenu *monMenu = (DebugMonMenu*) SysTask_GetParam(SysTask_StartAndAllocateParam(Task_DebugMenu_CreateOrEditMon, sizeof(DebugMonMenu), 0, HEAP_ID_APPLICATION));
+    DebugMonMenu *monMenu = (DebugMonMenu *)SysTask_GetParam(SysTask_StartAndAllocateParam(Task_DebugMenu_CreateOrEditMon, sizeof(DebugMonMenu), 0, HEAP_ID_APPLICATION));
     monMenu->sys = sys;
     monMenu->state = 0;
     monMenu->mode = mode;
@@ -398,7 +397,7 @@ static void DebugMenu_CreateOrEditMon_CreateTask (FieldSystem *sys, enum DebugMo
     BGL_AddWindow(bgl, &monMenu->mainWindow, 3, 1, 7, 30, 16, 13, 1 + 30 * 4);
 
     // set window gfx or something
-    sub_0200DAA4(bgl, 3, 1+30*4+30*18, 14, 0, HEAP_ID_APPLICATION);
+    sub_0200DAA4(bgl, 3, 1 + 30 * 4 + 30 * 18, 14, 0, HEAP_ID_APPLICATION);
 
     Window_Show(&monMenu->titleWindow, 1, 1 + 30 * 4 + 30 * 18, 14);
     Window_Show(&monMenu->mainWindow, 1, 1 + 30 * 4 + 30 * 18, 14);
@@ -408,9 +407,9 @@ static void DebugMenu_CreateOrEditMon_CreateTask (FieldSystem *sys, enum DebugMo
 
 static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
 {
-    DebugMonMenu *monMenu = (DebugMonMenu*)data;
+    DebugMonMenu *monMenu = (DebugMonMenu *)data;
 
-    switch(monMenu->state) {
+    switch (monMenu->state) {
     case 0:
         DebugMonMenu_DisplayPageAndCursor(monMenu);
         break;
@@ -431,7 +430,7 @@ static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
         sub_0203D140();
         break;
     case 5:
-        if(gCoreSys.pressedKeys & (PAD_BUTTON_X | PAD_BUTTON_Y)) {
+        if (gCoreSys.pressedKeys & (PAD_BUTTON_X | PAD_BUTTON_Y)) {
             monMenu->state = 0;
         }
         break;
@@ -454,4 +453,3 @@ static void DebugMenu_ToggleCollision(SysTask *task, void *data)
 
     DebugMenu_Exit(task, data);
 }
- 

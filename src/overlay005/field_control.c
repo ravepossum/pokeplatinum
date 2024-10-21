@@ -15,6 +15,7 @@
 
 #include "field/field_system.h"
 #include "field/field_system_sub2_t.h"
+#include "overlay005/debug_menu.h"
 #include "overlay005/ov5_021DFB54.h"
 #include "overlay005/ov5_021E1154.h"
 #include "overlay005/ov5_021E622C.h"
@@ -24,7 +25,6 @@
 #include "overlay005/ov5_021F8370.h"
 #include "overlay005/struct_ov5_021D219C.h"
 #include "overlay005/vs_seeker.h"
-#include "overlay005/debug_menu.h"
 #include "overlay006/ov6_02240C9C.h"
 #include "overlay006/ov6_02246BF4.h"
 #include "overlay008/ov8_02249960.h"
@@ -175,7 +175,7 @@ void FieldInput_Update(FieldInput *input, FieldSystem *fieldSystem, u16 pressedK
     // start debug menu
     if (heldKeys & DEBUG_KEY) {
         input->debugKey = TRUE;
-        
+
         input->movement = FALSE;
         input->endMovement = FALSE;
         input->sign = FALSE;
@@ -576,7 +576,7 @@ int FieldInput_Process_BattleTower(const FieldInput *input, FieldSystem *fieldSy
         FieldMenu_Init(fieldSystem);
         return TRUE;
     }
-        
+
     if (input->debugMenu) {
         Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
         DebugMenu_Init(fieldSystem);

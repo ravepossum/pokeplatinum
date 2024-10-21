@@ -44,7 +44,7 @@ static void DebugMonMenu_SetTrainerMemo(DebugMonMenu *monMenu, BOOL playerIsOT);
 static void DebugMonMenu_DisplayCursor(DebugMonMenu *monMenu, u8 mode);
 static void DebugMonMenu_ChangeValue(DebugMon *mon, u8 mode);
 static void DebugMonMenu_DisplayPage(DebugMonMenu *monMenu);
-static void DebugMonMenu_DisplayValues(DebugMonMenu * monMenu);
+static void DebugMonMenu_DisplayValues(DebugMonMenu *monMenu);
 static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu);
 
 static void DebugMon_InitStats(DebugMon *mon);
@@ -52,7 +52,7 @@ static void DebugMon_CalcInitialStats(DebugMon *mon);
 static void DebugMon_CalcFullStats(DebugMonMenu *monMenu, DebugMon *mon);
 static void DebugMon_CalcBaseStats(DebugMon *mon);
 static void DebugMon_CalcStatsFromExp(DebugMon *mon);
-static void DebugMon_SetStatsFromMonData(DebugMon * mon);
+static void DebugMon_SetStatsFromMonData(DebugMon *mon);
 static void DebugMon_SetMonDataFromStats(DebugMon *mon);
 static void DebugMon_SetMoveAtPosition(Pokemon *mon, u16 moveID, u16 movePos);
 
@@ -65,72 +65,114 @@ static void DebugMonValue_PrintSpeciesName(Window *window, u32 species, u32 x, u
 static u32 DebugMonValue_Get(DebugMon *mon, u8 statID);
 static void DebugMonValue_Set(DebugMon *mon, u32 value, u8 statID);
 
-static const DebugMonValue sDebugValue00 = {1, SPECIES_EGG - 1, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue01 = {1, 100, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue02 = {1, 2000000, DMMD_BOTH, 7};
-static const DebugMonValue sDebugValue03 = {0, 0xFFFFFFFF, DMMD_BOTH, 10};
-static const DebugMonValue sDebugValue04 = {0, 0xFFFFFFFF, DMMD_BOTH, 10};
-static const DebugMonValue sDebugValue05 = {0, 2, DMMD_BOTH, 0xFF};
-static const DebugMonValue sDebugValue06 = {0, 24, DMMD_BOTH, 0xFF};
-static const DebugMonValue sDebugValue07 = {0, MAX_MOVES, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue08 = {0, MAX_MOVES, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue09 = {0, MAX_MOVES, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue10 = {0, MAX_MOVES, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue11 = {0, MAX_ITEMS, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue12 = {0, 1, DMMD_BOTH, 0xFF};
-static const DebugMonValue sDebugValue13 = {0, 0x1F, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue14 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue15 = {0, 0x1F, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue16 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue17 = {0, 0x1F, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue18 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue19 = {0, 0x1F, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue20 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue21 = {0, 0x1F, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue22 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue23 = {0, 0x1F, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue24 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue25 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue26 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue27 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue28 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue29 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue30 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue31 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue32 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue33 = {0, 1, DMMD_BOTH, 0xFF};
-static const DebugMonValue sDebugValue34 = {0, 6, DMMD_BOTH, 0xFF};
-static const DebugMonValue sDebugValue41 = {0, 1, DMMD_BOTH, 0xFF};
-static const DebugMonValue sDebugValue42 = {0, 9999, DMMD_BOTH, 4};
-static const DebugMonValue sDebugValue43 = {0, 100, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue44 = {1, 15, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue45 = {1, 16, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue46 = {1, 8, DMMD_BOTH, 1};
-static const DebugMonValue sDebugValue47 = {0, 255, DMMD_BOTH, 3};
-static const DebugMonValue sDebugValue48 = {0, 99, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue49 = {1, 12, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue50 = {1, 31, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue51 = {0, 9999, DMMD_BOTH, 4};
-static const DebugMonValue sDebugValue52 = {0, 99, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue53 = {1, 12, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue54 = {1, 31, DMMD_BOTH, 2};
-static const DebugMonValue sDebugValue55 = {0, 1, DMMD_BOTH, 0xFF};
+static const DebugMonValue sDebugValue00 = { 1, SPECIES_EGG - 1, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue01 = { 1, 100, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue02 = { 1, 2000000, DMMD_BOTH, 7 };
+static const DebugMonValue sDebugValue03 = { 0, 0xFFFFFFFF, DMMD_BOTH, 10 };
+static const DebugMonValue sDebugValue04 = { 0, 0xFFFFFFFF, DMMD_BOTH, 10 };
+static const DebugMonValue sDebugValue05 = { 0, 2, DMMD_BOTH, 0xFF };
+static const DebugMonValue sDebugValue06 = { 0, 24, DMMD_BOTH, 0xFF };
+static const DebugMonValue sDebugValue07 = { 0, MAX_MOVES, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue08 = { 0, MAX_MOVES, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue09 = { 0, MAX_MOVES, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue10 = { 0, MAX_MOVES, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue11 = { 0, MAX_ITEMS, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue12 = { 0, 1, DMMD_BOTH, 0xFF };
+static const DebugMonValue sDebugValue13 = { 0, 0x1F, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue14 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue15 = { 0, 0x1F, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue16 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue17 = { 0, 0x1F, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue18 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue19 = { 0, 0x1F, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue20 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue21 = { 0, 0x1F, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue22 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue23 = { 0, 0x1F, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue24 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue25 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue26 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue27 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue28 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue29 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue30 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue31 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue32 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue33 = { 0, 1, DMMD_BOTH, 0xFF };
+static const DebugMonValue sDebugValue34 = { 0, 6, DMMD_BOTH, 0xFF };
+static const DebugMonValue sDebugValue41 = { 0, 1, DMMD_BOTH, 0xFF };
+static const DebugMonValue sDebugValue42 = { 0, 9999, DMMD_BOTH, 4 };
+static const DebugMonValue sDebugValue43 = { 0, 100, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue44 = { 1, 15, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue45 = { 1, 16, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue46 = { 1, 8, DMMD_BOTH, 1 };
+static const DebugMonValue sDebugValue47 = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValue48 = { 0, 99, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue49 = { 1, 12, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue50 = { 1, 31, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue51 = { 0, 9999, DMMD_BOTH, 4 };
+static const DebugMonValue sDebugValue52 = { 0, 99, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue53 = { 1, 12, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue54 = { 1, 31, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValue55 = { 0, 1, DMMD_BOTH, 0xFF };
 
-static const DebugMonValueEntry	sDebugMonValueList[] = {
-    {DMV_LABEL_00, &sDebugValue00}, {DMV_LABEL_01, &sDebugValue01}, {DMV_LABEL_02, &sDebugValue02}, {DMV_LABEL_03, &sDebugValue03},
-    {DMV_LABEL_04, &sDebugValue04}, {DMV_LABEL_05, &sDebugValue05}, {DMV_LABEL_06, &sDebugValue06}, {DMV_LABEL_07, &sDebugValue07},
-    {DMV_LABEL_08, &sDebugValue08}, {DMV_LABEL_09, &sDebugValue09}, {DMV_LABEL_10, &sDebugValue10}, {DMV_LABEL_11, &sDebugValue11},
-    {DMV_LABEL_12, &sDebugValue12}, {DMV_LABEL_13, &sDebugValue13}, {DMV_LABEL_14, &sDebugValue14}, {DMV_LABEL_15, &sDebugValue15},
-    {DMV_LABEL_16, &sDebugValue16}, {DMV_LABEL_17, &sDebugValue17}, {DMV_LABEL_18, &sDebugValue18}, {DMV_LABEL_19, &sDebugValue19},
-    {DMV_LABEL_20, &sDebugValue20}, {DMV_LABEL_21, &sDebugValue21}, {DMV_LABEL_22, &sDebugValue22}, {DMV_LABEL_23, &sDebugValue23},
-    {DMV_LABEL_24, &sDebugValue24}, {DMV_LABEL_25, &sDebugValue25}, {DMV_LABEL_26, &sDebugValue26}, {DMV_LABEL_27, &sDebugValue27},
-    {DMV_LABEL_28, &sDebugValue28}, {DMV_LABEL_29, &sDebugValue29}, {DMV_LABEL_30, &sDebugValue30}, {DMV_LABEL_31, &sDebugValue31},
-    {DMV_LABEL_32, &sDebugValue32}, {DMV_LABEL_33, &sDebugValue33}, {DMV_LABEL_34, &sDebugValue34}, {DMV_LABEL_35, &sDebugValue00},
-    {DMV_LABEL_36, &sDebugValue00}, {DMV_LABEL_37, &sDebugValue00}, {DMV_LABEL_38, &sDebugValue00}, {DMV_LABEL_39, &sDebugValue00},
-    {DMV_LABEL_40, &sDebugValue00}, {DMV_LABEL_41, &sDebugValue41}, {DMV_LABEL_42, &sDebugValue42}, {DMV_LABEL_43, &sDebugValue43},
-    {DMV_LABEL_44, &sDebugValue44}, {DMV_LABEL_45, &sDebugValue45}, {DMV_LABEL_46, &sDebugValue46}, {DMV_LABEL_47, &sDebugValue47},
-    {DMV_LABEL_49, &sDebugValue48}, {DMV_LABEL_50, &sDebugValue49}, {DMV_LABEL_51, &sDebugValue50}, {DMV_LABEL_48, &sDebugValue51},
-    {DMV_LABEL_49, &sDebugValue52}, {DMV_LABEL_50, &sDebugValue53}, {DMV_LABEL_51, &sDebugValue54}, {DMV_LABEL_52, &sDebugValue55},
+static const DebugMonValueEntry sDebugMonValueList[] = {
+    { DMV_LABEL_00, &sDebugValue00 },
+    { DMV_LABEL_01, &sDebugValue01 },
+    { DMV_LABEL_02, &sDebugValue02 },
+    { DMV_LABEL_03, &sDebugValue03 },
+    { DMV_LABEL_04, &sDebugValue04 },
+    { DMV_LABEL_05, &sDebugValue05 },
+    { DMV_LABEL_06, &sDebugValue06 },
+    { DMV_LABEL_07, &sDebugValue07 },
+    { DMV_LABEL_08, &sDebugValue08 },
+    { DMV_LABEL_09, &sDebugValue09 },
+    { DMV_LABEL_10, &sDebugValue10 },
+    { DMV_LABEL_11, &sDebugValue11 },
+    { DMV_LABEL_12, &sDebugValue12 },
+    { DMV_LABEL_13, &sDebugValue13 },
+    { DMV_LABEL_14, &sDebugValue14 },
+    { DMV_LABEL_15, &sDebugValue15 },
+    { DMV_LABEL_16, &sDebugValue16 },
+    { DMV_LABEL_17, &sDebugValue17 },
+    { DMV_LABEL_18, &sDebugValue18 },
+    { DMV_LABEL_19, &sDebugValue19 },
+    { DMV_LABEL_20, &sDebugValue20 },
+    { DMV_LABEL_21, &sDebugValue21 },
+    { DMV_LABEL_22, &sDebugValue22 },
+    { DMV_LABEL_23, &sDebugValue23 },
+    { DMV_LABEL_24, &sDebugValue24 },
+    { DMV_LABEL_25, &sDebugValue25 },
+    { DMV_LABEL_26, &sDebugValue26 },
+    { DMV_LABEL_27, &sDebugValue27 },
+    { DMV_LABEL_28, &sDebugValue28 },
+    { DMV_LABEL_29, &sDebugValue29 },
+    { DMV_LABEL_30, &sDebugValue30 },
+    { DMV_LABEL_31, &sDebugValue31 },
+    { DMV_LABEL_32, &sDebugValue32 },
+    { DMV_LABEL_33, &sDebugValue33 },
+    { DMV_LABEL_34, &sDebugValue34 },
+    { DMV_LABEL_35, &sDebugValue00 },
+    { DMV_LABEL_36, &sDebugValue00 },
+    { DMV_LABEL_37, &sDebugValue00 },
+    { DMV_LABEL_38, &sDebugValue00 },
+    { DMV_LABEL_39, &sDebugValue00 },
+    { DMV_LABEL_40, &sDebugValue00 },
+    { DMV_LABEL_41, &sDebugValue41 },
+    { DMV_LABEL_42, &sDebugValue42 },
+    { DMV_LABEL_43, &sDebugValue43 },
+    { DMV_LABEL_44, &sDebugValue44 },
+    { DMV_LABEL_45, &sDebugValue45 },
+    { DMV_LABEL_46, &sDebugValue46 },
+    { DMV_LABEL_47, &sDebugValue47 },
+    { DMV_LABEL_49, &sDebugValue48 },
+    { DMV_LABEL_50, &sDebugValue49 },
+    { DMV_LABEL_51, &sDebugValue50 },
+    { DMV_LABEL_48, &sDebugValue51 },
+    { DMV_LABEL_49, &sDebugValue52 },
+    { DMV_LABEL_50, &sDebugValue53 },
+    { DMV_LABEL_51, &sDebugValue54 },
+    { DMV_LABEL_52, &sDebugValue55 },
 };
 
 static const u32 sDebugMonIncrements[] = {
@@ -138,74 +180,111 @@ static const u32 sDebugMonIncrements[] = {
 };
 
 static const u32 sStatusConditionTable[][2] = {
-    {DMV_STATUS_LABEL_01, 0x00000000},
-    {DMV_STATUS_LABEL_02, 0x00000001},
-    {DMV_STATUS_LABEL_03, 0x00000008},
-    {DMV_STATUS_LABEL_04, 0x00000010},
-    {DMV_STATUS_LABEL_05, 0x00000020},
-    {DMV_STATUS_LABEL_06, 0x00000040},
-    {DMV_STATUS_LABEL_07, 0x00000080},
+    { DMV_STATUS_LABEL_01, 0x00000000 },
+    { DMV_STATUS_LABEL_02, 0x00000001 },
+    { DMV_STATUS_LABEL_03, 0x00000008 },
+    { DMV_STATUS_LABEL_04, 0x00000010 },
+    { DMV_STATUS_LABEL_05, 0x00000020 },
+    { DMV_STATUS_LABEL_06, 0x00000040 },
+    { DMV_STATUS_LABEL_07, 0x00000080 },
 };
 
 static const u8 sDebugMonPage1[] = {
-    DEBUG_MON_SPECIES, DEBUG_MON_LEVEL, DEBUG_MON_EXP,
-    DEBUG_MON_OT_ID, DEBUG_MON_PERSONALITY, DEBUG_MON_GENDER,
-    DEBUG_MON_NATURE, DEBUG_MON_END
+    DEBUG_MON_SPECIES,
+    DEBUG_MON_LEVEL,
+    DEBUG_MON_EXP,
+    DEBUG_MON_OT_ID,
+    DEBUG_MON_PERSONALITY,
+    DEBUG_MON_GENDER,
+    DEBUG_MON_NATURE,
+    DEBUG_MON_END
 };
 
 static const u8 sDebugMonPage2[] = {
-    DEBUG_MON_STATUS_CONDITION, DEBUG_MON_FRIENDSHIP, DEBUG_MON_POKERUS,
-    DEBUG_MON_IS_EGG, DEBUG_MON_FATEFUL_ENCOUNTER, DEBUG_MON_HAS_NICKNAME,
+    DEBUG_MON_STATUS_CONDITION,
+    DEBUG_MON_FRIENDSHIP,
+    DEBUG_MON_POKERUS,
+    DEBUG_MON_IS_EGG,
+    DEBUG_MON_FATEFUL_ENCOUNTER,
+    DEBUG_MON_HAS_NICKNAME,
     DEBUG_MON_END
 };
 
 static const u8 sDebugMonPage3[] = {
-    DEBUG_MON_MOVE1, DEBUG_MON_MOVE2, DEBUG_MON_MOVE3,
-    DEBUG_MON_MOVE4, DEBUG_MON_HELD_ITEM, DEBUG_MON_ABILITY,
+    DEBUG_MON_MOVE1,
+    DEBUG_MON_MOVE2,
+    DEBUG_MON_MOVE3,
+    DEBUG_MON_MOVE4,
+    DEBUG_MON_HELD_ITEM,
+    DEBUG_MON_ABILITY,
     DEBUG_MON_END
 };
 
 static const u8 sDebugMonPage4[] = {
-    DEBUG_MON_HP_IV, DEBUG_MON_HP_EV, DEBUG_MON_ATK_IV,
-    DEBUG_MON_ATK_EV, DEBUG_MON_DEF_IV, DEBUG_MON_DEF_EV,
-    DEBUG_MON_BATTLE_PARAM1, DEBUG_MON_END
+    DEBUG_MON_HP_IV,
+    DEBUG_MON_HP_EV,
+    DEBUG_MON_ATK_IV,
+    DEBUG_MON_ATK_EV,
+    DEBUG_MON_DEF_IV,
+    DEBUG_MON_DEF_EV,
+    DEBUG_MON_BATTLE_PARAM1,
+    DEBUG_MON_END
 };
 
 static const u8 sDebugMonPage5[] = {
-    DEBUG_MON_SPEED_IV, DEBUG_MON_SPEED_EV, DEBUG_MON_SPATK_IV,
-    DEBUG_MON_SPATK_EV, DEBUG_MON_SPDEF_IV, DEBUG_MON_SPDEF_EV,
-    DEBUG_MON_BATTLE_PARAM2, DEBUG_MON_END
+    DEBUG_MON_SPEED_IV,
+    DEBUG_MON_SPEED_EV,
+    DEBUG_MON_SPATK_IV,
+    DEBUG_MON_SPATK_EV,
+    DEBUG_MON_SPDEF_IV,
+    DEBUG_MON_SPDEF_EV,
+    DEBUG_MON_BATTLE_PARAM2,
+    DEBUG_MON_END
 };
 
 static const u8 sDebugMonPage6[] = {
-    DEBUG_MON_COOL, DEBUG_MON_BEAUTY, DEBUG_MON_CUTE,
-    DEBUG_MON_SMART, DEBUG_MON_TOUGH, DEBUG_MON_SHEEN,
+    DEBUG_MON_COOL,
+    DEBUG_MON_BEAUTY,
+    DEBUG_MON_CUTE,
+    DEBUG_MON_SMART,
+    DEBUG_MON_TOUGH,
+    DEBUG_MON_SHEEN,
     DEBUG_MON_END
 };
 
 static const u8 sDebugMonPage7[] = {
-    DEBUG_MON_MET_LEVEL, DEBUG_MON_MET_GAME, DEBUG_MON_POKEBALL,
-    DEBUG_MON_MET_GAME_REGION_CODE, DEBUG_MON_FORM, DEBUG_MON_END
+    DEBUG_MON_MET_LEVEL,
+    DEBUG_MON_MET_GAME,
+    DEBUG_MON_POKEBALL,
+    DEBUG_MON_MET_GAME_REGION_CODE,
+    DEBUG_MON_FORM,
+    DEBUG_MON_END
 };
 
 static const u8 sDebugMonPage8[] = {
-    DEBUG_MON_MET_LOCATION, DEBUG_MON_MET_YEAR, DEBUG_MON_MET_MONTH,
-    DEBUG_MON_MET_DAY, DEBUG_MON_HATCH_LOCATION, DEBUG_MON_HATCH_YEAR,
-    DEBUG_MON_HATCH_MONTH, DEBUG_MON_HATCH_DAY, DEBUG_MON_END
+    DEBUG_MON_MET_LOCATION,
+    DEBUG_MON_MET_YEAR,
+    DEBUG_MON_MET_MONTH,
+    DEBUG_MON_MET_DAY,
+    DEBUG_MON_HATCH_LOCATION,
+    DEBUG_MON_HATCH_YEAR,
+    DEBUG_MON_HATCH_MONTH,
+    DEBUG_MON_HATCH_DAY,
+    DEBUG_MON_END
 };
 
 static const DebugMonMenuPage sDebugMonMenuPages[DEBUG_MON_MENU_MAX_PAGES] = {
-    {sDebugMonPage1, 5},
-    {sDebugMonPage2, 6},
-    {sDebugMonPage3, 6},
-    {sDebugMonPage4, 6},
-    {sDebugMonPage5, 6}, 
-    {sDebugMonPage6, 6},
-    {sDebugMonPage7, 5},
-    {sDebugMonPage8, 8}
+    { sDebugMonPage1, 5 },
+    { sDebugMonPage2, 6 },
+    { sDebugMonPage3, 6 },
+    { sDebugMonPage4, 6 },
+    { sDebugMonPage5, 6 },
+    { sDebugMonPage6, 6 },
+    { sDebugMonPage7, 5 },
+    { sDebugMonPage8, 8 }
 };
 
-void DebugMonMenu_HandleInput (DebugMonMenu *monMenu)
+void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
 {
     u8 result;
 
@@ -231,7 +310,7 @@ void DebugMonMenu_HandleInput (DebugMonMenu *monMenu)
 
         result = DebugMonMenu_AddMon(monMenu);
 
-        BGL_WindowColor(&monMenu->mainWindow, 15, 24, 64, 30*8-24, 32);
+        BGL_WindowColor(&monMenu->mainWindow, 15, 24, 64, 30 * 8 - 24, 32);
 
         if (result == 1) {
             DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, 109, 32, 72, 0, DMM_COLOR_BLACK);
@@ -279,7 +358,7 @@ void DebugMonMenu_HandleInput (DebugMonMenu *monMenu)
     }
 }
 
-void DebugMonMenu_HandleValueInput (DebugMonMenu *monMenu)
+void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu)
 {
     u8 statID = sDebugMonMenuPages[monMenu->mon.page].page[monMenu->mon.cursor];
 
@@ -319,14 +398,14 @@ void DebugMonMenu_HandleValueInput (DebugMonMenu *monMenu)
     }
 }
 
-void DebugMonMenu_WaitButtonPress (DebugMonMenu *monMenu)
+void DebugMonMenu_WaitButtonPress(DebugMonMenu *monMenu)
 {
     if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
         monMenu->state = 0;
     }
 }
 
-void DebugMonMenu_Init (DebugMonMenu *monMenu)
+void DebugMonMenu_Init(DebugMonMenu *monMenu)
 {
     BGL_FillWindow(&monMenu->titleWindow, 15);
     DebugMonMenu_PrintString(&monMenu->titleWindow, monMenu->msgLoader, DMV_INFO_02, 0, 0, 0, DMM_COLOR_BLACK);
@@ -336,8 +415,8 @@ void DebugMonMenu_Init (DebugMonMenu *monMenu)
     if (monMenu->mode == DEBUG_MON_MENU_MODE_CREATE) {
         DebugMon_InitStats(&monMenu->mon);
     } else if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
-        Party* party = Party_GetFromSavedata(monMenu->sys->saveData);
-        Pokemon* changeMon = Party_GetPokemonBySlotIndex(party, 0);
+        Party *party = Party_GetFromSavedata(monMenu->sys->saveData);
+        Pokemon *changeMon = Party_GetPokemonBySlotIndex(party, 0);
 
         MI_CpuCopy8(changeMon, monMenu->mon.monData, Pokemon_GetStructSize());
 
@@ -348,7 +427,7 @@ void DebugMonMenu_Init (DebugMonMenu *monMenu)
     monMenu->mon.cursor = 0;
 }
 
-void DebugMonMenu_Free (DebugMonMenu *monMenu)
+void DebugMonMenu_Free(DebugMonMenu *monMenu)
 {
     Heap_FreeToHeap(monMenu->mon.monData);
 
@@ -367,7 +446,7 @@ void DebugMonMenu_Free (DebugMonMenu *monMenu)
     sub_02014A20(monMenu->cursor);
 }
 
-static void DebugMonMenu_PrintString (Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonMenu_PrintString(Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
 {
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, entryID);
 
@@ -384,7 +463,7 @@ static void DebugMonMenu_PrintString (Window *window, MessageLoader *msgLoader, 
         }                                                                                                                                 \
     }
 
-static void DebugMonMenu_SetTrainerMemo (DebugMonMenu *monMenu, BOOL playerIsOT)
+static void DebugMonMenu_SetTrainerMemo(DebugMonMenu *monMenu, BOOL playerIsOT)
 {
     if (monMenu->mode != DEBUG_MON_MENU_MODE_EDIT) {
         DebugMon_CalcFullStats(monMenu, &monMenu->mon);
@@ -395,8 +474,8 @@ static void DebugMonMenu_SetTrainerMemo (DebugMonMenu *monMenu, BOOL playerIsOT)
     BGL_FillWindow(&monMenu->mainWindow, 15);
 
     // get display info?
-    PokemonInfoDisplayStruct* infoDisplay = sub_02092494(monMenu->mon.monData, playerIsOT, HEAP_ID_APPLICATION);
-    
+    PokemonInfoDisplayStruct *infoDisplay = sub_02092494(monMenu->mon.monData, playerIsOT, HEAP_ID_APPLICATION);
+
     DISPLAYINFO_PRINT(infoDisplay->unk_14)
     DISPLAYINFO_PRINT(infoDisplay->unk_1C)
     DISPLAYINFO_PRINT(infoDisplay->unk_24)
@@ -407,11 +486,11 @@ static void DebugMonMenu_SetTrainerMemo (DebugMonMenu *monMenu, BOOL playerIsOT)
     sub_0209282C(infoDisplay);
 }
 
-static void DebugMonMenu_DisplayCursor (DebugMonMenu *monMenu, u8 mode)
+static void DebugMonMenu_DisplayCursor(DebugMonMenu *monMenu, u8 mode)
 {
     DebugMon *mon = &monMenu->mon;
 
-    switch(mode) {
+    switch (mode) {
     case DMMD_BOTH:
         // print cursor
         sub_02014A58(monMenu->cursor, &monMenu->mainWindow, 0, mon->cursor * 16);
@@ -423,7 +502,7 @@ static void DebugMonMenu_DisplayCursor (DebugMonMenu *monMenu, u8 mode)
         if (mon->cursor < sDebugMonMenuPages[mon->page].count - 1) {
             BGL_WindowColor(&monMenu->mainWindow, 15, 0, mon->cursor * 16, 12, 16);
             mon->cursor++;
-            //print cursor
+            // print cursor
             sub_02014A58(monMenu->cursor, &monMenu->mainWindow, 0, mon->cursor * 16);
             // update window at vblank?
             sub_0201A9A4(&monMenu->mainWindow);
@@ -440,25 +519,24 @@ static void DebugMonMenu_DisplayCursor (DebugMonMenu *monMenu, u8 mode)
             sub_0201A9A4(&monMenu->mainWindow);
         }
         break;
-
     }
 }
 
-static void DebugMonMenu_ChangeValue (DebugMon *mon, u8 mode)
+static void DebugMonMenu_ChangeValue(DebugMon *mon, u8 mode)
 {
     u32 currentValue = DebugMonValue_Get(mon, sDebugMonMenuPages[mon->page].page[mon->cursor]);
     u32 minValue = sDebugMonValueList[sDebugMonMenuPages[mon->page].page[mon->cursor]].value->min;
     u32 maxValue = sDebugMonValueList[sDebugMonMenuPages[mon->page].page[mon->cursor]].value->max;
     u32 valueChange = sDebugMonIncrements[mon->value];
 
-    switch(sDebugMonValueList[sDebugMonMenuPages[mon->page].page[mon->cursor]].value->mode) {
+    switch (sDebugMonValueList[sDebugMonMenuPages[mon->page].page[mon->cursor]].value->mode) {
     case DMMD_BOTH:
-        switch(mode) {
+        switch (mode) {
         case DMMD_INCREASE:
-            if (currentValue < maxValue-valueChange) {
+            if (currentValue < maxValue - valueChange) {
                 currentValue += valueChange;
             } else {
-                if ( currentValue < maxValue ) {
+                if (currentValue < maxValue) {
                     currentValue = maxValue;
                 } else {
                     currentValue = minValue;
@@ -470,7 +548,7 @@ static void DebugMonMenu_ChangeValue (DebugMon *mon, u8 mode)
             if (currentValue > minValue + valueChange) {
                 currentValue -= valueChange;
             } else {
-                if (currentValue > minValue){
+                if (currentValue > minValue) {
                     currentValue = minValue;
                 } else {
                     currentValue = maxValue;
@@ -483,22 +561,22 @@ static void DebugMonMenu_ChangeValue (DebugMon *mon, u8 mode)
     DebugMonValue_Set(mon, currentValue, sDebugMonMenuPages[mon->page].page[mon->cursor]);
 }
 
-void DebugMonMenu_DisplayPageAndCursor (DebugMonMenu *monMenu)
+void DebugMonMenu_DisplayPageAndCursor(DebugMonMenu *monMenu)
 {
     DebugMonMenu_DisplayPage(monMenu);
     DebugMonMenu_DisplayCursor(monMenu, DMMD_BOTH);
     monMenu->state = 1;
 }
 
-static void DebugMonMenu_DisplayPage (DebugMonMenu *monMenu)
+static void DebugMonMenu_DisplayPage(DebugMonMenu *monMenu)
 {
     DebugMon *mon = &monMenu->mon;
 
     BGL_FillWindow(&monMenu->mainWindow, 15);
 
     u16 i = 0;
-    while(sDebugMonMenuPages[mon->page].page[i] != DEBUG_MON_END) {
-        DebugMonValue_Display(monMenu, sDebugMonMenuPages[mon->page].page[i], DMM_COLOR_BLACK, i*16);
+    while (sDebugMonMenuPages[mon->page].page[i] != DEBUG_MON_END) {
+        DebugMonValue_Display(monMenu, sDebugMonMenuPages[mon->page].page[i], DMM_COLOR_BLACK, i * 16);
         i++;
     }
 
@@ -506,7 +584,7 @@ static void DebugMonMenu_DisplayPage (DebugMonMenu *monMenu)
     sub_0201ACCC(&monMenu->mainWindow);
 }
 
-static void DebugMonMenu_DisplayValues (DebugMonMenu * monMenu)
+static void DebugMonMenu_DisplayValues(DebugMonMenu *monMenu)
 {
     DebugMon *mon = &monMenu->mon;
     BGL_FillWindow(&monMenu->mainWindow, 15);
@@ -527,7 +605,7 @@ static void DebugMonMenu_DisplayValues (DebugMonMenu * monMenu)
     sub_0201ACCC(&monMenu->mainWindow);
 }
 
-static u8 DebugMonMenu_AddMon (DebugMonMenu *monMenu)
+static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu)
 {
     Party *party;
 
@@ -553,7 +631,7 @@ static u8 DebugMonMenu_AddMon (DebugMonMenu *monMenu)
             Pokemon_SetValue(monMenu->mon.monData, MON_DATA_NICKNAME_STRBUF, buf);
             Strbuf_Free(buf);
         }
-        
+
         Pokemon *mon = Party_GetPokemonBySlotIndex(party, 0);
 
         buf = Strbuf_Init(16, HEAP_ID_APPLICATION);
@@ -571,7 +649,7 @@ static u8 DebugMonMenu_AddMon (DebugMonMenu *monMenu)
     return 0;
 }
 
-static void DebugMon_InitStats (DebugMon *mon)
+static void DebugMon_InitStats(DebugMon *mon)
 {
     for (u32 i = 0; i < DEBUG_MON_MENU_STATS_SIZE; i++) {
         mon->stats[i] = 0;
@@ -596,14 +674,14 @@ static void DebugMon_InitStats (DebugMon *mon)
     DebugMon_CalcInitialStats(mon);
 }
 
-static void DebugMon_CalcInitialStats (DebugMon *mon)
+static void DebugMon_CalcInitialStats(DebugMon *mon)
 {
-    u32	monIVs = ((mon->stats[DEBUG_MON_HP_IV] & 0x0000001f) << 0)
-                    | ((mon->stats[DEBUG_MON_ATK_IV] & 0x0000001f) << 5)
-                    | ((mon->stats[DEBUG_MON_DEF_IV] & 0x0000001f) << 10)
-                    | ((mon->stats[DEBUG_MON_SPEED_IV] & 0x0000001f) << 15)
-                    | ((mon->stats[DEBUG_MON_SPATK_IV] & 0x0000001f) << 20)
-                    | ((mon->stats[DEBUG_MON_SPDEF_IV] & 0x0000001f) << 25);
+    u32 monIVs = ((mon->stats[DEBUG_MON_HP_IV] & 0x0000001f) << 0)
+        | ((mon->stats[DEBUG_MON_ATK_IV] & 0x0000001f) << 5)
+        | ((mon->stats[DEBUG_MON_DEF_IV] & 0x0000001f) << 10)
+        | ((mon->stats[DEBUG_MON_SPEED_IV] & 0x0000001f) << 15)
+        | ((mon->stats[DEBUG_MON_SPATK_IV] & 0x0000001f) << 20)
+        | ((mon->stats[DEBUG_MON_SPDEF_IV] & 0x0000001f) << 25);
 
     Pokemon_InitWith(mon->monData, mon->stats[DEBUG_MON_SPECIES], mon->stats[DEBUG_MON_LEVEL], monIVs, 1, mon->stats[DEBUG_MON_PERSONALITY], 1, mon->stats[DEBUG_MON_OT_ID]);
 
@@ -622,14 +700,14 @@ static void DebugMon_CalcInitialStats (DebugMon *mon)
     mon->stats[DEBUG_MON_SP_DEF] = Pokemon_GetValue(mon->monData, MON_DATA_SP_DEF, NULL);
 }
 
-static void DebugMon_CalcFullStats (DebugMonMenu *monMenu, DebugMon *mon)
+static void DebugMon_CalcFullStats(DebugMonMenu *monMenu, DebugMon *mon)
 {
     u32 monIVs = ((mon->stats[DEBUG_MON_HP_IV] & 0x0000001f) << 0)
-                    | ((mon->stats[DEBUG_MON_ATK_IV] & 0x0000001f) << 5)
-                    | ((mon->stats[DEBUG_MON_DEF_IV] & 0x0000001f) << 10)
-                    | ((mon->stats[DEBUG_MON_SPEED_IV] & 0x0000001f) << 15)
-                    | ((mon->stats[DEBUG_MON_SPATK_IV] & 0x0000001f) << 20)
-                    | ((mon->stats[DEBUG_MON_SPDEF_IV] & 0x0000001f) << 25);
+        | ((mon->stats[DEBUG_MON_ATK_IV] & 0x0000001f) << 5)
+        | ((mon->stats[DEBUG_MON_DEF_IV] & 0x0000001f) << 10)
+        | ((mon->stats[DEBUG_MON_SPEED_IV] & 0x0000001f) << 15)
+        | ((mon->stats[DEBUG_MON_SPATK_IV] & 0x0000001f) << 20)
+        | ((mon->stats[DEBUG_MON_SPDEF_IV] & 0x0000001f) << 25);
 
     Pokemon_InitWith(mon->monData, mon->stats[DEBUG_MON_SPECIES], mon->stats[DEBUG_MON_LEVEL], monIVs, 1, mon->stats[DEBUG_MON_PERSONALITY], 1, mon->stats[DEBUG_MON_OT_ID]);
 
@@ -689,7 +767,7 @@ static void DebugMon_CalcFullStats (DebugMonMenu *monMenu, DebugMon *mon)
         mon->stats[DEBUG_MON_MET_YEAR] = 0;
         mon->stats[DEBUG_MON_MET_MONTH] = 0;
         mon->stats[DEBUG_MON_MET_DAY] = 0;
-        
+
         if (mon->stats[DEBUG_MON_HATCH_LOCATION] == 0) {
             mon->stats[DEBUG_MON_HATCH_LOCATION] = 1;
         }
@@ -705,7 +783,7 @@ static void DebugMon_CalcFullStats (DebugMonMenu *monMenu, DebugMon *mon)
     Pokemon_SetValue(mon->monData, MON_DATA_HATCH_DAY, &mon->stats[DEBUG_MON_HATCH_DAY]);
     Pokemon_SetValue(mon->monData, MON_DATA_IS_EGG, &mon->stats[DEBUG_MON_IS_EGG]);
 
-    Strbuf * buf;
+    Strbuf *buf;
 
     if (mon->stats[DEBUG_MON_IS_EGG]) {
         buf = MessageLoader_GetNewStrbuf(monMenu->msgLoader, DMV_EGG_NAME);
@@ -720,7 +798,7 @@ static void DebugMon_CalcFullStats (DebugMonMenu *monMenu, DebugMon *mon)
     Pokemon_CalcLevelAndStats(mon->monData);
 }
 
-static void DebugMon_CalcBaseStats (DebugMon *mon)
+static void DebugMon_CalcBaseStats(DebugMon *mon)
 {
     Pokemon_SetValue(mon->monData, MON_DATA_HP_IV, &mon->stats[DEBUG_MON_HP_IV]);
     Pokemon_SetValue(mon->monData, MON_DATA_HP_EV, &mon->stats[DEBUG_MON_HP_EV]);
@@ -745,9 +823,9 @@ static void DebugMon_CalcBaseStats (DebugMon *mon)
     mon->stats[DEBUG_MON_SP_DEF] = Pokemon_GetValue(mon->monData, MON_DATA_SP_DEF, NULL);
 }
 
-static void DebugMon_CalcStatsFromExp (DebugMon *mon)
+static void DebugMon_CalcStatsFromExp(DebugMon *mon)
 {
-    u32	nullData = 0;
+    u32 nullData = 0;
     Pokemon_SetValue(mon->monData, MON_DATA_EXP, &mon->stats[DEBUG_MON_EXP]);
     Pokemon_SetValue(mon->monData, MON_DATA_MOVE1, &nullData);
     Pokemon_SetValue(mon->monData, MON_DATA_MOVE2, &nullData);
@@ -771,9 +849,12 @@ static void DebugMon_CalcStatsFromExp (DebugMon *mon)
     mon->stats[DEBUG_MON_SP_DEF] = Pokemon_GetValue(mon->monData, MON_DATA_SP_DEF, NULL);
 }
 
-#define DEBUG_MON_SET_STAT_FROM_MON_DATA(statID, monDataValue) {mon->stats[statID] = Pokemon_GetValue(mon->monData, monDataValue, NULL);}
+#define DEBUG_MON_SET_STAT_FROM_MON_DATA(statID, monDataValue)                   \
+    {                                                                            \
+        mon->stats[statID] = Pokemon_GetValue(mon->monData, monDataValue, NULL); \
+    }
 
-static void DebugMon_SetStatsFromMonData (DebugMon * mon)
+static void DebugMon_SetStatsFromMonData(DebugMon *mon)
 {
     DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_SPECIES, MON_DATA_SPECIES)
     DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_LEVEL, MON_DATA_LEVEL)
@@ -820,7 +901,7 @@ static void DebugMon_SetStatsFromMonData (DebugMon * mon)
     u32 statusCondition = Pokemon_GetValue(mon->monData, MON_DATA_STATUS_CONDITION, NULL);
     mon->stats[DEBUG_MON_STATUS_CONDITION] = 0;
     for (u32 i = 0; i < 7; i++) {
-        if(statusCondition == sStatusConditionTable[i][1]) {
+        if (statusCondition == sStatusConditionTable[i][1]) {
             mon->stats[DEBUG_MON_STATUS_CONDITION] = i;
             break;
         }
@@ -849,10 +930,16 @@ static void DebugMon_SetStatsFromMonData (DebugMon * mon)
     DEBUG_MON_SET_STAT_FROM_MON_DATA(DEBUG_MON_HATCH_DAY, MON_DATA_HATCH_DAY)
 }
 
-#define DEBUG_MON_CLEAR_STAT(statID) {mon->stats[statID] = 0;}
-#define DEBUG_MON_SET_MON_DATA_FROM_STAT(statID, monDataValue) {Pokemon_SetValue(mon->monData, monDataValue, &mon->stats[statID]);}
+#define DEBUG_MON_CLEAR_STAT(statID) \
+    {                                \
+        mon->stats[statID] = 0;      \
+    }
+#define DEBUG_MON_SET_MON_DATA_FROM_STAT(statID, monDataValue)             \
+    {                                                                      \
+        Pokemon_SetValue(mon->monData, monDataValue, &mon->stats[statID]); \
+    }
 
-static void DebugMon_SetMonDataFromStats (DebugMon *mon)
+static void DebugMon_SetMonDataFromStats(DebugMon *mon)
 {
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_SPECIES, MON_DATA_SPECIES)
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_LEVEL, MON_DATA_LEVEL)
@@ -925,30 +1012,29 @@ static void DebugMon_SetMonDataFromStats (DebugMon *mon)
         if (mon->stats[MON_DATA_HATCH_LOCATION] == 0) {
             mon->stats[MON_DATA_HATCH_LOCATION] = 1;
         }
-    }
-    else {
+    } else {
         DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_MET_LOCATION, MON_DATA_MET_LOCATION)
         DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_MET_YEAR, MON_DATA_MET_YEAR)
         DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_MET_MONTH, MON_DATA_MET_MONTH)
         DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_MET_DAY, MON_DATA_MET_DAY)
     }
-    
+
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_HATCH_LOCATION, MON_DATA_HATCH_LOCATION)
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_HATCH_YEAR, MON_DATA_HATCH_YEAR)
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_HATCH_MONTH, MON_DATA_HATCH_MONTH)
     DEBUG_MON_SET_MON_DATA_FROM_STAT(DEBUG_MON_HATCH_DAY, MON_DATA_HATCH_DAY)
-    
+
     Pokemon_CalcLevelAndStats(mon->monData);
 }
 
-static void DebugMon_SetMoveAtPosition (Pokemon *mon, u16 moveID, u16 movePos)
+static void DebugMon_SetMoveAtPosition(Pokemon *mon, u16 moveID, u16 movePos)
 {
     u8 pp = MoveTable_LoadParam(moveID, MOVEATTRIBUTE_PP);
     Pokemon_SetValue(mon, MON_DATA_MOVE1 + movePos, &moveID);
     Pokemon_SetValue(mon, MON_DATA_MOVE1_CUR_PP + movePos, &pp);
 }
 
-static u8 DebugMonValue_Display (DebugMonMenu *monMenu, u8 statID, u32 color, u8 y)
+static u8 DebugMonValue_Display(DebugMonMenu *monMenu, u8 statID, u32 color, u8 y)
 {
     DebugMon *mon = &monMenu->mon;
 
@@ -966,7 +1052,7 @@ static u8 DebugMonValue_Display (DebugMonMenu *monMenu, u8 statID, u32 color, u8
 
     if (statID == DEBUG_MON_BATTLE_PARAM2) {
         DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_LABEL_38, 12, y, 0xFF, DMM_COLOR_GREEN);
-        DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[DEBUG_MON_SPEED], 3, 12 +24, y + 16, 0xFF, DMM_COLOR_BLACK);
+        DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[DEBUG_MON_SPEED], 3, 12 + 24, y + 16, 0xFF, DMM_COLOR_BLACK);
 
         DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_LABEL_39, 12 + 72, y, 0xFF, DMM_COLOR_GREEN);
         DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[DEBUG_MON_SP_ATK], 3, 12 + 72 + 24, y + 16, 0xFF, DMM_COLOR_BLACK);
@@ -976,18 +1062,18 @@ static u8 DebugMonValue_Display (DebugMonMenu *monMenu, u8 statID, u32 color, u8
         return 0;
     }
 
-    DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, sDebugMonValueList[statID].label, 12, y, 0xFF, color );
+    DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, sDebugMonValueList[statID].label, 12, y, 0xFF, color);
 
     u8 count = sDebugMonValueList[statID].value->count;
 
-    switch(statID) {
+    switch (statID) {
     case DEBUG_MON_SPECIES:
         DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[statID], count, 12 + 72 + 24, y, 0xFF, color);
         DebugMonValue_PrintSpeciesName(&monMenu->mainWindow, mon->stats[statID], 12 + 72 + 24 + 32, y, 0xFF, DMM_COLOR_BLACK);
         break;
 
     case DEBUG_MON_GENDER:
-        switch(mon->stats[statID]) {
+        switch (mon->stats[statID]) {
         case 0:
             DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_STRING_01, 12 + 72 + 24, y, 0xFF, DMM_COLOR_BLACK);
             break;
@@ -1067,7 +1153,7 @@ static u8 DebugMonValue_Display (DebugMonMenu *monMenu, u8 statID, u32 color, u8
     case DEBUG_MON_IS_EGG:
     case DEBUG_MON_FATEFUL_ENCOUNTER:
     case DEBUG_MON_HAS_NICKNAME:
-        if(mon->stats[statID]) {
+        if (mon->stats[statID]) {
             DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_STRING_04, 12 + 72 + 24, y, 0xFF, DMM_COLOR_BLACK);
         } else {
             DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_STRING_05, 12 + 72 + 24, y, 0xFF, DMM_COLOR_BLACK);
@@ -1086,7 +1172,7 @@ static u8 DebugMonValue_Display (DebugMonMenu *monMenu, u8 statID, u32 color, u8
     return 0;
 }
 
-static void DebugMonValue_PrintStr (Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonValue_PrintStr(Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
 {
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, entryID);
 
@@ -1095,13 +1181,13 @@ static void DebugMonValue_PrintStr (Window *window, MessageLoader *msgLoader, u3
     Strbuf_Free(buf);
 }
 
-static void DebugMonValue_PrintStrExpanded (Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonValue_PrintStrExpanded(Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
 {
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, entryID);
     Strbuf *bufExp = Strbuf_Init(128, HEAP_ID_APPLICATION);
 
     StringTemplate_Format(strTemplate, bufExp, buf);
-    
+
     // print color string
     Text_AddPrinterWithParamsAndColor(window, 0, bufExp, x, y, delay, color, NULL);
 
@@ -1109,14 +1195,14 @@ static void DebugMonValue_PrintStrExpanded (Window *window, MessageLoader *msgLo
     Strbuf_Free(bufExp);
 }
 
-static void DebugMonValue_PrintNum (Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, DebugMon *mon, u32 num, u32 digits, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonValue_PrintNum(Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, DebugMon *mon, u32 num, u32 digits, u32 x, u32 y, u32 delay, u32 color)
 {
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, DMV_STRING_06);
     Strbuf *bufExp = Strbuf_Init(32, HEAP_ID_APPLICATION);
-    
+
     u32 i;
     u32 tmp = 1;
-    
+
     for (i = 0; i < digits - 1; i++) {
         tmp *= 10;
     }
@@ -1125,7 +1211,7 @@ static void DebugMonValue_PrintNum (Window *window, MessageLoader *msgLoader, St
     for (i = digits; i >= 1; i--) {
         StringTemplate_SetNumber(strTemplate, 0, num / tmp, 1, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
         StringTemplate_Format(strTemplate, bufExp, buf);
-        
+
         // print color string
         Text_AddPrinterWithParamsAndColor(window, 0, bufExp, x + size, y, 0xFF, DebugMonValue_GetColor(mon, i - 1, color), NULL);
         num %= tmp;
@@ -1145,7 +1231,7 @@ static void DebugMonValue_PrintNum (Window *window, MessageLoader *msgLoader, St
 }
 
 // ravetodo better name probably
-static u32 DebugMonValue_GetColor (DebugMon *mon, u8 digit, u32 color)
+static u32 DebugMonValue_GetColor(DebugMon *mon, u8 digit, u32 color)
 {
     if (color == DMM_COLOR_RED) {
         if (digit == mon->value) {
@@ -1157,7 +1243,7 @@ static u32 DebugMonValue_GetColor (DebugMon *mon, u8 digit, u32 color)
     return DMM_COLOR_BLACK;
 }
 
-static void DebugMonValue_PrintSpeciesName (Window *window, u32 species, u32 x, u32 y, u32 delay, u32 color)
+static void DebugMonValue_PrintSpeciesName(Window *window, u32 species, u32 x, u32 y, u32 delay, u32 color)
 {
     MessageLoader *msgLoader = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, 412, HEAP_ID_APPLICATION);
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, species);
@@ -1169,14 +1255,14 @@ static void DebugMonValue_PrintSpeciesName (Window *window, u32 species, u32 x, 
     MessageLoader_Free(msgLoader);
 }
 
-static u32 DebugMonValue_Get (DebugMon *mon, u8 statID)
+static u32 DebugMonValue_Get(DebugMon *mon, u8 statID)
 {
     return mon->stats[statID];
 }
 
-static void DebugMonValue_Set (DebugMon *mon, u32 value, u8 statID)
+static void DebugMonValue_Set(DebugMon *mon, u32 value, u8 statID)
 {
-    switch(statID) {
+    switch (statID) {
     case DEBUG_MON_SPECIES:
     case DEBUG_MON_PERSONALITY:
     case DEBUG_MON_OT_ID:
