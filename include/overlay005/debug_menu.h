@@ -33,12 +33,13 @@ typedef struct DebugMenuItem {
     u32 function;
 } DebugMenuItem;
 
-enum DebugItems {
-    DEBUG_HEADER = 1,
-    DEBUG_FLY,
-    DEBUG_CREATE_MON,
-    DEBUG_EDIT_MON,
-    DEBUG_TOGGLE_COLLISION,
+enum DebugItem {
+    DEBUG_ITEM_NONE,
+    DEBUG_ITEM_HEADER,
+    DEBUG_ITEM_FLY,
+    DEBUG_ITEM_CREATE_MON,
+    DEBUG_ITEM_EDIT_MON,
+    DEBUG_ITEM_TOGGLE_COLLISION,
 };
 
 typedef struct DebugFly {

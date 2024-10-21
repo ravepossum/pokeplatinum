@@ -99,11 +99,11 @@ static const UnkStruct_ov84_02240FA8 DebugMenu_List_Header = {
 };
 
 static const DebugMenuItem DebugMenu_ItemList[] = {
-    {DEBUG_HEADER,		        DEBUG_MENU_DUMMY_FUNCTION},
-    {DEBUG_FLY,			        (u32)DebugMenu_Fly},
-    {DEBUG_CREATE_MON,	        (u32)DebugMenu_CreateMon},
-    {DEBUG_EDIT_MON,	        (u32)DebugMenu_EditMon},
-    {DEBUG_TOGGLE_COLLISION,	(u32)DebugMenu_ToggleCollision},
+    { DEBUG_ITEM_HEADER,           DEBUG_MENU_DUMMY_FUNCTION },
+    { DEBUG_ITEM_FLY,              (u32)DebugMenu_Fly },
+    { DEBUG_ITEM_CREATE_MON,       (u32)DebugMenu_CreateMon },
+    { DEBUG_ITEM_EDIT_MON,         (u32)DebugMenu_EditMon },
+    { DEBUG_ITEM_TOGGLE_COLLISION, (u32)DebugMenu_ToggleCollision },
 };
 
 void DebugMenu_Init(FieldSystem *sys)
