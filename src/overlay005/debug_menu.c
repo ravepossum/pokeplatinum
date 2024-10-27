@@ -17,8 +17,7 @@
 #include "field/field_system.h"
 #include "overlay005/debug_mon_menu.h"
 #include "overlay006/ov6_02243258.h"
-#include "overlay061/struct_ov61_0222C884.h"
-#include "overlay084/struct_ov84_02240FA8.h"
+#include "text/pl_msg.naix"
 
 #include "camera.h"
 #include "core_sys.h"
@@ -30,12 +29,8 @@
 #include "strbuf.h"
 #include "sys_task.h"
 #include "text.h"
-#include "unk_0200112C.h"
-#include "unk_020021B0.h"
 #include "unk_0200DA60.h"
 #include "unk_0200F174.h"
-#include "unk_02013A04.h"
-#include "unk_02018340.h"
 #include "unk_0203A7D8.h"
 #include "unk_0203D1B8.h"
 #include "unk_020508D4.h"
@@ -48,75 +43,75 @@ static void CB_DebugMenu_Exit(SysTask *task, DebugMenu *menu);
 static void DebugMenu_Exit(SysTask *task, DebugMenu *menu);
 static void Task_DebugMenu_Exit(SysTask *task, void *data);
 static void DebugMenu_List_Init(DebugMenu *menu, const DebugMenuItem *list);
-static ResourceMetadata *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count);
-static ResourceMetadata *DebugMenu_CreateSubList(int count);
-static void DebugMenu_SetWindow(BGL *bgl);
+static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count);
+static StringList *DebugMenu_CreateSubList(int count);
+static void DebugMenu_SetWindow(BgConfig *bgConfig);
 static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc);
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data);
-static void CB_DebugMenu_ListHeader(BmpList *bmpList, u32 param, u8 y);
+static void CB_DebugMenu_ListHeader(ListMenu *listMenu, u32 param, u8 y);
+static void DebugFunction_Dummy(SysTask *task, DebugMenu *menu);
 
-static void DebugMenu_Fly(SysTask *task, DebugMenu *menu);
+static void DebugFunction_Fly(SysTask *task, DebugMenu *menu);
 static void DebugMenu_Fly_CreateTask(FieldSystem *sys);
 static void Task_DebugMenu_Fly(SysTask *task, void *data);
 
-static void DebugMenu_CreateMon(SysTask *task, DebugMenu *menu);
-static void DebugMenu_EditMon(SysTask *task, DebugMenu *menu);
+static void DebugFunction_CreateMon(SysTask *task, DebugMenu *menu);
+static void DebugFunction_EditMon(SysTask *task, DebugMenu *menu);
 static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *sys, enum DebugMonMenuMode mode);
 static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data);
 
-static void DebugMenu_AdjustCamera(SysTask *task, DebugMenu *menu);
+static void DebugFunction_AdjustCamera(SysTask *task, DebugMenu *menu);
 static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *sys, DebugMenu *menu);
 static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data);
 
-static void DebugMenu_ToggleCollision(SysTask *task, DebugMenu *menu);
-static void DebugMenu_ExecuteFunction(SysTask *task, DebugMenu *menu);
+static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu);
+static void DebugFunction_ExecuteFunction(SysTask *task, DebugMenu *menu);
 
-static const UnkStruct_ov61_0222C884 DebugMenu_List_WindowTemplate = {
-    3, // BG3
-    0, // x
-    5, // y
-    13, // width
-    18, // height
-    13, // palette
-    8 // baseblock or something?
+static const WindowTemplate DebugMenu_List_WindowTemplate = {
+    .bgLayer = BG_LAYER_MAIN_3,
+    .tilemapLeft = 0,
+    .tilemapTop = 5,
+    .width = 13,
+    .height = 18,
+    .palette = 13,
+    .baseTile = 8
 };
 
-static const UnkStruct_ov84_02240FA8 DebugMenu_List_Header = {
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    0,
-    8,
-    2,
-    12,
-    1,
-    8,
-    // font colors
-    11, // white
-    15, // black
-    2, // black shadow
-    0,
-    0,
-    1, // multichoice LR scroll
-    0, // system font
-    0,
-    NULL,
+static const ListMenuTemplate DebugMenu_List_Header = {
+    .choices = NULL,
+    .cursorCallback = NULL,
+    .printCallback = NULL,
+    .window = NULL,
+    .count = 0,
+    .maxDisplay = 8,
+    .headerXOffset = 2,
+    .textXOffset = 12,
+    .cursorXOffset = 1,
+    .yOffset = 8,
+    .textColorFg = 11, // white
+    .textColorBg = 15, // black
+    .textColorShadow = 2, // black shadow
+    .letterSpacing = 0,
+    .lineSpacing = 0,
+    .pagerMode = PAGER_MODE_LEFT_RIGHT_PAD,
+    .fontID = FONT_SYSTEM,
+    .cursorType = 0,
+    .tmp = NULL,
 };
 
 static const DebugMenuItem DebugMenu_ItemList[] = {
-    { DEBUG_ITEM_HEADER,           DEBUG_MENU_DUMMY_FUNCTION },
-    { DEBUG_ITEM_FLY,              (u32)DebugMenu_Fly },
-    { DEBUG_ITEM_CREATE_MON,       (u32)DebugMenu_CreateMon },
-    { DEBUG_ITEM_EDIT_MON,         (u32)DebugMenu_EditMon },
-    { DEBUG_ITEM_TOGGLE_COLLISION, (u32)DebugMenu_ToggleCollision },
-    { DEBUG_ITEM_ADJUST_CAMERA,    (u32)DebugMenu_AdjustCamera },
-    { DEBUG_ITEM_EXECUTE_FUNCTION, (u32)DebugMenu_ExecuteFunction },
+    { DEBUG_ITEM_HEADER, DebugFunction_Dummy },
+    { DEBUG_ITEM_FLY, DebugFunction_Fly },
+    { DEBUG_ITEM_CREATE_MON, DebugFunction_CreateMon },
+    { DEBUG_ITEM_EDIT_MON, DebugFunction_EditMon },
+    { DEBUG_ITEM_TOGGLE_COLLISION, DebugFunction_ToggleCollision },
+    { DEBUG_ITEM_ADJUST_CAMERA, DebugFunction_AdjustCamera },
+    { DEBUG_ITEM_EXECUTE_FUNCTION, DebugFunction_ExecuteFunction },
 };
 
 void DebugMenu_Init(FieldSystem *sys)
 {
-    DebugMenu *menu = DebugMenu_CreateMultichoice(sys, DEBUG_MENU_MESSAGE_BANK, DebugMenu_ItemList, NELEMS(DebugMenu_ItemList), NULL);
+    DebugMenu *menu = DebugMenu_CreateMultichoice(sys, message_bank_unk_0328, DebugMenu_ItemList, NELEMS(DebugMenu_ItemList), NULL);
     menu->callback = NULL;
 
     // field system hold sequence
@@ -125,16 +120,10 @@ void DebugMenu_Init(FieldSystem *sys)
 
 static void DebugMenu_Free(DebugMenu *menu)
 {
-    // window off
-    sub_0201ACF4(menu->window);
-
-    // delete menu list?
-    sub_02013A3C(menu->menuList);
-
-    // menu list exit?
-    sub_02001384(menu->bmpList, &(menu->debugList), &(menu->cursor));
-
-    BGL_DeleteWindow(menu->window);
+    Window_ClearAndCopyToVRAM(menu->window);
+    StringList_Free(menu->stringList);
+    ListMenu_Free(menu->listMenu, &(menu->debugList), &(menu->cursor));
+    Window_Remove(menu->window);
     Heap_FreeToHeap(menu->window);
 }
 
@@ -181,40 +170,34 @@ static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const
     DebugMenu_List_Init(menu, list);
     DebugMenu_SetWindow(menu->sys->unk_08);
 
-    // allocate window?
-    menu->window = sub_0201A778(HEAP_ID_FIELD, 1);
-
-    // some kind of add window - from template?
-    sub_0201A8D4(menu->sys->unk_08, menu->window, &DebugMenu_List_WindowTemplate);
+    menu->window = Window_New(HEAP_ID_FIELD, 1);
+    Window_AddFromTemplate(menu->sys->unk_08, menu->window, &DebugMenu_List_WindowTemplate);
 
     if (list != NULL) {
-        menu->menuList = DebugMenu_CreateList(arcID, list, count);
+        menu->stringList = DebugMenu_CreateList(arcID, list, count);
     }
 
-    UnkStruct_ov84_02240FA8 listHeader = DebugMenu_List_Header;
-    listHeader.unk_00 = menu->menuList;
-    listHeader.unk_0C = menu->window;
-    listHeader.unk_10 = count;
+    ListMenuTemplate listHeader = DebugMenu_List_Header;
+    listHeader.choices = menu->stringList;
+    listHeader.window = menu->window;
+    listHeader.count = count;
 
-    // set list
-    menu->bmpList = sub_0200112C(&listHeader, menu->debugList, menu->cursor, HEAP_ID_FIELD);
+    menu->listMenu = ListMenu_New(&listHeader, menu->debugList, menu->cursor, HEAP_ID_FIELD);
 
     return menu;
 }
 
-static ResourceMetadata *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count)
+static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count)
 {
-    // create list
-    ResourceMetadata *menuList = sub_02013A04(count, HEAP_ID_FIELD);
+    StringList *stringList = StringList_New(count, HEAP_ID_FIELD);
     MessageLoader *msgLoader = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, arcID, HEAP_ID_FIELD);
 
     for (int i = 0; i < count; i++) {
-        // add string from narc?
-        sub_02013A4C(menuList, msgLoader, list[i].index, list[i].function);
+        StringList_AddFromMessageBank(stringList, msgLoader, list[i].index, list[i].function);
     }
     MessageLoader_Free(msgLoader);
 
-    return menuList;
+    return stringList;
 }
 
 static void DebugMenu_List_Init(DebugMenu *menu, const DebugMenuItem *list)
@@ -222,24 +205,23 @@ static void DebugMenu_List_Init(DebugMenu *menu, const DebugMenuItem *list)
     if (menu->debugList == 0
         && menu->cursor == 0
         && list != NULL
-        && list[menu->debugList].function == DEBUG_MENU_DUMMY_FUNCTION) {
+        && list[menu->debugList].function == DebugFunction_Dummy) {
 
         menu->debugList = 0;
         menu->cursor = 1;
     }
 }
 
-static void DebugMenu_SetWindow(BGL *bgl)
+static void DebugMenu_SetWindow(BgConfig *bgConfig)
 {
     // set window gfx or something?
-    sub_0200DAA4(bgl, 3, 473, 11, 0, HEAP_ID_FIELD);
+    sub_0200DAA4(bgConfig, 3, 473, 11, 0, HEAP_ID_FIELD);
 }
 
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
 {
     DebugMenu *menu = (DebugMenu *)data;
-    // multichoice main?
-    s32 choice = sub_02001288(menu->bmpList);
+    s32 choice = ListMenu_ProcessInput(menu->listMenu);
     SysTaskFunc taskFunc;
 
     if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
@@ -261,9 +243,13 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
     }
 }
 
+static void DebugFunction_Dummy(SysTask *task, DebugMenu *menu)
+{
+}
+
 // Fly section
 
-static void DebugMenu_Fly(SysTask *task, DebugMenu *menu)
+static void DebugFunction_Fly(SysTask *task, DebugMenu *menu)
 {
     DebugMenu_Fly_CreateTask(menu->sys);
     CB_DebugMenu_Exit(task, menu);
@@ -355,7 +341,6 @@ static void Task_DebugMenu_Fly(SysTask *task, void *data)
         // set location from warp?
         sub_0203A7F0(warpID, &destloc);
 
-        // map change via fly
         FieldTask_StartMapChangeFly(fly->sys, destloc.mapId, (-1), destloc.x, destloc.z, DIR_SOUTH);
         break;
     case 6:
@@ -370,13 +355,13 @@ static void Task_DebugMenu_Fly(SysTask *task, void *data)
 
 // CreateMon and EditMon section
 
-static void DebugMenu_CreateMon(SysTask *task, DebugMenu *menu)
+static void DebugFunction_CreateMon(SysTask *task, DebugMenu *menu)
 {
     CB_DebugMenu_Exit(task, menu);
     DebugMenu_CreateOrEditMon_CreateTask(menu->sys, DEBUG_MON_MENU_MODE_CREATE);
 }
 
-static void DebugMenu_EditMon(SysTask *task, DebugMenu *menu)
+static void DebugFunction_EditMon(SysTask *task, DebugMenu *menu)
 {
     CB_DebugMenu_Exit(task, menu);
     DebugMenu_CreateOrEditMon_CreateTask(menu->sys, DEBUG_MON_MENU_MODE_EDIT);
@@ -390,17 +375,16 @@ static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *sys, enum DebugMon
     monMenu->mode = mode;
     monMenu->msgLoader = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, DEBUG_MON_MENU_MESSAGE_BANK, HEAP_ID_APPLICATION);
     monMenu->strTemplate = StringTemplate_Default(HEAP_ID_APPLICATION);
-    // create cursor?
-    monMenu->cursor = sub_020149F0(HEAP_ID_APPLICATION);
+    monMenu->cursor = ColoredArrow_New(HEAP_ID_APPLICATION);
 
-    // get bgl?
-    BGL *bgl = sub_0203D170(sys);
+    // get bgConfig from fieldsys?
+    BgConfig *bgConfig = sub_0203D170(sys);
 
-    BGL_AddWindow(bgl, &monMenu->titleWindow, 3, 1, 1, 30, 4, 13, 1);
-    BGL_AddWindow(bgl, &monMenu->mainWindow, 3, 1, 7, 30, 16, 13, 1 + 30 * 4);
+    Window_Add(bgConfig, &monMenu->titleWindow, BG_LAYER_MAIN_3, 1, 1, 30, 4, 13, 1);
+    Window_Add(bgConfig, &monMenu->mainWindow, BG_LAYER_MAIN_3, 1, 7, 30, 16, 13, 1 + 30 * 4);
 
     // set window gfx or something
-    sub_0200DAA4(bgl, 3, 1 + 30 * 4 + 30 * 18, 14, 0, HEAP_ID_APPLICATION);
+    sub_0200DAA4(bgConfig, 3, 1 + 30 * 4 + 30 * 18, 14, 0, HEAP_ID_APPLICATION);
 
     Window_Show(&monMenu->titleWindow, 1, 1 + 30 * 4 + 30 * 18, 14);
     Window_Show(&monMenu->mainWindow, 1, 1 + 30 * 4 + 30 * 18, 14);
@@ -442,7 +426,7 @@ static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
 
 // Adjust Camera section
 
-static void DebugMenu_AdjustCamera(SysTask *task, DebugMenu *menu)
+static void DebugFunction_AdjustCamera(SysTask *task, DebugMenu *menu)
 {
     DebugMenu_AdjustCamera_CreateTask(menu->sys, menu);
     CB_DebugMenu_Exit(task, menu);
@@ -485,7 +469,7 @@ static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data)
 
 // Smaller functionality
 
-static void DebugMenu_ToggleCollision(SysTask *task, DebugMenu *menu)
+static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu)
 {
     VarsFlags *varsFlags = SaveData_GetVarsFlags(menu->sys->saveData);
 
@@ -501,7 +485,7 @@ static void DebugMenu_ToggleCollision(SysTask *task, DebugMenu *menu)
 }
 
 // shell function to run any arbitrary code you need
-static void DebugMenu_ExecuteFunction(SysTask *task, DebugMenu *menu)
+static void DebugFunction_ExecuteFunction(SysTask *task, DebugMenu *menu)
 {
     // debug function start
 

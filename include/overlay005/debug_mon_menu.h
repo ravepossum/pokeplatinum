@@ -1,35 +1,23 @@
 #ifndef POKEPLATINUM_DEBUG_MON_MENU_H
 #define POKEPLATINUM_DEBUG_MON_MENU_H
 
-#include "struct_decls/struct_0200112C_decl.h"
-#include "struct_decls/struct_02013A04_decl.h"
-#include "struct_decls/struct_020149F0_decl.h"
-#include "struct_defs/struct_0205AA50.h"
-
 #include "field/field_system_decl.h"
 
+#include "list_menu.h"
 #include "message.h"
 #include "string_template.h"
 #include "sys_task_manager.h"
+#include "text.h"
 
 #define DEBUG_MON_MENU_MESSAGE_BANK 336
 #define DEBUG_MON_MENU_STATS_SIZE   64
 #define DEBUG_MON_MENU_MAX_PAGES    8
 
-#define TEXT_COLOR_MASK         0xFF
-#define TEXT_FG_COLOR_SHIFT     16
-#define TEXT_SHADOW_COLOR_SHIFT 8
-#define TEXT_BG_COLOR_SHIFT     0
-
-#define DEBUG_TEXT_COLOR(fgColor, shadowColor, bgColor) (u32)(((fgColor & TEXT_COLOR_MASK) << TEXT_FG_COLOR_SHIFT) |            \
-                                                              ((shadowColor & TEXT_COLOR_MASK) << TEXT_SHADOW_COLOR_SHIFT) |    \
-                                                              ((bgColor & TEXT_COLOR_MASK) << TEXT_BG_COLOR_SHIFT))
-
-#define DMM_COLOR_BLACK DEBUG_TEXT_COLOR(1, 2, 15)
-#define DMM_COLOR_BLUE  DEBUG_TEXT_COLOR(3, 4, 15)
-#define DMM_COLOR_RED   DEBUG_TEXT_COLOR(5, 6, 15)
-#define DMM_COLOR_PINK  DEBUG_TEXT_COLOR(7, 8, 15)
-#define DMM_COLOR_GREEN DEBUG_TEXT_COLOR(9, 10, 15)
+#define DMM_COLOR_BLACK TEXT_COLOR(1, 2, 15)
+#define DMM_COLOR_BLUE  TEXT_COLOR(3, 4, 15)
+#define DMM_COLOR_RED   TEXT_COLOR(5, 6, 15)
+#define DMM_COLOR_PINK  TEXT_COLOR(7, 8, 15)
+#define DMM_COLOR_GREEN TEXT_COLOR(9, 10, 15)
 
 typedef struct DebugMon {
     Pokemon *monData;
@@ -47,11 +35,13 @@ typedef struct DebugMonMenu {
     Window titleWindow;
     MessageLoader *msgLoader;
     StringTemplate *strTemplate;
-    UnkStruct_020149F0 *cursor;
+    ColoredArrow *cursor;
     DebugMon mon;
     u32 state;
     u32 mode;
 } DebugMonMenu;
+
+#define DMV_COUNT_NONE 0xFF
 
 typedef struct DebugMonValue {
     u32 min;
