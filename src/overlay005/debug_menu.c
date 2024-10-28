@@ -169,10 +169,10 @@ static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const
     }
 
     DebugMenu_List_Init(menu, list);
-    LoadStandardWindowGraphics(menu->sys->unk_08, BG_LAYER_MAIN_3, 473, 11, STANDARD_WINDOW_SYSTEM, HEAP_ID_FIELD);
+    LoadStandardWindowGraphics(menu->sys->bgConfig, BG_LAYER_MAIN_3, 473, 11, STANDARD_WINDOW_SYSTEM, HEAP_ID_FIELD);
 
     menu->window = Window_New(HEAP_ID_FIELD, 1);
-    Window_AddFromTemplate(menu->sys->unk_08, menu->window, &DebugMenu_List_WindowTemplate);
+    Window_AddFromTemplate(menu->sys->bgConfig, menu->window, &DebugMenu_List_WindowTemplate);
 
     if (list != NULL) {
         menu->stringList = DebugMenu_CreateList(arcID, list, count);
