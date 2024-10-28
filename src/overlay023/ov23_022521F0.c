@@ -27,6 +27,7 @@
 #include "map_object.h"
 #include "menu.h"
 #include "message.h"
+#include "render_window.h"
 #include "savedata.h"
 #include "strbuf.h"
 #include "string_list.h"
@@ -35,7 +36,6 @@
 #include "sys_task_manager.h"
 #include "text.h"
 #include "unk_02005474.h"
-#include "unk_0200DA60.h"
 #include "unk_0202631C.h"
 #include "unk_0202854C.h"
 #include "unk_020573FC.h"
@@ -133,7 +133,7 @@ static void ov23_022522F0(UnkStruct_ov23_02250CD4 *param0, int param1)
     int v1, v2, v3, v4, v5;
     SaveData *v6 = FieldSystem_SaveData(param0->fieldSystem);
     UndergroundData *v7 = sub_020298B0(v6);
-    BOOL v8 = sub_02027474(SaveData_Pokedex(v6));
+    BOOL v8 = Pokedex_IsNationalDexObtained(SaveData_Pokedex(v6));
 
     MATH_InitRand16(&v0, sub_02028930(v7) + param1);
 
@@ -217,7 +217,7 @@ static void *ov23_022524B8(UnkStruct_ov23_02250CD4 *param0)
     param0->unk_40 = StringList_New(v1, 4);
 
     Window_Add(param0->fieldSystem->unk_08, &param0->unk_10, 3, 19, 3, 12, v1 * 2, 13, ((((1024 - (18 + 12) - 9 - (32 * 8)) - (18 + 12 + 24)) - (27 * 4)) - 12 * 6));
-    Window_Show(&param0->unk_10, 1, 1024 - (18 + 12) - 9, 11);
+    Window_DrawStandardFrame(&param0->unk_10, 1, 1024 - (18 + 12) - 9, 11);
 
     {
         int v2, v3;
@@ -399,7 +399,7 @@ static void ov23_02252A18(UnkStruct_ov23_02250CD4 *param0)
     param0->unk_40 = StringList_New(v1, 4);
 
     Window_Add(param0->fieldSystem->unk_08, &param0->unk_10, 3, 19, 3, 12, v1 * 2, 13, (((((1024 - (18 + 12) - 9 - (32 * 8)) - (18 + 12 + 24)) - (27 * 4)) - 12 * 6) - 12 * 12));
-    Window_Show(&param0->unk_10, 1, 1024 - (18 + 12) - 9, 11);
+    Window_DrawStandardFrame(&param0->unk_10, 1, 1024 - (18 + 12) - 9, 11);
 
     {
         MessageLoader *v2;
@@ -446,7 +446,7 @@ static void ov23_02252A18(UnkStruct_ov23_02250CD4 *param0)
 static void ov23_02252B90(UnkStruct_ov23_02250CD4 *param0, BOOL param1)
 {
     if (Window_IsInUse(&param0->unk_20)) {
-        Window_Clear(&param0->unk_20, 1);
+        Window_EraseStandardFrame(&param0->unk_20, 1);
         Window_Remove(&param0->unk_20);
     }
 
@@ -547,7 +547,7 @@ static void ov23_02252D1C(UnkStruct_ov23_02250CD4 *param0)
 {
     if (!Window_IsInUse(&param0->unk_20)) {
         Window_Add(param0->fieldSystem->unk_08, &param0->unk_20, 3, 1, 12, 12, 4, 13, 1);
-        Window_Show(&param0->unk_20, 1, 1024 - (18 + 12) - 9, 11);
+        Window_DrawStandardFrame(&param0->unk_20, 1, 1024 - (18 + 12) - 9, 11);
     }
 
     Window_FillTilemap(&param0->unk_20, 15);
@@ -557,7 +557,7 @@ static void ov23_02252D1C(UnkStruct_ov23_02250CD4 *param0)
 void ov23_02252D74(UnkStruct_ov23_02250CD4 *param0, int param1)
 {
     Window_Add(param0->fieldSystem->unk_08, &param0->unk_30, 3, 1, 1, 7, 4, 13, 51);
-    Window_Show(&param0->unk_30, 1, 1024 - (18 + 12) - 9, 11);
+    Window_DrawStandardFrame(&param0->unk_30, 1, 1024 - (18 + 12) - 9, 11);
 
     Window_FillTilemap(&param0->unk_30, 15);
     Window_CopyToVRAM(&param0->unk_30);
@@ -570,7 +570,7 @@ void ov23_02252D74(UnkStruct_ov23_02250CD4 *param0, int param1)
 void ov23_02252DF4(UnkStruct_ov23_02250CD4 *param0)
 {
     if (Window_IsInUse(&param0->unk_30)) {
-        Window_Clear(&param0->unk_30, 1);
+        Window_EraseStandardFrame(&param0->unk_30, 1);
         Window_Remove(&param0->unk_30);
     }
 }
@@ -578,7 +578,7 @@ void ov23_02252DF4(UnkStruct_ov23_02250CD4 *param0)
 void ov23_02252E18(UnkStruct_ov23_02250CD4 *param0)
 {
     if (Window_IsInUse(&param0->unk_30)) {
-        Window_Clear(&param0->unk_30, 0);
+        Window_EraseStandardFrame(&param0->unk_30, 0);
         Window_Remove(&param0->unk_30);
     }
 }

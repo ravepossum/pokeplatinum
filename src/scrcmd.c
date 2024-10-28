@@ -53,7 +53,6 @@
 #include "overlay005/ov5_021DDAE4.h"
 #include "overlay005/ov5_021DFB54.h"
 #include "overlay005/ov5_021E1B08.h"
-#include "overlay005/ov5_021E1D20.h"
 #include "overlay005/ov5_021E779C.h"
 #include "overlay005/ov5_021EA874.h"
 #include "overlay005/ov5_021ECC20.h"
@@ -62,9 +61,9 @@
 #include "overlay005/ov5_021F0E84.h"
 #include "overlay005/ov5_021F6454.h"
 #include "overlay005/ov5_021F77A8.h"
+#include "overlay005/save_info_window.h"
 #include "overlay005/struct_ov5_021DC1A4_decl.h"
 #include "overlay005/struct_ov5_021DD42C.h"
-#include "overlay005/struct_ov5_021E1FF4_decl.h"
 #include "overlay005/vs_seeker.h"
 #include "overlay006/ov6_0223E140.h"
 #include "overlay006/ov6_02242AF0.h"
@@ -119,6 +118,7 @@
 #include "pokemon.h"
 #include "pokeradar.h"
 #include "poketch_data.h"
+#include "render_window.h"
 #include "roaming_pokemon.h"
 #include "rtc.h"
 #include "save_player.h"
@@ -132,7 +132,6 @@
 #include "trainer_data.h"
 #include "trainer_info.h"
 #include "unk_020041CC.h"
-#include "unk_0200DA60.h"
 #include "unk_0200F174.h"
 #include "unk_02014D38.h"
 #include "unk_0201D15C.h"
@@ -2369,7 +2368,7 @@ static BOOL ScrCmd_CloseMessage(ScriptContext *ctx)
     Window *window = FieldSystem_GetScriptMemberPtr(fieldSystem, SCRIPT_MANAGER_WINDOW);
     u8 *v2 = FieldSystem_GetScriptMemberPtr(fieldSystem, SCRIPT_MANAGER_IS_MSG_BOX_OPEN);
 
-    sub_0200E084(window, 0);
+    Window_EraseMessageBox(window, 0);
     Window_Remove(window);
 
     *v2 = 0;
@@ -2660,7 +2659,7 @@ static BOOL ScrCmd_03E(ScriptContext *ctx)
     Menu **v1 = FieldSystem_GetScriptMemberPtr(fieldSystem, SCRIPT_MANAGER_UI_CONTROL);
     u16 v2 = ScriptContext_ReadHalfWord(ctx);
 
-    sub_0200DAA4(fieldSystem->unk_08, 3, 1024 - (18 + 12) - 9, 11, 0, 4);
+    LoadStandardWindowGraphics(fieldSystem->unk_08, 3, 1024 - (18 + 12) - 9, 11, 0, 4);
 
     *v1 = Menu_MakeYesNoChoice(fieldSystem->unk_08, &Unk_020EAB84, 1024 - (18 + 12) - 9, 11, 4);
     ctx->data[0] = v2;
@@ -2698,7 +2697,7 @@ static BOOL ScrCmd_18D(ScriptContext *ctx)
     Window *v1 = FieldSystem_GetScriptMemberPtr(ctx->fieldSystem, SCRIPT_MANAGER_WINDOW);
 
     v0 = FieldSystem_GetScriptMemberPtr(ctx->fieldSystem, SCRIPT_MANAGER_SAVING_ICON);
-    *v0 = sub_0200E7FC(v1, 1024 - (18 + 12));
+    *v0 = Window_AddWaitDial(v1, 1024 - (18 + 12));
 
     return 0;
 }
@@ -2708,7 +2707,7 @@ static BOOL ScrCmd_18E(ScriptContext *ctx)
     void **v0;
 
     v0 = FieldSystem_GetScriptMemberPtr(ctx->fieldSystem, SCRIPT_MANAGER_SAVING_ICON);
-    DeleteWaitDial(*v0);
+    DestroyWaitDial(*v0);
 
     return 0;
 }
@@ -4014,8 +4013,8 @@ static BOOL ScrCmd_208(ScriptContext *ctx)
     u16 v1 = ScriptContext_GetVar(ctx);
     u16 v2 = ScriptContext_GetVar(ctx);
 
-    sub_0200DAA4(ctx->fieldSystem->unk_08, 3, 1024 - (18 + 12) - 9, 11, 0, 4);
-    *v0 = sub_0200EBF0(ctx->fieldSystem->unk_08, 3, 10, 5, 11, 1024 - (18 + 12) - 9, v1, v2, 4);
+    LoadStandardWindowGraphics(ctx->fieldSystem->unk_08, 3, 1024 - (18 + 12) - 9, 11, 0, 4);
+    *v0 = DrawPokemonPreview(ctx->fieldSystem->unk_08, 3, 10, 5, 11, 1024 - (18 + 12) - 9, v1, v2, 4);
     sub_020451B4(ctx->fieldSystem, v1);
 
     return 0;
@@ -4028,9 +4027,9 @@ static BOOL ScrCmd_28C(ScriptContext *ctx)
     u16 v2 = ScriptContext_GetVar(ctx);
 
     v0 = Party_GetPokemonBySlotIndex(Party_GetFromSavedata(ctx->fieldSystem->saveData), v2);
-    sub_0200DAA4(ctx->fieldSystem->unk_08, 3, 1024 - (18 + 12) - 9, 11, 0, 4);
+    LoadStandardWindowGraphics(ctx->fieldSystem->unk_08, 3, 1024 - (18 + 12) - 9, 11, 0, 4);
 
-    *v1 = sub_0200EC48(ctx->fieldSystem->unk_08, 3, 10, 5, 11, 1024 - (18 + 12) - 9, v0, 4);
+    *v1 = DrawPokemonPreviewFromStruct(ctx->fieldSystem->unk_08, 3, 10, 5, 11, 1024 - (18 + 12) - 9, v0, 4);
     sub_020451B4(ctx->fieldSystem, Pokemon_GetValue(v0, MON_DATA_SPECIES, NULL));
 
     return 0;
@@ -4984,7 +4983,7 @@ static BOOL ScrCmd_11E(ScriptContext *ctx)
     const PokedexData *v0 = SaveData_Pokedex(ctx->fieldSystem->saveData);
     u16 *v1 = ScriptContext_GetVarPointer(ctx);
 
-    *v1 = sub_02026EAC(v0);
+    *v1 = Pokedex_CountSeenSinnoh(v0);
     return 0;
 }
 
@@ -5002,7 +5001,7 @@ static BOOL ScrCmd_120(ScriptContext *ctx)
     const PokedexData *v0 = SaveData_Pokedex(ctx->fieldSystem->saveData);
     u16 *v1 = ScriptContext_GetVarPointer(ctx);
 
-    *v1 = sub_02026E0C(v0);
+    *v1 = Pokedex_CountSeenNational(v0);
     return 0;
 }
 
@@ -5161,10 +5160,10 @@ static BOOL ScrCmd_CheckSaveType(ScriptContext *ctx)
 static BOOL ScrCmd_12D(ScriptContext *ctx)
 {
     FieldSystem *fieldSystem = ctx->fieldSystem;
-    u16 *v1 = ScriptContext_GetVarPointer(ctx);
+    u16 *destVarResult = ScriptContext_GetVarPointer(ctx);
 
-    *v1 = ov5_021E200C(fieldSystem);
-    return 0;
+    *destVarResult = FieldSystem_Save(fieldSystem);
+    return FALSE;
 }
 
 static BOOL ScrCmd_2D6(ScriptContext *ctx)
@@ -6481,12 +6480,12 @@ static BOOL ScrCmd_218(ScriptContext *ctx)
     u16 *v1 = ScriptContext_GetVarPointer(ctx);
     u16 v2, v3, v4, v5;
 
-    v2 = sub_02026EAC(v0);
+    v2 = Pokedex_CountSeenSinnoh(v0);
     v3 = LCRNG_Next() % v2;
     *v1 = 25;
 
     for (v4 = 1, v5 = 0; v4 <= NATIONAL_DEX_COUNT; v4++) {
-        if ((sub_02026FE8(v0, v4) == 1) && (Pokemon_SinnohDexNumber(v4) != 0)) {
+        if (Pokedex_HasSeenSpecies(v0, v4) == TRUE && Pokemon_SinnohDexNumber(v4) != FALSE) {
             if (v5 == v3) {
                 *v1 = v4;
                 break;
@@ -6597,7 +6596,7 @@ static BOOL ScrCmd_22D(ScriptContext *ctx)
         sub_02027454(SaveData_Pokedex(ctx->fieldSystem->saveData));
         TrainerInfo_GiveNationalDex(SaveData_GetTrainerInfo(ctx->fieldSystem->saveData));
     } else if (v0 == 2) {
-        *v1 = sub_02027474(SaveData_Pokedex(ctx->fieldSystem->saveData));
+        *v1 = Pokedex_IsNationalDexObtained(SaveData_Pokedex(ctx->fieldSystem->saveData));
     } else {
         GF_ASSERT(FALSE);
     }
@@ -7745,27 +7744,27 @@ static BOOL ScrCmd_2BE(ScriptContext *ctx)
 static BOOL ScrCmd_2C1(ScriptContext *ctx)
 {
     FieldSystem *fieldSystem = ctx->fieldSystem;
-    UnkStruct_ov5_021E1FF4 **v1 = FieldSystem_GetScriptMemberPtr(fieldSystem, 40);
+    SaveInfoWindow **saveInfoWin = FieldSystem_GetScriptMemberPtr(fieldSystem, SCRIPT_MANAGER_SAVE_INFO_WINDOW);
 
     if (!SaveData_OverwriteCheck(fieldSystem->saveData)) {
-        *v1 = ov5_021E1F98(fieldSystem, 4, 3);
-        ov5_021E1F04(*v1);
+        *saveInfoWin = SaveInfoWindow_New(fieldSystem, HEAP_ID_FIELD, BG_LAYER_MAIN_3);
+        SaveInfoWindow_Draw(*saveInfoWin);
     }
 
-    return 0;
+    return FALSE;
 }
 
 static BOOL ScrCmd_2C2(ScriptContext *ctx)
 {
     FieldSystem *fieldSystem = ctx->fieldSystem;
-    UnkStruct_ov5_021E1FF4 **v1 = FieldSystem_GetScriptMemberPtr(fieldSystem, 40);
+    SaveInfoWindow **saveInfoWin = FieldSystem_GetScriptMemberPtr(fieldSystem, SCRIPT_MANAGER_SAVE_INFO_WINDOW);
 
     if (!SaveData_OverwriteCheck(fieldSystem->saveData)) {
-        ov5_021E1F7C(*v1);
-        ov5_021E1FF4(*v1);
+        SaveInfoWindow_Erase(*saveInfoWin);
+        SaveInfoWindow_Free(*saveInfoWin);
     }
 
-    return 0;
+    return FALSE;
 }
 
 static BOOL ScrCmd_2C3(ScriptContext *ctx)

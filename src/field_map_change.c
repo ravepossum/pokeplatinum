@@ -17,7 +17,7 @@
 #include "functypes/funcptr_02050904.h"
 #include "overlay005/ov5_021DD6FC.h"
 #include "overlay005/ov5_021E135C.h"
-#include "overlay005/ov5_021E1D20.h"
+#include "overlay005/save_info_window.h"
 #include "overlay005/struct_ov5_021D432C_decl.h"
 #include "overlay006/ov6_02243258.h"
 #include "overlay006/ov6_02247100.h"
@@ -41,6 +41,7 @@
 #include "message.h"
 #include "player_avatar.h"
 #include "pokeradar.h"
+#include "render_window.h"
 #include "save_player.h"
 #include "savedata.h"
 #include "savedata_misc.h"
@@ -51,7 +52,6 @@
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
 #include "unk_0200A9DC.h"
-#include "unk_0200DA60.h"
 #include "unk_0200F174.h"
 #include "unk_02027F50.h"
 #include "unk_0202854C.h"
@@ -121,7 +121,7 @@ typedef struct MapChangeUndergroundData {
     int unk_14;
     BOOL unk_18;
     u16 unk_1C;
-    void *unk_20;
+    SaveInfoWindow *saveInfoWin;
     Window unk_24;
     Strbuf *unk_34;
     u8 unk_38;
@@ -1151,7 +1151,7 @@ BOOL FieldTask_MapChangeToUnderground(TaskManager *taskMan)
     case 1:
         if (FieldMessage_FinishedPrinting(mapChangeUndergroundData->unk_38) == 1) {
             Strbuf_Free(mapChangeUndergroundData->unk_34);
-            sub_0200DAA4(fieldSystem->unk_08, 3, 1024 - (18 + 12) - 9, 11, 0, 11);
+            LoadStandardWindowGraphics(fieldSystem->unk_08, 3, 1024 - (18 + 12) - 9, 11, 0, 11);
             mapChangeUndergroundData->unk_3C = Menu_MakeYesNoChoice(fieldSystem->unk_08, &Unk_020EC3A0, 1024 - (18 + 12) - 9, 11, 11);
             mapChangeUndergroundData->state = 2;
         }
@@ -1159,12 +1159,12 @@ BOOL FieldTask_MapChangeToUnderground(TaskManager *taskMan)
     case 2:
         switch (Menu_ProcessInputAndHandleExit(mapChangeUndergroundData->unk_3C, 11)) {
         case 0:
-            sub_0200E084(&mapChangeUndergroundData->unk_24, 0);
+            Window_EraseMessageBox(&mapChangeUndergroundData->unk_24, 0);
             Window_Remove(&mapChangeUndergroundData->unk_24);
             mapChangeUndergroundData->state = 3;
             break;
         case 0xfffffffe:
-            sub_0200E084(&mapChangeUndergroundData->unk_24, 0);
+            Window_EraseMessageBox(&mapChangeUndergroundData->unk_24, 0);
             Window_Remove(&mapChangeUndergroundData->unk_24);
             mapChangeUndergroundData->state = 5;
         }
@@ -1174,8 +1174,8 @@ BOOL FieldTask_MapChangeToUnderground(TaskManager *taskMan)
             ScriptManager_Start(taskMan, 2034, NULL, NULL);
         } else {
             sub_020287E0(fieldSystem->saveData);
-            mapChangeUndergroundData->unk_20 = ov5_021E1F98(fieldSystem, 11, 3);
-            ov5_021E1F04(mapChangeUndergroundData->unk_20);
+            mapChangeUndergroundData->saveInfoWin = SaveInfoWindow_New(fieldSystem, 11, BG_LAYER_MAIN_3);
+            SaveInfoWindow_Draw(mapChangeUndergroundData->saveInfoWin);
             mapChangeUndergroundData->unk_1C = 0;
             ScriptManager_Start(taskMan, 2005, NULL, &mapChangeUndergroundData->unk_1C);
         }
@@ -1186,8 +1186,8 @@ BOOL FieldTask_MapChangeToUnderground(TaskManager *taskMan)
         if (SaveData_OverwriteCheck(fieldSystem->saveData)) {
             mapChangeUndergroundData->state = 5;
         } else {
-            ov5_021E1F7C(mapChangeUndergroundData->unk_20);
-            ov5_021E1FF4(mapChangeUndergroundData->unk_20);
+            SaveInfoWindow_Erase(mapChangeUndergroundData->saveInfoWin);
+            SaveInfoWindow_Free(mapChangeUndergroundData->saveInfoWin);
 
             if (mapChangeUndergroundData->unk_1C == 0) {
                 mapChangeUndergroundData->state = 5;
