@@ -24,10 +24,10 @@
 #include "message.h"
 #include "move_table.h"
 #include "party.h"
+#include "render_window.h"
 #include "strbuf.h"
 #include "sys_task.h"
 #include "text.h"
-#include "unk_0200DA60.h"
 #include "unk_0200F174.h"
 #include "unk_0203D1B8.h"
 #include "unk_020508D4.h"
@@ -428,8 +428,8 @@ void DebugMonMenu_Free(DebugMonMenu *monMenu)
 {
     Heap_FreeToHeap(monMenu->mon.monData);
 
-    Window_Clear(&monMenu->titleWindow, 1);
-    Window_Clear(&monMenu->mainWindow, 0);
+    Window_EraseStandardFrame(&monMenu->titleWindow, TRUE);
+    Window_EraseStandardFrame(&monMenu->mainWindow, FALSE);
 
     Window_ClearAndCopyToVRAM(&monMenu->titleWindow);
     Window_ClearAndCopyToVRAM(&monMenu->mainWindow);

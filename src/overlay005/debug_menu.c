@@ -26,10 +26,10 @@
 #include "message.h"
 #include "move_table.h"
 #include "party.h"
+#include "render_window.h"
 #include "strbuf.h"
 #include "sys_task.h"
 #include "text.h"
-#include "unk_0200DA60.h"
 #include "unk_0200F174.h"
 #include "unk_0203A7D8.h"
 #include "unk_0203D1B8.h"
@@ -45,7 +45,6 @@ static void Task_DebugMenu_Exit(SysTask *task, void *data);
 static void DebugMenu_List_Init(DebugMenu *menu, const DebugMenuItem *list);
 static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count);
 static StringList *DebugMenu_CreateSubList(int count);
-static void DebugMenu_SetWindow(BgConfig *bgConfig);
 static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc);
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data);
 static void CB_DebugMenu_ListHeader(ListMenu *listMenu, u32 param, u8 y);
@@ -100,13 +99,15 @@ static const ListMenuTemplate DebugMenu_List_Header = {
 };
 
 static const DebugMenuItem DebugMenu_ItemList[] = {
-    { DEBUG_ITEM_HEADER, DebugFunction_Dummy },
-    { DEBUG_ITEM_FLY, DebugFunction_Fly },
-    { DEBUG_ITEM_CREATE_MON, DebugFunction_CreateMon },
-    { DEBUG_ITEM_EDIT_MON, DebugFunction_EditMon },
-    { DEBUG_ITEM_TOGGLE_COLLISION, DebugFunction_ToggleCollision },
-    { DEBUG_ITEM_ADJUST_CAMERA, DebugFunction_AdjustCamera },
-    { DEBUG_ITEM_EXECUTE_FUNCTION, DebugFunction_ExecuteFunction },
+    // clang-format off
+    { DEBUG_ITEM_HEADER,            DebugFunction_Dummy },
+    { DEBUG_ITEM_FLY,               DebugFunction_Fly },
+    { DEBUG_ITEM_CREATE_MON,        DebugFunction_CreateMon },
+    { DEBUG_ITEM_EDIT_MON,          DebugFunction_EditMon },
+    { DEBUG_ITEM_TOGGLE_COLLISION,  DebugFunction_ToggleCollision },
+    { DEBUG_ITEM_ADJUST_CAMERA,     DebugFunction_AdjustCamera },
+    { DEBUG_ITEM_EXECUTE_FUNCTION,  DebugFunction_ExecuteFunction },
+    // clang-format on
 };
 
 void DebugMenu_Init(FieldSystem *sys)
@@ -168,7 +169,7 @@ static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const
     }
 
     DebugMenu_List_Init(menu, list);
-    DebugMenu_SetWindow(menu->sys->unk_08);
+    LoadStandardWindowGraphics(menu->sys->unk_08, BG_LAYER_MAIN_3, 473, 11, STANDARD_WINDOW_SYSTEM, HEAP_ID_FIELD);
 
     menu->window = Window_New(HEAP_ID_FIELD, 1);
     Window_AddFromTemplate(menu->sys->unk_08, menu->window, &DebugMenu_List_WindowTemplate);
@@ -210,12 +211,6 @@ static void DebugMenu_List_Init(DebugMenu *menu, const DebugMenuItem *list)
         menu->debugList = 0;
         menu->cursor = 1;
     }
-}
-
-static void DebugMenu_SetWindow(BgConfig *bgConfig)
-{
-    // set window gfx or something?
-    sub_0200DAA4(bgConfig, 3, 473, 11, 0, HEAP_ID_FIELD);
 }
 
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
@@ -383,11 +378,10 @@ static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *sys, enum DebugMon
     Window_Add(bgConfig, &monMenu->titleWindow, BG_LAYER_MAIN_3, 1, 1, 30, 4, 13, 1);
     Window_Add(bgConfig, &monMenu->mainWindow, BG_LAYER_MAIN_3, 1, 7, 30, 16, 13, 1 + 30 * 4);
 
-    // set window gfx or something
-    sub_0200DAA4(bgConfig, 3, 1 + 30 * 4 + 30 * 18, 14, 0, HEAP_ID_APPLICATION);
+    LoadStandardWindowGraphics(bgConfig, BG_LAYER_MAIN_3, 1 + 30 * 4 + 30 * 18, 14, STANDARD_WINDOW_SYSTEM, HEAP_ID_APPLICATION);
 
-    Window_Show(&monMenu->titleWindow, 1, 1 + 30 * 4 + 30 * 18, 14);
-    Window_Show(&monMenu->mainWindow, 1, 1 + 30 * 4 + 30 * 18, 14);
+    Window_DrawStandardFrame(&monMenu->titleWindow, TRUE, 1 + 30 * 4 + 30 * 18, 14);
+    Window_DrawStandardFrame(&monMenu->mainWindow, TRUE, 1 + 30 * 4 + 30 * 18, 14);
 
     DebugMonMenu_Init(monMenu);
 }
