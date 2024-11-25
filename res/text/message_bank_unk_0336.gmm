@@ -443,7 +443,7 @@
 	</row>
 	<row id="pl_msg_00000336_00110" index="110">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Create Pokémon      XY: View Memo\n  LR: Switch Page    START: Create/Save Mon</language>
+		<language name="English">Create Pokémon      XY: View Memo\n  LR: Switch Page    START: Create Mon</language>
 	</row>
 	<row id="pl_msg_00000336_00111" index="111">
 		<attribute name="window_context_name">used</attribute>
@@ -459,11 +459,11 @@
 	</row>
 	<row id="pl_msg_00000336_00114" index="114">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Diamond</language>
+		<language name="English">Edit Pokémon          XY: Switch Party Slot\n  LR: Switch Page    START: Save Mon</language>
 	</row>
 	<row id="pl_msg_00000336_00115" index="115">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Pearl</language>
+		<language name="English">Edited a Pokémon in your party.</language>
 	</row>
 	<row id="pl_msg_00000336_00116" index="116">
 		<attribute name="window_context_name">used</attribute>

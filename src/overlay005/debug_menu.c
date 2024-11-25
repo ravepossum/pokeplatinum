@@ -371,6 +371,7 @@ static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *sys, enum DebugMon
     monMenu->msgLoader = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, DEBUG_MON_MENU_MESSAGE_BANK, HEAP_ID_APPLICATION);
     monMenu->strTemplate = StringTemplate_Default(HEAP_ID_APPLICATION);
     monMenu->cursor = ColoredArrow_New(HEAP_ID_APPLICATION);
+    monMenu->partySlot = 0;
 
     // get bgConfig from fieldsys?
     BgConfig *bgConfig = sub_0203D170(sys);

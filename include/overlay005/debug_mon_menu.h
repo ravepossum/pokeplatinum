@@ -39,6 +39,7 @@ typedef struct DebugMonMenu {
     DebugMon mon;
     u32 state;
     u32 mode;
+    u8 partySlot;
 } DebugMonMenu;
 
 #define DMV_COUNT_NONE 0xFF
@@ -213,6 +214,9 @@ enum DebugMonValueLabel {
     DMV_INFO_02,
     DMV_OT_NAME,
     DMV_EGG_NAME,
+
+    DMV_EDIT_INSTRUCTIONS = 114,
+    DMV_EDIT_CONFIRMATION,
 };
 
 void DebugMonMenu_Init(DebugMonMenu *monMenu);

@@ -41,6 +41,7 @@ static void DebugMonMenu_ChangeValue(DebugMon *mon, u8 mode);
 static void DebugMonMenu_DisplayPage(DebugMonMenu *monMenu);
 static void DebugMonMenu_DisplayValues(DebugMonMenu *monMenu);
 static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu);
+static void DebugMonMenu_SetEditMon(DebugMonMenu *monMenu, u8 partySlot);
 
 static void DebugMon_InitStats(DebugMon *mon);
 static void DebugMon_CalcInitialStats(DebugMon *mon);
@@ -309,9 +310,13 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
         Window_FillRectWithColor(&monMenu->mainWindow, 15, 24, 64, 30 * 8 - 24, 32);
 
         if (result == 1) {
-            DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, 109, 32, 72, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+            DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, DMV_INFO_01, 32, 72, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
         } else {
-            DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, 108, 32, 72, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+            if (monMenu->mode != DEBUG_MON_MENU_MODE_EDIT) {
+                DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, DMV_INFO_00, 32, 72, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+            } else {
+                DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, DMV_EDIT_CONFIRMATION, 32, 72, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+            }
         }
 
         monMenu->state = 3;
@@ -343,14 +348,40 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
     }
 
     if (gCoreSys.pressedKeys & PAD_BUTTON_X) {
-        DebugMonMenu_SetTrainerMemo(monMenu, TRUE);
-        monMenu->state = 5;
+        if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
+            int partyCount = Party_GetCurrentCount(Party_GetFromSavedata(monMenu->sys->saveData));
+
+            if (monMenu->partySlot == 0) {
+                monMenu->partySlot = partyCount - 1;
+            } else {
+                monMenu->partySlot--;
+            }
+
+            DebugMonMenu_SetEditMon(monMenu, monMenu->partySlot);
+            monMenu->state = 0;
+        } else {
+            DebugMonMenu_SetTrainerMemo(monMenu, TRUE);
+            monMenu->state = 5;
+        }
         return;
     }
 
     if (gCoreSys.pressedKeys & PAD_BUTTON_Y) {
-        DebugMonMenu_SetTrainerMemo(monMenu, FALSE);
-        monMenu->state = 5;
+        if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
+            int partyCount = Party_GetCurrentCount(Party_GetFromSavedata(monMenu->sys->saveData));
+
+            if (monMenu->partySlot == partyCount - 1) {
+                monMenu->partySlot = 0;
+            } else {
+                monMenu->partySlot++;
+            }
+
+            DebugMonMenu_SetEditMon(monMenu, monMenu->partySlot);
+            monMenu->state = 0;
+        } else {
+            DebugMonMenu_SetTrainerMemo(monMenu, TRUE);
+            monMenu->state = 5;
+        }
     }
 }
 
@@ -405,19 +436,18 @@ void DebugMonMenu_WaitButtonPress(DebugMonMenu *monMenu)
 void DebugMonMenu_Init(DebugMonMenu *monMenu)
 {
     Window_FillTilemap(&monMenu->titleWindow, 15);
-    DebugMonMenu_PrintString(&monMenu->titleWindow, monMenu->msgLoader, DMV_INFO_02, 0, 0, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+    if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
+        DebugMonMenu_PrintString(&monMenu->titleWindow, monMenu->msgLoader, DMV_EDIT_INSTRUCTIONS, 0, 0, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+    } else {
+        DebugMonMenu_PrintString(&monMenu->titleWindow, monMenu->msgLoader, DMV_INFO_02, 0, 0, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+    }
 
     monMenu->mon.monData = Pokemon_New(HEAP_ID_APPLICATION);
 
     if (monMenu->mode == DEBUG_MON_MENU_MODE_CREATE) {
         DebugMon_InitStats(&monMenu->mon);
     } else if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
-        Party *party = Party_GetFromSavedata(monMenu->sys->saveData);
-        Pokemon *changeMon = Party_GetPokemonBySlotIndex(party, 0);
-
-        MI_CpuCopy8(changeMon, monMenu->mon.monData, Pokemon_GetStructSize());
-
-        DebugMon_SetStatsFromMonData(&monMenu->mon);
+        DebugMonMenu_SetEditMon(monMenu, monMenu->partySlot);
     }
 
     monMenu->mon.page = 0;
@@ -617,7 +647,7 @@ static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu)
             Strbuf_Free(buf);
         }
 
-        Pokemon *mon = Party_GetPokemonBySlotIndex(party, 0);
+        Pokemon *mon = Party_GetPokemonBySlotIndex(party, monMenu->partySlot);
 
         buf = Strbuf_Init(16, HEAP_ID_APPLICATION);
         Pokemon_GetValue(mon, MON_DATA_OTNAME_STRBUF, buf);
@@ -627,11 +657,19 @@ static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu)
         u8 gender = Pokemon_GetValue(mon, MON_DATA_OT_GENDER, NULL);
         Pokemon_SetValue(monMenu->mon.monData, MON_DATA_OT_GENDER, &gender);
         // set party data?
-        sub_0207A128(party, 0, monMenu->mon.monData);
+        sub_0207A128(party, monMenu->partySlot, monMenu->mon.monData);
         return 0;
     }
 
     return 0;
+}
+
+static void DebugMonMenu_SetEditMon(DebugMonMenu *monMenu, u8 partySlot)
+{
+    Party *party = Party_GetFromSavedata(monMenu->sys->saveData);
+    Pokemon *changeMon = Party_GetPokemonBySlotIndex(party, partySlot);
+    MI_CpuCopy8(changeMon, monMenu->mon.monData, Pokemon_GetStructSize());
+    DebugMon_SetStatsFromMonData(&monMenu->mon);
 }
 
 static void DebugMon_InitStats(DebugMon *mon)
