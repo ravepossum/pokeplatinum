@@ -265,7 +265,7 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
 {
     u8 result;
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (JOY_NEW(PAD_BUTTON_A)) {
         monMenu->mon.dataBackup = monMenu->mon.stats[sDebugMonMenuPages[monMenu->mon.page].page[monMenu->mon.cursor]];
         monMenu->mon.value = 0;
         DebugMonMenu_DisplayValues(monMenu);
@@ -273,12 +273,12 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
         return;
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    if (JOY_NEW(PAD_BUTTON_B)) {
         monMenu->state = 4;
         return;
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_START) {
+    if (JOY_NEW(PAD_BUTTON_START)) {
         if (monMenu->mode != DEBUG_MON_MENU_MODE_EDIT) {
             DebugMon_CalcFullStats(monMenu, &monMenu->mon);
         } else {
@@ -303,31 +303,31 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
         return;
     }
 
-    if (gCoreSys.pressedKeys & PAD_KEY_UP) {
+    if (JOY_NEW(PAD_KEY_UP)) {
         DebugMonMenu_DisplayCursor(monMenu, DMMD_DECREASE);
         return;
     }
 
-    if (gCoreSys.pressedKeys & PAD_KEY_DOWN) {
+    if (JOY_NEW(PAD_KEY_DOWN)) {
         DebugMonMenu_DisplayCursor(monMenu, DMMD_INCREASE);
         return;
     }
 
-    if ((gCoreSys.pressedKeys & PAD_BUTTON_L) && monMenu->mon.page > 0) {
+    if (JOY_NEW(PAD_BUTTON_L) && monMenu->mon.page > 0) {
         monMenu->mon.page--;
         monMenu->mon.cursor = 0;
         monMenu->state = 0;
         return;
     }
 
-    if ((gCoreSys.pressedKeys & PAD_BUTTON_R) && monMenu->mon.page < DEBUG_MON_MENU_MAX_PAGES - 1) {
+    if (JOY_NEW(PAD_BUTTON_R) && monMenu->mon.page < DEBUG_MON_MENU_MAX_PAGES - 1) {
         monMenu->mon.page++;
         monMenu->mon.cursor = 0;
         monMenu->state = 0;
         return;
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_X) {
+    if (JOY_NEW(PAD_BUTTON_X)) {
         if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
             int partyCount = Party_GetCurrentCount(Party_GetFromSavedata(monMenu->sys->saveData));
 
@@ -346,7 +346,7 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
         return;
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_Y) {
+    if (JOY_NEW(PAD_BUTTON_Y)) {
         if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
             int partyCount = Party_GetCurrentCount(Party_GetFromSavedata(monMenu->sys->saveData));
 
@@ -369,24 +369,24 @@ void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu)
 {
     u8 statID = sDebugMonMenuPages[monMenu->mon.page].page[monMenu->mon.cursor];
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (JOY_NEW(PAD_BUTTON_A)) {
         monMenu->state = 0;
         return;
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    if (JOY_NEW(PAD_BUTTON_B)) {
         monMenu->mon.stats[statID] = monMenu->mon.dataBackup;
         monMenu->state = 0;
         return;
     }
 
-    if (gCoreSys.heldKeys & PAD_KEY_UP) {
+    if (JOY_HELD(PAD_KEY_UP)) {
         DebugMonMenu_ChangeValue(&monMenu->mon, DMMD_INCREASE);
         DebugMonMenu_DisplayValues(monMenu);
         return;
     }
 
-    if (gCoreSys.heldKeys & PAD_KEY_DOWN) {
+    if (JOY_HELD(PAD_KEY_DOWN)) {
         DebugMonMenu_ChangeValue(&monMenu->mon, DMMD_DECREASE);
         DebugMonMenu_DisplayValues(monMenu);
         return;
@@ -394,12 +394,12 @@ void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu)
 
     // ravetodo better names
     if (sDebugMonValueList[statID].value->count != DMV_COUNT_NONE) {
-        if ((gCoreSys.pressedKeys & PAD_KEY_LEFT) && monMenu->mon.value < sDebugMonValueList[statID].value->count - 1) {
+        if (JOY_NEW(PAD_KEY_LEFT) && monMenu->mon.value < sDebugMonValueList[statID].value->count - 1) {
             monMenu->mon.value++;
             DebugMonMenu_DisplayValues(monMenu);
             return;
         }
-        if ((gCoreSys.pressedKeys & PAD_KEY_RIGHT) && monMenu->mon.value > 0) {
+        if (JOY_NEW(PAD_KEY_RIGHT) && monMenu->mon.value > 0) {
             monMenu->mon.value--;
             DebugMonMenu_DisplayValues(monMenu);
         }
@@ -408,7 +408,7 @@ void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu)
 
 void DebugMonMenu_WaitButtonPress(DebugMonMenu *monMenu)
 {
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (JOY_NEW(PAD_BUTTON_A)) {
         monMenu->state = 0;
     }
 }

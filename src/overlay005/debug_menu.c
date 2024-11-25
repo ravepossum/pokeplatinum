@@ -215,7 +215,7 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
     s32 choice = ListMenu_ProcessInput(menu->listMenu);
     SysTaskFunc taskFunc;
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (JOY_NEW(PAD_BUTTON_A)) {
         if (choice) {
             taskFunc = (SysTaskFunc)choice;
             taskFunc(task, data);
@@ -223,7 +223,7 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
         return;
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    if (JOY_NEW(PAD_BUTTON_B)) {
         if (menu->callback != NULL) {
             void (*taskFunc)(FieldSystem *) = menu->callback;
             CB_DebugMenu_Exit(task, menu);
@@ -401,7 +401,7 @@ static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
         FieldSystem_ResumeProcessing();
         break;
     case 5:
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_X | PAD_BUTTON_Y)) {
+        if (JOY_NEW(PAD_BUTTON_X | PAD_BUTTON_Y)) {
             monMenu->state = 0;
         }
         break;
@@ -428,23 +428,23 @@ static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data)
     Camera *cam = menu->sys->camera;
     CameraAngle angle = { 0, 0, 0, 0 };
 
-    if (gCoreSys.heldKeys & PAD_KEY_UP) {
+    if (JOY_HELD(PAD_KEY_UP)) {
         menu->data += 100;
-    } else if (gCoreSys.heldKeys & PAD_KEY_DOWN) {
+    } else if (JOY_HELD(PAD_KEY_DOWN)) {
         menu->data -= 100;
     }
 
-    if (gCoreSys.heldKeys & PAD_KEY_LEFT) {
+    if (JOY_HELD(PAD_KEY_LEFT)) {
         angle.y = -800;
         Camera_AdjustAngleAroundTarget(&angle, cam);
-    } else if (gCoreSys.heldKeys & PAD_KEY_RIGHT) {
+    } else if (JOY_HELD(PAD_KEY_RIGHT)) {
         angle.y = 800;
         Camera_AdjustAngleAroundTarget(&angle, cam);
     }
 
     Camera_SetFOV(menu->data, cam);
 
-    if (gCoreSys.heldKeys & PAD_BUTTON_START) {
+    if (JOY_HELD(PAD_BUTTON_START)) {
         SysTask_Done(task);
         FieldSystem_ResumeProcessing();
     }
