@@ -7,9 +7,9 @@
 
 #include "overlay021/ov21_021D0D80.h"
 #include "overlay021/ov21_021D1FA4.h"
-#include "overlay021/ov21_021D3208.h"
 #include "overlay021/ov21_021D4C0C.h"
 #include "overlay021/ov21_021E29DC.h"
+#include "overlay021/pokedex_sort.h"
 #include "overlay021/struct_ov21_021D0F60_decl.h"
 #include "overlay021/struct_ov21_021D13FC.h"
 #include "overlay021/struct_ov21_021D3320.h"
@@ -24,6 +24,7 @@
 #include "cell_actor.h"
 #include "core_sys.h"
 #include "heap.h"
+#include "math.h"
 #include "narc.h"
 #include "sprite_resource.h"
 #include "touch_screen.h"
@@ -33,7 +34,6 @@
 #include "unk_0200A328.h"
 #include "unk_0200A9DC.h"
 #include "unk_02012744.h"
-#include "unk_0201D15C.h"
 #include "unk_0201DBEC.h"
 #include "unk_0201F834.h"
 #include "unk_02023FCC.h"
@@ -279,15 +279,15 @@ static int ov21_021E4DC0(UnkStruct_ov21_021E6A68 *param0, void *param1)
     UnkStruct_ov21_021E4D90 *v0 = param1;
     UnkStruct_ov21_021E51DC *v1 = param0->unk_08;
     int v2;
-    int v3 = ov21_021D37BC(v0->unk_04);
+    int species = PokedexSort_CurrentSpecies(v0->unk_04);
 
-    v1 = Heap_AllocFromHeap(param0->unk_04, sizeof(UnkStruct_ov21_021E51DC));
+    v1 = Heap_AllocFromHeap(param0->heapID, sizeof(UnkStruct_ov21_021E51DC));
     memset(v1, 0, sizeof(UnkStruct_ov21_021E51DC));
 
-    ov21_021E5128(v1, v0, param0->unk_04);
+    ov21_021E5128(v1, v0, param0->heapID);
     ov21_021E51DC(v1, v0);
 
-    v1->unk_6C = sub_020050F8(v3);
+    v1->unk_6C = sub_020050F8(species);
 
     param0->unk_08 = v1;
 
@@ -352,12 +352,12 @@ static int ov21_021E4E98(void *param0, UnkStruct_ov21_021E6B20 *param1, const vo
 
     switch (param1->unk_00) {
     case 0:
-        param1->unk_08 = Heap_AllocFromHeap(param1->unk_04, sizeof(UnkStruct_ov21_021E5004));
+        param1->unk_08 = Heap_AllocFromHeap(param1->heapID, sizeof(UnkStruct_ov21_021E5004));
         memset(param1->unk_08, 0, sizeof(UnkStruct_ov21_021E5004));
         param1->unk_00++;
         break;
     case 1:
-        ov21_021E54D4(v3, v2, param1->unk_04);
+        ov21_021E54D4(v3, v2, param1->heapID);
         ov21_021E507C(v3, v2, v0, 1);
         param1->unk_00++;
         break;
@@ -417,7 +417,7 @@ static int ov21_021E4F78(void *param0, UnkStruct_ov21_021E6B20 *param1, const vo
         }
         break;
     case 2:
-        ov21_021E5510(v3, v2, param1->unk_04);
+        ov21_021E5510(v3, v2, param1->heapID);
         param1->unk_00++;
         break;
     case 3:
@@ -568,7 +568,7 @@ static void ov21_021E5268(u32 param0, u32 param1, void *param2)
     UnkStruct_ov21_021E5228 *v0 = param2;
     UnkStruct_ov21_021E4D90 *v1 = v0->unk_00;
     UnkStruct_ov21_021E51DC *v2 = v0->unk_04;
-    int v3 = ov21_021D37BC(v1->unk_04);
+    int species = PokedexSort_CurrentSpecies(v1->unk_04);
 
     v2->unk_18[param0] = param1;
 
@@ -585,7 +585,7 @@ static void ov21_021E5268(u32 param0, u32 param1, void *param2)
             case 0:
                 if (v2->unk_64 == 1) {
                     if (v2->unk_2C == 0) {
-                        ov21_021E5DE8(v2, v1, v3);
+                        ov21_021E5DE8(v2, v1, species);
                     } else {
                         ov21_021E5E18(v2);
                     }
@@ -594,7 +594,7 @@ static void ov21_021E5268(u32 param0, u32 param1, void *param2)
                         sub_0200592C(0);
                     }
 
-                    ov21_021E5DE8(v2, v1, v3);
+                    ov21_021E5DE8(v2, v1, species);
                 }
                 break;
             case 1:
@@ -932,7 +932,7 @@ static void ov21_021E58B8(UnkStruct_ov21_021E5004 *param0, UnkStruct_ov21_021E4D
     v1.unk_18 = 2;
     v1.unk_1C = 0;
     v1.unk_20 = NNS_G2D_VRAM_TYPE_2DSUB;
-    v1.unk_24 = param2;
+    v1.heapID = param2;
 
     v4 = sub_0201FAB4(v1.unk_08, NNS_G2D_VRAM_TYPE_2DSUB);
     v0 = ov21_021D4D6C(v3->unk_14C, 8, 2);
@@ -1017,7 +1017,7 @@ static void ov21_021E5A44(UnkStruct_ov21_021E51DC *param0)
     v0 = param0->unk_58 - 157;
     v3 = gCoreSys.touchX - 51;
     v2 = gCoreSys.touchY - 157;
-    v4 = sub_0201D4CC(v1, v0, v3, v2, 0);
+    v4 = CalcDotProduct2D(v1, v0, v3, v2, 0);
 
     if (MATH_IAbs(v4) < 1) {
         return;
@@ -1101,7 +1101,7 @@ static void ov21_021E5AD8(UnkStruct_ov21_021E51DC *param0)
 
 static void ov21_021E5B50(UnkStruct_ov21_021E5004 *param0, const UnkStruct_ov21_021E51DC *param1)
 {
-    CellActor_SetAffineZRotation(param0->unk_00, sub_0201D580(14, param1->unk_5C));
+    CellActor_SetAffineZRotation(param0->unk_00, CalcRadialAngle(14, param1->unk_5C));
 }
 
 static void ov21_021E5B6C(UnkStruct_ov21_021E5004 *param0, UnkStruct_ov21_021E4DA4 *param1, const UnkStruct_ov21_021E51DC *param2)
@@ -1284,13 +1284,13 @@ static void ov21_021E5E28(UnkStruct_ov21_021E51DC *param0)
 
 static void ov21_021E5E48(UnkStruct_ov21_021E51DC *param0, UnkStruct_ov21_021E4D90 *param1)
 {
-    int v0 = ov21_021D37BC(param1->unk_04);
+    int species = PokedexSort_CurrentSpecies(param1->unk_04);
 
     if (sub_0200598C() == 0) {
         param0->unk_68--;
 
         if (param0->unk_68 == 0) {
-            ov21_021E5DE8(param0, param1, v0);
+            ov21_021E5DE8(param0, param1, species);
             param0->unk_68 = 10;
         }
     }
@@ -1374,7 +1374,7 @@ static void ov21_021E5F38(UnkStruct_ov21_021E5004 *param0, const UnkStruct_ov21_
 
 static void ov21_021E5F5C(UnkStruct_ov21_021E51DC *param0, UnkStruct_ov21_021E4D90 *param1)
 {
-    int v0 = ov21_021D37BC(param1->unk_04);
+    int species = PokedexSort_CurrentSpecies(param1->unk_04);
 
     if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
         param0->unk_28 = 1;
@@ -1386,10 +1386,10 @@ static void ov21_021E5F5C(UnkStruct_ov21_021E51DC *param0, UnkStruct_ov21_021E4D
                 sub_0200592C(0);
             }
 
-            ov21_021E5DE8(param0, param1, v0);
+            ov21_021E5DE8(param0, param1, species);
         } else {
             if (param0->unk_2C == 0) {
-                ov21_021E5DE8(param0, param1, v0);
+                ov21_021E5DE8(param0, param1, species);
             } else {
                 ov21_021E5E18(param0);
             }

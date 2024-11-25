@@ -7,6 +7,9 @@
     .include "consts/poketch.inc"
     .include "consts/scrcmd.inc"
     .include "consts/sdat.inc"
+    .include "consts/species.inc"
+
+#include "res/trainers/trdata.naix"
 
     .macro Noop
     .short 0
@@ -1262,10 +1265,10 @@
     .short \arg0
     .endm
 
-    .macro ScrCmd_0E5 arg0, arg1
+    .macro StartTrainerBattle enemyTrainer1, enemyTrainer2=0
     .short 229
-    .short \arg0
-    .short \arg1
+    .short \enemyTrainer1
+    .short \enemyTrainer2
     .endm
 
     .macro ScrCmd_0E6 arg0, arg1
@@ -1317,7 +1320,7 @@
     .short \arg0
     .endm
 
-    .macro ScrCmd_0EF
+    .macro StartDummyTrainerBattle
     .short 239
     .endm
 
@@ -1356,7 +1359,7 @@
     .short \arg0
     .endm
 
-    .macro ScrCmd_0F6
+    .macro StartLinkBattle
     .short 246
     .endm
 
@@ -1596,18 +1599,18 @@
     .short \arg1
     .endm
 
-    .macro ScrCmd_124 arg0, arg1
+    .macro StartWildBattle species, level
     .short 292
-    .short \arg0
-    .short \arg1
+    .short \species
+    .short \level
     .endm
 
-    .macro ScrCmd_125 arg0
+    .macro StartFirstBattle trainerID
     .short 293
-    .short \arg0
+    .short \trainerID
     .endm
 
-    .macro ScrCmd_126
+    .macro StartCatchingTutorial
     .short 294
     .endm
 
@@ -1620,7 +1623,7 @@
     .short \arg0
     .endm
 
-    .macro ScrCmd_129
+    .macro StartHoneyTreeBattle
     .short 297
     .endm
 
@@ -1840,81 +1843,81 @@
     .short \arg0
     .endm
 
-    .macro ScrCmd_157 arg0
+    .macro CheckPokedexAcquired destVarID
     .short 343
-    .short \arg0
+    .short \destVarID
     .endm
 
-    .macro ScrCmd_158
+    .macro GivePokedex
     .short 344
     .endm
 
-    .macro ScrCmd_159 arg0
+    .macro CheckRunningShoesAcquired destVarID
     .short 345
-    .short \arg0
+    .short \destVarID
     .endm
 
-    .macro ScrCmd_15A
+    .macro GiveRunningShoes
     .short 346
     .endm
 
-    .macro CheckBadge badgeID, destVarID
+    .macro CheckBadgeAcquired badgeID, destVarID
     .short 347
     .short \badgeID
     .short \destVarID
     .endm
 
-    .macro ScrCmd_15C arg0
+    .macro GiveBadge badgeID
     .short 348
-    .short \arg0
+    .short \badgeID
     .endm
 
-    .macro ScrCmd_15D arg0
+    .macro CountBadgesAcquired destVarID
     .short 349
-    .short \arg0
+    .short \destVarID
     .endm
 
-    .macro ScrCmd_15E arg0
+    .macro CheckBagAcquired destVarID
     .short 350
-    .short \arg0
+    .short \destVarID
     .endm
 
-    .macro ScrCmd_15F
+    .macro GiveBag
     .short 351
     .endm
 
-    .macro ScrCmd_160 arg0
+    .macro CheckHasPartner destVarID
     .short 352
-    .short \arg0
+    .short \destVarID
     .endm
 
-    .macro ScrCmd_161
+    .macro SetHasPartner
     .short 353
     .endm
 
-    .macro ScrCmd_162
+    .macro ClearHasPartner
     .short 354
     .endm
 
-    .macro ScrCmd_163 arg0
+    .macro CheckStepFlag destVarID
     .short 355
-    .short \arg0
+    .short \destVarID
     .endm
 
-    .macro ScrCmd_164
+    .macro SetStepFlag
     .short 356
     .endm
 
-    .macro ScrCmd_165
+    .macro ClearStepFlag
     .short 357
     .endm
 
-    .macro ScrCmd_166 arg0
+    .macro CheckGameCompleted destVarID
     .short 358
-    .short \arg0
+    .short \destVarID
     .endm
 
-    .macro ScrCmd_167
+    .macro SetGameCompleted
     .short 359
     .endm
 
@@ -2457,7 +2460,7 @@
     .short \arg2
     .endm
 
-    .macro ScrCmd_1CC
+    .macro GiveJournal
     .short 460
     .endm
 
@@ -2474,27 +2477,27 @@
     .short 462
     .endm
 
-    .macro ScrCmd_1CF arg0, arg1=0
+    .macro Strength mode, checkDestVarID=0
     .short 463
-    .byte \arg0
-    .if \arg0 == 2
-        .short \arg1
+    .byte \mode
+    .if \mode == 2
+        .short \checkDestVarID
     .endif
     .endm
 
-    .macro ScrCmd_1D0 arg0, arg1=0
+    .macro Flash mode, checkDestVarID=0
     .short 464
-    .byte \arg0
-    .if \arg0 == 2
-        .short \arg1
+    .byte \mode
+    .if \mode == 2
+        .short \checkDestVarID
     .endif
     .endm
 
-    .macro ScrCmd_1D1 arg0, arg1=0
+    .macro Defog mode, checkDestVarID=0
     .short 465
-    .byte \arg0
-    .if \arg0 == 2
-        .short \arg1
+    .byte \mode
+    .if \mode == 2
+        .short \checkDestVarID
     .endif
     .endm
 
@@ -3317,11 +3320,11 @@
     .short \arg0
     .endm
 
-    .macro ScrCmd_265
+    .macro HidePoketch
     .short 613
     .endm
 
-    .macro ScrCmd_266
+    .macro ShowPoketch
     .short 614
     .endm
 
@@ -3642,11 +3645,11 @@
     .short \arg0
     .endm
 
-    .macro ScrCmd_2A0 arg0, arg1, arg2
+    .macro StartTagBattle partnerTrainer, enemyTrainer1, enemyTrainer2
     .short 672
-    .short \arg0
-    .short \arg1
-    .short \arg2
+    .short \partnerTrainer
+    .short \enemyTrainer1
+    .short \enemyTrainer2
     .endm
 
     .macro ScrCmd_2A1 arg0, arg1, arg2
@@ -3798,10 +3801,10 @@
     .short \destVarID
     .endm
 
-    .macro ScrCmd_2BD arg0, arg1
+    .macro StartLegendaryBattle species, level
     .short 701
-    .short \arg0
-    .short \arg1
+    .short \species
+    .short \level
     .endm
 
     .macro ScrCmd_2BE arg0
@@ -4305,16 +4308,16 @@
     .short \destVarIDZ
     .endm
 
-    .macro ScrCmd_318 arg0, arg1
+    .macro StartFatefulEncounter species, level
     .short 792
-    .short \arg0
-    .short \arg1
+    .short \species
+    .short \level
     .endm
 
-    .macro ScrCmd_319 arg0, arg1
+    .macro StartGiratinaOriginBattle species, level
     .short 793
-    .short \arg0
-    .short \arg1
+    .short \species
+    .short \level
     .endm
 
     .macro ScrCmd_31A arg0

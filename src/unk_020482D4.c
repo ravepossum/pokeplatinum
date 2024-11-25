@@ -68,7 +68,7 @@ BOOL ScrCmd_PlayDefaultMusic(ScriptContext *ctx)
 
 BOOL ScrCmd_053(ScriptContext *param0)
 {
-    sub_020553F0(param0->fieldSystem, ScriptContext_ReadHalfWord(param0));
+    Sound_SetSpecialBGM(param0->fieldSystem, ScriptContext_ReadHalfWord(param0));
     return 0;
 }
 
@@ -126,7 +126,7 @@ BOOL ScrCmd_PlayFanfare(ScriptContext *ctx)
 
 BOOL ScrCmd_04A(ScriptContext *param0)
 {
-    sub_020057A4(ScriptContext_GetVar(param0), 0);
+    Sound_StopEffect(ScriptContext_GetVar(param0), 0);
     return 0;
 }
 

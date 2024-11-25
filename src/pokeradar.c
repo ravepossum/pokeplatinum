@@ -6,7 +6,6 @@
 #include "constants/battle.h"
 #include "consts/sdat.h"
 
-#include "struct_decls/struct_020508D4_decl.h"
 #include "struct_defs/struct_0201CFEC.h"
 #include "struct_defs/struct_020698E4.h"
 
@@ -16,9 +15,11 @@
 #include "overlay101/struct_ov101_021D5D90_decl.h"
 
 #include "bag.h"
+#include "field_task.h"
 #include "heap.h"
 #include "inlines.h"
 #include "map_object.h"
+#include "map_tile_behavior.h"
 #include "player_avatar.h"
 #include "scrcmd.h"
 #include "script_manager.h"
@@ -26,10 +27,8 @@
 #include "unk_0201CED8.h"
 #include "unk_0202D7A8.h"
 #include "unk_02039C80.h"
-#include "unk_020508D4.h"
 #include "unk_02054D00.h"
 #include "unk_020553DC.h"
-#include "unk_0205DAC8.h"
 #include "unk_020711EC.h"
 
 typedef struct {
@@ -271,7 +270,7 @@ void sub_0206979C(FieldSystem *fieldSystem)
     GrassPatch *patch;
     int patchRing;
 
-    if (!fieldSystem->chain->active || fieldSystem->taskManager != NULL) {
+    if (!fieldSystem->chain->active || fieldSystem->task != NULL) {
         return;
     }
 
@@ -308,9 +307,9 @@ static BOOL CheckTileIsGrass(FieldSystem *fieldSystem, const fx32 param1, const 
     int v1 = (param3 - (9 / 2)) + param5;
     patch->unk_00 = v0;
     patch->unk_04 = v1;
-    u8 v2 = sub_02054F94(fieldSystem, v0, v1);
+    u8 v2 = FieldSystem_GetTileBehavior(fieldSystem, v0, v1);
 
-    if (sub_0205DAC8(v2)) {
+    if (TileBehavior_IsTallGrass(v2)) {
         u8 v3;
         patch->position.x = FX32_ONE * 16 * v0;
         patch->position.z = FX32_ONE * 16 * v1;
@@ -416,10 +415,10 @@ static BOOL CheckPatchContinueChain(const u8 patchRing, const int battleResult)
     }
 }
 
-BOOL RefreshRadarChain(TaskManager *taskMan)
+BOOL RefreshRadarChain(FieldTask *taskMan)
 {
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(taskMan);
-    int *v1 = TaskManager_Environment(taskMan);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(taskMan);
+    int *v1 = FieldTask_GetEnv(taskMan);
 
     switch (*v1) {
     case 0:

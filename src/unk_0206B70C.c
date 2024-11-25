@@ -3,9 +3,10 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/savedata/vars_flags.h"
+
 #include "struct_decls/struct_0203A790_decl.h"
 #include "struct_defs/struct_0203D8AC.h"
-#include "struct_defs/struct_02049FA8.h"
 #include "struct_defs/struct_020556C4.h"
 #include "struct_defs/union_0206B878.h"
 
@@ -15,10 +16,12 @@
 #include "field_system.h"
 #include "heap.h"
 #include "inlines.h"
+#include "location.h"
 #include "map_header.h"
 #include "player_avatar.h"
 #include "save_player.h"
 #include "script_manager.h"
+#include "system_flags.h"
 #include "trainer_info.h"
 #include "unk_02039C80.h"
 #include "unk_0206AFE0.h"
@@ -47,26 +50,26 @@ static const int Unk_020EFA98[10][4] = {
 };
 
 static const u8 Unk_020EFA84[20] = {
-    0x0,
-    0x1,
-    0x2,
-    0x3,
-    0x4,
-    0x5,
-    0x6,
-    0x7,
-    0x8,
-    0x9,
-    0xA,
-    0xB,
-    0xC,
-    0xD,
-    0xE,
-    0xF,
-    0x11,
-    0x43,
-    0x10,
-    0x44
+    FIRST_ARRIVAL_TWINLEAF_TOWN,
+    FIRST_ARRIVAL_SANDGEM_TOWN,
+    FIRST_ARRIVAL_FLOAROMA_TOWN,
+    FIRST_ARRIVAL_SOLACEON_TOWN,
+    FIRST_ARRIVAL_CELESTIC_TOWN,
+    FIRST_ARRIVAL_SURVIVAL_AREA,
+    FIRST_ARRIVAL_RESORT_AREA,
+    FIRST_ARRIVAL_JUBILIFE_CITY,
+    FIRST_ARRIVAL_CANALAVE_CITY,
+    FIRST_ARRIVAL_OREBURGH_CITY,
+    FIRST_ARRIVAL_ETERNA_CITY,
+    FIRST_ARRIVAL_HEARTHOME_CITY,
+    FIRST_ARRIVAL_PASTORIA_CITY,
+    FIRST_ARRIVAL_VEILSTONE_CITY,
+    FIRST_ARRIVAL_SUNYSHORE_CITY,
+    FIRST_ARRIVAL_SNOWPOINT_CITY,
+    FIRST_ARRIVAL_FIGHT_AREA,
+    FIRST_ARRIVAL_POKE_PARK_FRONT_GATE,
+    FIRST_ARRIVAL_OUTSIDE_VICTORY_ROAD,
+    FIRST_ARRIVAL_POKEMON_LEAGUE,
 };
 
 void sub_0206B70C(FieldSystem *fieldSystem, UnkStruct_0203D8AC *param1, int param2)
@@ -76,16 +79,16 @@ void sub_0206B70C(FieldSystem *fieldSystem, UnkStruct_0203D8AC *param1, int para
     int x, z, v6;
     UnkStruct_020556C4 *v7;
     VarsFlags *v8 = SaveData_GetVarsFlags(fieldSystem->saveData);
-    FieldOverworldState *v9 = SaveData_GetFieldOverworldState(fieldSystem->saveData);
-    Location *v10 = sub_0203A72C(v9);
+    FieldOverworldState *fieldState = SaveData_GetFieldOverworldState(fieldSystem->saveData);
+    Location *v10 = FieldOverworldState_GetExitLocation(fieldState);
 
     memset(param1, 0, sizeof(UnkStruct_0203D8AC));
 
     x = Player_GetXPos(fieldSystem->playerAvatar);
     z = Player_GetZPos(fieldSystem->playerAvatar);
 
-    int v11 = 10 - 1;
-    Location *location = sub_0203A720(v9);
+    int v11 = 9;
+    Location *location = FieldOverworldState_GetPlayerLocation(fieldState);
 
     v6 = location->mapId;
 
@@ -109,7 +112,7 @@ void sub_0206B70C(FieldSystem *fieldSystem, UnkStruct_0203D8AC *param1, int para
         param1->unk_04 = v10->z;
     }
 
-    v0 = SaveData_GetTrainerInfo(FieldSystem_SaveData(fieldSystem));
+    v0 = SaveData_GetTrainerInfo(FieldSystem_GetSaveData(fieldSystem));
     param1->unk_0C = TrainerInfo_Gender(v0);
     v7 = sub_0203A76C(SaveData_GetFieldOverworldState(fieldSystem->saveData));
     v2 = (v7->unk_00 - 2 + 6) % 6;
@@ -133,13 +136,13 @@ void sub_0206B70C(FieldSystem *fieldSystem, UnkStruct_0203D8AC *param1, int para
     }
 
     for (v1 = 0; v1 < 4; v1++) {
-        if (sub_0206B1F0(v8, v1)) {
+        if (VarFlags_HiddenLocationsUnlocked(v8, v1)) {
             param1->unk_13C |= (0x1 << v1);
         }
     }
 
     for (v1 = 0; v1 < 20; v1++) {
-        param1->unk_124[v1] = inline_0208BE68(v8, Unk_020EFA84[v1]);
+        param1->unk_124[v1] = SystemFlag_HandleFirstArrivalToZone(v8, HANDLE_FLAG_CHECK, Unk_020EFA84[v1]);
     }
 
     sub_0206B878(fieldSystem, param1, "data/tmap_flags.dat");
@@ -150,7 +153,7 @@ void sub_0206B70C(FieldSystem *fieldSystem, UnkStruct_0203D8AC *param1, int para
 static void sub_0206B878(FieldSystem *fieldSystem, UnkStruct_0203D8AC *param1, const char *param2)
 {
     FSFile v0;
-    int v1, v2;
+    int v1, i;
     int v3;
     UnkStruct_0206B878 *v4;
     UnkUnion_0206B878 *v5;
@@ -171,13 +174,13 @@ static void sub_0206B878(FieldSystem *fieldSystem, UnkStruct_0203D8AC *param1, c
 
     param1->unk_13A = v3;
 
-    for (v2 = 0; v2 < v3; v2++) {
-        v5 = &(param1->unk_5C[v2]);
+    for (i = 0; i < v3; i++) {
+        v5 = &(param1->unk_5C[i]);
         v1 = FS_ReadFile(&v0, v4, sizeof(UnkStruct_0206B878));
 
         switch (v4->unk_00) {
         case 1:
-            v5->val1_2 = inline_0208BE68(v6, v4->unk_01);
+            v5->val1_2 = SystemFlag_HandleFirstArrivalToZone(v6, HANDLE_FLAG_CHECK, v4->unk_01);
             v5->val1_0 = 1;
             break;
         case 2:
@@ -188,7 +191,7 @@ static void sub_0206B878(FieldSystem *fieldSystem, UnkStruct_0203D8AC *param1, c
 
         switch (v4->unk_02) {
         case 1:
-            v5->val1_6 = inline_0208BE68(v6, v4->unk_03);
+            v5->val1_6 = SystemFlag_HandleFirstArrivalToZone(v6, HANDLE_FLAG_CHECK, v4->unk_03);
             v5->val1_4 = 1;
             break;
         case 2:
@@ -200,6 +203,4 @@ static void sub_0206B878(FieldSystem *fieldSystem, UnkStruct_0203D8AC *param1, c
 
     (void)FS_CloseFile(&v0);
     Heap_FreeToHeap(v4);
-
-    return;
 }

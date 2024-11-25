@@ -25,6 +25,7 @@
 #include "font.h"
 #include "gx_layers.h"
 #include "heap.h"
+#include "math.h"
 #include "message.h"
 #include "narc.h"
 #include "overlay_manager.h"
@@ -41,7 +42,6 @@
 #include "unk_0200C6E4.h"
 #include "unk_0200F174.h"
 #include "unk_02017728.h"
-#include "unk_0201D15C.h"
 #include "unk_0201DBEC.h"
 #include "unk_020393C8.h"
 #include "unk_0208C098.h"
@@ -222,10 +222,10 @@ int ov79_021D22E4(OverlayManager *param0, int *param1)
         }
 
         v0->unk_04 = 0;
-        sub_0200F174(0, 1, 1, 0x0, 6, 1, v0->unk_00);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, v0->unk_00);
         break;
     case 3:
-        if (!ScreenWipe_Done()) {
+        if (!IsScreenTransitionDone()) {
             return 0;
         }
 
@@ -235,10 +235,10 @@ int ov79_021D22E4(OverlayManager *param0, int *param1)
             return 0;
         }
 
-        sub_0200F174(0, 0, 0, 0x0, 6, 1, v0->unk_00);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, v0->unk_00);
         break;
     case 5:
-        if (!ScreenWipe_Done()) {
+        if (!IsScreenTransitionDone()) {
             return 0;
         }
 
@@ -332,7 +332,7 @@ static void ov79_021D252C(void *param0)
     Bg_RunScheduledUpdates(v0->unk_68);
     sub_02008A94(v0->unk_40.unk_04);
 
-    sub_0200C800();
+    OAMManager_ApplyAndResetBuffers();
     sub_0201DCAC();
 
     OS_SetIrqCheckFlag(OS_IE_V_BLANK);
@@ -532,7 +532,7 @@ static void ov79_021D2858(UnkStruct_ov79_021D2928 *param0)
 
 static void ov79_021D2864(UnkStruct_ov79_021D2928 *param0)
 {
-    sub_0201DBEC(32, param0->unk_00);
+    VRAMTransferManager_New(32, param0->unk_00);
 
     param0->unk_7C = sub_0200C6E4(param0->unk_00);
 
@@ -576,7 +576,7 @@ static void ov79_021D2908(UnkStruct_ov79_021D2928 *param0)
     sub_02099370(param0->unk_5C, param0->unk_60[0]);
     sub_0209903C(param0->unk_5C);
     sub_0200C8D4(param0->unk_7C);
-    sub_0201DC3C();
+    VRAMTransferManager_Destroy();
 }
 
 static int ov79_021D2928(UnkStruct_ov79_021D2928 *param0)
@@ -840,7 +840,7 @@ static void ov79_021D2E74(SysTask *param0, void *param1)
     v3.y = v2->unk_00.y + FX_Mul(v2->unk_18.y, v0->unk_0C);
 
     v4 = FX_Mul(v2->unk_48, v0->unk_0C);
-    v4 = FX_Mul(sub_0201D250(v4 >> 12), FX32_CONST(-64));
+    v4 = FX_Mul(CalcSineDegrees_Wraparound(v4 >> 12), FX32_CONST(-64));
     v5 = FX32_ONE;
     v3.y += FX_Mul(v4, v5);
 
@@ -1063,7 +1063,7 @@ static void ov79_021D34A8(SysTask *param0, void *param1)
     sub_02007DEC(v1->unk_C8, 1, v3.y >> 12);
 
     v4 = FX_Mul(v2->unk_48, v0->unk_0C);
-    v4 = FX_Mul(sub_0201D250(v4 >> 12), FX32_CONST(-6));
+    v4 = FX_Mul(CalcSineDegrees_Wraparound(v4 >> 12), FX32_CONST(-6));
 
     sub_02007DEC(v1->unk_C8, 4, v4 >> 12);
 
@@ -1161,7 +1161,7 @@ static void ov79_021D36F0(SysTask *param0, void *param1)
     VecFx32 v3;
     fx32 v4, v5;
 
-    v4 = sub_0201D250(v2->unk_50);
+    v4 = CalcSineDegrees_Wraparound(v2->unk_50);
     v5 = FX_Mul(v4, FX32_CONST(2));
 
     if (v2->unk_50 > 359) {

@@ -11,12 +11,12 @@ _000E:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    CheckBadge BADGE_ID_COAL, 0x800C
+    CheckBadgeAcquired BADGE_ID_COAL, 0x800C
     GoToIfEq 0x800C, 1, _0103
     ScrCmd_1CD 9, 47, 0, 0, 0
     Message 0
     CloseMessage
-    ScrCmd_0E5 246, 0
+    StartTrainerBattle trainer_leader_roark
     CheckWonBattle 0x800C
     GoToIfEq 0x800C, 0, _0119
     Message 1
@@ -24,17 +24,17 @@ _000E:
     Message 2
     PlaySound SEQ_BADGE
     WaitSound
-    SetTrainerFlag 244
-    SetTrainerFlag 245
-    ScrCmd_15C 0
+    SetTrainerFlag trainer_youngster_jonathon
+    SetTrainerFlag trainer_youngster_darius
+    GiveBadge BADGE_ID_COAL
     ScrCmd_260 23
-    SetTrainerFlag 244
-    SetTrainerFlag 245
+    SetTrainerFlag trainer_youngster_jonathon
+    SetTrainerFlag trainer_youngster_darius
     SetFlag 0x23F
     SetVar 0x40F0, 1
     SetVar 0x4076, 1
     SetVar 0x4079, 2
-    ScrCmd_1CD 10, 47, 246, 0, 0
+    ScrCmd_1CD 10, 47, trainer_leader_roark, 0, 0
     SetVar 0x4077, 3
     ClearFlag 0x17A
     ClearFlag 0x19D
@@ -82,7 +82,7 @@ _011F:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    CheckBadge BADGE_ID_COAL, 0x800C
+    CheckBadgeAcquired BADGE_ID_COAL, 0x800C
     GoToIfEq 0x800C, 1, _0145
     Message 6
     WaitABXPadPress
@@ -101,7 +101,7 @@ _0145:
 _0153:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckBadge BADGE_ID_COAL, 0x800C
+    CheckBadgeAcquired BADGE_ID_COAL, 0x800C
     GoToIfEq 0x800C, 1, _017D
     BufferRivalName 0
     BufferRivalName 1

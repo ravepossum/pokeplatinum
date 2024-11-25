@@ -21,11 +21,11 @@
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
+#include "math.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "unk_02005474.h"
 #include "unk_0200F174.h"
-#include "unk_0201D15C.h"
 #include "unk_0202419C.h"
 
 enum {
@@ -300,7 +300,7 @@ static int ov95_022486AC(UnkStruct_ov95_02248688 *param0, int *param1)
     ov95_022488A4(param0);
     ov95_02248B84(param0);
     ov95_02248CA8(param0);
-    sub_0200F174(0, 1, 1, 0x0, 8, 1, 58);
+    StartScreenTransition(0, 1, 1, 0x0, 8, 1, 58);
 
     return 1;
 }
@@ -311,7 +311,7 @@ static int ov95_022486E0(UnkStruct_ov95_02248688 *param0, int *param1)
 
     switch (*param1) {
     case 0:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             v0 = 0;
             (*param1)++;
         }
@@ -394,12 +394,12 @@ static int ov95_022487D4(UnkStruct_ov95_02248688 *param0, int *param1)
         }
 
         if (ov95_022494F4(param0->unk_160)) {
-            sub_0200F174(0, 0, 0, 0x7fff, 4, 1, 58);
+            StartScreenTransition(0, 0, 0, 0x7fff, 4, 1, 58);
             (*param1)++;
         }
         break;
     case 4:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             return 1;
         }
     }
@@ -923,8 +923,8 @@ static void ov95_022492DC(UnkStruct_ov95_0224922C *param0)
         }
     }
 
-    param0->unk_14.x = param0->unk_08.x + FX_Mul(sub_0201D1D4(v0), param0->unk_38);
-    param0->unk_14.z = param0->unk_08.z + FX_Mul(sub_0201D15C(v0), param0->unk_3C);
+    param0->unk_14.x = param0->unk_08.x + FX_Mul(CalcCosineDegrees(v0), param0->unk_38);
+    param0->unk_14.z = param0->unk_08.z + FX_Mul(CalcSineDegrees(v0), param0->unk_3C);
     param0->unk_20.y += param0->unk_56;
 
     for (v1 = 0; v1 < 3; v1++) {

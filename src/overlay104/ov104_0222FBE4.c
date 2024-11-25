@@ -14,7 +14,6 @@
 #include "struct_defs/struct_0200D0F4.h"
 
 #include "overlay004/ov4_021D0D80.h"
-#include "overlay006/battle_params.h"
 #include "overlay063/ov63_0222BE18.h"
 #include "overlay063/ov63_0222CCE4.h"
 #include "overlay063/struct_ov63_0222BEC0_decl.h"
@@ -64,9 +63,11 @@
 #include "communication_system.h"
 #include "core_sys.h"
 #include "enums.h"
+#include "field_battle_data_transfer.h"
 #include "field_comm_manager.h"
 #include "game_records.h"
 #include "heap.h"
+#include "math.h"
 #include "menu.h"
 #include "message.h"
 #include "narc.h"
@@ -88,7 +89,6 @@
 #include "unk_0200F174.h"
 #include "unk_02014000.h"
 #include "unk_02017728.h"
-#include "unk_0201D15C.h"
 #include "unk_0202ACE0.h"
 #include "unk_0202D05C.h"
 #include "unk_0202F1D4.h"
@@ -840,7 +840,7 @@ static BOOL ov104_0222FF90(UnkStruct_ov104_0222E930 *param0)
     u16 v2 = ov104_0222EA48(param0);
     u16 v3 = ov104_0222EA48(param0);
 
-    sub_0200F174(0, v2, v2, v3, v0, v1, 11);
+    StartScreenTransition(0, v2, v2, v3, v0, v1, 11);
     sub_0200F32C(0);
     sub_0200F32C(1);
 
@@ -855,7 +855,7 @@ static BOOL ov104_0222FFD8(UnkStruct_ov104_0222E930 *param0)
 
 static BOOL ov104_0222FFE8(UnkStruct_ov104_0222E930 *param0)
 {
-    if (ScreenWipe_Done() == 1) {
+    if (IsScreenTransitionDone() == 1) {
         return 1;
     }
 
@@ -1674,11 +1674,11 @@ static int ov104_02230A2C(u16 param0, u16 param1)
 static BOOL ov104_02230B50(UnkStruct_ov104_0222E930 *param0)
 {
     int v0;
-    BattleParams *v1;
+    FieldBattleDTO *v1;
     UnkStruct_ov104_02230BE4 *v2 = sub_0209B970(param0->unk_00->unk_00);
 
-    v1 = Heap_AllocFromHeap(11, sizeof(BattleParams));
-    MI_CpuClear8(v1, sizeof(BattleParams));
+    v1 = Heap_AllocFromHeap(11, sizeof(FieldBattleDTO));
+    MI_CpuClear8(v1, sizeof(FieldBattleDTO));
 
     sub_0202F298(v2->unk_08, 11, &v0, v1, 0);
     sub_02004550(5, 1119, 1);
@@ -2095,11 +2095,11 @@ static BOOL ov104_02231148(UnkStruct_ov104_02231148 *param0)
 
         sub_0200F32C(0);
         sub_0200F32C(1);
-        sub_0200F174(0, 32, 32, 0x0, 12, 1, 11);
+        StartScreenTransition(0, 32, 32, 0x0, 12, 1, 11);
         param0->unk_04++;
         break;
     default:
-        if (ScreenWipe_Done() == 1) {
+        if (IsScreenTransitionDone() == 1) {
             return 0;
         }
         break;
@@ -2143,7 +2143,7 @@ static BOOL ov104_022311BC(UnkStruct_ov104_02231148 *param0)
         }
     } break;
     default:
-        if (ScreenWipe_Done() == 1) {
+        if (IsScreenTransitionDone() == 1) {
             ov104_0223EBD0(param0->unk_2C);
 
             Window_ClearAndCopyToVRAM(param0->unk_28);
@@ -2198,7 +2198,7 @@ static BOOL ov104_022312D8(UnkStruct_ov104_02231148 *param0)
     } break;
 
     default:
-        if (ScreenWipe_Done() == 1) {
+        if (IsScreenTransitionDone() == 1) {
             ov104_0223EBD0(param0->unk_2C);
 
             Window_ClearAndCopyToVRAM(param0->unk_28);
@@ -2252,7 +2252,7 @@ static void ov104_022313FC(SysTask *param0, void *param1)
                 v10 = v4->unk_00[v0].unk_0C & 0xffff;
                 v11 = v4->unk_00[v0].unk_0C >> 16;
 
-                sub_0201D470(&v5, 0, FX32_ONE, FX32_ONE, 0);
+                CreateAffineTransformationMatrix(&v5, 0, FX32_ONE, FX32_ONE, AFFINE_MODE_NORMAL);
 
                 v12 = v6 + v4->unk_00[v0].unk_08;
                 v13 = v7 + v4->unk_00[v0].unk_0A;
@@ -2317,7 +2317,7 @@ static void ov104_022313FC(SysTask *param0, void *param1)
             v14 = v4->unk_00[v0].unk_0C & 0xffff;
             v15 = v4->unk_00[v0].unk_0C >> 16;
 
-            sub_0201D470(&v5, 0, FX32_ONE, FX32_ONE, 0);
+            CreateAffineTransformationMatrix(&v5, 0, FX32_ONE, FX32_ONE, AFFINE_MODE_NORMAL);
 
             v16 = v6 + v4->unk_00[v0].unk_08;
             v17 = v7 + v4->unk_00[v0].unk_0A;

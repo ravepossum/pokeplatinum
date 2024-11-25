@@ -33,7 +33,6 @@
 #include "unk_0200F174.h"
 #include "unk_0203A7D8.h"
 #include "unk_0203D1B8.h"
-#include "unk_020508D4.h"
 #include "unk_0206B70C.h"
 #include "unk_02092494.h"
 #include "vars_flags.h"
@@ -114,9 +113,7 @@ void DebugMenu_Init(FieldSystem *sys)
 {
     DebugMenu *menu = DebugMenu_CreateMultichoice(sys, message_bank_unk_0328, DebugMenu_ItemList, NELEMS(DebugMenu_ItemList), NULL);
     menu->callback = NULL;
-
-    // field system hold sequence
-    sub_0203D128();
+    FieldSystem_PauseProcessing();
 }
 
 static void DebugMenu_Free(DebugMenu *menu)
@@ -145,8 +142,7 @@ static void Task_DebugMenu_Exit(SysTask *task, void *data)
 {
     Heap_FreeToHeap(data);
     SysTask_Done(task);
-    // hold sequence end?
-    sub_0203D140();
+    FieldSystem_ResumeProcessing();
 }
 
 static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc)
@@ -266,11 +262,10 @@ static void Task_DebugMenu_Fly(SysTask *task, void *data)
     switch (fly->sequence) {
     case 0:
         fly->wipeFunc = 0;
-        // screen wipe start
-        sub_0200F174(0, 0, 0, 0x0000, 6, 1, HEAP_ID_APPLICATION);
+        StartScreenTransition(0, 0, 0, 0x0000, 6, 1, HEAP_ID_APPLICATION);
         break;
     case 1:
-        if (!ScreenWipe_Done()) {
+        if (!IsScreenTransitionDone()) {
             return;
         }
 
@@ -286,25 +281,22 @@ static void Task_DebugMenu_Fly(SysTask *task, void *data)
         sub_0203D884(fly->sys, fly->data);
         break;
     case 2:
-        // field event wait for sub process
-        if (sub_020509B4(fly->sys)) {
+        if (FieldSystem_IsRunningApplication(fly->sys)) {
             return;
         }
-        // field event set map process
-        sub_020509D4(fly->sys);
+
+        FieldSystem_StartFieldMap(fly->sys);
         break;
     case 3:
-        // field event wait for map process to start
-        if (!sub_020509DC(fly->sys)) {
+        if (!FieldSystem_IsRunningFieldMap(fly->sys)) {
             return;
         }
 
         fly->wipeFunc = 0;
-        // start screen wipe
-        sub_0200F174(0, 1, 1, 0x0000, 6, 1, HEAP_ID_APPLICATION);
+        StartScreenTransition(0, 1, 1, 0x0000, 6, 1, HEAP_ID_APPLICATION);
         break;
     case 4:
-        if (!ScreenWipe_Done()) {
+        if (!IsScreenTransitionDone()) {
             return;
         }
 
@@ -373,8 +365,7 @@ static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *sys, enum DebugMon
     monMenu->cursor = ColoredArrow_New(HEAP_ID_APPLICATION);
     monMenu->partySlot = 0;
 
-    // get bgConfig from fieldsys?
-    BgConfig *bgConfig = sub_0203D170(sys);
+    BgConfig *bgConfig = FieldSystem_GetBgConfig(sys);
 
     Window_Add(bgConfig, &monMenu->titleWindow, BG_LAYER_MAIN_3, 1, 1, 30, 4, 13, 1);
     Window_Add(bgConfig, &monMenu->mainWindow, BG_LAYER_MAIN_3, 1, 7, 30, 16, 13, 1 + 30 * 4);
@@ -407,9 +398,7 @@ static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
     case 4:
         DebugMonMenu_Free(monMenu);
         SysTask_FinishAndFreeParam(task);
-
-        // field system hold end
-        sub_0203D140();
+        FieldSystem_ResumeProcessing();
         break;
     case 5:
         if (gCoreSys.pressedKeys & (PAD_BUTTON_X | PAD_BUTTON_Y)) {
@@ -457,8 +446,7 @@ static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data)
 
     if (gCoreSys.heldKeys & PAD_BUTTON_START) {
         SysTask_Done(task);
-        // field end hold sequence
-        sub_0203D140();
+        FieldSystem_ResumeProcessing();
     }
 }
 

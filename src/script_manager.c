@@ -11,23 +11,23 @@
 #include "field/scripts/scr_seq.naix"
 
 #include "field_menu.h"
+#include "field_task.h"
 #include "heap.h"
 #include "map_header.h"
 #include "map_header_data.h"
 #include "map_object.h"
+#include "math.h"
 #include "message.h"
 #include "narc.h"
 #include "player_avatar.h"
 #include "strbuf.h"
 #include "trainer_data.h"
-#include "unk_0201D15C.h"
-#include "unk_020508D4.h"
 #include "vars_flags.h"
 
 #include "constdata/const_020EAB80.h"
 #include "constdata/const_020EAC58.h"
 
-static BOOL FieldTask_RunScript(TaskManager *taskManager);
+static BOOL FieldTask_RunScript(FieldTask *taskManager);
 static ScriptManager *ScriptManager_New();
 static void ScriptContext_Free(ScriptContext *ctx);
 static void sub_0203EA68(FieldSystem *fieldSystem, ScriptManager *scriptManager, u16 scriptID, MapObject *object, void *saveType);
@@ -47,12 +47,12 @@ void ScriptManager_Set(FieldSystem *fieldSystem, u16 scriptID, MapObject *object
     ScriptManager *scriptManager = ScriptManager_New();
 
     sub_0203EA68(fieldSystem, scriptManager, scriptID, object, NULL);
-    FieldTask_Set(fieldSystem, FieldTask_RunScript, scriptManager);
+    FieldSystem_CreateTask(fieldSystem, FieldTask_RunScript, scriptManager);
 }
 
 void ScriptManager_SetApproachingTrainer(FieldSystem *fieldSystem, MapObject *object, int sightRange, int direction, int scriptID, int trainerID, int trainerType, int approachNum)
 {
-    ScriptManager *scriptManager = TaskManager_Environment(fieldSystem->taskManager);
+    ScriptManager *scriptManager = FieldTask_GetEnv(fieldSystem->task);
     ApproachingTrainer *trainer = &scriptManager->trainers[approachNum];
 
     trainer->sightRange = sightRange;
@@ -63,31 +63,31 @@ void ScriptManager_SetApproachingTrainer(FieldSystem *fieldSystem, MapObject *ob
     trainer->object = object;
 }
 
-void ScriptManager_Start(TaskManager *taskManager, u16 scriptID, MapObject *object, void *saveType)
+void ScriptManager_Start(FieldTask *taskManager, u16 scriptID, MapObject *object, void *saveType)
 {
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(taskManager);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(taskManager);
     ScriptManager *scriptManager = ScriptManager_New();
 
     sub_0203EA68(fieldSystem, scriptManager, scriptID, object, saveType);
-    FieldTask_Start(taskManager, FieldTask_RunScript, scriptManager);
+    FieldTask_InitCall(taskManager, FieldTask_RunScript, scriptManager);
 }
 
-void ScriptManager_Change(TaskManager *taskManager, u16 scriptID, MapObject *object)
+void ScriptManager_Change(FieldTask *taskManager, u16 scriptID, MapObject *object)
 {
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(taskManager);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(taskManager);
     ScriptManager *scriptManager = ScriptManager_New();
 
     sub_0203EA68(fieldSystem, scriptManager, scriptID, object, NULL);
-    FieldTask_Change(taskManager, FieldTask_RunScript, scriptManager);
+    FieldTask_InitJump(taskManager, FieldTask_RunScript, scriptManager);
 }
 
-static BOOL FieldTask_RunScript(TaskManager *taskManager)
+static BOOL FieldTask_RunScript(FieldTask *taskManager)
 {
     int i;
     FieldSysFunc scriptFunction;
     ScriptContext *ctx = NULL;
-    ScriptManager *scriptManager = TaskManager_Environment(taskManager);
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(taskManager);
+    ScriptManager *scriptManager = FieldTask_GetEnv(taskManager);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(taskManager);
 
     switch (scriptManager->state) {
     case 0:
@@ -187,7 +187,7 @@ static void sub_0203EAF4(FieldSystem *fieldSystem, ScriptContext *ctx, u16 scrip
 
     ScriptContext_Start(ctx, ctx->scripts);
     sub_0203F0E4(ctx, offsetID);
-    ScriptContext_SetTaskManager(ctx, fieldSystem->taskManager);
+    ScriptContext_SetTask(ctx, fieldSystem->task);
 }
 
 static u16 ScriptContext_LoadAndOffsetID(FieldSystem *fieldSystem, ScriptContext *ctx, u16 scriptID)
@@ -352,8 +352,8 @@ void *ScriptManager_GetMemberPtr(ScriptManager *scriptManager, u32 member)
         return &scriptManager->tmpBuf;
     case SCRIPT_MANAGER_SAVING_ICON:
         return &scriptManager->savingIcon;
-    case 19:
-        return &scriptManager->unk_A8;
+    case SCRIPT_MANAGER_PARTY_MANAGEMENT_DATA:
+        return &scriptManager->partyManagementDataPtr;
     case SCRIPT_MANAGER_DATA_PTR:
         return &scriptManager->dataPtr;
     case 21:
@@ -434,7 +434,7 @@ void *ScriptManager_GetMemberPtr(ScriptManager *scriptManager, u32 member)
 
 void *FieldSystem_GetScriptMemberPtr(FieldSystem *fieldSystem, u32 member)
 {
-    ScriptManager *script = TaskManager_Environment(fieldSystem->taskManager);
+    ScriptManager *script = FieldTask_GetEnv(fieldSystem->task);
 
     GF_ASSERT(script->magic == SCRIPT_MANAGER_MAGIC_NUMBER);
 
@@ -443,7 +443,7 @@ void *FieldSystem_GetScriptMemberPtr(FieldSystem *fieldSystem, u32 member)
 
 void sub_0203F0C0(FieldSystem *fieldSystem)
 {
-    ScriptManager *scriptManager = TaskManager_Environment(fieldSystem->taskManager);
+    ScriptManager *scriptManager = FieldTask_GetEnv(fieldSystem->task);
 
     if (sub_0203A9C8(fieldSystem) == 1) {
         scriptManager->function = sub_0203AB00;

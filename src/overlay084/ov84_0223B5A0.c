@@ -28,6 +28,7 @@
 #include "heap.h"
 #include "item.h"
 #include "list_menu.h"
+#include "math.h"
 #include "menu.h"
 #include "message.h"
 #include "narc.h"
@@ -47,7 +48,6 @@
 #include "unk_0200C6E4.h"
 #include "unk_0200F174.h"
 #include "unk_02017728.h"
-#include "unk_0201D15C.h"
 #include "unk_0201DBEC.h"
 #include "unk_0201E3D8.h"
 #include "unk_0202D7A8.h"
@@ -408,7 +408,7 @@ int ov84_0223B5A0(OverlayManager *param0, int *param1)
     v0->unk_00 = BgConfig_New(6);
     v0->unk_425 = TrainerInfo_Gender(v0->unk_CC);
 
-    sub_0200F174(1, 3, 3, 0x0, 6, 1, 6);
+    StartScreenTransition(1, 3, 3, 0x0, 6, 1, 6);
     SetAutorepeat(3, 8);
 
     ov84_0223BEAC(v0);
@@ -444,7 +444,7 @@ int ov84_0223B5A0(OverlayManager *param0, int *param1)
 
     SetMainCallback(ov84_0223BA14, v0);
     sub_02004550(51, 0, 0);
-    sub_020397E4();
+    DrawWifiConnectionIcon();
 
     return 1;
 }
@@ -455,7 +455,7 @@ int ov84_0223B76C(OverlayManager *param0, int *param1)
 
     switch (*param1) {
     case 0:
-        if (ScreenWipe_Done() == 1) {
+        if (IsScreenTransitionDone() == 1) {
             if (v0->unk_C4->unk_65 == 2) {
                 *param1 = 16;
             } else if (v0->unk_C4->unk_65 == 1) {
@@ -548,7 +548,7 @@ int ov84_0223B76C(OverlayManager *param0, int *param1)
         *param1 = ov84_0223EA18(v0);
         break;
     case 24:
-        if (ScreenWipe_Done() == 1) {
+        if (IsScreenTransitionDone() == 1) {
             return 1;
         }
         break;
@@ -573,7 +573,7 @@ int ov84_0223B900(OverlayManager *param0, int *param1)
     ov84_0223BBC4(v0->unk_00);
 
     sub_0201E530();
-    sub_0201DC3C();
+    VRAMTransferManager_Destroy();
 
     ov84_0223FB50(v0);
     ov84_0223F238(v0);
@@ -626,7 +626,7 @@ static void ov84_0223BA14(void *param0)
 
     Bg_RunScheduledUpdates(v0->unk_00);
     sub_0201DCAC();
-    sub_0200C800();
+    OAMManager_ApplyAndResetBuffers();
     OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
 
@@ -903,7 +903,7 @@ static void ov84_0223BEAC(UnkStruct_ov84_0223B5A0 *param0)
             break;
         }
 
-        sub_0207D9B4(param0->unk_C4->unk_6C, v0[v1].unk_08, &v3, &v4);
+        BagCursor_GetFieldPocketPosition(param0->unk_C4->unk_6C, v0[v1].unk_08, &v3, &v4);
 
         if (v3 == 0) {
             v3 = 1;
@@ -913,7 +913,7 @@ static void ov84_0223BEAC(UnkStruct_ov84_0223B5A0 *param0)
         v0[v1].unk_06 = v4;
     }
 
-    v2 = sub_0207D9C4(param0->unk_C4->unk_6C);
+    v2 = BagCursor_GetFieldPocket(param0->unk_C4->unk_6C);
 
     for (v1 = 0; v1 < 8; v1++) {
         if (v0[v1].unk_00 == NULL) {
@@ -942,10 +942,10 @@ static void ov84_0223BF68(UnkStruct_ov84_0223B5A0 *param0)
             break;
         }
 
-        sub_0207D9C8(param0->unk_C4->unk_6C, v0[v1].unk_08, (u8)v0[v1].unk_04, (u8)v0[v1].unk_06);
+        BagCursor_SetFieldPocketPosition(param0->unk_C4->unk_6C, v0[v1].unk_08, (u8)v0[v1].unk_04, (u8)v0[v1].unk_06);
     }
 
-    sub_0207D9D4(param0->unk_C4->unk_6C, v0[param0->unk_C4->unk_64].unk_08);
+    BagCursor_SetFieldPocket(param0->unk_C4->unk_6C, v0[param0->unk_C4->unk_64].unk_08);
 }
 
 static void ov84_0223BFBC(UnkStruct_ov84_0223B5A0 *param0)
@@ -2968,8 +2968,8 @@ static BOOL ov84_0223EB84(UnkStruct_ov84_0223B5A0 *param0, u16 param1)
         if (ov84_0223EB6C() == 1) {
             s32 v0, v1;
 
-            v0 = sub_0201D4CC(128 - param0->unk_49E, 80 - param0->unk_4A0, 128 - gCoreSys.touchX, 80 - gCoreSys.touchY, 80);
-            v1 = sub_0201D580(80, v0 * 2);
+            v0 = CalcDotProduct2D(128 - param0->unk_49E, 80 - param0->unk_4A0, 128 - gCoreSys.touchX, 80 - gCoreSys.touchY, 80);
+            v1 = CalcRadialAngle(80, v0 * 2);
             v1 = ((v1 << 8) / 182) >> 8;
             param0->unk_49A += v1;
 

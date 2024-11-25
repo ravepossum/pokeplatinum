@@ -1481,7 +1481,7 @@ static void BattleController_CheckMonConditions(BattleSystem *battleSys, BattleC
             break;
 
         case MON_COND_CHECK_STATE_BAD_DREAMS:
-            battleCtx->scriptTemp = BattleSystem_CountAbility(battleSys, battleCtx, 4, battler, ABILITY_BAD_DREAMS);
+            battleCtx->scriptTemp = BattleSystem_CountAbility(battleSys, battleCtx, COUNT_ALIVE_BATTLERS_THEIR_SIDE_FLAG, battler, ABILITY_BAD_DREAMS);
 
             if ((battleCtx->battleMons[battler].status & MON_CONDITION_SLEEP)
                 && Battler_Ability(battleCtx, battler) != ABILITY_MAGIC_GUARD
@@ -1941,10 +1941,10 @@ static void BattleController_ItemCommand(BattleSystem *battleSys, BattleContext 
 
         battleCtx->msgItemTemp = battleCtx->aiContext.usedItem[battleCtx->attacker >> 1];
     } else {
-        switch (used->pocket) {
-        case BATTLE_POCKET_RECOVER_STATUS:
-        case BATTLE_POCKET_RECOVER_HP:
-        case BATTLE_POCKET_BATTLE_ITEMS:
+        switch (used->category) {
+        case BATTLE_ITEM_CATEGORY_RECOVER_STATUS:
+        case BATTLE_ITEM_CATEGORY_RECOVER_HP:
+        case BATTLE_ITEM_CATEGORY_BATTLE_ITEMS:
             if (used->item == ITEM_POKE_DOLL || used->item == ITEM_FLUFFY_TAIL) {
                 nextSeq = subscript_escape_item;
             } else {
@@ -1953,12 +1953,12 @@ static void BattleController_ItemCommand(BattleSystem *battleSys, BattleContext 
 
             break;
 
-        case BATTLE_POCKET_POKE_BALLS:
+        case BATTLE_ITEM_CATEGORY_POKE_BALLS:
             nextSeq = subscript_throw_pokeball;
             if ((BattleSystem_BattleType(battleSys) & BATTLE_TYPE_TRAINER) == FALSE
                 && (BattleSystem_BattleType(battleSys) & BATTLE_TYPE_CATCH_TUTORIAL) == FALSE) {
                 Bag_TryRemoveItem(BattleSystem_Bag(battleSys), used->item, 1, HEAP_ID_BATTLE);
-                Bag_SetLastItemUsed(BattleSystem_BagCursor(battleSys), used->item, used->pocket);
+                Bag_SetLastBattleItemUsed(BattleSystem_BagCursor(battleSys), used->item, used->category);
             }
 
             break;
@@ -2237,19 +2237,19 @@ static BOOL BattleController_DecrementPP(BattleSystem *battleSys, BattleContext 
     int ppCost = 1;
     if (ATTACKER_SELF_TURN_FLAGS.skipPressureCheck == FALSE && battleCtx->defender != BATTLER_NONE) {
         if (battleCtx->moveTemp == MOVE_IMPRISON) {
-            ppCost += BattleSystem_CountAbility(battleSys, battleCtx, 3, battleCtx->attacker, ABILITY_PRESSURE);
+            ppCost += BattleSystem_CountAbility(battleSys, battleCtx, COUNT_ALIVE_BATTLERS_THEIR_SIDE, battleCtx->attacker, ABILITY_PRESSURE);
         } else {
             switch (battleCtx->aiContext.moveTable[battleCtx->moveTemp].range) {
             case RANGE_ALL_ADJACENT:
             case RANGE_FIELD:
                 // Number of mons on the field with Pressure
-                ppCost += BattleSystem_CountAbility(battleSys, battleCtx, 9, battleCtx->attacker, ABILITY_PRESSURE);
+                ppCost += BattleSystem_CountAbility(battleSys, battleCtx, COUNT_ALIVE_BATTLERS_EXCEPT_ME, battleCtx->attacker, ABILITY_PRESSURE);
                 break;
 
             case RANGE_ADJACENT_OPPONENTS:
             case RANGE_OPPONENT_SIDE:
                 // Number of mons on the enemy side with Pressure
-                ppCost += BattleSystem_CountAbility(battleSys, battleCtx, 3, battleCtx->attacker, ABILITY_PRESSURE);
+                ppCost += BattleSystem_CountAbility(battleSys, battleCtx, COUNT_ALIVE_BATTLERS_THEIR_SIDE, battleCtx->attacker, ABILITY_PRESSURE);
                 break;
 
             case RANGE_USER_SIDE:
@@ -4033,7 +4033,7 @@ static void BattleController_HandleResult(BattleSystem *battleSys, BattleContext
 
 static void BattleController_ScreenWipe(BattleSystem *battleSys, BattleContext *battleCtx)
 {
-    if (ScreenWipe_Done() == TRUE) {
+    if (IsScreenTransitionDone() == TRUE) {
         battleCtx->command = BATTLE_CONTROL_FIGHT_END;
     }
 }

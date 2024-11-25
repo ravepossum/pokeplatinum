@@ -6,7 +6,6 @@
 #include "consts/game_records.h"
 
 #include "struct_decls/struct_020216E0_decl.h"
-#include "struct_decls/struct_020508D4_decl.h"
 #include "struct_decls/struct_0205E884_decl.h"
 #include "struct_decls/struct_02061830_decl.h"
 #include "struct_decls/struct_02061AB4_decl.h"
@@ -20,7 +19,6 @@
 #include "overlay005/ov5_021F2850.h"
 #include "overlay005/ov5_021F8560.h"
 #include "overlay005/struct_ov5_021D1BEC_decl.h"
-#include "overlay006/battle_params.h"
 #include "overlay006/ov6_02240C9C.h"
 #include "overlay006/ov6_02243258.h"
 #include "overlay006/ov6_02248050.h"
@@ -29,20 +27,21 @@
 #include "overlay101/struct_ov101_021D5D90_decl.h"
 
 #include "core_sys.h"
+#include "encounter.h"
+#include "field_battle_data_transfer.h"
+#include "field_task.h"
 #include "game_records.h"
 #include "heap.h"
 #include "map_object.h"
 #include "map_object_move.h"
+#include "map_tile_behavior.h"
 #include "party.h"
 #include "player_avatar.h"
 #include "pokemon.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "unk_02005474.h"
-#include "unk_020508D4.h"
-#include "unk_02050A74.h"
 #include "unk_020553DC.h"
-#include "unk_0205DAC8.h"
 #include "unk_0205F180.h"
 #include "unk_020655F4.h"
 #include "unk_02071B10.h"
@@ -139,22 +138,22 @@ static int ov5_021DFE68(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, in
 static int ov5_021DFEF4(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, int param2, int param3);
 static int ov5_021DFF1C(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, int param2, int param3);
 static void ov5_021DFF88(int param0, FieldSystem *param1, PlayerAvatar *playerAvatar, MapObject *param3);
-static BOOL ov5_021DFFBC(TaskManager *param0);
+static BOOL ov5_021DFFBC(FieldTask *param0);
 static void ov5_021E00B0(FieldSystem *fieldSystem, int param1, const UnkStruct_ov5_021E1050 *param2);
-static BOOL ov5_021E0160(TaskManager *param0);
+static BOOL ov5_021E0160(FieldTask *param0);
 static int ov5_021E032C(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, int param2, int param3);
 static void ov5_021E0390(int param0, FieldSystem *param1, PlayerAvatar *playerAvatar);
-static BOOL ov5_021E03C8(TaskManager *param0);
+static BOOL ov5_021E03C8(FieldTask *param0);
 static int ov5_021E04A8(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, int param2, int param3);
 static int ov5_021E04EC(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, int param2, int param3);
 static void ov5_021E0534(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar);
-static BOOL ov5_021E0560(TaskManager *param0);
+static BOOL ov5_021E0560(FieldTask *param0);
 static int ov5_021E067C(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, int param2);
 static int ov5_021E06A8(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar);
 static void ov5_021E06F8(FieldSystem *fieldSystem, int param1, const UnkStruct_ov5_021E1050 *param2);
-static BOOL ov5_021E07A0(TaskManager *param0);
+static BOOL ov5_021E07A0(FieldTask *param0);
 static UnkStruct_ov5_021F9B10 *ov5_021E0948(FieldSystem *fieldSystem, int param1, const UnkStruct_ov5_021E1050 *param2);
-static BOOL ov5_021E09D4(TaskManager *param0);
+static BOOL ov5_021E09D4(FieldTask *param0);
 static SysTask *ov5_021E0F54(FieldSystem *fieldSystem, u32 param1);
 static void ov5_021E0FC0(SysTask *param0);
 static void ov5_021E0FF0(SysTask *param0, void *param1);
@@ -168,7 +167,7 @@ static void *ov5_021E1110(int param0);
 static void ov5_021E1134(void *param0);
 static Pokemon *ov5_021E1140(FieldSystem *fieldSystem, int param1);
 static void ov5_021E0DE0(FieldSystem *fieldSystem);
-static BOOL ov5_021E0E10(TaskManager *param0);
+static BOOL ov5_021E0E10(FieldTask *param0);
 
 static void (*const sPlayerAvatarRequestStateTbl[10])(PlayerAvatar *);
 int (*const Unk_ov5_021F9B54[])(UnkStruct_ov5_021F9B54 *);
@@ -509,13 +508,13 @@ static void ov5_021DFF88(int param0, FieldSystem *fieldSystem, PlayerAvatar *pla
     v0->unk_10 = param3;
     v0->playerAvatar = playerAvatar;
 
-    FieldTask_Set(fieldSystem, ov5_021DFFBC, v0);
+    FieldSystem_CreateTask(fieldSystem, ov5_021DFFBC, v0);
     GameRecords_IncrementRecordValue(SaveData_GetGameRecordsPtr(fieldSystem->saveData), RECORD_UNK_055);
 }
 
-static BOOL ov5_021DFFBC(TaskManager *param0)
+static BOOL ov5_021DFFBC(FieldTask *param0)
 {
-    UnkStruct_ov5_021DFF88 *v0 = TaskManager_Environment(param0);
+    UnkStruct_ov5_021DFF88 *v0 = FieldTask_GetEnv(param0);
     MapObject *v1 = Player_MapObject(v0->playerAvatar);
     MapObject *v2 = v0->unk_10;
 
@@ -588,13 +587,13 @@ static void ov5_021E00B0(FieldSystem *fieldSystem, int param1, const UnkStruct_o
     v0->unk_24 = Player_MapObject(v0->playerAvatar);
     v0->unk_0C = *param2;
 
-    FieldTask_Start(fieldSystem->taskManager, ov5_021E0160, v0);
+    FieldTask_InitCall(fieldSystem->task, ov5_021E0160, v0);
 }
 
-void ov5_021E00EC(TaskManager *taskMan, int param1, int param2)
+void ov5_021E00EC(FieldTask *taskMan, int param1, int param2)
 {
     UnkStruct_ov5_021E1050 v0;
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(taskMan);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(taskMan);
     Pokemon *v2 = ov5_021E1140(fieldSystem, param2);
 
     ov5_021E1028(fieldSystem, v2, &v0);
@@ -605,8 +604,8 @@ int ov5_021E0118(PlayerAvatar *playerAvatar, u32 param1, u32 param2)
 {
     MapObject *v0 = Player_MapObject(playerAvatar);
 
-    if (sub_0205DB58(param2) == 1) {
-        if ((sub_0205DEFC(param1) == 1) || (sub_0205DEF0(param1) == 1)) {
+    if (TileBehavior_IsSurfable(param2) == 1) {
+        if ((TileBehavior_IsBridge(param1) == 1) || (TileBehavior_IsBridgeStart(param1) == 1)) {
             if (sub_02062F30(v0) == 1) {
                 return 0;
             }
@@ -618,14 +617,14 @@ int ov5_021E0118(PlayerAvatar *playerAvatar, u32 param1, u32 param2)
     return 0;
 }
 
-static BOOL ov5_021E0160(TaskManager *taskMan)
+static BOOL ov5_021E0160(FieldTask *taskMan)
 {
-    UnkStruct_ov5_021E00B0 *v0 = TaskManager_Environment(taskMan);
+    UnkStruct_ov5_021E00B0 *v0 = FieldTask_GetEnv(taskMan);
 
     switch (v0->unk_00) {
     case 0:
         if (PlayerAvatar_MapDistortionState(v0->playerAvatar) == AVATAR_DISTORTION_STATE_NONE) {
-            sub_020553F0(v0->fieldSystem, 0);
+            Sound_SetSpecialBGM(v0->fieldSystem, 0);
             sub_02055554(v0->fieldSystem, 1151, 1);
         }
 
@@ -746,12 +745,12 @@ static void ov5_021E0390(int param0, FieldSystem *fieldSystem, PlayerAvatar *par
     v0->unk_10 = Player_MapObject(param2);
     v0->unk_14 = sub_0205EC04(param2);
 
-    FieldTask_Set(fieldSystem, ov5_021E03C8, v0);
+    FieldSystem_CreateTask(fieldSystem, ov5_021E03C8, v0);
 }
 
-static BOOL ov5_021E03C8(TaskManager *param0)
+static BOOL ov5_021E03C8(FieldTask *param0)
 {
-    UnkStruct_ov5_021E0390 *v0 = TaskManager_Environment(param0);
+    UnkStruct_ov5_021E0390 *v0 = FieldTask_GetEnv(param0);
 
     switch (v0->unk_00) {
     case 0:
@@ -808,7 +807,7 @@ static int ov5_021E04A8(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, in
     {
         u8 v0 = sub_0206156C(playerAvatar, param2);
 
-        if (sub_0205DDB4(v0) == 0) {
+        if (TileBehavior_IsWaterfall(v0) == 0) {
             return 0;
         }
     }
@@ -827,7 +826,7 @@ static int ov5_021E04EC(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, in
         MapObject *v0 = Player_MapObject(playerAvatar);
         u8 v1 = sub_02062BE8(v0);
 
-        if ((sub_0205DCF0(v1) != 1) && (sub_0205DD0C(v1) != 1)) {
+        if ((TileBehavior_IsDeepMud(v1) != 1) && (TileBehavior_IsDeepMudWithGrass(v1) != 1)) {
             return 0;
         }
     }
@@ -843,13 +842,13 @@ static void ov5_021E0534(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar)
     v0->fieldSystem = fieldSystem;
     v0->playerAvatar = playerAvatar;
 
-    FieldTask_Set(fieldSystem, ov5_021E0560, v0);
+    FieldSystem_CreateTask(fieldSystem, ov5_021E0560, v0);
     GameRecords_IncrementRecordValue(SaveData_GetGameRecordsPtr(fieldSystem->saveData), RECORD_UNK_056);
 }
 
-static BOOL ov5_021E0560(TaskManager *param0)
+static BOOL ov5_021E0560(FieldTask *param0)
 {
-    UnkStruct_ov5_021E0534 *v0 = TaskManager_Environment(param0);
+    UnkStruct_ov5_021E0534 *v0 = FieldTask_GetEnv(param0);
     MapObject *v1 = Player_MapObject(v0->playerAvatar);
 
     switch (v0->unk_00) {
@@ -886,14 +885,14 @@ static BOOL ov5_021E0560(TaskManager *param0)
         {
             u8 v7 = sub_02062BE8(v1);
 
-            if (sub_0205DD0C(v7) == 1) {
-                FieldSystem *fieldSystem = TaskManager_FieldSystem(param0);
-                BattleParams *v9;
+            if (TileBehavior_IsDeepMudWithGrass(v7) == 1) {
+                FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
+                FieldBattleDTO *v9;
 
                 if (ov6_022413E4(fieldSystem, &v9) == 1) {
                     PlayerAvatar_SetInDeepSwamp(v0->playerAvatar, 1);
                     ov5_021E1134(v0);
-                    sub_02050E78(fieldSystem, param0, v9);
+                    Encounter_StartVsWild(fieldSystem, param0, v9);
                     return 0;
                 }
             }
@@ -969,13 +968,13 @@ static void ov5_021E06F8(FieldSystem *fieldSystem, int param1, const UnkStruct_o
     v0->unk_14 = Player_MapObject(v0->playerAvatar);
     v0->unk_1C = *param2;
 
-    FieldTask_Start(fieldSystem->taskManager, ov5_021E07A0, v0);
+    FieldTask_InitCall(fieldSystem->task, ov5_021E07A0, v0);
 }
 
-void ov5_021E0734(TaskManager *param0, int param1, int param2)
+void ov5_021E0734(FieldTask *param0, int param1, int param2)
 {
     UnkStruct_ov5_021E1050 v0;
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(param0);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
     Pokemon *v2 = ov5_021E1140(fieldSystem, param2);
 
     ov5_021E1028(fieldSystem, v2, &v0);
@@ -987,13 +986,13 @@ int ov5_021E0760(u32 param0, int param1)
     switch (param1) {
     case 0:
     case 1:
-        if (sub_0205DC68(param0) == 1) {
+        if (TileBehavior_IsRockClimbNorthSouth(param0) == 1) {
             return 1;
         }
         break;
     case 2:
     case 3:
-        if (sub_0205DC74(param0) == 1) {
+        if (TileBehavior_IsRockClimbEastWest(param0) == 1) {
             return 1;
         }
         break;
@@ -1002,10 +1001,10 @@ int ov5_021E0760(u32 param0, int param1)
     return 0;
 }
 
-static BOOL ov5_021E07A0(TaskManager *param0)
+static BOOL ov5_021E07A0(FieldTask *param0)
 {
     int v0;
-    UnkStruct_ov5_021F9B54 *v1 = TaskManager_Environment(param0);
+    UnkStruct_ov5_021F9B54 *v1 = FieldTask_GetEnv(param0);
 
     do {
         v0 = Unk_ov5_021F9B54[v1->unk_00](v1);
@@ -1155,27 +1154,27 @@ static UnkStruct_ov5_021F9B10 *ov5_021E0948(FieldSystem *fieldSystem, int param1
 void ov5_021E097C(FieldSystem *fieldSystem, int param1)
 {
     UnkStruct_ov5_021F9B10 *v0 = ov5_021E0948(fieldSystem, param1, NULL);
-    FieldTask_Set(fieldSystem, ov5_021E09D4, v0);
+    FieldSystem_CreateTask(fieldSystem, ov5_021E09D4, v0);
 }
 
-void ov5_021E0998(TaskManager *param0, int param1, int param2)
+void ov5_021E0998(FieldTask *param0, int param1, int param2)
 {
     UnkStruct_ov5_021E1050 v0;
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(param0);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
     Pokemon *v2 = ov5_021E1140(fieldSystem, param2);
 
     ov5_021E1028(fieldSystem, v2, &v0);
 
     {
         UnkStruct_ov5_021F9B10 *v3 = ov5_021E0948(fieldSystem, param1, &v0);
-        FieldTask_Start(param0, ov5_021E09D4, v3);
+        FieldTask_InitCall(param0, ov5_021E09D4, v3);
     }
 }
 
-static BOOL ov5_021E09D4(TaskManager *param0)
+static BOOL ov5_021E09D4(FieldTask *param0)
 {
     int v0;
-    UnkStruct_ov5_021F9B10 *v1 = TaskManager_Environment(param0);
+    UnkStruct_ov5_021F9B10 *v1 = FieldTask_GetEnv(param0);
 
     do {
         if (v1->unk_04 == 0) {
@@ -1506,9 +1505,9 @@ static const MapObjectAnimCmd Unk_ov5_021F9C00[] = {
     { 0xfe, 0x0 }
 };
 
-void ov5_021E0DD4(TaskManager *param0)
+void ov5_021E0DD4(FieldTask *param0)
 {
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(param0);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
     ov5_021E0DE0(fieldSystem);
 }
 
@@ -1521,12 +1520,12 @@ static void ov5_021E0DE0(FieldSystem *fieldSystem)
     v0->unk_08 = Player_MapObject(v0->playerAvatar);
     v0->unk_10 = PlayerAvatar_Gender(v0->playerAvatar);
 
-    FieldTask_Start(fieldSystem->taskManager, ov5_021E0E10, v0);
+    FieldTask_InitCall(fieldSystem->task, ov5_021E0E10, v0);
 }
 
-static BOOL ov5_021E0E10(TaskManager *param0)
+static BOOL ov5_021E0E10(FieldTask *param0)
 {
-    UnkStruct_ov5_021E0DE0 *v0 = TaskManager_Environment(param0);
+    UnkStruct_ov5_021E0DE0 *v0 = FieldTask_GetEnv(param0);
 
     switch (v0->unk_0C) {
     case 0:

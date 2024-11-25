@@ -86,7 +86,7 @@ _00FE:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    CheckBadge BADGE_ID_FEN, 0x800C
+    CheckBadgeAcquired BADGE_ID_FEN, 0x800C
     GoToIfEq 0x800C, 1, _0124
     Message 33
     WaitABXPadPress
@@ -581,15 +581,15 @@ _04C8:
     GoTo _053F
 
 _053F:
-    ScrCmd_0E5 0x1D9, 0
+    StartTrainerBattle trainer_rival_pastoria_city_piplup
     GoTo _0563
 
 _054B:
-    ScrCmd_0E5 0x1DA, 0
+    StartTrainerBattle trainer_rival_pastoria_city_turtwig
     GoTo _0563
 
 _0557:
-    ScrCmd_0E5 0x1DB, 0
+    StartTrainerBattle trainer_rival_pastoria_city_chimchar
     GoTo _0563
 
 _0563:

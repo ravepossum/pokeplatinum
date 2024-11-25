@@ -32,14 +32,14 @@ UnkStruct_ov104_02230BE4 *sub_0209BA18(FieldSystem *fieldSystem, void *param1)
     v0->unk_08 = fieldSystem->saveData;
     v0->unk_0C = fieldSystem->journal;
     v0->unk_10 = fieldSystem->unk_98;
-    v0->unk_20 = fieldSystem->unk_BC;
+    v0->unk_20 = fieldSystem->battleSubscreenCursorOn;
     v0->unk_14 = 0;
     v0->unk_18 = 0;
     v0->unk_1C = fieldSystem->location->mapId;
     v0->unk_24 = (((((((((((0 + 1) + 1) + 1) + 1) + 1) + 3) + 1) + 1) + 1) + 2) + 1);
     v0->fieldSystem = fieldSystem;
 
-    sub_0203CD84(fieldSystem, &Unk_020F8BE0, v0);
+    FieldSystem_StartChildProcess(fieldSystem, &Unk_020F8BE0, v0);
 
     return v0;
 }

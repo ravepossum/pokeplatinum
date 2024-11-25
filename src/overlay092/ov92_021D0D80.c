@@ -19,6 +19,7 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "list_menu.h"
+#include "math.h"
 #include "menu.h"
 #include "message.h"
 #include "narc.h"
@@ -34,7 +35,6 @@
 #include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_02017728.h"
-#include "unk_0201D15C.h"
 #include "unk_0202419C.h"
 #include "unk_0202C858.h"
 #include "unk_020996D0.h"
@@ -376,7 +376,7 @@ int ov92_021D0EB8(OverlayManager *param0, int *param1)
 
         v0->unk_BAEC = 0;
 
-        sub_0200F174(0, 1, 1, 0x0, 6, 1, v0->unk_00);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, v0->unk_00);
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG2, 1);
         GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG2, 1);
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG3, 1);
@@ -384,7 +384,7 @@ int ov92_021D0EB8(OverlayManager *param0, int *param1)
         *param1 = 1;
         break;
     case 1:
-        if (ScreenWipe_Done() == 1) {
+        if (IsScreenTransitionDone() == 1) {
             *param1 = 2;
         }
         break;
@@ -645,11 +645,11 @@ int ov92_021D0EB8(OverlayManager *param0, int *param1)
     } break;
     case 17:
         v0->unk_BAEC = 0;
-        sub_0200F174(0, 0, 0, 0x0, 6, 1, v0->unk_00);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, v0->unk_00);
         *param1 = 18;
         break;
     case 18:
-        if (ScreenWipe_Done() == 1) {
+        if (IsScreenTransitionDone() == 1) {
             v0->unk_BAE8 = 1;
 
             ov92_021D1B24(v0);
@@ -1539,11 +1539,11 @@ static u32 ov92_021D28C0(const UnkStruct_ov92_021D28C0 *param0, const UnkStruct_
     v0 = MATH_ABS(param0->unk_00 - param1->unk_00);
     v1 = MATH_ABS(param0->unk_04 - param1->unk_04);
 
-    if (v0 > sub_0201D278(180)) {
+    if (v0 > CalcAngleRotationIdx(180)) {
         v0 = 0xffff - v0;
     }
 
-    if (v1 > sub_0201D278(180)) {
+    if (v1 > CalcAngleRotationIdx(180)) {
         v1 = 0xffff - v1;
     }
 

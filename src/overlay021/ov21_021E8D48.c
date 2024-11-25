@@ -143,7 +143,7 @@ UnkStruct_ov21_021E8D48 *ov21_021E8D48(const UnkStruct_ov21_021E8E0C *param0)
         v1 = Pokemon_GetValue(param0->unk_10, MON_DATA_SPECIES, NULL);
         v2 = Pokemon_GetValue(param0->unk_10, MON_DATA_FORM, NULL);
 
-        if (v1 == 487) {
+        if (v1 == SPECIES_GIRATINA) {
             Pokedex_SetupGiratina(v2);
         } else {
             Pokedex_SetupGiratina(1);
@@ -226,7 +226,7 @@ static void ov21_021E8E0C(UnkStruct_ov21_021E8D48 *param0, const UnkStruct_ov21_
     {
         int v3;
 
-        if ((param0->unk_220 == 487) && (v2 > 0)) {
+        if ((param0->unk_220 == SPECIES_GIRATINA) && (v2 > 0)) {
             v3 = 11;
         } else {
             v3 = param0->unk_220;
@@ -410,7 +410,7 @@ static void ov21_021E9240(UnkStruct_ov21_021D22F8 *param0, UnkStruct_ov21_021D4C
     v0.unk_18 = 2;
     v0.unk_1C = 0;
     v0.unk_20 = NNS_G2D_VRAM_TYPE_2DMAIN;
-    v0.unk_24 = param2;
+    v0.heapID = param2;
 
     if (param4 == 0) {
         v1 = ov21_021D172C(param1, param2, param3);
@@ -561,7 +561,7 @@ static void ov21_021E9560(UnkStruct_ov21_021E95B0 *param0, UnkStruct_ov21_021D4C
     v1.unk_18 = 2;
     v1.unk_1C = 32 - 1;
     v1.unk_20 = NNS_G2D_VRAM_TYPE_2DMAIN;
-    v1.unk_24 = param2;
+    v1.heapID = param2;
     v1.unk_04 = v0;
 
     param0->unk_04 = ov21_021D4CA0(&v1);

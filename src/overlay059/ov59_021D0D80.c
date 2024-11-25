@@ -27,6 +27,7 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "journal.h"
+#include "math.h"
 #include "menu.h"
 #include "message.h"
 #include "message_util.h"
@@ -47,7 +48,6 @@
 #include "unk_0200A784.h"
 #include "unk_0200F174.h"
 #include "unk_02017728.h"
-#include "unk_0201D15C.h"
 #include "unk_0201DBEC.h"
 #include "unk_0201E86C.h"
 #include "unk_0201F834.h"
@@ -195,7 +195,7 @@ int ov59_021D0D80(OverlayManager *param0, int *param1)
 
         sub_0200F338(0);
         sub_0200F338(1);
-        sub_0200F174(0, 17, 17, 0x0, 16, 1, 51);
+        StartScreenTransition(0, 17, 17, 0x0, 16, 1, 51);
 
         ov59_021D1388(v0, v1);
         SetMainCallback(ov59_021D1100, v0);
@@ -243,7 +243,7 @@ int ov59_021D0F00(OverlayManager *param0, int *param1)
 
     switch (*param1) {
     case 0:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             *param1 = 1;
 
             if (CommSys_CurNetId() != 0) {
@@ -278,7 +278,7 @@ int ov59_021D0F00(OverlayManager *param0, int *param1)
         }
         break;
     case 3:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             return 1;
         }
         break;
@@ -1100,7 +1100,7 @@ static int ov59_021D1E0C(UnkStruct_020961E8 *param0, int param1)
     }
 
     if (sub_02038EDC(param0->unk_08->unk_00, 2, &param0->unk_404)) {
-        sub_020057A4(1624, 8);
+        Sound_StopEffect(1624, 8);
         ov59_021D2628(param0, 13, 0);
         ov59_021D19B0(param0, 29);
         CellActor_SetAnim(param0->unk_28C[0], 0);
@@ -1140,7 +1140,7 @@ static int ov59_021D1E98(UnkStruct_020961E8 *param0, int param1)
 static int ov59_021D1EB8(UnkStruct_020961E8 *param0, int param1)
 {
     if (++param0->unk_3B4 > 60) {
-        sub_0200F174(0, 16, 16, 0x0, 16, 1, 51);
+        StartScreenTransition(0, 16, 16, 0x0, 16, 1, 51);
         param1 = 3;
     }
 
@@ -1236,7 +1236,7 @@ static int ov59_021D2064(UnkStruct_020961E8 *param0, int param1)
 {
     if (CommTiming_IsSyncState(201)) {
         CommMan_SetErrorHandling(0, 0);
-        sub_0200F174(0, 16, 16, 0x0, 16, 1, 51);
+        StartScreenTransition(0, 16, 16, 0x0, 16, 1, 51);
 
         param1 = 3;
     }
@@ -1434,7 +1434,7 @@ static void ov59_021D23B0(u16 *param0)
         *param0 = 0;
     }
 
-    v0 = sub_0201D250(*param0);
+    v0 = CalcSineDegrees_Wraparound(*param0);
     v3 = 15 + (v0 * 10) / FX32_ONE;
     v1 = GX_RGB(29, v3, 0);
 

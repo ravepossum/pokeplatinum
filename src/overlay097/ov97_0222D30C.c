@@ -4,9 +4,7 @@
 #include <string.h>
 
 #include "struct_decls/struct_0202442C_decl.h"
-#include "struct_decls/struct_02025CCC_decl.h"
 #include "struct_defs/struct_0202DF40.h"
-#include "struct_defs/struct_0203CC84.h"
 
 #include "overlay077/const_ov77_021D742C.h"
 #include "overlay097/ov97_0222D04C.h"
@@ -32,6 +30,8 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "list_menu.h"
+#include "main.h"
+#include "math.h"
 #include "message.h"
 #include "message_util.h"
 #include "overlay_manager.h"
@@ -46,15 +46,14 @@
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system_data.h"
 #include "text.h"
-#include "unk_02000C88.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
 #include "unk_020093B4.h"
 #include "unk_0200A328.h"
 #include "unk_0200F174.h"
 #include "unk_02017728.h"
-#include "unk_0201D15C.h"
 #include "unk_0202DAB4.h"
 #include "unk_02033200.h"
 #include "unk_020363E8.h"
@@ -429,7 +428,7 @@ static void ov97_0222D658(OverlayManager *param0)
     UnkStruct_ov97_0222D04C *v2 = OverlayManager_Data(param0);
     UnkStruct_ov97_0222D250 *v3 = &v2->unk_8C.unk_00;
     UnkUnion_ov97_0222D2B0 *v4 = &v2->unk_8C.unk_50;
-    SaveData *v5 = ((UnkStruct_0203CC84 *)OverlayManager_Args(param0))->unk_08;
+    SaveData *v5 = ((ApplicationArgs *)OverlayManager_Args(param0))->saveData;
     MysteryGift *v6;
 
     if (v3->unk_4E_2 == 0) {
@@ -664,7 +663,7 @@ static int ov97_0222DA64(OverlayManager *param0)
 static int ov97_0222DA84(OverlayManager *param0)
 {
     Window *v0;
-    UnkStruct_02025CCC *v1;
+    SystemData *v1;
     UnkStruct_ov97_0222D04C *v2 = OverlayManager_Data(param0);
     MysteryGift *v3 = SaveData_MysteryGift(v2->unk_04);
 
@@ -1102,7 +1101,7 @@ static int ov97_0222E2DC(OverlayManager *param0, int *param1)
     }
 
     v0->unk_62C = 29;
-    v0->unk_04 = ((UnkStruct_0203CC84 *)OverlayManager_Args(param0))->unk_08;
+    v0->unk_04 = ((ApplicationArgs *)OverlayManager_Args(param0))->saveData;
     v0->unk_08 = SaveData_Options(v0->unk_04);
     v0->unk_68 = 0xff;
 
@@ -1448,8 +1447,8 @@ static void ov97_0222EA68(UnkStruct_ov97_0222E398 *param0)
             int v2 = LCRNG_Next() % 360;
             int v3 = 64 + (LCRNG_Next() % 32);
 
-            v1.x = param0->unk_88[v0].unk_10.x + (sub_0201D250(v2) * v3);
-            v1.y = param0->unk_88[v0].unk_10.y + (sub_0201D264(v2) * v3);
+            v1.x = param0->unk_88[v0].unk_10.x + (CalcSineDegrees_Wraparound(v2) * v3);
+            v1.y = param0->unk_88[v0].unk_10.y + (CalcCosineDegrees_Wraparound(v2) * v3);
 
             CellActor_SetPosition(param0->unk_88[v0].unk_0C, &v1);
         }
@@ -1593,31 +1592,31 @@ static void ov97_0222EEB8(SysTask *param0, void *param1)
                 if (v0->unk_2C == 0) {
                     v0->unk_34 += 8;
                     v0->unk_34 %= 360;
-                    v0->unk_40 = (sub_0201D264(v0->unk_34) * v0->unk_38) >> FX32_SHIFT;
+                    v0->unk_40 = (CalcCosineDegrees_Wraparound(v0->unk_34) * v0->unk_38) >> FX32_SHIFT;
 
-                    v1.x = v0->unk_10.x + (sub_0201D250(v0->unk_28) * v0->unk_40 * +1);
-                    v1.y = v0->unk_10.y + (sub_0201D264(v0->unk_28) * v0->unk_44 * +1);
+                    v1.x = v0->unk_10.x + (CalcSineDegrees_Wraparound(v0->unk_28) * v0->unk_40 * +1);
+                    v1.y = v0->unk_10.y + (CalcCosineDegrees_Wraparound(v0->unk_28) * v0->unk_44 * +1);
                 } else if (v0->unk_2C == 1) {
                     v0->unk_34 += 8;
                     v0->unk_34 %= 360;
-                    v0->unk_44 = (sub_0201D250(v0->unk_34) * v0->unk_38) >> FX32_SHIFT;
+                    v0->unk_44 = (CalcSineDegrees_Wraparound(v0->unk_34) * v0->unk_38) >> FX32_SHIFT;
 
-                    v1.x = v0->unk_10.x + (sub_0201D250(v0->unk_28) * v0->unk_40 * +1);
-                    v1.y = v0->unk_10.y + (sub_0201D264(v0->unk_28) * v0->unk_44 * +1);
+                    v1.x = v0->unk_10.x + (CalcSineDegrees_Wraparound(v0->unk_28) * v0->unk_40 * +1);
+                    v1.y = v0->unk_10.y + (CalcCosineDegrees_Wraparound(v0->unk_28) * v0->unk_44 * +1);
                 } else if (v0->unk_2C == 2) {
                     v0->unk_34 += 8;
                     v0->unk_34 %= 360;
-                    v0->unk_44 = (sub_0201D250(v0->unk_34) * v0->unk_38) >> FX32_SHIFT;
+                    v0->unk_44 = (CalcSineDegrees_Wraparound(v0->unk_34) * v0->unk_38) >> FX32_SHIFT;
 
-                    v1.x = v0->unk_10.x + (sub_0201D250(v0->unk_28) * v0->unk_40 * -1);
-                    v1.y = v0->unk_10.y + (sub_0201D264(v0->unk_28) * v0->unk_44 * -1);
+                    v1.x = v0->unk_10.x + (CalcSineDegrees_Wraparound(v0->unk_28) * v0->unk_40 * -1);
+                    v1.y = v0->unk_10.y + (CalcCosineDegrees_Wraparound(v0->unk_28) * v0->unk_44 * -1);
                 } else if (v0->unk_2C == 3) {
                     v0->unk_34 += 8;
                     v0->unk_34 %= 360;
-                    v0->unk_40 = (sub_0201D264(v0->unk_34) * v0->unk_38) >> FX32_SHIFT;
+                    v0->unk_40 = (CalcCosineDegrees_Wraparound(v0->unk_34) * v0->unk_38) >> FX32_SHIFT;
 
-                    v1.x = v0->unk_10.x + (sub_0201D250(v0->unk_28) * v0->unk_40 * -1);
-                    v1.y = v0->unk_10.y + (sub_0201D264(v0->unk_28) * v0->unk_44 * -1);
+                    v1.x = v0->unk_10.x + (CalcSineDegrees_Wraparound(v0->unk_28) * v0->unk_40 * -1);
+                    v1.y = v0->unk_10.y + (CalcCosineDegrees_Wraparound(v0->unk_28) * v0->unk_44 * -1);
                 } else if (v0->unk_2C == 4) {
                     if (v0->unk_38 < (64 + 32)) {
                         v0->unk_38 += v0->unk_3C;
@@ -1626,8 +1625,8 @@ static void ov97_0222EEB8(SysTask *param0, void *param1)
                     v0->unk_40 = v0->unk_38;
                     v0->unk_44 = v0->unk_38;
 
-                    v1.x = v0->unk_10.x + (sub_0201D250(v0->unk_28) * v0->unk_40 * +1);
-                    v1.y = v0->unk_10.y + (sub_0201D264(v0->unk_28) * v0->unk_44 * +1);
+                    v1.x = v0->unk_10.x + (CalcSineDegrees_Wraparound(v0->unk_28) * v0->unk_40 * +1);
+                    v1.y = v0->unk_10.y + (CalcCosineDegrees_Wraparound(v0->unk_28) * v0->unk_44 * +1);
                 } else if (v0->unk_2C == 5) {
                     if (v0->unk_38 < (64 + 32)) {
                         v0->unk_38 += v0->unk_3C;
@@ -1636,8 +1635,8 @@ static void ov97_0222EEB8(SysTask *param0, void *param1)
                     v0->unk_40 = v0->unk_38;
                     v0->unk_44 = v0->unk_38;
 
-                    v1.x = v0->unk_10.x + (sub_0201D250(v0->unk_28) * v0->unk_40 * -1);
-                    v1.y = v0->unk_10.y + (sub_0201D264(v0->unk_28) * v0->unk_44 * -1);
+                    v1.x = v0->unk_10.x + (CalcSineDegrees_Wraparound(v0->unk_28) * v0->unk_40 * -1);
+                    v1.y = v0->unk_10.y + (CalcCosineDegrees_Wraparound(v0->unk_28) * v0->unk_44 * -1);
                 } else {
                     v0->unk_04 = 10;
                     v0->unk_1C += FX32_CONST(0.5);
@@ -2436,9 +2435,9 @@ static int ov97_022301BC(OverlayManager *param0, int *param1)
     UnkStruct_ov97_0222D04C *v0 = OverlayManager_Data(param0);
 
     if (v0->unk_440 == 0) {
-        sub_02000EC4(FS_OVERLAY_ID(overlay77), &Unk_ov77_021D742C);
+        EnqueueApplication(FS_OVERLAY_ID(overlay77), &gTitleScreenOverlayTemplate);
     } else if (v0->unk_440 == 1) {
-        sub_02000EC4(FS_OVERLAY_ID(overlay97), &Unk_ov97_0223D7AC);
+        EnqueueApplication(FS_OVERLAY_ID(overlay97), &Unk_ov97_0223D7AC);
     }
 
     Heap_Destroy(91);

@@ -19,12 +19,12 @@
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
+#include "math.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_02017728.h"
-#include "unk_0201D15C.h"
 #include "unk_0202419C.h"
 
 enum {
@@ -193,7 +193,7 @@ static int ov95_022497F8(UnkStruct_ov95_022497D8 *param0, int *param1)
     param0->unk_0C = 0;
 
     SysTask_ExecuteAfterVBlank(ov95_02249F38, param0, 0);
-    sub_0200F174(0, 1, 1, 0x7fff, 3, 1, 58);
+    StartScreenTransition(0, 1, 1, 0x7fff, 3, 1, 58);
 
     return 1;
 }
@@ -223,12 +223,12 @@ static int ov95_02249840(UnkStruct_ov95_022497D8 *param0, int *param1)
         break;
     case 3:
         if (CellActor_IsAnimated(param0->unk_20[0]) == 0) {
-            sub_0200F174(0, 0, 0, 0x7fff, 16, 1, 58);
+            StartScreenTransition(0, 0, 0, 0x7fff, 16, 1, 58);
             (*param1)++;
         }
         break;
     case 4:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             return 1;
         }
     }
@@ -511,8 +511,8 @@ static void ov95_02249D38(UnkStruct_ov95_02249C28 *param0)
         param0->unk_5C--;
     }
 
-    param0->unk_1C.x = FX_Mul(sub_0201D1D4(v0), param0->unk_44);
-    param0->unk_1C.y = FX_Mul(sub_0201D15C(v0), param0->unk_48);
+    param0->unk_1C.x = FX_Mul(CalcCosineDegrees(v0), param0->unk_44);
+    param0->unk_1C.y = FX_Mul(CalcSineDegrees(v0), param0->unk_48);
     param0->unk_1C.z = 0;
     param0->unk_34.x += 0x300;
 

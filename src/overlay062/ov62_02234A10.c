@@ -15,6 +15,7 @@
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
+#include "math.h"
 #include "message.h"
 #include "palette.h"
 #include "strbuf.h"
@@ -24,7 +25,6 @@
 #include "unk_0200C6E4.h"
 #include "unk_0200F174.h"
 #include "unk_02012744.h"
-#include "unk_0201D15C.h"
 #include "unk_0208B284.h"
 
 static void ov62_02234A10(UnkStruct_0208C06C *param0);
@@ -70,7 +70,7 @@ static BOOL ov62_02234AB4(UnkStruct_0208C06C *param0)
             break;
         }
 
-        sub_0200F174(0, 1, 1, 0x0, 6, 1, 102);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, 102);
         PaletteData_BlendMulti(param0->unk_14.unk_14, 2, 0xFFFE, 16, ov62_022316D0(param0));
         PaletteData_BlendMulti(param0->unk_14.unk_14, 0, 0xBFFF, 16, ov62_022316D0(param0));
         PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0x3FFE, 16, ov62_022316D0(param0));
@@ -80,7 +80,7 @@ static BOOL ov62_02234AB4(UnkStruct_0208C06C *param0)
         param0->unk_08++;
         break;
     case 1:
-        if (ScreenWipe_Done() == 0) {
+        if (IsScreenTransitionDone() == 0) {
             break;
         }
 
@@ -183,7 +183,7 @@ static BOOL ov62_02234CDC(UnkStruct_0208C06C *param0)
         break;
     case 1:
         if (ov62_022300BC(param0) == 1) {
-            if (ScreenWipe_Done() == 1) {
+            if (IsScreenTransitionDone() == 1) {
                 param0->unk_08++;
             }
         } else {
@@ -336,7 +336,7 @@ BOOL ov62_02235008(UnkStruct_0208C06C *param0)
                 }
 
                 v8 = v6 * FX32_ONE;
-                v7 = v0->unk_00[v3].unk_0C + (sub_0201D250((v0->unk_00[v3].unk_04 * 0xffff) / 360) * 16);
+                v7 = v0->unk_00[v3].unk_0C + (CalcSineDegrees_Wraparound((v0->unk_00[v3].unk_04 * 0xffff) / 360) * 16);
                 v0->unk_00[v3].unk_04 += (-4 * 1);
 
                 sub_0200D614(param0->unk_534.unk_C8[v3].unk_00, v7, v8);

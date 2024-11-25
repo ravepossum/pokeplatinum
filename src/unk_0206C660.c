@@ -3,18 +3,16 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_020508D4_decl.h"
-
 #include "field/field_system.h"
 #include "overlay006/ov6_02246184.h"
 #include "overlay006/struct_ov6_02246204_decl.h"
 #include "overlay006/struct_ov6_02246254.h"
 #include "overlay095/ov95_02246C20.h"
 
+#include "field_task.h"
+#include "field_transition.h"
 #include "heap.h"
 #include "pokemon.h"
-#include "unk_020508D4.h"
-#include "unk_02055808.h"
 
 FS_EXTERN_OVERLAY(overlay95);
 
@@ -27,13 +25,13 @@ typedef struct {
     Pokemon *unk_28;
 } UnkStruct_0206C660;
 
-static BOOL sub_0206C680(TaskManager *param0);
-static void sub_0206C660(TaskManager *param0);
+static BOOL sub_0206C680(FieldTask *param0);
+static void sub_0206C660(FieldTask *param0);
 
-void sub_0206C660(TaskManager *param0)
+void sub_0206C660(FieldTask *param0)
 {
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(param0);
-    UnkStruct_0206C660 *v1 = TaskManager_Environment(param0);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
+    UnkStruct_0206C660 *v1 = FieldTask_GetEnv(param0);
 
     {
         FS_EXTERN_OVERLAY(overlay95);
@@ -45,14 +43,14 @@ void sub_0206C660(TaskManager *param0)
             FS_OVERLAY_ID(overlay95),
         };
 
-        sub_02050A38(param0, &v2, &v1->unk_0C);
+        FieldTask_RunApplication(param0, &v2, &v1->unk_0C);
     }
 }
 
-static BOOL sub_0206C680(TaskManager *param0)
+static BOOL sub_0206C680(FieldTask *param0)
 {
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(param0);
-    UnkStruct_0206C660 *v1 = TaskManager_Environment(param0);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
+    UnkStruct_0206C660 *v1 = FieldTask_GetEnv(param0);
 
     switch (v1->unk_04) {
     case 0:
@@ -61,11 +59,11 @@ static BOOL sub_0206C680(TaskManager *param0)
         v1->unk_04++;
         break;
     case 1:
-        sub_020558AC(param0);
+        FieldTransition_FadeOut(param0);
         v1->unk_04++;
         break;
     case 2:
-        FieldTask_FinishFieldMap(param0);
+        FieldTransition_FinishMap(param0);
         v1->unk_04++;
         break;
     case 3:
@@ -73,11 +71,11 @@ static BOOL sub_0206C680(TaskManager *param0)
         v1->unk_04++;
         break;
     case 4:
-        FieldTask_StartFieldMap(param0);
+        FieldTransition_StartMap(param0);
         v1->unk_04++;
         break;
     case 5:
-        sub_020558F0(param0);
+        FieldTransition_FadeIn(param0);
         v1->unk_04++;
         break;
     case 6:
@@ -90,7 +88,7 @@ static BOOL sub_0206C680(TaskManager *param0)
     return 0;
 }
 
-void sub_0206C740(TaskManager *param0, UnkStruct_ov6_02246204 *param1, int param2, u32 param3)
+void sub_0206C740(FieldTask *param0, UnkStruct_ov6_02246204 *param1, int param2, u32 param3)
 {
     UnkStruct_0206C660 *v0 = Heap_AllocFromHeap(param3, sizeof(UnkStruct_0206C660));
 
@@ -102,5 +100,5 @@ void sub_0206C740(TaskManager *param0, UnkStruct_ov6_02246204 *param1, int param
     v0->unk_24 = Pokemon_New(param3);
     v0->unk_28 = Pokemon_New(param3);
 
-    FieldTask_Start(param0, sub_0206C680, v0);
+    FieldTask_InitCall(param0, sub_0206C680, v0);
 }

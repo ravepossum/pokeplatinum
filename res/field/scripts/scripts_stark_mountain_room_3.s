@@ -21,7 +21,7 @@ _0031:
 
 _0037:
     GoToIfSet 0x120, _0083
-    ScrCmd_166 0x4000
+    CheckGameCompleted 0x4000
     GoToIfEq 0x4000, 0, _0083
     ScrCmd_22D 2, 0x4000
     GoToIfEq 0x4000, 0, _0083
@@ -108,7 +108,7 @@ _00E6:
     Message 15
     CloseMessage
     SetFlag 142
-    ScrCmd_2BD 0x1E5, 50
+    StartLegendaryBattle SPECIES_HEATRAN, 50
     ClearFlag 142
     CheckWonBattle 0x800C
     GoToIfEq 0x800C, 0, _0168

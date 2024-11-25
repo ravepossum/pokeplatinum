@@ -4,8 +4,6 @@
 #include <string.h>
 
 #include "struct_decls/struct_0203A790_decl.h"
-#include "struct_decls/struct_020508D4_decl.h"
-#include "struct_defs/struct_02049FA8.h"
 #include "struct_defs/struct_02099F80.h"
 
 #include "field/field_system.h"
@@ -15,10 +13,13 @@
 #include "field_map_change.h"
 #include "field_overworld_state.h"
 #include "field_system.h"
+#include "field_task.h"
+#include "field_transition.h"
 #include "font.h"
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
+#include "location.h"
 #include "message.h"
 #include "party.h"
 #include "pokemon.h"
@@ -32,9 +33,7 @@
 #include "unk_0200A9DC.h"
 #include "unk_0200F174.h"
 #include "unk_0203A7D8.h"
-#include "unk_020508D4.h"
 #include "unk_020553DC.h"
-#include "unk_02055808.h"
 #include "unk_02070428.h"
 
 typedef struct {
@@ -46,8 +45,8 @@ typedef struct {
     StringTemplate *unk_20;
 } UnkStruct_02052AA4;
 
-static void sub_02052914(FieldSystem *fieldSystem, TaskManager *param1);
-static BOOL sub_020529C4(TaskManager *param0);
+static void sub_02052914(FieldSystem *fieldSystem, FieldTask *task);
+static BOOL sub_020529C4(FieldTask *task);
 static void sub_02052AA4(UnkStruct_02052AA4 *param0, u16 param1, u8 param2, u8 param3);
 
 static const WindowTemplate Unk_020EC2F0 = {
@@ -102,11 +101,9 @@ static void sub_020528D0(BgConfig *param0)
     Graphics_LoadPalette(14, 6, 0, 13 * 0x20, 0x20, 11);
 }
 
-static void sub_02052914(FieldSystem *fieldSystem, TaskManager *param1)
+static void sub_02052914(FieldSystem *fieldSystem, FieldTask *task)
 {
-    UnkStruct_02052AA4 *v0;
-
-    v0 = Heap_AllocFromHeap(11, sizeof(UnkStruct_02052AA4));
+    UnkStruct_02052AA4 *v0 = Heap_AllocFromHeap(11, sizeof(UnkStruct_02052AA4));
 
     if (v0 == NULL) {
         GF_ASSERT(FALSE);
@@ -124,7 +121,7 @@ static void sub_02052914(FieldSystem *fieldSystem, TaskManager *param1)
     v0->unk_20 = StringTemplate_Default(11);
 
     Window_AddFromTemplate(v0->unk_08, &v0->unk_0C, &Unk_020EC2F0);
-    StringTemplate_SetPlayerName(v0->unk_20, 0, SaveData_GetTrainerInfo(FieldSystem_SaveData(fieldSystem)));
+    StringTemplate_SetPlayerName(v0->unk_20, 0, SaveData_GetTrainerInfo(FieldSystem_GetSaveData(fieldSystem)));
 
     if (fieldSystem->location->mapId == 414) {
         sub_02052AA4(v0, 4, 0, 0);
@@ -133,33 +130,33 @@ static void sub_02052914(FieldSystem *fieldSystem, TaskManager *param1)
     }
 
     Window_CopyToVRAM(&v0->unk_0C);
-    FieldTask_Start(param1, sub_020529C4, v0);
+    FieldTask_InitCall(task, sub_020529C4, v0);
 
     return;
 }
 
-static BOOL sub_020529C4(TaskManager *param0)
+static BOOL sub_020529C4(FieldTask *task)
 {
-    UnkStruct_02052AA4 *v0 = TaskManager_Environment(param0);
+    UnkStruct_02052AA4 *v0 = FieldTask_GetEnv(task);
 
     switch (v0->unk_00) {
     case 0:
-        sub_0200F174(3, 1, 42, 0x0, 8, 1, 32);
+        StartScreenTransition(3, 1, 42, 0x0, 8, 1, 32);
         v0->unk_00++;
         break;
     case 1:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             v0->unk_00++;
         }
         break;
     case 2:
         if ((gCoreSys.pressedKeys & PAD_BUTTON_A) || (gCoreSys.pressedKeys & PAD_BUTTON_B)) {
-            sub_0200F174(0, 0, 0, 0x0, 8, 1, 32);
+            StartScreenTransition(0, 0, 0, 0x0, 8, 1, 32);
             v0->unk_00++;
         }
         break;
     case 3:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             Window_FillTilemap(&v0->unk_0C, 0);
             v0->unk_00++;
         }
@@ -200,15 +197,12 @@ static void sub_02052AA4(UnkStruct_02052AA4 *param0, u16 param1, u8 param2, u8 p
     return;
 }
 
-BOOL sub_02052B2C(TaskManager *param0)
+BOOL sub_02052B2C(FieldTask *task)
 {
-    FieldSystem *fieldSystem;
-    int *v1;
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(task);
+    int *state = FieldTask_GetState(task);
 
-    fieldSystem = TaskManager_FieldSystem(param0);
-    v1 = FieldTask_GetState(param0);
-
-    switch (*v1) {
+    switch (*state) {
     case 0: {
         if ((fieldSystem != NULL) && (fieldSystem->saveData != NULL)) {
             Party_SetGiratinaForm(Party_GetFromSavedata(fieldSystem->saveData), 0);
@@ -216,48 +210,48 @@ BOOL sub_02052B2C(TaskManager *param0)
     }
 
         {
-            Location v2;
-            FieldOverworldState *v3 = SaveData_GetFieldOverworldState(fieldSystem->saveData);
-            u16 v4 = FieldOverworldState_GetWarpId(v3);
+            Location location;
+            FieldOverworldState *fieldState = SaveData_GetFieldOverworldState(fieldSystem->saveData);
+            u16 warpId = FieldOverworldState_GetWarpId(fieldState);
 
-            sub_0203A824(v4, &v2);
-            sub_0203A7F0(v4, sub_0203A72C(v3));
-            FieldTask_ChangeMapByLocation(param0, &v2);
+            sub_0203A824(warpId, &location);
+            sub_0203A7F0(warpId, FieldOverworldState_GetExitLocation(fieldState));
+            FieldTask_ChangeMapByLocation(task, &location);
             sub_020705B4(fieldSystem);
         }
-        (*v1)++;
+        (*state)++;
         break;
     case 1:
         sub_0200564C(0, 20);
-        (*v1)++;
+        (*state)++;
         break;
     case 2:
         if (Sound_CheckFade() == 0) {
             sub_020553DC();
-            (*v1)++;
+            (*state)++;
         }
         break;
     case 3:
         sub_0200AB4C(-16, ((GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD) ^ GX_BLEND_PLANEMASK_BG3), 1);
         sub_0200AB4C(-16, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), 2);
-        sub_02052914(fieldSystem, param0);
-        (*v1)++;
+        sub_02052914(fieldSystem, task);
+        (*state)++;
         break;
     case 4:
-        FieldTask_StartFieldMap(param0);
-        (*v1)++;
+        FieldTransition_StartMap(task);
+        (*state)++;
         break;
     case 5:
         sub_0200AB4C(0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), 3);
 
         if (sub_0203A7EC()
             == FieldOverworldState_GetWarpId(SaveData_GetFieldOverworldState(fieldSystem->saveData))) {
-            ScriptManager_Start(param0, 2020, NULL, NULL);
+            ScriptManager_Start(task, 2020, NULL, NULL);
         } else {
-            ScriptManager_Start(param0, 2021, NULL, NULL);
+            ScriptManager_Start(task, 2021, NULL, NULL);
         }
 
-        (*v1)++;
+        (*state)++;
         break;
     case 6:
         return 1;
@@ -266,7 +260,7 @@ BOOL sub_02052B2C(TaskManager *param0)
     return 0;
 }
 
-void sub_02052C5C(TaskManager *param0)
+void sub_02052C5C(FieldTask *task)
 {
-    FieldTask_Start(param0, sub_02052B2C, NULL);
+    FieldTask_InitCall(task, sub_02052B2C, NULL);
 }

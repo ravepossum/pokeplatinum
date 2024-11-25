@@ -11,7 +11,7 @@ _000A:
     End
 
 _0012:
-    ScrCmd_166 0x4000
+    CheckGameCompleted 0x4000
     GoToIfEq 0x4000, 0, _0075
     ScrCmd_22D 2, 0x4000
     GoToIfEq 0x4000, 0, _0075
@@ -39,7 +39,7 @@ _0077:
     Message 1
     ScrCmd_04D
     CloseMessage
-    ScrCmd_2BD 0x1E3, 70
+    StartLegendaryBattle SPECIES_DIALGA, 70
     CheckWonBattle 0x800C
     GoToIfEq 0x800C, 0, _00E8
     SetVar 0x40C4, 1

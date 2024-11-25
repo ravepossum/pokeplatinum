@@ -20,12 +20,12 @@ _0025:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    CheckBadge BADGE_ID_ICICLE, 0x800C
+    CheckBadgeAcquired BADGE_ID_ICICLE, 0x800C
     GoToIfEq 0x800C, 1, _00F8
     ScrCmd_1CD 9, 167, 0, 0, 0
     Message 0
     CloseMessage
-    ScrCmd_0E5 0x13F, 0
+    StartTrainerBattle trainer_leader_candice
     CheckWonBattle 0x800C
     GoToIfEq 0x800C, 0, _010E
     Message 1
@@ -33,15 +33,15 @@ _0025:
     Message 2
     PlaySound SEQ_BADGE
     WaitSound
-    ScrCmd_15C 6
+    GiveBadge BADGE_ID_ICICLE
     ScrCmd_260 23
-    SetTrainerFlag 0x10C
-    SetTrainerFlag 0x10D
-    SetTrainerFlag 0x33B
-    SetTrainerFlag 0x10E
-    SetTrainerFlag 0x10F
-    SetTrainerFlag 0x33C
-    ScrCmd_1CD 10, 167, 0x13F, 0, 0
+    SetTrainerFlag trainer_ace_trainer_sergio
+    SetTrainerFlag trainer_ace_trainer_isaiah
+    SetTrainerFlag trainer_ace_trainer_anton
+    SetTrainerFlag trainer_ace_trainer_savannah
+    SetTrainerFlag trainer_ace_trainer_alicia
+    SetTrainerFlag trainer_ace_trainer_brenna
+    ScrCmd_1CD 10, 167, trainer_leader_candice, 0, 0
     SetFlag 0x1BF
     Message 3
     GoTo _00B0
@@ -84,7 +84,7 @@ _0114:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    CheckBadge BADGE_ID_ICICLE, 0x800C
+    CheckBadgeAcquired BADGE_ID_ICICLE, 0x800C
     GoToIfEq 0x800C, 1, _013A
     Message 6
     WaitABXPadPress
@@ -103,7 +103,7 @@ _013A:
 _0148:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckBadge BADGE_ID_ICICLE, 0x800C
+    CheckBadgeAcquired BADGE_ID_ICICLE, 0x800C
     GoToIfEq 0x800C, 1, _0172
     BufferRivalName 0
     BufferRivalName 1

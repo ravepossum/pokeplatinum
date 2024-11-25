@@ -24,13 +24,13 @@
 #include "easy3d_object.h"
 #include "heap.h"
 #include "inlines.h"
+#include "math.h"
 #include "palette.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "unk_02005474.h"
 #include "unk_0200C6E4.h"
 #include "unk_0200F174.h"
-#include "unk_0201D15C.h"
 
 typedef struct {
     CellActorData *unk_00;
@@ -330,7 +330,7 @@ static void ov116_022647BC(SysTask *param0, void *param1)
         FX32_CONST(+2)
     };
 
-    if ((ScreenWipe_Done() == 0) || (v0->unk_A4->unk_2C.unk_00 == 1)) {
+    if ((IsScreenTransitionDone() == 0) || (v0->unk_A4->unk_2C.unk_00 == 1)) {
         for (v1 = 0; v1 < 3; v1++) {
             sub_0200D0F4(v0->unk_08[v1]);
         }
@@ -407,8 +407,8 @@ void ov116_0226493C(UnkStruct_ov116_02262A8C *param0, s16 param1, s16 param2)
 
 static inline void inline_ov116_022649E4(UnkStruct_ov116_02264FEC_sub1 *param0)
 {
-    param0->unk_1C = FX_Mul(sub_0201D250(param0->unk_28), FX32_CONST(param0->unk_2E));
-    param0->unk_20 = FX_Mul(sub_0201D264(param0->unk_28), FX32_CONST(param0->unk_30));
+    param0->unk_1C = FX_Mul(CalcSineDegrees_Wraparound(param0->unk_28), FX32_CONST(param0->unk_2E));
+    param0->unk_20 = FX_Mul(CalcCosineDegrees_Wraparound(param0->unk_28), FX32_CONST(param0->unk_30));
 }
 
 static inline void inline_ov116_022649E4_1(UnkStruct_ov116_02264FEC_sub1 *wk, fx32 x, fx32 y)
@@ -424,7 +424,7 @@ static void ov116_022649E4(SysTask *param0, void *param1)
     UnkStruct_ov116_02264FEC *v0 = param1;
     UnkStruct_ov116_022649E4 *v1 = v0->unk_00->unk_14;
 
-    if ((ScreenWipe_Done() == 0) || (v1->unk_2C.unk_00 == 1)) {
+    if ((IsScreenTransitionDone() == 0) || (v1->unk_2C.unk_00 == 1)) {
         *v0->unk_10 = 0;
         SysTask_Done(param0);
         Heap_FreeToHeap(v0);
@@ -829,7 +829,7 @@ static void ov116_0226534C(SysTask *param0, void *param1)
     UnkStruct_ov116_0226534C *v0 = param1;
     UnkStruct_ov116_022649E4 *v1 = v0->unk_84;
 
-    if ((ScreenWipe_Done() == 0) || (v1->unk_2C.unk_00 == 1)) {
+    if ((IsScreenTransitionDone() == 0) || (v1->unk_2C.unk_00 == 1)) {
         SysTask_Done(param0);
 
         return;
@@ -871,7 +871,7 @@ static void ov116_0226534C(SysTask *param0, void *param1)
             v0->unk_08[2].unk_50[0] = 1;
             v0->unk_08[3].unk_50[0] = 1;
             v0->unk_08[4].unk_50[0] = 1;
-            sub_020057A4(1393, 0);
+            Sound_StopEffect(1393, 0);
         }
         break;
     }
@@ -1156,7 +1156,7 @@ static void ov116_0226591C(SysTask *param0, void *param1)
 
     v2 = *v3->unk_0C;
 
-    if ((ScreenWipe_Done() == 0) || (v3->unk_30->unk_2C.unk_00 == 1)) {
+    if ((IsScreenTransitionDone() == 0) || (v3->unk_30->unk_2C.unk_00 == 1)) {
         SysTask_Done(param0);
         return;
     }
@@ -1226,7 +1226,7 @@ static void ov116_02265AA4(SysTask *param0, void *param1)
     fx32 v3, v4;
     fx32 v5, v6;
 
-    if ((ScreenWipe_Done() == 0) || (v0->unk_30->unk_2C.unk_00 == 1)) {
+    if ((IsScreenTransitionDone() == 0) || (v0->unk_30->unk_2C.unk_00 == 1)) {
         SysTask_Done(param0);
         return;
     }
@@ -1252,16 +1252,16 @@ static void ov116_02265AA4(SysTask *param0, void *param1)
         {
             sub_0200D67C(v1->unk_00[0].unk_00, &v5, &v6, ((192 + 64) << FX32_SHIFT));
 
-            v3 = (v1->unk_00[0].unk_14 << FX32_SHIFT) + (sub_0201D250(v1->unk_00[0].unk_08) * v1->unk_00[0].unk_18);
-            v4 = (v1->unk_00[0].unk_16 << FX32_SHIFT) + (sub_0201D264(v1->unk_00[0].unk_08) * v1->unk_00[0].unk_1C);
+            v3 = (v1->unk_00[0].unk_14 << FX32_SHIFT) + (CalcSineDegrees_Wraparound(v1->unk_00[0].unk_08) * v1->unk_00[0].unk_18);
+            v4 = (v1->unk_00[0].unk_16 << FX32_SHIFT) + (CalcCosineDegrees_Wraparound(v1->unk_00[0].unk_08) * v1->unk_00[0].unk_1C);
 
             sub_0200D650(v1->unk_00[0].unk_00, v3, v4, ((192 + 64) << FX32_SHIFT));
             ov116_02264764(&v1->unk_00[0].unk_20, v3, v3 + FX32_CONST(180), ov116_022658C8(v1->unk_148));
             ov116_02264764(&v1->unk_00[0].unk_38, v4, v4 - FX32_CONST(24), ov116_022658C8(v1->unk_148));
             sub_0200D67C(v1->unk_A0[0].unk_00, &v5, &v6, ((192 + 64) << FX32_SHIFT));
 
-            v3 = (v1->unk_A0[0].unk_14 << FX32_SHIFT) + (sub_0201D250(v1->unk_A0[0].unk_08) * v1->unk_A0[0].unk_18);
-            v4 = (v1->unk_A0[0].unk_16 << FX32_SHIFT) - (sub_0201D264(v1->unk_A0[0].unk_08) * v1->unk_A0[0].unk_1C);
+            v3 = (v1->unk_A0[0].unk_14 << FX32_SHIFT) + (CalcSineDegrees_Wraparound(v1->unk_A0[0].unk_08) * v1->unk_A0[0].unk_18);
+            v4 = (v1->unk_A0[0].unk_16 << FX32_SHIFT) - (CalcCosineDegrees_Wraparound(v1->unk_A0[0].unk_08) * v1->unk_A0[0].unk_1C);
 
             sub_0200D650(v1->unk_A0[0].unk_00, v3, v4, ((192 + 64) << FX32_SHIFT));
             ov116_02264764(&v1->unk_A0[0].unk_20, v3, v3 - FX32_CONST(180), ov116_022658C8(v1->unk_144));
@@ -1455,11 +1455,11 @@ static BOOL ov116_02265FD4(UnkStruct_ov116_02265D84 *param0, int param1, int par
         sub_0200D67C(param0->unk_00, &v3, &v4, ((192 + 64) << FX32_SHIFT));
 
         if (param2 == 0) {
-            v1 = (param0->unk_14 << FX32_SHIFT) - (sub_0201D250(param0->unk_08) * param0->unk_18);
-            v2 = (param0->unk_16 << FX32_SHIFT) - (sub_0201D264(param0->unk_08) * param0->unk_1C);
+            v1 = (param0->unk_14 << FX32_SHIFT) - (CalcSineDegrees_Wraparound(param0->unk_08) * param0->unk_18);
+            v2 = (param0->unk_16 << FX32_SHIFT) - (CalcCosineDegrees_Wraparound(param0->unk_08) * param0->unk_1C);
         } else {
-            v1 = (param0->unk_14 << FX32_SHIFT) + (sub_0201D250(param0->unk_08) * param0->unk_18);
-            v2 = (param0->unk_16 << FX32_SHIFT) - (sub_0201D264(param0->unk_08) * param0->unk_1C);
+            v1 = (param0->unk_14 << FX32_SHIFT) + (CalcSineDegrees_Wraparound(param0->unk_08) * param0->unk_18);
+            v2 = (param0->unk_16 << FX32_SHIFT) - (CalcCosineDegrees_Wraparound(param0->unk_08) * param0->unk_1C);
         }
 
         sub_0200D650(param0->unk_00, v1, v2, ((192 + 64) << FX32_SHIFT));
@@ -1491,7 +1491,7 @@ static void ov116_022660A8(SysTask *param0, void *param1)
     fx32 v4, v5;
     fx32 v6, v7;
 
-    if ((ScreenWipe_Done() == 0) || (v1->unk_30->unk_2C.unk_00 == 1)) {
+    if ((IsScreenTransitionDone() == 0) || (v1->unk_30->unk_2C.unk_00 == 1)) {
         SysTask_Done(param0);
         return;
     }
@@ -1516,13 +1516,13 @@ static void ov116_022660A8(SysTask *param0, void *param1)
             SpriteActor_EnableObject(v2->unk_A0[v0].unk_00, 1);
 
             sub_0200D67C(v2->unk_00[v0].unk_00, &v6, &v7, ((192 + 64) << FX32_SHIFT));
-            v4 = (v2->unk_00[v0].unk_14 << FX32_SHIFT) + (sub_0201D250(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_18);
-            v5 = (v2->unk_00[v0].unk_16 << FX32_SHIFT) + (sub_0201D264(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_1C);
+            v4 = (v2->unk_00[v0].unk_14 << FX32_SHIFT) + (CalcSineDegrees_Wraparound(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_18);
+            v5 = (v2->unk_00[v0].unk_16 << FX32_SHIFT) + (CalcCosineDegrees_Wraparound(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_1C);
             sub_0200D650(v2->unk_00[v0].unk_00, v4, v5, ((192 + 64) << FX32_SHIFT));
 
             sub_0200D67C(v2->unk_A0[v0].unk_00, &v6, &v7, ((192 + 64) << FX32_SHIFT));
-            v4 = (v2->unk_A0[v0].unk_14 << FX32_SHIFT) + (sub_0201D250(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_18);
-            v5 = (v2->unk_A0[v0].unk_16 << FX32_SHIFT) - (sub_0201D264(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_1C);
+            v4 = (v2->unk_A0[v0].unk_14 << FX32_SHIFT) + (CalcSineDegrees_Wraparound(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_18);
+            v5 = (v2->unk_A0[v0].unk_16 << FX32_SHIFT) - (CalcCosineDegrees_Wraparound(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_1C);
             sub_0200D650(v2->unk_A0[v0].unk_00, v4, v5, ((192 + 64) << FX32_SHIFT));
         }
 
@@ -1618,7 +1618,7 @@ static void ov116_0226644C(SysTask *param0, void *param1)
     fx32 v4, v5;
     fx32 v6, v7;
 
-    if ((ScreenWipe_Done() == 0) || (v1->unk_30->unk_2C.unk_00 == 1)) {
+    if ((IsScreenTransitionDone() == 0) || (v1->unk_30->unk_2C.unk_00 == 1)) {
         SysTask_Done(param0);
         return;
     }
@@ -1643,13 +1643,13 @@ static void ov116_0226644C(SysTask *param0, void *param1)
             SpriteActor_EnableObject(v2->unk_A0[v0].unk_00, 1);
 
             sub_0200D67C(v2->unk_00[v0].unk_00, &v6, &v7, ((192 + 64) << FX32_SHIFT));
-            v4 = (v2->unk_00[v0].unk_14 << FX32_SHIFT) + (sub_0201D250(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_18);
-            v5 = (v2->unk_00[v0].unk_16 << FX32_SHIFT) + (sub_0201D264(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_1C);
+            v4 = (v2->unk_00[v0].unk_14 << FX32_SHIFT) + (CalcSineDegrees_Wraparound(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_18);
+            v5 = (v2->unk_00[v0].unk_16 << FX32_SHIFT) + (CalcCosineDegrees_Wraparound(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_1C);
             sub_0200D650(v2->unk_00[v0].unk_00, v4, v5, ((192 + 64) << FX32_SHIFT));
 
             sub_0200D67C(v2->unk_A0[v0].unk_00, &v6, &v7, ((192 + 64) << FX32_SHIFT));
-            v4 = (v2->unk_A0[v0].unk_14 << FX32_SHIFT) + (sub_0201D250(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_18);
-            v5 = (v2->unk_A0[v0].unk_16 << FX32_SHIFT) - (sub_0201D264(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_1C);
+            v4 = (v2->unk_A0[v0].unk_14 << FX32_SHIFT) + (CalcSineDegrees_Wraparound(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_18);
+            v5 = (v2->unk_A0[v0].unk_16 << FX32_SHIFT) - (CalcCosineDegrees_Wraparound(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_1C);
             sub_0200D650(v2->unk_A0[v0].unk_00, v4, v5, ((192 + 64) << FX32_SHIFT));
         }
 
@@ -1736,7 +1736,7 @@ static void ov116_022667F4(SysTask *param0, void *param1)
     fx32 v4, v5;
     fx32 v6, v7;
 
-    if ((ScreenWipe_Done() == 0) || (v1->unk_30->unk_2C.unk_00 == 1)) {
+    if ((IsScreenTransitionDone() == 0) || (v1->unk_30->unk_2C.unk_00 == 1)) {
         SysTask_Done(param0);
         return;
     }
@@ -1761,13 +1761,13 @@ static void ov116_022667F4(SysTask *param0, void *param1)
             SpriteActor_EnableObject(v2->unk_A0[v0].unk_00, 1);
 
             sub_0200D67C(v2->unk_00[v0].unk_00, &v6, &v7, ((192 + 64) << FX32_SHIFT));
-            v4 = (v2->unk_00[v0].unk_14 << FX32_SHIFT) + (sub_0201D250(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_18);
-            v5 = (v2->unk_00[v0].unk_16 << FX32_SHIFT) + (sub_0201D264(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_1C);
+            v4 = (v2->unk_00[v0].unk_14 << FX32_SHIFT) + (CalcSineDegrees_Wraparound(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_18);
+            v5 = (v2->unk_00[v0].unk_16 << FX32_SHIFT) + (CalcCosineDegrees_Wraparound(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_1C);
             sub_0200D650(v2->unk_00[v0].unk_00, v4, v5, ((192 + 64) << FX32_SHIFT));
 
             sub_0200D67C(v2->unk_A0[v0].unk_00, &v6, &v7, ((192 + 64) << FX32_SHIFT));
-            v4 = (v2->unk_A0[v0].unk_14 << FX32_SHIFT) + (sub_0201D250(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_18);
-            v5 = (v2->unk_A0[v0].unk_16 << FX32_SHIFT) - (sub_0201D264(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_1C);
+            v4 = (v2->unk_A0[v0].unk_14 << FX32_SHIFT) + (CalcSineDegrees_Wraparound(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_18);
+            v5 = (v2->unk_A0[v0].unk_16 << FX32_SHIFT) - (CalcCosineDegrees_Wraparound(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_1C);
             sub_0200D650(v2->unk_A0[v0].unk_00, v4, v5, ((192 + 64) << FX32_SHIFT));
         }
 
@@ -1882,7 +1882,7 @@ static void ov116_02266BF0(SysTask *param0, void *param1)
     fx32 v4, v5;
     fx32 v6, v7;
 
-    if ((ScreenWipe_Done() == 0) || (v1->unk_30->unk_2C.unk_00 == 1)) {
+    if ((IsScreenTransitionDone() == 0) || (v1->unk_30->unk_2C.unk_00 == 1)) {
         SysTask_Done(param0);
         return;
     }
@@ -1907,13 +1907,13 @@ static void ov116_02266BF0(SysTask *param0, void *param1)
             SpriteActor_EnableObject(v2->unk_A0[v0].unk_00, 1);
 
             sub_0200D67C(v2->unk_00[v0].unk_00, &v6, &v7, ((192 + 64) << FX32_SHIFT));
-            v4 = (v2->unk_00[v0].unk_14 << FX32_SHIFT) + (sub_0201D250(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_18);
-            v5 = (v2->unk_00[v0].unk_16 << FX32_SHIFT) + (sub_0201D264(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_1C);
+            v4 = (v2->unk_00[v0].unk_14 << FX32_SHIFT) + (CalcSineDegrees_Wraparound(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_18);
+            v5 = (v2->unk_00[v0].unk_16 << FX32_SHIFT) + (CalcCosineDegrees_Wraparound(v2->unk_00[v0].unk_08) * v2->unk_00[v0].unk_1C);
             sub_0200D650(v2->unk_00[v0].unk_00, v4, v5, ((192 + 64) << FX32_SHIFT));
 
             sub_0200D67C(v2->unk_A0[v0].unk_00, &v6, &v7, ((192 + 64) << FX32_SHIFT));
-            v4 = (v2->unk_A0[v0].unk_14 << FX32_SHIFT) + (sub_0201D250(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_18);
-            v5 = (v2->unk_A0[v0].unk_16 << FX32_SHIFT) - (sub_0201D264(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_1C);
+            v4 = (v2->unk_A0[v0].unk_14 << FX32_SHIFT) + (CalcSineDegrees_Wraparound(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_18);
+            v5 = (v2->unk_A0[v0].unk_16 << FX32_SHIFT) - (CalcCosineDegrees_Wraparound(v2->unk_A0[v0].unk_08) * v2->unk_A0[v0].unk_1C);
             sub_0200D650(v2->unk_A0[v0].unk_00, v4, v5, ((192 + 64) << FX32_SHIFT));
         }
 

@@ -28,6 +28,7 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "inlines.h"
+#include "math.h"
 #include "message.h"
 #include "narc.h"
 #include "overlay_manager.h"
@@ -48,7 +49,6 @@
 #include "unk_02012744.h"
 #include "unk_02015920.h"
 #include "unk_02017728.h"
-#include "unk_0201D15C.h"
 #include "unk_0201DBEC.h"
 #include "unk_0201E3D8.h"
 #include "unk_0201E86C.h"
@@ -134,7 +134,7 @@ int ov72_0223D7A0(OverlayManager *param0, int *param1)
         SetAutorepeat(4, 8);
         ov72_0223DA70();
         ov72_0223DA90(v0->unk_00);
-        sub_0200F174(0, 1, 1, 0x0, 16, 1, 39);
+        StartScreenTransition(0, 1, 1, 0x0, 16, 1, 39);
 
         {
             SaveData *v2 = (SaveData *)OverlayManager_Args(param0);
@@ -178,7 +178,7 @@ int ov72_0223D920(OverlayManager *param0, int *param1)
 
     switch (*param1) {
     case 0:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             *param1 = 1;
         }
         break;
@@ -191,7 +191,7 @@ int ov72_0223D920(OverlayManager *param0, int *param1)
         ov72_0223E8D0(&v0->unk_437C);
         break;
     case 2:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             return 1;
         }
         break;
@@ -767,7 +767,7 @@ static int ov72_0223E488(UnkStruct_ov72_0223DB98 *param0, int param1)
         GameRecords_IncrementRecordValue(param0->records, RECORD_UNK_114);
         Window_EraseMessageBox(&param0->unk_338, 1);
         sub_02015A54(param0->unk_5D00);
-        sub_0200F174(0, 0, 0, 0x0, 16, 1, 39);
+        StartScreenTransition(0, 0, 0, 0x0, 16, 1, 39);
         return 2;
         break;
     case 2:
@@ -1069,7 +1069,7 @@ static void ov72_0223E8D0(u16 *param0)
         *param0 = 0;
     }
 
-    v0 = sub_0201D250(*param0);
+    v0 = CalcSineDegrees_Wraparound(*param0);
     v3 = 15 + (v0 * 10) / FX32_ONE;
     v1 = GX_RGB(29, v3, 0);
 

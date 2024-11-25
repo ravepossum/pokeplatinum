@@ -3,12 +3,14 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/heap.h"
+
 #include "struct_defs/struct_02017E74.h"
 
 #include "core_sys.h"
 #include "heap.h"
+#include "math.h"
 #include "sys_task_manager.h"
-#include "unk_0201D15C.h"
 #include "unk_02024358.h"
 
 typedef struct {
@@ -29,7 +31,7 @@ void sub_02017728(void)
     MI_WaitDma(GX_DEFAULT_DMAID);
     SysTaskManager_ExecuteTasks(gCoreSys.vBlankTaskMgr);
 
-    gCoreSys.unk_30++;
+    gCoreSys.frameCounter++;
 }
 
 static void sub_0201775C(void)
@@ -149,7 +151,7 @@ void sub_0201789C(void)
     gCoreSys.mainTaskMgr = SysTaskManager_Init(160, OS_AllocFromMainArenaLo(SysTaskManager_GetRequiredSize(160), 4));
     gCoreSys.vBlankTaskMgr = SysTaskManager_Init(32, OS_AllocFromMainArenaLo(SysTaskManager_GetRequiredSize(32), 4));
     gCoreSys.postVBlankTaskMgr = SysTaskManager_Init(32, OS_AllocFromMainArenaLo(SysTaskManager_GetRequiredSize(32), 4));
-    gCoreSys.unk_24 = SysTaskManager_Init(4, OS_AllocFromMainArenaLo(SysTaskManager_GetRequiredSize(4), 4));
+    gCoreSys.printTaskMgr = SysTaskManager_Init(4, OS_AllocFromMainArenaLo(SysTaskManager_GetRequiredSize(4), 4));
 
     GX_DispOff();
     GXS_DispOff();
@@ -178,12 +180,12 @@ void sub_0201789C(void)
     gCoreSys.unk_10 = NULL;
     gCoreSys.unk_14 = NULL;
     gCoreSys.heapCanary = NULL;
-    gCoreSys.frameCounter = 0;
+    gCoreSys.vblankCounter = 0;
     gCoreSys.unk_65 = 0;
 
     CARD_SetCacheFlushThreshold(0x500, 0x2400);
 
-    sub_0201D640(0);
+    InitCRC16Table(HEAP_ID_SYSTEM);
 }
 
 void InitGraphics(void)

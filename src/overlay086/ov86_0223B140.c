@@ -24,6 +24,7 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "inlines.h"
+#include "math.h"
 #include "message.h"
 #include "narc.h"
 #include "overlay_manager.h"
@@ -44,7 +45,6 @@
 #include "unk_0200F174.h"
 #include "unk_020131EC.h"
 #include "unk_02017728.h"
-#include "unk_0201D15C.h"
 
 typedef struct {
     fx32 unk_00;
@@ -405,11 +405,11 @@ static BOOL ov86_0223B3C8(UnkStruct_ov86_0223B3C8 *param0)
 {
     switch (param0->unk_00) {
     case 0:
-        sub_0200F174(3, 1, 1, 0x0, 16, 1, 63);
+        StartScreenTransition(3, 1, 1, 0x0, 16, 1, 63);
         param0->unk_00++;
         break;
     case 1:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             return 1;
         }
     }
@@ -421,12 +421,12 @@ static BOOL ov86_0223B40C(UnkStruct_ov86_0223B3C8 *param0)
 {
     switch (param0->unk_00) {
     case 0:
-        sub_0200F174(3, 0, 0, 0x0, 2, 1, 63);
+        StartScreenTransition(3, 0, 0, 0x0, 2, 1, 63);
         sub_0200564C(0, 30);
         param0->unk_00++;
         break;
     case 1:
-        if (ScreenWipe_Done() && (Sound_CheckFade() == 0)) {
+        if (IsScreenTransitionDone() && (Sound_CheckFade() == 0)) {
             return 1;
         }
     }
@@ -1607,8 +1607,8 @@ static void inline inline_ov86_0223CB74(UnkStruct_ov86_0223CAE4 *param0)
         int v0 = param0->unk_808 >> FX32_SHIFT;
         fx32 v1, v2;
 
-        v1 = param0->unk_818 + FX_Mul(sub_0201D1D4(v0), 10240);
-        v2 = FX_Mul(sub_0201D15C(v0), 10240) - FX16_ONE;
+        v1 = param0->unk_818 + FX_Mul(CalcCosineDegrees(v0), 10240);
+        v2 = FX_Mul(CalcSineDegrees(v0), 10240) - FX16_ONE;
 
         VEC_Fx16Set(&(param0->unk_826), v1 - 576, v2, 0);
         VEC_Fx16Set(&(param0->unk_82C), v1 + 576, v2, 0);

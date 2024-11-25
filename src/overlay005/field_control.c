@@ -3,6 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/field_poison.h"
 #include "constants/player_avatar.h"
 #include "consts/game_records.h"
 #include "consts/sdat.h"
@@ -11,7 +12,6 @@
 #include "struct_decls/struct_0203A790_decl.h"
 #include "struct_decls/struct_02061AB4_decl.h"
 #include "struct_decls/struct_party_decl.h"
-#include "struct_defs/struct_02049FA8.h"
 
 #include "field/field_system.h"
 #include "field/field_system_sub2_t.h"
@@ -23,7 +23,6 @@
 #include "overlay005/ov5_021EF4BC.h"
 #include "overlay005/ov5_021EFB0C.h"
 #include "overlay005/ov5_021F8370.h"
-#include "overlay005/struct_ov5_021D219C.h"
 #include "overlay005/vs_seeker.h"
 #include "overlay006/ov6_02240C9C.h"
 #include "overlay006/ov6_02246BF4.h"
@@ -35,39 +34,40 @@
 #include "communication_information.h"
 #include "communication_system.h"
 #include "core_sys.h"
+#include "encounter.h"
 #include "field_comm_manager.h"
 #include "field_map_change.h"
 #include "field_menu.h"
 #include "field_overworld_state.h"
 #include "game_records.h"
 #include "inlines.h"
+#include "location.h"
 #include "map_header.h"
 #include "map_header_data.h"
 #include "map_object.h"
+#include "map_tile_behavior.h"
 #include "party.h"
 #include "player_avatar.h"
 #include "pokemon.h"
 #include "pokeradar.h"
 #include "save_player.h"
 #include "script_manager.h"
+#include "system_flags.h"
 #include "trainer_info.h"
 #include "unk_02005474.h"
 #include "unk_020261E4.h"
 #include "unk_02030EE0.h"
 #include "unk_020366A0.h"
 #include "unk_0203C954.h"
-#include "unk_02050A74.h"
 #include "unk_02054884.h"
 #include "unk_02054D00.h"
 #include "unk_020562F8.h"
 #include "unk_02056B30.h"
 #include "unk_0205A0D8.h"
 #include "unk_0205B33C.h"
-#include "unk_0205DAC8.h"
 #include "unk_0205F180.h"
 #include "unk_02067A84.h"
 #include "unk_020683F4.h"
-#include "unk_0206A8DC.h"
 #include "unk_0206AFE0.h"
 #include "unk_02071B10.h"
 #include "vars_flags.h"
@@ -197,7 +197,7 @@ BOOL FieldInput_Process(const FieldInput *input, FieldSystem *fieldSystem)
     if (input->debugKey == FALSE) {
         BOOL hasTwoAliveMons = Party_HasTwoAliveMons(Party_GetFromSavedata(fieldSystem->saveData));
 
-        if (sub_0206A984(SaveData_GetVarsFlags(fieldSystem->saveData)) == TRUE) {
+        if (SystemFlag_CheckHasPartner(SaveData_GetVarsFlags(fieldSystem->saveData)) == TRUE) {
             hasTwoAliveMons = TRUE;
         }
 
@@ -212,7 +212,7 @@ BOOL FieldInput_Process(const FieldInput *input, FieldSystem *fieldSystem)
     }
 
     if (input->movement) {
-        sub_0206A9A4(SaveData_GetVarsFlags(fieldSystem->saveData));
+        SystemFlag_ClearStep(SaveData_GetVarsFlags(fieldSystem->saveData));
 
         if (Field_ProcessStep(fieldSystem) == TRUE) {
             return TRUE;
@@ -223,7 +223,7 @@ BOOL FieldInput_Process(const FieldInput *input, FieldSystem *fieldSystem)
         int playerEvent = PLAYER_EVENT_NONE;
         int direction = sub_02061308(fieldSystem->playerAvatar, input->pressedKeys, input->heldKeys);
 
-        if (inline_0204E650_2(SaveData_GetVarsFlags(fieldSystem->saveData))) {
+        if (SystemFlag_HandleStrengthActive(SaveData_GetVarsFlags(fieldSystem->saveData), HANDLE_FLAG_CHECK)) {
             playerEvent |= PLAYER_EVENT_USED_STRENGTH;
         }
 
@@ -417,7 +417,7 @@ BOOL FieldInput_Process_Colosseum(FieldInput *input, FieldSystem *fieldSystem)
 {
     if (input->mapTransition
         && input->transitionDir == DIR_SOUTH
-        && sub_0205DB1C(Field_CurrentTileBehavior(fieldSystem))) {
+        && TileBehavior_IsWarpEntranceSouth(Field_CurrentTileBehavior(fieldSystem))) {
 
         ScriptManager_Set(fieldSystem, 9101, NULL);
         return TRUE;
@@ -503,7 +503,7 @@ BOOL FieldInput_Process_UnionRoom(const FieldInput *input, FieldSystem *fieldSys
         }
     }
 
-    if (input->movement && TileBehavior_IsWarp(Field_CurrentTileBehavior(fieldSystem))) {
+    if (input->movement && TileBehavior_IsWarpPanel(Field_CurrentTileBehavior(fieldSystem))) {
         sub_020545EC(fieldSystem);
         return TRUE;
     }
@@ -592,9 +592,9 @@ static BOOL Field_CheckWildEncounter(FieldSystem *fieldSystem)
 
     Field_GetPlayerPos(fieldSystem, &playerX, &playerZ);
 
-    if (sub_0206AE8C(SaveData_GetVarsFlags(fieldSystem->saveData)) == TRUE) {
+    if (SystemFlag_CheckInPalPark(SaveData_GetVarsFlags(fieldSystem->saveData)) == TRUE) {
         if (sub_02056374(fieldSystem, playerX, playerZ) == TRUE) {
-            sub_02051450(fieldSystem, sub_0205639C(fieldSystem));
+            Encounter_NewVsPalParkTransfer(fieldSystem, sub_0205639C(fieldSystem));
             return TRUE;
         } else {
             return FALSE;
@@ -625,16 +625,16 @@ static BOOL Field_CheckMapTransition(FieldSystem *fieldSystem, const FieldInput 
     Location nextMap;
 
     if (Field_MapConnection(fieldSystem, playerX, playerZ, &nextMap) && input->transitionDir != DIR_NONE) {
-        tileBehavior = sub_02054F94(fieldSystem, playerX, playerZ);
+        tileBehavior = FieldSystem_GetTileBehavior(fieldSystem, playerX, playerZ);
 
-        if (sub_0205DAEC(tileBehavior)) {
+        if (TileBehavior_IsDoor(tileBehavior)) {
             int v6 = input->transitionDir;
 
             if (sub_02071CB4(fieldSystem, 2) == TRUE) {
                 ov8_0224C62C(fieldSystem, playerX, playerZ, &v6);
             }
 
-            sub_02056BDC(fieldSystem, nextMap.mapId, nextMap.unk_04, 0, 0, v6, 1);
+            sub_02056BDC(fieldSystem, nextMap.mapId, nextMap.warpId, 0, 0, v6, 1);
 
             return TRUE;
         }
@@ -642,25 +642,25 @@ static BOOL Field_CheckMapTransition(FieldSystem *fieldSystem, const FieldInput 
 
     Field_GetPlayerPos(fieldSystem, &playerX, &playerZ);
 
-    tileBehavior = sub_02054F94(fieldSystem, playerX, playerZ);
+    tileBehavior = FieldSystem_GetTileBehavior(fieldSystem, playerX, playerZ);
 
-    if (sub_0205DAF8(tileBehavior) || sub_0205DB28(tileBehavior)) {
+    if (TileBehavior_IsWarpEntranceEast(tileBehavior) || TileBehavior_IsWarpEast(tileBehavior)) {
         if (input->transitionDir != DIR_EAST) {
             return FALSE;
         }
-    } else if (sub_0205DB04(tileBehavior) || sub_0205DB34(tileBehavior)) {
+    } else if (TileBehavior_IsWarpEntranceWest(tileBehavior) || TileBehavior_IsWarpWest(tileBehavior)) {
         if (input->transitionDir != DIR_WEST) {
             return FALSE;
         }
-    } else if (sub_0205DB1C(tileBehavior) || sub_0205DB4C(tileBehavior)) {
+    } else if (TileBehavior_IsWarpEntranceSouth(tileBehavior) || TileBehavior_IsWarpSouth(tileBehavior)) {
         if (input->transitionDir != DIR_SOUTH) {
             return FALSE;
         }
-    } else if (sub_0205DC44(tileBehavior)) {
+    } else if (TileBehavior_IsWarpStairsEast(tileBehavior)) {
         if (input->transitionDir != DIR_EAST) {
             return FALSE;
         }
-    } else if (sub_0205DC50(tileBehavior)) {
+    } else if (TileBehavior_IsWarpStairsWest(tileBehavior)) {
         if (input->transitionDir != DIR_WEST) {
             return FALSE;
         }
@@ -672,23 +672,23 @@ static BOOL Field_CheckMapTransition(FieldSystem *fieldSystem, const FieldInput 
 
     int transitionType;
 
-    if (sub_0205DAEC(tileBehavior)) {
+    if (TileBehavior_IsDoor(tileBehavior)) {
         transitionType = 1;
-    } else if (sub_0205DC44(tileBehavior)) {
+    } else if (TileBehavior_IsWarpStairsEast(tileBehavior)) {
         transitionType = 3;
-    } else if (sub_0205DC50(tileBehavior)) {
+    } else if (TileBehavior_IsWarpStairsWest(tileBehavior)) {
         transitionType = 3;
-    } else if (sub_0205DAF8(tileBehavior) || sub_0205DB28(tileBehavior)
-        || sub_0205DB04(tileBehavior) || sub_0205DB34(tileBehavior)
-        || sub_0205DB1C(tileBehavior) || sub_0205DB4C(tileBehavior)) {
-        sub_02056C18(fieldSystem, nextMap.mapId, nextMap.unk_04, 0, 0, input->transitionDir);
+    } else if (TileBehavior_IsWarpEntranceEast(tileBehavior) || TileBehavior_IsWarpEast(tileBehavior)
+        || TileBehavior_IsWarpEntranceWest(tileBehavior) || TileBehavior_IsWarpWest(tileBehavior)
+        || TileBehavior_IsWarpEntranceSouth(tileBehavior) || TileBehavior_IsWarpSouth(tileBehavior)) {
+        sub_02056C18(fieldSystem, nextMap.mapId, nextMap.warpId, 0, 0, input->transitionDir);
         return TRUE;
     } else {
         return FALSE;
     }
 
     // these statements are unreachable, but required for matching
-    sub_02056BDC(fieldSystem, nextMap.mapId, nextMap.unk_04, 0, 0, input->transitionDir, transitionType);
+    sub_02056BDC(fieldSystem, nextMap.mapId, nextMap.warpId, 0, 0, input->transitionDir, transitionType);
 
     return TRUE;
 }
@@ -697,31 +697,31 @@ u16 Field_TileBehaviorToScript(FieldSystem *fieldSystem, u8 behavior)
 {
     int playerDir = PlayerAvatar_GetDir(fieldSystem->playerAvatar);
 
-    if (sub_0205DBE4(behavior) && playerDir == DIR_NORTH) {
+    if (TileBehavior_IsPC(behavior) && playerDir == DIR_NORTH) {
         return 2018;
-    } else if (sub_0205DC80(behavior)) {
+    } else if (TileBehavior_IsSmallBookshelf1(behavior)) {
         return 2500;
-    } else if (sub_0205DC8C(behavior)) {
+    } else if (TileBehavior_IsSmallBookshelf2(behavior)) {
         return 2501;
-    } else if (sub_0205DC98(behavior)) {
+    } else if (TileBehavior_IsBookshelf1(behavior)) {
         return 2502;
-    } else if (sub_0205DCA4(behavior)) {
+    } else if (TileBehavior_IsBookshelf2(behavior)) {
         return 2503;
-    } else if (sub_0205DCB0(behavior)) {
+    } else if (TileBehavior_IsTrashCan(behavior)) {
         return 2504;
-    } else if (sub_0205DCBC(behavior)) {
+    } else if (TileBehavior_IsMartShelf1(behavior)) {
         return 2505;
-    } else if (sub_0205DCC8(behavior)) {
+    } else if (TileBehavior_IsMartShelf2(behavior)) {
         return 2506;
-    } else if (sub_0205DCD4(behavior)) {
+    } else if (TileBehavior_IsMartShelf3(behavior)) {
         return 2507;
-    } else if (sub_0205DDB4(behavior)) {
+    } else if (TileBehavior_IsWaterfall(behavior)) {
         return 10006;
-    } else if (sub_0205DBF0(behavior)) {
+    } else if (TileBehavior_IsTownMap(behavior)) {
         return 2508;
-    } else if (sub_0205DDC0(behavior)) {
+    } else if (TileBehavior_IsBikeParking(behavior)) {
         return 2030;
-    } else if (sub_0205DE84(behavior) && playerDir == DIR_NORTH) {
+    } else if (TileBehavior_IsTV(behavior) && playerDir == DIR_NORTH) {
         return 10100;
     }
 
@@ -761,7 +761,7 @@ static BOOL Field_ProcessStep(FieldSystem *fieldSystem)
 
     int playerX = Player_GetXPos(fieldSystem->playerAvatar);
     int playerZ = Player_GetZPos(fieldSystem->playerAvatar);
-    u8 tileBehavior = sub_02054F94(fieldSystem, playerX, playerZ);
+    u8 tileBehavior = FieldSystem_GetTileBehavior(fieldSystem, playerX, playerZ);
 
     if (Field_CheckCoordEvent(fieldSystem) == TRUE) {
         return TRUE;
@@ -830,7 +830,7 @@ static BOOL Field_CheckTransition(FieldSystem *fieldSystem, const int playerX, c
         return FALSE;
     }
 
-    if (sub_0205DC2C(curTileBehavior) == TRUE) {
+    if (TileBehavior_IsEscalatorFlipFace(curTileBehavior) == TRUE) {
         int playerDir = PlayerAvatar_GetDir(fieldSystem->playerAvatar);
 
         if (playerDir == DIR_WEST) {
@@ -842,7 +842,7 @@ static BOOL Field_CheckTransition(FieldSystem *fieldSystem, const int playerX, c
             return FALSE;
         }
 
-        sub_02056BDC(fieldSystem, nextMap.mapId, nextMap.unk_04, 0, 0, playerDir, 2);
+        sub_02056BDC(fieldSystem, nextMap.mapId, nextMap.warpId, 0, 0, playerDir, 2);
         return TRUE;
     } else if (TileBehavior_IsEscalator(curTileBehavior) == TRUE) {
         int playerDir = PlayerAvatar_GetDir(fieldSystem->playerAvatar);
@@ -852,17 +852,17 @@ static BOOL Field_CheckTransition(FieldSystem *fieldSystem, const int playerX, c
             return FALSE;
         }
 
-        sub_02056BDC(fieldSystem, nextMap.mapId, nextMap.unk_04, 0, 0, playerDir, 2);
+        sub_02056BDC(fieldSystem, nextMap.mapId, nextMap.warpId, 0, 0, playerDir, 2);
         return TRUE;
     }
 
-    if (sub_0205DB10(curTileBehavior) || sub_0205DB40(curTileBehavior)) {
-        sub_02056C18(fieldSystem, nextMap.mapId, nextMap.unk_04, 0, 0, 0);
+    if (TileBehavior_IsWarpEntranceNorth(curTileBehavior) || TileBehavior_IsWarpNorth(curTileBehavior)) {
+        sub_02056C18(fieldSystem, nextMap.mapId, nextMap.warpId, 0, 0, 0);
         return TRUE;
     }
 
-    if (TileBehavior_IsWarp(curTileBehavior)) {
-        FieldSystem_StartMapChangeWarpTask(fieldSystem, nextMap.mapId, nextMap.unk_04);
+    if (TileBehavior_IsWarpPanel(curTileBehavior)) {
+        FieldSystem_StartMapChangeWarpTask(fieldSystem, nextMap.mapId, nextMap.warpId);
         return TRUE;
     }
 
@@ -942,7 +942,7 @@ static void Field_CalculateFriendship(FieldSystem *fieldSystem)
 static BOOL Field_UpdatePoison(FieldSystem *fieldSystem)
 {
     Party *party = Party_GetFromSavedata(fieldSystem->saveData);
-    u16 *poisonSteps = sub_0203A78C(SaveData_GetFieldOverworldState(fieldSystem->saveData));
+    u16 *poisonSteps = FieldOverworldState_GetPoisonStepCount(SaveData_GetFieldOverworldState(fieldSystem->saveData));
 
     (*poisonSteps)++;
     (*poisonSteps) %= 4;
@@ -951,14 +951,14 @@ static BOOL Field_UpdatePoison(FieldSystem *fieldSystem)
         return FALSE;
     }
 
-    switch (sub_02054B04(party, MapHeader_GetMapLabelTextID(fieldSystem->location->mapId))) {
-    case 0:
+    switch (Pokemon_DoPoisonDamage(party, MapHeader_GetMapLabelTextID(fieldSystem->location->mapId))) {
+    case FLDPSN_NONE:
         return FALSE;
-    case 1:
-        ov5_021EF518(fieldSystem->unk_04->unk_20);
+    case FLDPSN_POISONED:
+        Field_DoPoisonEffect(fieldSystem->unk_04->unk_20);
         return FALSE;
-    case 2:
-        ov5_021EF518(fieldSystem->unk_04->unk_20);
+    case FLDPSN_FAINTED:
+        Field_DoPoisonEffect(fieldSystem->unk_04->unk_20);
         ScriptManager_Set(fieldSystem, 2003, NULL);
         return TRUE;
     }
@@ -968,18 +968,18 @@ static BOOL Field_UpdatePoison(FieldSystem *fieldSystem)
 
 static BOOL Field_UpdateSafari(FieldSystem *fieldSystem)
 {
-    if (sub_0206AE5C(SaveData_GetVarsFlags(fieldSystem->saveData)) == FALSE) {
+    if (SystemFlag_CheckSafariGameActive(SaveData_GetVarsFlags(fieldSystem->saveData)) == FALSE) {
         return FALSE;
     }
 
-    u16 *balls = sub_0203A784(SaveData_GetFieldOverworldState(fieldSystem->saveData));
+    u16 *balls = FieldOverworldState_GetSafariBallCount(SaveData_GetFieldOverworldState(fieldSystem->saveData));
 
     if (*balls == 0) {
         ScriptManager_Set(fieldSystem, 8802, NULL);
         return TRUE;
     }
 
-    u16 *steps = sub_0203A788(SaveData_GetFieldOverworldState(fieldSystem->saveData));
+    u16 *steps = FieldOverworldState_GetSafariStepCount(SaveData_GetFieldOverworldState(fieldSystem->saveData));
     (*steps)++;
 
     if (*steps >= 500) {
@@ -1028,14 +1028,14 @@ static u8 Field_CurrentTileBehavior(const FieldSystem *fieldSystem)
 {
     int playerX, playerZ;
     Field_GetPlayerPos(fieldSystem, &playerX, &playerZ);
-    return sub_02054F94(fieldSystem, playerX, playerZ);
+    return FieldSystem_GetTileBehavior(fieldSystem, playerX, playerZ);
 }
 
 static u8 Field_NextTileBehavior(const FieldSystem *fieldSystem)
 {
     int playerX, playerZ;
     Field_Step(fieldSystem, &playerX, &playerZ);
-    return sub_02054F94(fieldSystem, playerX, playerZ);
+    return FieldSystem_GetTileBehavior(fieldSystem, playerX, playerZ);
 }
 
 static BOOL Field_MapConnection(const FieldSystem *fieldSystem, int playerX, int playerZ, Location *nextMap)
@@ -1070,11 +1070,11 @@ static BOOL Field_MapConnection(const FieldSystem *fieldSystem, int playerX, int
 
 static void Field_SetMapConnection(FieldSystem *fieldSystem, const int playerX, const int playerZ, const int playerDir)
 {
-    FieldOverworldState *v0 = SaveData_GetFieldOverworldState(fieldSystem->saveData);
-    Location *nextMap = sub_0203A72C(v0);
+    FieldOverworldState *fieldState = SaveData_GetFieldOverworldState(fieldSystem->saveData);
+    Location *nextMap = FieldOverworldState_GetExitLocation(fieldState);
 
     (*nextMap) = *(fieldSystem->location);
-    nextMap->unk_10 = playerDir;
+    nextMap->faceDirection = playerDir;
     nextMap->x = playerX;
     nextMap->z = playerZ;
 
@@ -1083,7 +1083,7 @@ static void Field_SetMapConnection(FieldSystem *fieldSystem, const int playerX, 
     }
 
     nextMap->mapId = fieldSystem->location->mapId;
-    nextMap->unk_04 = -1;
+    nextMap->warpId = WARP_ID_NONE;
 }
 
 static void Field_TrySetMapConnection(FieldSystem *fieldSystem)

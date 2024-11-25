@@ -3,36 +3,36 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_defs/struct_02049FA8.h"
 #include "struct_defs/struct_020556C4.h"
 #include "struct_defs/struct_0205EC34.h"
 #include "struct_defs/struct_02061D3C.h"
 
 #include "field/field_system.h"
 
+#include "location.h"
 #include "map_object.h"
 #include "player_avatar.h"
 #include "savedata.h"
 #include "unk_0203A7D8.h"
 #include "unk_020556C4.h"
 
-typedef struct UnkStruct_0203A790_t {
-    Location unk_00;
+typedef struct FieldOverworldState {
+    Location player;
     Location entrance;
     Location previous;
     Location special;
-    Location unk_50;
-    u16 unk_64;
+    Location exit;
+    u16 bgm;
     u16 weather;
     u16 warpId;
     u8 cameraType;
     UnkStruct_020556C4 unk_6C;
     PlayerData playerData;
-    u16 unk_94;
-    u16 unk_96;
-    u16 unk_98;
-    u16 unk_9A;
-    u16 unk_9C;
+    u16 poisonSteps;
+    u16 safariSteps;
+    u16 safariBalls;
+    u16 padding_9A; // unused
+    u16 padding_9C; // unused
 } FieldOverworldState;
 
 typedef struct UnkStruct_0203A79C_t {
@@ -49,9 +49,9 @@ int FieldOverworldSave_Size(void)
     return sizeof(FieldOverworldSave);
 }
 
-void FieldOverworldSave_Init(FieldOverworldSave *fieldState)
+void FieldOverworldSave_Init(FieldOverworldSave *fieldSave)
 {
-    MI_CpuClear32(fieldState, sizeof(FieldOverworldSave));
+    MI_CpuClear32(fieldSave, sizeof(FieldOverworldSave));
 }
 
 void FieldOverworldState_Init(FieldOverworldState *fieldState)
@@ -64,9 +64,9 @@ void FieldOverworldState_Init(FieldOverworldState *fieldState)
     fieldState->warpId = sub_0203A7EC();
 }
 
-Location *sub_0203A720(FieldOverworldState *fieldState)
+Location *FieldOverworldState_GetPlayerLocation(FieldOverworldState *fieldState)
 {
-    return &fieldState->unk_00;
+    return &fieldState->player;
 }
 
 Location *FieldOverworldState_GetEntranceLocation(FieldOverworldState *fieldState)
@@ -79,9 +79,9 @@ Location *FieldOverworldState_GetPrevLocation(FieldOverworldState *fieldState)
     return &fieldState->previous;
 }
 
-Location *sub_0203A72C(FieldOverworldState *fieldState)
+Location *FieldOverworldState_GetExitLocation(FieldOverworldState *fieldState)
 {
-    return &fieldState->unk_50;
+    return &fieldState->exit;
 }
 
 Location *FieldOverworldState_GetSpecialLocation(FieldOverworldState *fieldState)
@@ -95,9 +95,9 @@ void FieldOverworldState_SetSpecialLocation(FieldOverworldState *fieldState, Loc
     return;
 }
 
-u16 *sub_0203A748(FieldOverworldState *fieldState)
+u16 *FieldOverworldState_GetSpecialBGM(FieldOverworldState *fieldState)
 {
-    return &fieldState->unk_64;
+    return &fieldState->bgm;
 }
 
 u16 FieldOverworldState_GetWeather(const FieldOverworldState *fieldState)
@@ -140,19 +140,19 @@ PlayerData *FieldOverworldState_GetPlayerData(FieldOverworldState *fieldState)
     return &fieldState->playerData;
 }
 
-u16 *sub_0203A784(FieldOverworldState *fieldState)
+u16 *FieldOverworldState_GetSafariBallCount(FieldOverworldState *fieldState)
 {
-    return &fieldState->unk_98;
+    return &fieldState->safariBalls;
 }
 
-u16 *sub_0203A788(FieldOverworldState *fieldState)
+u16 *FieldOverworldState_GetSafariStepCount(FieldOverworldState *fieldState)
 {
-    return &fieldState->unk_96;
+    return &fieldState->safariSteps;
 }
 
-u16 *sub_0203A78C(FieldOverworldState *fieldState)
+u16 *FieldOverworldState_GetPoisonStepCount(FieldOverworldState *fieldState)
 {
-    return &fieldState->unk_94;
+    return &fieldState->poisonSteps;
 }
 
 FieldOverworldState *SaveData_GetFieldOverworldState(SaveData *saveData)

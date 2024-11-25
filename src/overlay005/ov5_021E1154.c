@@ -3,18 +3,17 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_020508D4_decl.h"
 #include "struct_decls/struct_0205E884_decl.h"
 #include "struct_decls/struct_02061AB4_decl.h"
 
 #include "field/field_system.h"
 
+#include "field_task.h"
 #include "heap.h"
 #include "map_object.h"
+#include "map_tile_behavior.h"
 #include "player_avatar.h"
 #include "unk_02005474.h"
-#include "unk_020508D4.h"
-#include "unk_0205DAC8.h"
 #include "unk_0205F180.h"
 #include "unk_020655F4.h"
 
@@ -28,7 +27,7 @@ typedef struct {
 } UnkStruct_ov5_021E11B0;
 
 static void ov5_021E11B0(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, int param2);
-static BOOL ov5_021E120C(TaskManager *param0);
+static BOOL ov5_021E120C(FieldTask *param0);
 static void *ov5_021E132C(int param0);
 static void ov5_021E1350(void *param0);
 
@@ -38,13 +37,13 @@ int ov5_021E1154(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, int param
     u8 v1 = sub_02062BE8(v0);
     int v2;
 
-    if (sub_0205DEB4(v1) == 1) {
+    if (TileBehavior_IsSlideEastward(v1) == 1) {
         v2 = 3;
-    } else if (sub_0205DEC0(v1) == 1) {
+    } else if (TileBehavior_IsSlideWestward(v1) == 1) {
         v2 = 2;
-    } else if (sub_0205DECC(v1) == 1) {
+    } else if (TileBehavior_IsSlideNorthward(v1) == 1) {
         v2 = 0;
-    } else if (sub_0205DED8(v1) == 1) {
+    } else if (TileBehavior_IsSlideSouthward(v1) == 1) {
         v2 = 1;
     } else {
         return 0;
@@ -63,7 +62,7 @@ static void ov5_021E11B0(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, i
     v0->unk_00 = param2;
 
     Sound_PlayEffect(1624);
-    FieldTask_Set(fieldSystem, ov5_021E120C, v0);
+    FieldSystem_CreateTask(fieldSystem, ov5_021E120C, v0);
 }
 
 static int ov5_021E11E0(int param0)
@@ -82,9 +81,9 @@ static int ov5_021E11E0(int param0)
     return 0;
 }
 
-static BOOL ov5_021E120C(TaskManager *param0)
+static BOOL ov5_021E120C(FieldTask *param0)
 {
-    UnkStruct_ov5_021E11B0 *v0 = TaskManager_Environment(param0);
+    UnkStruct_ov5_021E11B0 *v0 = FieldTask_GetEnv(param0);
     MapObject *v1 = Player_MapObject(v0->playerAvatar);
     u8 v2 = sub_02062BE8(v1);
 
@@ -119,13 +118,13 @@ static BOOL ov5_021E120C(TaskManager *param0)
         v0->unk_04--;
 
         if (v0->unk_04 == 0) {
-            if (sub_0205DEB4(v2) == 1) {
+            if (TileBehavior_IsSlideEastward(v2) == 1) {
                 v0->unk_00 = 3;
-            } else if (sub_0205DEC0(v2) == 1) {
+            } else if (TileBehavior_IsSlideWestward(v2) == 1) {
                 v0->unk_00 = 2;
-            } else if (sub_0205DECC(v2) == 1) {
+            } else if (TileBehavior_IsSlideNorthward(v2) == 1) {
                 v0->unk_00 = 0;
-            } else if (sub_0205DED8(v2) == 1) {
+            } else if (TileBehavior_IsSlideSouthward(v2) == 1) {
                 v0->unk_00 = 1;
             } else {
                 v0->unk_00 = ov5_021E11E0(v0->unk_00);
@@ -141,7 +140,7 @@ static BOOL ov5_021E120C(TaskManager *param0)
                     MapObject_SetStatusFlagOff(v1, (1 << 8));
                     Player_SetDir(v0->playerAvatar, v0->unk_00);
                     ov5_021E1350(v0);
-                    sub_020057A4(1624, 0);
+                    Sound_StopEffect(1624, 0);
                     return 1;
                 }
             }

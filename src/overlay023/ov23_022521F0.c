@@ -86,7 +86,7 @@ static void ov23_022521F0(UnkStruct_ov23_02250CD4 *param0, int param1)
 {
     MATHRandContext16 v0;
     int v1, v2, v3, v4, v5;
-    UndergroundData *v6 = sub_020298B0(FieldSystem_SaveData(param0->fieldSystem));
+    UndergroundData *v6 = sub_020298B0(FieldSystem_GetSaveData(param0->fieldSystem));
 
     MATH_InitRand16(&v0, sub_02028930(v6) + param1);
 
@@ -131,7 +131,7 @@ static void ov23_022522F0(UnkStruct_ov23_02250CD4 *param0, int param1)
 {
     MATHRandContext16 v0;
     int v1, v2, v3, v4, v5;
-    SaveData *v6 = FieldSystem_SaveData(param0->fieldSystem);
+    SaveData *v6 = FieldSystem_GetSaveData(param0->fieldSystem);
     UndergroundData *v7 = sub_020298B0(v6);
     BOOL v8 = Pokedex_IsNationalDexObtained(SaveData_Pokedex(v6));
 
@@ -176,7 +176,7 @@ static void ov23_022522F0(UnkStruct_ov23_02250CD4 *param0, int param1)
 static int ov23_02252404(UnkStruct_ov23_02250CD4 *param0, int param1, int param2)
 {
     BOOL v0 = 0;
-    UndergroundData *v1 = sub_020298B0(FieldSystem_SaveData(param0->fieldSystem));
+    UndergroundData *v1 = sub_020298B0(FieldSystem_GetSaveData(param0->fieldSystem));
 
     if (param0->unk_279[param1] != ov23_0224F684(param2, param0)) {
         return 0xfffd;
@@ -299,7 +299,7 @@ static void ov23_02252754(ListMenu *param0, u32 param1, u8 param2)
 {
     MATHRandContext16 v0;
     UnkStruct_ov23_02250CD4 *v1 = (UnkStruct_ov23_02250CD4 *)ListMenu_GetAttribute(param0, 19);
-    UndergroundData *v2 = sub_020298B0(FieldSystem_SaveData(v1->fieldSystem));
+    UndergroundData *v2 = sub_020298B0(FieldSystem_GetSaveData(v1->fieldSystem));
     int v3 = param1, v4, v5;
     int v6, v7 = 0, v8;
 
@@ -474,7 +474,7 @@ static void ov23_02252BB8(int param0, UnkStruct_ov23_02250CD4 *param1)
 
 static u32 ov23_02252C08(UnkStruct_ov23_02250CD4 *param0)
 {
-    UndergroundData *v0 = sub_020298B0(FieldSystem_SaveData(param0->fieldSystem));
+    UndergroundData *v0 = sub_020298B0(FieldSystem_GetSaveData(param0->fieldSystem));
 
     if (ov23_0224F6E0(param0->unk_279[0], param0->unk_27E[0])) {
         if (param0->unk_2AC == 1) {
@@ -937,17 +937,17 @@ void ov23_022534A0(FieldSystem *fieldSystem)
     ov23_022431EC(v4, v4->unk_04, ov23_02251270);
 
     {
-        int v8, v9;
-        const ObjectEvent *v10;
-        MapObject *v11;
+        int objEventCount, i;
+        const ObjectEvent *objEventList;
+        MapObject *mapObj;
 
-        v8 = MapHeaderData_GetNumObjectEvents(v4->fieldSystem);
-        v10 = MapHeaderData_GetObjectEvents(v4->fieldSystem);
+        objEventCount = MapHeaderData_GetNumObjectEvents(v4->fieldSystem);
+        objEventList = MapHeaderData_GetObjectEvents(v4->fieldSystem);
 
-        for (v9 = 0; v9 < v8; v9++) {
-            if ((v10[v9].x == v1) && (v10[v9].z == v2)) {
-                v11 = MapObjMan_LocalMapObjByIndex(v4->fieldSystem->mapObjMan, v9);
-                MapObject_SetDir(v11, v3);
+        for (i = 0; i < objEventCount; i++) {
+            if (objEventList[i].x == v1 && objEventList[i].z == v2) {
+                mapObj = MapObjMan_LocalMapObjByIndex(v4->fieldSystem->mapObjMan, i);
+                MapObject_SetDir(mapObj, v3);
             }
         }
     }

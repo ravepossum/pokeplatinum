@@ -1,7 +1,6 @@
 #ifndef POKEPLATINUM_SCRIPT_MANAGER_H
 #define POKEPLATINUM_SCRIPT_MANAGER_H
 
-#include "struct_decls/struct_020508D4_decl.h"
 #include "struct_decls/struct_02061AB4_decl.h"
 #include "struct_defs/struct_0203F478.h"
 
@@ -12,6 +11,7 @@
 
 #include "bg_window.h"
 #include "field_script_context.h"
+#include "field_task.h"
 #include "menu.h"
 #include "string_template.h"
 #include "sys_task_manager.h"
@@ -35,8 +35,8 @@ enum ScriptManagerMember {
     SCRIPT_MANAGER_MESSAGE_BUF,
     SCRIPT_MANAGER_TEMPORARY_BUF,
     SCRIPT_MANAGER_SAVING_ICON,
-
-    SCRIPT_MANAGER_DATA_PTR = 20,
+    SCRIPT_MANAGER_PARTY_MANAGEMENT_DATA,
+    SCRIPT_MANAGER_DATA_PTR,
 
     SCRIPT_MANAGER_PLAYER_TASK = 22,
     SCRIPT_MANAGER_BATTLE_RESULT,
@@ -130,7 +130,7 @@ typedef struct ScriptManager {
     ApproachingTrainer trainers[2];
     u16 data[SCRIPT_DATA_MAX - SCRIPT_DATA_START];
     FieldSysFunc function;
-    void *unk_A8;
+    void *partyManagementDataPtr;
     void *dataPtr; // used as a generic pointer to data in many different script commands
     UnkStruct_ov101_021D5D90 *unk_B0;
     SysTask *playerTask; // used to set player sprite animations while saving
@@ -141,8 +141,8 @@ typedef struct ScriptManager {
 
 void ScriptManager_Set(FieldSystem *fieldSystem, u16 scriptID, MapObject *object);
 void ScriptManager_SetApproachingTrainer(FieldSystem *fieldSystem, MapObject *object, int sightRange, int direction, int scriptID, int trainerID, int trainerType, int approachNum);
-void ScriptManager_Start(TaskManager *taskManager, u16 scriptID, MapObject *object, void *saveType);
-void ScriptManager_Change(TaskManager *taskManager, u16 scriptID, MapObject *object);
+void ScriptManager_Start(FieldTask *taskManager, u16 scriptID, MapObject *object, void *saveType);
+void ScriptManager_Change(FieldTask *taskManager, u16 scriptID, MapObject *object);
 ScriptContext *ScriptContext_CreateAndStart(FieldSystem *fieldSystem, u16 scriptID);
 void *ScriptManager_GetMemberPtr(ScriptManager *scriptManager, u32 member);
 void *FieldSystem_GetScriptMemberPtr(FieldSystem *fieldSystem, u32 member);

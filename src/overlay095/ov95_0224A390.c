@@ -19,12 +19,12 @@
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
+#include "math.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_02017728.h"
-#include "unk_0201D15C.h"
 #include "unk_0202419C.h"
 #include "unk_020393C8.h"
 
@@ -177,7 +177,7 @@ static int ov95_0224A42C(UnkStruct_ov95_0224A42C *param0, int *param1)
     ov95_0224A690(param0);
     ov95_0224A7B0(param0);
 
-    sub_0200F174(0, 1, 1, 0x7fff, 8, 1, 58);
+    StartScreenTransition(0, 1, 1, 0x7fff, 8, 1, 58);
 
     return 1;
 }
@@ -186,7 +186,7 @@ static int ov95_0224A464(UnkStruct_ov95_0224A42C *param0, int *param1)
 {
     switch (*param1) {
     case 0:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             CellActor_SetAnim(param0->unk_20[0], 3);
             CellActor_SetDrawFlag(param0->unk_20[0], 1);
             (*param1)++;
@@ -202,12 +202,12 @@ static int ov95_0224A464(UnkStruct_ov95_0224A42C *param0, int *param1)
         break;
     case 2:
         if (ov95_0224A924(&(param0->unk_34))) {
-            sub_0200F174(0, 0, 0, 0x7fff, 16, 1, 58);
+            StartScreenTransition(0, 0, 0, 0x7fff, 16, 1, 58);
             (*param1)++;
         }
         break;
     case 3:
-        if (ScreenWipe_Done()) {
+        if (IsScreenTransitionDone()) {
             return 1;
         }
         break;
@@ -507,8 +507,8 @@ static void ov95_0224A978(UnkStruct_ov95_0224A848 *param0)
             ov95_022479D4(param0->unk_0C, param0->unk_5C);
         }
 
-        param0->unk_1C.x = FX_Mul(sub_0201D1D4(v0), param0->unk_44);
-        param0->unk_1C.y = FX_Mul(sub_0201D15C(v0), param0->unk_48);
+        param0->unk_1C.x = FX_Mul(CalcCosineDegrees(v0), param0->unk_44);
+        param0->unk_1C.y = FX_Mul(CalcSineDegrees(v0), param0->unk_48);
         param0->unk_1C.z = 0;
         param0->unk_34.x -= 0x300;
 

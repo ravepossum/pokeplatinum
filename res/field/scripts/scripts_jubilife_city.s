@@ -440,7 +440,7 @@ _058C:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    CheckBadge BADGE_ID_COAL, 0x800C
+    CheckBadgeAcquired BADGE_ID_COAL, 0x800C
     GoToIfEq 0x800C, 1, _05B2
     Message 29
     WaitABXPadPress
@@ -878,7 +878,7 @@ _0AFE:
     ApplyMovement 0xFF, _0F30
     WaitMovement
     Call _0BAA
-    ScrCmd_2A0 0x8004, 0x19E, 0x19F
+    StartTagBattle 0x8004, 0x19E, 0x19F
     CheckWonBattle 0x800C
     GoToIfEq 0x800C, 0, _0DB7
     ApplyMovement 18, _0EB4

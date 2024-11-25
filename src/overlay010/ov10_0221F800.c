@@ -16,6 +16,7 @@
 #include "struct_defs/struct_0207C690.h"
 #include "struct_defs/struct_02099F80.h"
 
+#include "applications/pokemon_summary_screen/main.h"
 #include "overlay010/struct_ov10_0221F800.h"
 #include "overlay104/struct_ov104_022412F4.h"
 #include "overlay104/struct_ov104_02241308.h"
@@ -36,6 +37,7 @@
 #include "item.h"
 #include "journal.h"
 #include "map_header.h"
+#include "math.h"
 #include "menu.h"
 #include "message.h"
 #include "narc.h"
@@ -43,7 +45,6 @@
 #include "party.h"
 #include "pokemon.h"
 #include "pokemon_icon.h"
-#include "pokemon_summary_app.h"
 #include "render_window.h"
 #include "strbuf.h"
 #include "string_template.h"
@@ -59,7 +60,6 @@
 #include "unk_02012744.h"
 #include "unk_02014000.h"
 #include "unk_02017728.h"
-#include "unk_0201D15C.h"
 #include "unk_0201DBEC.h"
 #include "unk_0202419C.h"
 #include "unk_02024220.h"
@@ -397,8 +397,8 @@ void ov10_0221F800(UnkStruct_ov10_0221F800 *param0)
     v0->unk_BBC = sub_0202FAC0();
 
     if (v0->unk_BBC == 1) {
-        if ((v0->unk_00->unk_00 != NULL) && (v0->unk_00->unk_00->unk_198 != NULL)) {
-            v0->unk_BBC = Bag_CanRemoveItem(SaveData_GetBag(v0->unk_00->unk_00->unk_198), 465, 1, param0->unk_24);
+        if ((v0->unk_00->unk_00 != NULL) && (v0->unk_00->unk_00->saveData != NULL)) {
+            v0->unk_BBC = Bag_CanRemoveItem(SaveData_GetBag(v0->unk_00->unk_00->saveData), 465, 1, param0->unk_24);
         }
     }
 }
@@ -655,7 +655,7 @@ static u8 ov10_0221FD00(UnkStruct_ov10_0221FB28 *param0)
             BOOL v0;
             int v1;
 
-            v0 = sub_0202F330(param0->unk_00->unk_00->unk_198, param0->unk_00->unk_24, &v1, 0);
+            v0 = sub_0202F330(param0->unk_00->unk_00->saveData, param0->unk_00->unk_24, &v1, 0);
             param0->unk_BC0 = v1;
         }
         {
@@ -702,7 +702,7 @@ static u8 ov10_0221FD00(UnkStruct_ov10_0221FB28 *param0)
 
 static u8 ov10_0221FE10(UnkStruct_ov10_0221FB28 *param0)
 {
-    if (ScreenWipe_Done() == 0) {
+    if (IsScreenTransitionDone() == 0) {
         return 0;
     }
 
@@ -825,10 +825,10 @@ static u8 ov10_02220014(UnkStruct_ov10_0221FB28 *param0)
 static u8 ov10_02220228(UnkStruct_ov10_0221FB28 *param0)
 {
     if (param0->unk_B76 == 8) {
-        sub_0200F174(0, 0, 0, 0x7fff, 6, 1, param0->unk_00->unk_24);
+        StartScreenTransition(0, 0, 0, 0x7fff, 6, 1, param0->unk_00->unk_24);
     }
 
-    if ((param0->unk_B76 >= 8) && (ScreenWipe_Done() == 1)) {
+    if ((param0->unk_B76 >= 8) && (IsScreenTransitionDone() == 1)) {
         param0->unk_B73 = 2;
         return 1;
     }
@@ -1022,7 +1022,7 @@ static u8 ov10_02220700(UnkStruct_ov10_0221FB28 *param0)
     case 1: {
         int v0;
 
-        v0 = sub_0202F41C(param0->unk_00->unk_00->unk_198, param0->unk_00->unk_2C, 0, 0, &param0->unk_B78, &param0->unk_B7A);
+        v0 = sub_0202F41C(param0->unk_00->unk_00->saveData, param0->unk_00->unk_2C, 0, 0, &param0->unk_B78, &param0->unk_B7A);
 
         if (v0 == 2) {
             MessageLoader_GetStrbuf(param0->unk_BA0, 6, param0->unk_BA8);
@@ -1143,7 +1143,7 @@ static u8 ov10_02220A34(UnkStruct_ov10_0221FB28 *param0)
 
 static u8 ov10_02220A50(SysTask *param0, UnkStruct_ov10_0221FB28 *param1)
 {
-    if (ScreenWipe_Done() == 0) {
+    if (IsScreenTransitionDone() == 0) {
         return 0;
     }
 
@@ -1163,7 +1163,7 @@ static u8 ov10_02220A50(SysTask *param0, UnkStruct_ov10_0221FB28 *param1)
 
     ov10_02220BE8(param1);
 
-    sub_0201DC3C();
+    VRAMTransferManager_Destroy();
     PaletteData_FreeBuffer(param1->unk_08, 0);
     PaletteData_Free(param1->unk_08);
 
@@ -1189,7 +1189,7 @@ static BOOL ov10_02220AD0(void)
 
 static void ov10_02220B00(UnkStruct_ov10_0221FB28 *param0, UnkStruct_ov104_02241308 *param1, int param2)
 {
-    sub_0201DBEC(64, param0->unk_00->unk_24);
+    VRAMTransferManager_New(64, param0->unk_00->unk_24);
 
     param0->unk_190 = sub_0200C6E4(param0->unk_00->unk_24);
     param0->unk_194 = sub_0200C704(param0->unk_190);
@@ -1266,7 +1266,7 @@ static void ov10_02220C64(void *param0)
     Bg_RunScheduledUpdates(v0->unk_0C);
     PaletteData_CommitFadedBuffers(v0->unk_08);
     sub_0201DCAC();
-    sub_0200C800();
+    OAMManager_ApplyAndResetBuffers();
 
     OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
@@ -1445,8 +1445,8 @@ static void ov10_02220F1C(UnkStruct_ov10_0221FB28 *param0)
 {
     int v0;
 
-    GF_ASSERT(param0->unk_B9C == GX_BG0_AS_2D && param0->unk_00 != NULL && param0->unk_00->unk_00 != NULL && param0->unk_00->unk_00->unk_108 != NULL);
-    v0 = Options_Frame(param0->unk_00->unk_00->unk_108);
+    GF_ASSERT(param0->unk_B9C == GX_BG0_AS_2D && param0->unk_00 != NULL && param0->unk_00->unk_00 != NULL && param0->unk_00->unk_00->options != NULL);
+    v0 = Options_Frame(param0->unk_00->unk_00->options);
 
     LoadMessageBoxGraphics(param0->unk_0C, 0, 1, 15, v0, param0->unk_00->unk_24);
     PaletteData_LoadBufferFromHardware(param0->unk_08, 0, 15 * 16, 0x20 * 1);
@@ -1534,7 +1534,7 @@ static void ov10_022211F0(UnkStruct_ov10_0221FB28 *param0, Party *param1, u16 pa
                 continue;
             }
 
-            v2 = PokemonSummary_StatusIconAnimIdx(v0);
+            v2 = PokemonSummaryScreen_StatusIconAnimIdx(v0);
 
             if (v2 == 6) {
                 sub_0200D364(param0->unk_198[v4 + param3], 3);
@@ -2054,7 +2054,7 @@ static void ov10_02221D14(UnkStruct_ov10_0221FB28 *param0, Party *param1, u8 par
         }
 
         param0->unk_214[v1 + param2].unk_0D = Pokemon_GetGender(v0);
-        param0->unk_214[v1 + param2].unk_14 = (u8)PokemonSummary_StatusIconAnimIdx(v0);
+        param0->unk_214[v1 + param2].unk_14 = (u8)PokemonSummaryScreen_StatusIconAnimIdx(v0);
     }
 }
 
@@ -2470,7 +2470,7 @@ static void ov10_022227A4(UnkStruct_ov10_0221F800 *param0)
         }
     }
 
-    Journal_SaveData(param0->unk_00->unk_120, v0, 4);
+    Journal_SaveData(param0->unk_00->journal, v0, 4);
 }
 
 static void ov10_022229D4(UnkStruct_ov10_0221FB28 *param0)
@@ -2481,7 +2481,7 @@ static void ov10_022229D4(UnkStruct_ov10_0221FB28 *param0)
 
 static BOOL ov10_02222A08(UnkStruct_ov10_0221FB28 *param0)
 {
-    if ((param0->unk_00->unk_00->unk_198 == NULL) || (sub_0202F250() == 0)) {
+    if ((param0->unk_00->unk_00->saveData == NULL) || (sub_0202F250() == 0)) {
         return 0;
     }
 

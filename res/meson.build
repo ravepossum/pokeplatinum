@@ -35,11 +35,6 @@ s_to_bin_gen = generator(make_script_bin_sh,
     output: '@BASENAME@'
 )
 
-mv_gen = generator(find_program('mv'),
-    arguments: [ '@INPUT@', '@OUTPUT@', ],
-    output: '@PLAINNAME@',
-)
-
 ncgr_gen = generator(nitrogfx_exe,
     arguments: [ '@INPUT@', '@OUTPUT@', '@EXTRA_ARGS@', ],
     output: '@BASENAME@.NCGR',
@@ -65,6 +60,8 @@ lz_gen = generator(nitrogfx_exe,
     output: '@PLAINNAME@.lz',
 )
 
+subdir('trainers')
+
 subdir('battle')
 subdir('field')
 subdir('fonts')
@@ -72,4 +69,3 @@ subdir('graphics')
 subdir('items')
 subdir('pokemon')
 subdir('sound')
-subdir('trainers')

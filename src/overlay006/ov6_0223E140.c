@@ -3,15 +3,14 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_020508D4_decl.h"
 #include "struct_decls/struct_0205E884_decl.h"
 #include "struct_decls/struct_02061AB4_decl.h"
 #include "struct_defs/struct_02099F80.h"
 
 #include "field/field_system.h"
 #include "field/field_system_sub2_t.h"
+#include "overlay005/fieldmap.h"
 #include "overlay005/motion_blur.h"
-#include "overlay005/ov5_021D0D80.h"
 #include "overlay005/ov5_021D1A94.h"
 #include "overlay005/ov5_021D521C.h"
 #include "overlay005/struct_ov5_021D1BEC_decl.h"
@@ -26,17 +25,17 @@
 #include "core_sys.h"
 #include "easy3d_object.h"
 #include "field_system.h"
+#include "field_task.h"
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
 #include "map_object.h"
+#include "math.h"
 #include "narc.h"
 #include "player_avatar.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "unk_02005474.h"
-#include "unk_0201D15C.h"
-#include "unk_020508D4.h"
 #include "unk_020655F4.h"
 
 void include_unk_ov6_02248F30();
@@ -499,10 +498,10 @@ static void ov6_0223E318(FieldSystem *fieldSystem, u32 param1, BOOL param2)
     }
 }
 
-static BOOL ov6_0223E33C(TaskManager *taskMan)
+static BOOL ov6_0223E33C(FieldTask *taskMan)
 {
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(taskMan);
-    UnkStruct_ov6_0223E33C *v1 = TaskManager_Environment(taskMan);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(taskMan);
+    UnkStruct_ov6_0223E33C *v1 = FieldTask_GetEnv(taskMan);
 
     switch (v1->unk_0C) {
     case 0:
@@ -521,16 +520,16 @@ static BOOL ov6_0223E33C(TaskManager *taskMan)
     return 0;
 }
 
-void ov6_0223E384(TaskManager *taskMan)
+void ov6_0223E384(FieldTask *taskMan)
 {
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(taskMan);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(taskMan);
     UnkStruct_ov6_0223E33C *v1 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov6_0223E33C));
 
     memset(v1, 0, sizeof(UnkStruct_ov6_0223E33C));
     v1->unk_00 = ov6_0223FDE4(4);
 
     ov6_0223FE1C(v1->unk_00, (FX32_CONST(2.0f)), 0, 1, 16, fieldSystem->camera);
-    FieldTask_Start(taskMan, ov6_0223E33C, v1);
+    FieldTask_InitCall(taskMan, ov6_0223E33C, v1);
 }
 
 static void ov6_0223E3D8(UnkStruct_ov6_0223E33C *param0)
@@ -549,10 +548,10 @@ static void ov6_0223E3D8(UnkStruct_ov6_0223E33C *param0)
     }
 }
 
-static BOOL ov6_0223E408(TaskManager *param0)
+static BOOL ov6_0223E408(FieldTask *param0)
 {
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(param0);
-    UnkStruct_ov6_0223E33C *v1 = TaskManager_Environment(param0);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
+    UnkStruct_ov6_0223E33C *v1 = FieldTask_GetEnv(param0);
 
     switch (v1->unk_0C) {
     case 0:
@@ -578,7 +577,7 @@ static BOOL ov6_0223E408(TaskManager *param0)
         ov6_0223E3D8(v1);
 
         if (ov6_0223FF6C(v1->unk_00) == 1) {
-            sub_020057A4(1628, 0);
+            Sound_StopEffect(1628, 0);
             v1->unk_0C++;
             v1->unk_04 = 16;
         }
@@ -608,9 +607,9 @@ static BOOL ov6_0223E408(TaskManager *param0)
     return 0;
 }
 
-void ov6_0223E4EC(TaskManager *param0)
+void ov6_0223E4EC(FieldTask *param0)
 {
-    FieldSystem *fieldSystem = TaskManager_FieldSystem(param0);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
     UnkStruct_ov6_0223E33C *v1 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov6_0223E33C));
 
     memset(v1, 0, sizeof(UnkStruct_ov6_0223E33C));
@@ -619,7 +618,7 @@ void ov6_0223E4EC(TaskManager *param0)
     ov6_0223FE1C(v1->unk_00, (FX32_CONST(4.0f)), 0, 1, 24, fieldSystem->camera);
 
     v1->unk_08 = ov6_0223FFF4(v1->unk_00);
-    FieldTask_Start(param0, ov6_0223E408, v1);
+    FieldTask_InitCall(param0, ov6_0223E408, v1);
 }
 
 static void ov6_0223E548(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSystem, void *param2)
@@ -1139,7 +1138,7 @@ static BOOL ov6_0223EBDC(UnkStruct_ov6_0223EA98 *param0)
     case 3:
         Easy3DObject_GetPosition(&param0->unk_24, &v1, &v2, &v3);
         v0[0] = ov6_0223FD18(&param0->unk_E4, param0->unk_D0);
-        param0->unk_D8 += (sub_0201D264(param0->unk_D0 * (180 / 20)) * 3);
+        param0->unk_D8 += (CalcCosineDegrees_Wraparound(param0->unk_D0 * (180 / 20)) * 3);
         param0->unk_D0++;
         Easy3DObject_SetPosition(&param0->unk_24, param0->unk_E4.unk_00, v2, param0->unk_D8);
 
@@ -1158,7 +1157,7 @@ static BOOL ov6_0223EBDC(UnkStruct_ov6_0223EA98 *param0)
     case 5:
         Easy3DObject_GetPosition(&param0->unk_24, &v1, &v2, &v3);
         v0[0] = ov6_0223FD18(&param0->unk_E4, param0->unk_D0);
-        param0->unk_D8 -= (sub_0201D264(param0->unk_D0 * (90 / 20)) * 3);
+        param0->unk_D8 -= (CalcCosineDegrees_Wraparound(param0->unk_D0 * (90 / 20)) * 3);
         param0->unk_D0++;
         Easy3DObject_SetPosition(&param0->unk_24, param0->unk_E4.unk_00, v2, param0->unk_D8);
 
@@ -1215,7 +1214,7 @@ static BOOL ov6_0223EE5C(UnkStruct_ov6_0223EA98 *param0)
     case 3:
         Easy3DObject_GetPosition(&param0->unk_24, &v1, &v2, &v3);
         v0[0] = ov6_0223FD18(&param0->unk_E4, param0->unk_D0);
-        param0->unk_D8 += (sub_0201D264(param0->unk_D0 * (180 / 32)) * 3);
+        param0->unk_D8 += (CalcCosineDegrees_Wraparound(param0->unk_D0 * (180 / 32)) * 3);
         param0->unk_D0++;
         Easy3DObject_SetPosition(&param0->unk_24, param0->unk_E4.unk_00, v2, param0->unk_D8);
 
@@ -1229,7 +1228,7 @@ static BOOL ov6_0223EE5C(UnkStruct_ov6_0223EA98 *param0)
         param0->unk_18++;
     case 5:
         Easy3DObject_GetPosition(&param0->unk_24, &v1, &v2, &v3);
-        param0->unk_D8 -= (sub_0201D264(param0->unk_D0 * (360 / 32)) * 2);
+        param0->unk_D8 -= (CalcCosineDegrees_Wraparound(param0->unk_D0 * (360 / 32)) * 2);
         param0->unk_D0++;
         Easy3DObject_SetPosition(&param0->unk_24, v1, v2, param0->unk_D8);
 
@@ -1253,7 +1252,7 @@ static BOOL ov6_0223EE5C(UnkStruct_ov6_0223EA98 *param0)
         v0[0] = ov6_0223FD18(&param0->unk_E4, param0->unk_D0);
         v0[1] = ov6_0223FD18(&param0->unk_F4, param0->unk_D0);
         param0->unk_D0++;
-        param0->unk_DC -= (sub_0201D264((param0->unk_D0 + 1) * (180 / 32)) * 4);
+        param0->unk_DC -= (CalcCosineDegrees_Wraparound((param0->unk_D0 + 1) * (180 / 32)) * 4);
         Easy3DObject_SetPosition(&param0->unk_24, param0->unk_E4.unk_00 + param0->unk_DC, v2, param0->unk_F4.unk_00);
 
         if (v0[0] && v0[1]) {
@@ -1268,7 +1267,7 @@ static BOOL ov6_0223EE5C(UnkStruct_ov6_0223EA98 *param0)
         param0->unk_18++;
     case 9:
         Easy3DObject_GetPosition(&param0->unk_24, &v1, &v2, &v3);
-        param0->unk_D8 += (sub_0201D264(param0->unk_D0 * (360 / 32)) * 1);
+        param0->unk_D8 += (CalcCosineDegrees_Wraparound(param0->unk_D0 * (360 / 32)) * 1);
         param0->unk_D0++;
         Easy3DObject_SetPosition(&param0->unk_24, v1, v2, param0->unk_D8);
 
@@ -1292,7 +1291,7 @@ static BOOL ov6_0223EE5C(UnkStruct_ov6_0223EA98 *param0)
         Easy3DObject_GetPosition(&param0->unk_24, &v1, &v2, &v3);
         v0[0] = ov6_0223FD18(&param0->unk_E4, param0->unk_D0);
         v0[1] = ov6_0223FD18(&param0->unk_F4, param0->unk_D0);
-        param0->unk_E0 += (sub_0201D264(param0->unk_D0 * (180 / 32)) * 2);
+        param0->unk_E0 += (CalcCosineDegrees_Wraparound(param0->unk_D0 * (180 / 32)) * 2);
         param0->unk_D0++;
         Easy3DObject_SetPosition(&param0->unk_24, param0->unk_E4.unk_00, v2, param0->unk_F4.unk_00 + param0->unk_E0);
 
@@ -1390,7 +1389,7 @@ static BOOL ov6_0223EE5C(UnkStruct_ov6_0223EA98 *param0)
             GX_SetMasterBrightness(param0->unk_0C);
         }
 
-        param0->unk_DC += (sub_0201D264((param0->unk_D0 + 1) * (180 / 32)) * 8);
+        param0->unk_DC += (CalcCosineDegrees_Wraparound((param0->unk_D0 + 1) * (180 / 32)) * 8);
         Easy3DObject_SetPosition(&param0->unk_24, param0->unk_D4 + param0->unk_DC, v2, param0->unk_F4.unk_00);
 
         if (v0[0]) {
@@ -2058,7 +2057,7 @@ UnkStruct_ov6_022401B8 *ov6_02240104(u32 param0, FieldSystem *fieldSystem)
     ov6_02240260(&v0->unk_34, v0->unk_11C, &v0->unk_10C);
 
     {
-        BgConfig *v1 = sub_0203D170(v0->fieldSystem);
+        BgConfig *v1 = FieldSystem_GetBgConfig(v0->fieldSystem);
 
         Graphics_LoadTilesToBgLayer(172, 74, v1, 2, 0, 0, 0, param0);
         Graphics_LoadTilemapToBgLayer(172, 76, v1, 2, 0, 0, 0, param0);
