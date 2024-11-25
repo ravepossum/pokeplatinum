@@ -63,114 +63,93 @@ static void DebugMonValue_PrintSpeciesName(Window *window, u32 species, u32 x, u
 static u32 DebugMonValue_Get(DebugMon *mon, u8 statID);
 static void DebugMonValue_Set(DebugMon *mon, u32 value, u8 statID);
 
-static const DebugMonValue sDebugValue00 = { 1, SPECIES_EGG - 1, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue01 = { 1, 100, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue02 = { 1, 2000000, DMMD_BOTH, 7 };
-static const DebugMonValue sDebugValue03 = { 0, 0xFFFFFFFF, DMMD_BOTH, 10 };
-static const DebugMonValue sDebugValue04 = { 0, 0xFFFFFFFF, DMMD_BOTH, 10 };
-static const DebugMonValue sDebugValue05 = { 0, 2, DMMD_BOTH, DMV_COUNT_NONE };
-static const DebugMonValue sDebugValue06 = { 0, 24, DMMD_BOTH, DMV_COUNT_NONE };
-static const DebugMonValue sDebugValue07 = { 0, MAX_MOVES, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue08 = { 0, MAX_MOVES, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue09 = { 0, MAX_MOVES, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue10 = { 0, MAX_MOVES, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue11 = { 0, MAX_ITEMS, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue12 = { 0, 1, DMMD_BOTH, DMV_COUNT_NONE };
-static const DebugMonValue sDebugValue13 = { 0, 0x1F, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue14 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue15 = { 0, 0x1F, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue16 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue17 = { 0, 0x1F, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue18 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue19 = { 0, 0x1F, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue20 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue21 = { 0, 0x1F, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue22 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue23 = { 0, 0x1F, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue24 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue25 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue26 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue27 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue28 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue29 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue30 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue31 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue32 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue33 = { 0, 1, DMMD_BOTH, DMV_COUNT_NONE };
-static const DebugMonValue sDebugValue34 = { 0, 6, DMMD_BOTH, DMV_COUNT_NONE };
-static const DebugMonValue sDebugValue41 = { 0, 1, DMMD_BOTH, DMV_COUNT_NONE };
-static const DebugMonValue sDebugValue42 = { 0, 9999, DMMD_BOTH, 4 };
-static const DebugMonValue sDebugValue43 = { 0, 100, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue44 = { 1, 15, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue45 = { 1, 16, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue46 = { 1, 8, DMMD_BOTH, 1 };
-static const DebugMonValue sDebugValue47 = { 0, 255, DMMD_BOTH, 3 };
-static const DebugMonValue sDebugValue48 = { 0, 99, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue49 = { 1, 12, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue50 = { 1, 31, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue51 = { 0, 9999, DMMD_BOTH, 4 };
-static const DebugMonValue sDebugValue52 = { 0, 99, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue53 = { 1, 12, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue54 = { 1, 31, DMMD_BOTH, 2 };
-static const DebugMonValue sDebugValue55 = { 0, 1, DMMD_BOTH, DMV_COUNT_NONE };
+static const DebugMonValue sDebugValueSpeciesStats = { 1, SPECIES_EGG - 1, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValueLevel = { 1, 100, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValueExpPoints = { 1, 2000000, DMMD_BOTH, 7 };
+static const DebugMonValue sDebugValueOTID = { 0, 0xFFFFFFFF, DMMD_BOTH, 10 };
+static const DebugMonValue sDebugValuePersonality = { 0, 0xFFFFFFFF, DMMD_BOTH, 10 };
+static const DebugMonValue sDebugValueGender = { 0, 2, DMMD_BOTH, DMV_COUNT_NONE };
+static const DebugMonValue sDebugValueNature = { 0, 24, DMMD_BOTH, DMV_COUNT_NONE };
+static const DebugMonValue sDebugValueMoves = { 0, MAX_MOVES, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValueHeldItem = { 0, MAX_ITEMS, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValueAbility = { 0, 1, DMMD_BOTH, DMV_COUNT_NONE };
+static const DebugMonValue sDebugValueIVs = { 0, MAX_IVS_SINGLE_STAT, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValueEVs = { 0, MAX_EVS_SINGLE_STAT, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValueContestStats = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValueSheen = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValueFriendship = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValuePokerus = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValueIsEgg = { 0, 1, DMMD_BOTH, DMV_COUNT_NONE };
+static const DebugMonValue sDebugValueStatus = { 0, 6, DMMD_BOTH, DMV_COUNT_NONE };
+static const DebugMonValue sDebugValueIsFatefulEncounter = { 0, 1, DMMD_BOTH, DMV_COUNT_NONE };
+static const DebugMonValue sDebugValueLocation = { 0, 9999, DMMD_BOTH, 4 };
+static const DebugMonValue sDebugValueMetLevel = { 0, 100, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValueMetGame = { 1, 15, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValuePokeball = { 1, 16, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValueMetRegion = { 1, 8, DMMD_BOTH, 1 };
+static const DebugMonValue sDebugValueForm = { 0, 255, DMMD_BOTH, 3 };
+static const DebugMonValue sDebugValueYear = { 0, 99, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValueMonth = { 1, 12, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValueDay = { 1, 31, DMMD_BOTH, 2 };
+static const DebugMonValue sDebugValueHasNickname = { 0, 1, DMMD_BOTH, DMV_COUNT_NONE };
 
-static const DebugMonValueEntry sDebugMonValueList[] = {
-    { dmm_label_species, &sDebugValue00 },
-    { dmm_label_level, &sDebugValue01 },
-    { dmm_label_exp_points, &sDebugValue02 },
-    { dmm_label_ot_id, &sDebugValue03 },
-    { dmm_label_personality, &sDebugValue04 },
-    { dmm_label_gender, &sDebugValue05 },
-    { dmm_label_nature, &sDebugValue06 },
-    { dmm_label_move_1, &sDebugValue07 },
-    { dmm_label_move_2, &sDebugValue08 },
-    { dmm_label_move_3, &sDebugValue09 },
-    { dmm_label_move_4, &sDebugValue10 },
-    { dmm_label_held_item, &sDebugValue11 },
-    { dmm_label_ability, &sDebugValue12 },
-    { dmm_label_hp_iv, &sDebugValue13 },
-    { dmm_label_hp_ev, &sDebugValue14 },
-    { dmm_label_attack_iv, &sDebugValue15 },
-    { dmm_label_attack_ev, &sDebugValue16 },
-    { dmm_label_defense_iv, &sDebugValue17 },
-    { dmm_label_defense_ev, &sDebugValue18 },
-    { dmm_label_speed_iv, &sDebugValue19 },
-    { dmm_label_speed_ev, &sDebugValue20 },
-    { dmm_label_sp_attack_iv, &sDebugValue21 },
-    { dmm_label_sp_attack_ev, &sDebugValue22 },
-    { dmm_label_sp_defense_iv, &sDebugValue23 },
-    { dmm_label_sp_defense_ev, &sDebugValue24 },
-    { dmm_label_cool, &sDebugValue25 },
-    { dmm_label_beauty, &sDebugValue26 },
-    { dmm_label_cute, &sDebugValue27 },
-    { dmm_label_smart, &sDebugValue28 },
-    { dmm_label_tough, &sDebugValue29 },
-    { dmm_label_sheen, &sDebugValue30 },
-    { dmm_label_friendship, &sDebugValue31 },
-    { dmm_label_pokerus, &sDebugValue32 },
-    { dmm_label_egg, &sDebugValue33 },
-    { dmm_label_status, &sDebugValue34 },
-    { dmm_label_hp, &sDebugValue00 },
-    { dmm_label_attack, &sDebugValue00 },
-    { dmm_label_defense, &sDebugValue00 },
-    { dmm_label_speed, &sDebugValue00 },
-    { dmm_label_sp_attack, &sDebugValue00 },
-    { dmm_label_sp_defense, &sDebugValue00 },
-    { dmm_label_fateful_encounter, &sDebugValue41 },
-    { dmm_label_met_location, &sDebugValue42 },
-    { dmm_label_met_level, &sDebugValue43 },
-    { dmm_label_met_game, &sDebugValue44 },
-    { dmm_label_pokeball, &sDebugValue45 },
-    { dmm_label_met_region, &sDebugValue46 },
-    { dmm_label_form, &sDebugValue47 },
-    { dmm_label_year, &sDebugValue48 },
-    { dmm_label_month, &sDebugValue49 },
-    { dmm_label_day, &sDebugValue50 },
-    { dmm_label_hatch_location, &sDebugValue51 },
-    { dmm_label_year, &sDebugValue52 },
-    { dmm_label_month, &sDebugValue53 },
-    { dmm_label_day, &sDebugValue54 },
-    { dmm_label_nickname, &sDebugValue55 },
+static const DebugMonValueEntry sDebugMonValueList[MAX_DEBUG_MON_STAT] = {
+    [DEBUG_MON_SPECIES] = { dmm_label_species, &sDebugValueSpeciesStats },
+    [DEBUG_MON_LEVEL] = { dmm_label_level, &sDebugValueLevel },
+    [DEBUG_MON_EXP] = { dmm_label_exp_points, &sDebugValueExpPoints },
+    [DEBUG_MON_OT_ID] = { dmm_label_ot_id, &sDebugValueOTID },
+    [DEBUG_MON_PERSONALITY] = { dmm_label_personality, &sDebugValuePersonality },
+    [DEBUG_MON_GENDER] = { dmm_label_gender, &sDebugValueGender },
+    [DEBUG_MON_NATURE] = { dmm_label_nature, &sDebugValueNature },
+    [DEBUG_MON_MOVE1] = { dmm_label_move_1, &sDebugValueMoves },
+    [DEBUG_MON_MOVE2] = { dmm_label_move_2, &sDebugValueMoves },
+    [DEBUG_MON_MOVE3] = { dmm_label_move_3, &sDebugValueMoves },
+    [DEBUG_MON_MOVE4] = { dmm_label_move_4, &sDebugValueMoves },
+    [DEBUG_MON_HELD_ITEM] = { dmm_label_held_item, &sDebugValueHeldItem },
+    [DEBUG_MON_ABILITY] = { dmm_label_ability, &sDebugValueAbility },
+    [DEBUG_MON_HP_IV] = { dmm_label_hp_iv, &sDebugValueIVs },
+    [DEBUG_MON_HP_EV] = { dmm_label_hp_ev, &sDebugValueEVs },
+    [DEBUG_MON_ATK_IV] = { dmm_label_attack_iv, &sDebugValueIVs },
+    [DEBUG_MON_ATK_EV] = { dmm_label_attack_ev, &sDebugValueEVs },
+    [DEBUG_MON_DEF_IV] = { dmm_label_defense_iv, &sDebugValueIVs },
+    [DEBUG_MON_DEF_EV] = { dmm_label_defense_ev, &sDebugValueEVs },
+    [DEBUG_MON_SPEED_IV] = { dmm_label_speed_iv, &sDebugValueIVs },
+    [DEBUG_MON_SPEED_EV] = { dmm_label_speed_ev, &sDebugValueEVs },
+    [DEBUG_MON_SPATK_IV] = { dmm_label_sp_attack_iv, &sDebugValueIVs },
+    [DEBUG_MON_SPATK_EV] = { dmm_label_sp_attack_ev, &sDebugValueEVs },
+    [DEBUG_MON_SPDEF_IV] = { dmm_label_sp_defense_iv, &sDebugValueIVs },
+    [DEBUG_MON_SPDEF_EV] = { dmm_label_sp_defense_ev, &sDebugValueEVs },
+    [DEBUG_MON_COOL] = { dmm_label_cool, &sDebugValueContestStats },
+    [DEBUG_MON_BEAUTY] = { dmm_label_beauty, &sDebugValueContestStats },
+    [DEBUG_MON_CUTE] = { dmm_label_cute, &sDebugValueContestStats },
+    [DEBUG_MON_SMART] = { dmm_label_smart, &sDebugValueContestStats },
+    [DEBUG_MON_TOUGH] = { dmm_label_tough, &sDebugValueContestStats },
+    [DEBUG_MON_SHEEN] = { dmm_label_sheen, &sDebugValueSheen },
+    [DEBUG_MON_FRIENDSHIP] = { dmm_label_friendship, &sDebugValueFriendship },
+    [DEBUG_MON_POKERUS] = { dmm_label_pokerus, &sDebugValuePokerus },
+    [DEBUG_MON_IS_EGG] = { dmm_label_egg, &sDebugValueIsEgg },
+    [DEBUG_MON_STATUS_CONDITION] = { dmm_label_status, &sDebugValueStatus },
+    [DEBUG_MON_MAX_HP] = { dmm_label_hp, &sDebugValueSpeciesStats },
+    [DEBUG_MON_ATK] = { dmm_label_attack, &sDebugValueSpeciesStats },
+    [DEBUG_MON_DEF] = { dmm_label_defense, &sDebugValueSpeciesStats },
+    [DEBUG_MON_SPEED] = { dmm_label_speed, &sDebugValueSpeciesStats },
+    [DEBUG_MON_SP_ATK] = { dmm_label_sp_attack, &sDebugValueSpeciesStats },
+    [DEBUG_MON_SP_DEF] = { dmm_label_sp_defense, &sDebugValueSpeciesStats },
+    [DEBUG_MON_FATEFUL_ENCOUNTER] = { dmm_label_fateful_encounter, &sDebugValueIsFatefulEncounter },
+    [DEBUG_MON_MET_LOCATION] = { dmm_label_met_location, &sDebugValueLocation },
+    [DEBUG_MON_MET_LEVEL] = { dmm_label_met_level, &sDebugValueMetLevel },
+    [DEBUG_MON_MET_GAME] = { dmm_label_met_game, &sDebugValueMetGame },
+    [DEBUG_MON_POKEBALL] = { dmm_label_pokeball, &sDebugValuePokeball },
+    [DEBUG_MON_MET_GAME_REGION_CODE] = { dmm_label_met_region, &sDebugValueMetRegion },
+    [DEBUG_MON_FORM] = { dmm_label_form, &sDebugValueForm },
+    [DEBUG_MON_MET_YEAR] = { dmm_label_year, &sDebugValueYear },
+    [DEBUG_MON_MET_MONTH] = { dmm_label_month, &sDebugValueMonth },
+    [DEBUG_MON_MET_DAY] = { dmm_label_day, &sDebugValueDay },
+    [DEBUG_MON_HATCH_LOCATION] = { dmm_label_hatch_location, &sDebugValueLocation },
+    [DEBUG_MON_HATCH_YEAR] = { dmm_label_year, &sDebugValueYear },
+    [DEBUG_MON_HATCH_MONTH] = { dmm_label_month, &sDebugValueMonth },
+    [DEBUG_MON_HATCH_DAY] = { dmm_label_day, &sDebugValueDay },
+    [DEBUG_MON_HAS_NICKNAME] = { dmm_label_nickname, &sDebugValueHasNickname },
 };
 
 static const u32 sDebugMonIncrements[] = {
@@ -195,7 +174,7 @@ static const u8 sDebugMonPage1[] = {
     DEBUG_MON_PERSONALITY,
     DEBUG_MON_GENDER,
     DEBUG_MON_NATURE,
-    DEBUG_MON_END
+    DEBUG_MON_PAGE_END,
 };
 
 static const u8 sDebugMonPage2[] = {
@@ -205,7 +184,7 @@ static const u8 sDebugMonPage2[] = {
     DEBUG_MON_IS_EGG,
     DEBUG_MON_FATEFUL_ENCOUNTER,
     DEBUG_MON_HAS_NICKNAME,
-    DEBUG_MON_END
+    DEBUG_MON_PAGE_END,
 };
 
 static const u8 sDebugMonPage3[] = {
@@ -215,7 +194,7 @@ static const u8 sDebugMonPage3[] = {
     DEBUG_MON_MOVE4,
     DEBUG_MON_HELD_ITEM,
     DEBUG_MON_ABILITY,
-    DEBUG_MON_END
+    DEBUG_MON_PAGE_END,
 };
 
 static const u8 sDebugMonPage4[] = {
@@ -226,7 +205,7 @@ static const u8 sDebugMonPage4[] = {
     DEBUG_MON_DEF_IV,
     DEBUG_MON_DEF_EV,
     DEBUG_MON_BATTLE_PARAM1,
-    DEBUG_MON_END
+    DEBUG_MON_PAGE_END,
 };
 
 static const u8 sDebugMonPage5[] = {
@@ -237,7 +216,7 @@ static const u8 sDebugMonPage5[] = {
     DEBUG_MON_SPDEF_IV,
     DEBUG_MON_SPDEF_EV,
     DEBUG_MON_BATTLE_PARAM2,
-    DEBUG_MON_END
+    DEBUG_MON_PAGE_END,
 };
 
 static const u8 sDebugMonPage6[] = {
@@ -247,7 +226,7 @@ static const u8 sDebugMonPage6[] = {
     DEBUG_MON_SMART,
     DEBUG_MON_TOUGH,
     DEBUG_MON_SHEEN,
-    DEBUG_MON_END
+    DEBUG_MON_PAGE_END,
 };
 
 static const u8 sDebugMonPage7[] = {
@@ -256,7 +235,7 @@ static const u8 sDebugMonPage7[] = {
     DEBUG_MON_POKEBALL,
     DEBUG_MON_MET_GAME_REGION_CODE,
     DEBUG_MON_FORM,
-    DEBUG_MON_END
+    DEBUG_MON_PAGE_END,
 };
 
 static const u8 sDebugMonPage8[] = {
@@ -268,7 +247,7 @@ static const u8 sDebugMonPage8[] = {
     DEBUG_MON_HATCH_YEAR,
     DEBUG_MON_HATCH_MONTH,
     DEBUG_MON_HATCH_DAY,
-    DEBUG_MON_END
+    DEBUG_MON_PAGE_END,
 };
 
 static const DebugMonMenuPage sDebugMonMenuPages[DEBUG_MON_MENU_MAX_PAGES] = {
@@ -594,7 +573,7 @@ static void DebugMonMenu_DisplayPage(DebugMonMenu *monMenu)
     Window_FillTilemap(&monMenu->mainWindow, 15);
 
     u16 i = 0;
-    while (sDebugMonMenuPages[mon->page].page[i] != DEBUG_MON_END) {
+    while (sDebugMonMenuPages[mon->page].page[i] != DEBUG_MON_PAGE_END) {
         DebugMonValue_Display(monMenu, sDebugMonMenuPages[mon->page].page[i], DMM_COLOR_BLACK, i * 16);
         i++;
     }
@@ -608,7 +587,7 @@ static void DebugMonMenu_DisplayValues(DebugMonMenu *monMenu)
     Window_FillTilemap(&monMenu->mainWindow, 15);
 
     u16 i = 0;
-    while (sDebugMonMenuPages[mon->page].page[i] != DEBUG_MON_END) {
+    while (sDebugMonMenuPages[mon->page].page[i] != DEBUG_MON_PAGE_END) {
 
         if (i == mon->cursor) {
             DebugMonValue_Display(monMenu, sDebugMonMenuPages[mon->page].page[i], DMM_COLOR_RED, i * 16);
