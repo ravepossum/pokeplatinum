@@ -145,271 +145,271 @@
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">{STRVAR_1 52, 0, 0}</language>
 	</row>
-	<row id="pl_msg_00000336_00036" index="36">
+	<row id="dmm_label_species" index="36">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Species</language>
 	</row>
-	<row id="pl_msg_00000336_00037" index="37">
+	<row id="dmm_label_level" index="37">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Level</language>
 	</row>
-	<row id="pl_msg_00000336_00038" index="38">
+	<row id="dmm_label_exp_points" index="38">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Exp. Points</language>
 	</row>
-	<row id="pl_msg_00000336_00039" index="39">
+	<row id="dmm_label_ot_id" index="39">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">OT ID</language>
 	</row>
-	<row id="pl_msg_00000336_00040" index="40">
+	<row id="dmm_label_personality" index="40">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Personality</language>
 	</row>
-	<row id="pl_msg_00000336_00041" index="41">
+	<row id="dmm_label_gender" index="41">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Gender</language>
 	</row>
-	<row id="pl_msg_00000336_00042" index="42">
+	<row id="dmm_label_nature" index="42">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Nature</language>
 	</row>
-	<row id="pl_msg_00000336_00043" index="43">
+	<row id="dmm_label_move_1" index="43">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Move 1</language>
 	</row>
-	<row id="pl_msg_00000336_00044" index="44">
+	<row id="dmm_label_move_2" index="44">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Move 2</language>
 	</row>
-	<row id="pl_msg_00000336_00045" index="45">
+	<row id="dmm_label_move_3" index="45">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Move 3</language>
 	</row>
-	<row id="pl_msg_00000336_00046" index="46">
+	<row id="dmm_label_move_4" index="46">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Move 4</language>
 	</row>
-	<row id="pl_msg_00000336_00047" index="47">
+	<row id="dmm_label_held_item" index="47">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Held item</language>
 	</row>
-	<row id="pl_msg_00000336_00048" index="48">
+	<row id="dmm_label_ability" index="48">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Ability</language>
 	</row>
-	<row id="pl_msg_00000336_00049" index="49">
+	<row id="dmm_label_hp_iv" index="49">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">HP IV</language>
 	</row>
-	<row id="pl_msg_00000336_00050" index="50">
+	<row id="dmm_label_hp_ev" index="50">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">HP EV</language>
 	</row>
-	<row id="pl_msg_00000336_00051" index="51">
+	<row id="dmm_label_attack_iv" index="51">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Attack IV</language>
 	</row>
-	<row id="pl_msg_00000336_00052" index="52">
+	<row id="dmm_label_attack_ev" index="52">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Attack EV</language>
 	</row>
-	<row id="pl_msg_00000336_00053" index="53">
+	<row id="dmm_label_defense_iv" index="53">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Defense IV</language>
 	</row>
-	<row id="pl_msg_00000336_00054" index="54">
+	<row id="dmm_label_defense_ev" index="54">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Defense EV</language>
 	</row>
-	<row id="pl_msg_00000336_00055" index="55">
+	<row id="dmm_label_speed_iv" index="55">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Speed IV</language>
 	</row>
-	<row id="pl_msg_00000336_00056" index="56">
+	<row id="dmm_label_speed_ev" index="56">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Speed EV</language>
 	</row>
-	<row id="pl_msg_00000336_00057" index="57">
+	<row id="dmm_label_sp_attack_iv" index="57">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Sp. Atk IV</language>
 	</row>
-	<row id="pl_msg_00000336_00058" index="58">
+	<row id="dmm_label_sp_attack_ev" index="58">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Sp. Atk EV</language>
 	</row>
-	<row id="pl_msg_00000336_00059" index="59">
+	<row id="dmm_label_sp_defense_iv" index="59">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Sp. Def IV</language>
 	</row>
-	<row id="pl_msg_00000336_00060" index="60">
+	<row id="dmm_label_sp_defense_ev" index="60">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Sp. Def EV</language>
 	</row>
-	<row id="pl_msg_00000336_00061" index="61">
+	<row id="dmm_label_cool" index="61">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Cool</language>
 	</row>
-	<row id="pl_msg_00000336_00062" index="62">
+	<row id="dmm_label_beauty" index="62">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Beauty</language>
 	</row>
-	<row id="pl_msg_00000336_00063" index="63">
+	<row id="dmm_label_cute" index="63">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Cute</language>
 	</row>
-	<row id="pl_msg_00000336_00064" index="64">
+	<row id="dmm_label_smart" index="64">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Smart</language>
 	</row>
-	<row id="pl_msg_00000336_00065" index="65">
+	<row id="dmm_label_tough" index="65">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Tough</language>
 	</row>
-	<row id="pl_msg_00000336_00066" index="66">
+	<row id="dmm_label_sheen" index="66">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Sheen</language>
 	</row>
-	<row id="pl_msg_00000336_00067" index="67">
+	<row id="dmm_label_friendship" index="67">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Friendship</language>
 	</row>
-	<row id="pl_msg_00000336_00068" index="68">
+	<row id="dmm_label_pokerus" index="68">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">POKéRUS</language>
 	</row>
-	<row id="pl_msg_00000336_00069" index="69">
+	<row id="dmm_label_egg" index="69">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Egg</language>
 	</row>
-	<row id="pl_msg_00000336_00070" index="70">
+	<row id="dmm_label_status" index="70">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Status</language>
 	</row>
-	<row id="pl_msg_00000336_00071" index="71">
+	<row id="dmm_label_hp" index="71">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">HP</language>
 	</row>
-	<row id="pl_msg_00000336_00072" index="72">
+	<row id="dmm_label_attack" index="72">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Attack</language>
 	</row>
-	<row id="pl_msg_00000336_00073" index="73">
+	<row id="dmm_label_defense" index="73">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Defense</language>
 	</row>
-	<row id="pl_msg_00000336_00074" index="74">
+	<row id="dmm_label_speed" index="74">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Speed</language>
 	</row>
-	<row id="pl_msg_00000336_00075" index="75">
+	<row id="dmm_label_sp_attack" index="75">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Sp. Atk</language>
 	</row>
-	<row id="pl_msg_00000336_00076" index="76">
+	<row id="dmm_label_sp_defense" index="76">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Sp. Def</language>
 	</row>
-	<row id="pl_msg_00000336_00077" index="77">
+	<row id="dmm_label_fateful_encounter" index="77">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Fateful Enc.</language>
 	</row>
-	<row id="pl_msg_00000336_00078" index="78">
+	<row id="dmm_label_met_location" index="78">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Met Location</language>
 	</row>
-	<row id="pl_msg_00000336_00079" index="79">
+	<row id="dmm_label_met_level" index="79">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Met Level</language>
 	</row>
-	<row id="pl_msg_00000336_00080" index="80">
+	<row id="dmm_label_met_game" index="80">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Met Game</language>
 	</row>
-	<row id="pl_msg_00000336_00081" index="81">
+	<row id="dmm_label_pokeball" index="81">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Pokeball</language>
 	</row>
-	<row id="pl_msg_00000336_00082" index="82">
+	<row id="dmm_label_met_region" index="82">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Met Game Region</language>
 	</row>
-	<row id="pl_msg_00000336_00083" index="83">
+	<row id="dmm_label_form" index="83">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Form</language>
 	</row>
-	<row id="pl_msg_00000336_00084" index="84">
+	<row id="dmm_label_hatch_location" index="84">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Hatch Location</language>
 	</row>
-	<row id="pl_msg_00000336_00085" index="85">
+	<row id="dmm_label_year" index="85">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Year</language>
 	</row>
-	<row id="pl_msg_00000336_00086" index="86">
+	<row id="dmm_label_month" index="86">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Month</language>
 	</row>
-	<row id="pl_msg_00000336_00087" index="87">
+	<row id="dmm_label_day" index="87">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">Date</language>
+		<language name="English">Day</language>
 	</row>
-	<row id="pl_msg_00000336_00088" index="88">
+	<row id="dmm_label_nickname" index="88">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Nickname</language>
 	</row>
-	<row id="pl_msg_00000336_00089" index="89">
+	<row id="dmm_label_status_normal" index="89">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Normal</language>
 	</row>
-	<row id="pl_msg_00000336_00090" index="90">
+	<row id="dmm_label_status_sleep" index="90">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Sleep</language>
 	</row>
-	<row id="pl_msg_00000336_00091" index="91">
+	<row id="dmm_label_status_poison" index="91">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Poison</language>
 	</row>
-	<row id="pl_msg_00000336_00092" index="92">
+	<row id="dmm_label_status_burned" index="92">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Burned</language>
 	</row>
-	<row id="pl_msg_00000336_00093" index="93">
+	<row id="dmm_label_status_frozen" index="93">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Frozen</language>
 	</row>
-	<row id="pl_msg_00000336_00094" index="94">
+	<row id="dmm_label_status_paralysed" index="94">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Paralysed</language>
 	</row>
-	<row id="pl_msg_00000336_00095" index="95">
+	<row id="dmm_label_status_badly_poisoned" index="95">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Badly poisoned</language>
 	</row>
-	<row id="pl_msg_00000336_00096" index="96">
+	<row id="dmm_none" index="96">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">None</language>
 	</row>
-	<row id="pl_msg_00000336_00097" index="97">
+	<row id="dmm_symbol_male" index="97">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">㊚</language>
 	</row>
-	<row id="pl_msg_00000336_00098" index="98">
+	<row id="dmm_symbol_female" index="98">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">㊛</language>
 	</row>
-	<row id="pl_msg_00000336_00099" index="99">
+	<row id="dmm_hyphen" index="99">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">-</language>
 	</row>
-	<row id="pl_msg_00000336_00100" index="100">
+	<row id="dmm_on" index="100">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">ON</language>
 	</row>
-	<row id="pl_msg_00000336_00101" index="101">
+	<row id="dmm_off" index="101">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">OFF</language>
 	</row>
-	<row id="pl_msg_00000336_00102" index="102">
+	<row id="dmm_template_number" index="102">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">{STRVAR_1 59, 0, 0}</language>
 	</row>
@@ -417,39 +417,39 @@
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">{STRVAR_1 0, 0, 0}</language>
 	</row>
-	<row id="pl_msg_00000336_00104" index="104">
+	<row id="dmm_template_move_name" index="104">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">{STRVAR_1 6, 0, 0}</language>
 	</row>
-	<row id="pl_msg_00000336_00105" index="105">
+	<row id="dmm_template_held_item" index="105">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">{STRVAR_1 8, 0, 0}</language>
 	</row>
-	<row id="pl_msg_00000336_00106" index="106">
+	<row id="dmm_template_ability" index="106">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">{STRVAR_1 5, 0, 0}</language>
 	</row>
-	<row id="pl_msg_00000336_00107" index="107">
+	<row id="dmm_template_nature" index="107">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">{STRVAR_1 7, 0, 0}</language>
 	</row>
-	<row id="pl_msg_00000336_00108" index="108">
+	<row id="dmm_mon_added_to_party" index="108">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Added a Pokémon to your party.</language>
 	</row>
-	<row id="pl_msg_00000336_00109" index="109">
+	<row id="dmm_mon_added_to_pc" index="109">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Added a Pokémon to a PC box.</language>
 	</row>
-	<row id="pl_msg_00000336_00110" index="110">
+	<row id="dmm_instructions_create_mon" index="110">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Create Pokémon      XY: View Memo\n  LR: Switch Page    START: Create Mon</language>
 	</row>
-	<row id="pl_msg_00000336_00111" index="111">
+	<row id="dmm_debug_ot" index="111">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">DebugOT</language>
 	</row>
-	<row id="pl_msg_00000336_00112" index="112">
+	<row id="dmm_debug_egg_name" index="112">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Egg</language>
 	</row>
@@ -457,11 +457,11 @@
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">(Test message)\nPokémon used a move!</language>
 	</row>
-	<row id="pl_msg_00000336_00114" index="114">
+	<row id="dmm_instructions_edit_mon" index="114">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Edit Pokémon          XY: Switch Party Slot\n  LR: Switch Page    START: Save Mon</language>
 	</row>
-	<row id="pl_msg_00000336_00115" index="115">
+	<row id="dmm_mon_edited" index="115">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Edited a Pokémon in your party.</language>
 	</row>

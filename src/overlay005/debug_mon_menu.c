@@ -5,6 +5,7 @@
 #include "constants/map_object.h"
 #include "constants/narc.h"
 #include "constants/pokemon.h"
+#include "consts/gender.h"
 #include "consts/items.h"
 #include "consts/moves.h"
 #include "consts/pokemon.h"
@@ -14,6 +15,7 @@
 #include "struct_defs/struct_02090800.h"
 
 #include "field/field_system.h"
+#include "gmm/message_bank_unk_0336.h"
 #include "overlay005/debug_menu.h"
 #include "overlay006/ov6_02243258.h"
 #include "text/pl_msg.naix"
@@ -113,62 +115,62 @@ static const DebugMonValue sDebugValue54 = { 1, 31, DMMD_BOTH, 2 };
 static const DebugMonValue sDebugValue55 = { 0, 1, DMMD_BOTH, DMV_COUNT_NONE };
 
 static const DebugMonValueEntry sDebugMonValueList[] = {
-    { DMV_LABEL_00, &sDebugValue00 },
-    { DMV_LABEL_01, &sDebugValue01 },
-    { DMV_LABEL_02, &sDebugValue02 },
-    { DMV_LABEL_03, &sDebugValue03 },
-    { DMV_LABEL_04, &sDebugValue04 },
-    { DMV_LABEL_05, &sDebugValue05 },
-    { DMV_LABEL_06, &sDebugValue06 },
-    { DMV_LABEL_07, &sDebugValue07 },
-    { DMV_LABEL_08, &sDebugValue08 },
-    { DMV_LABEL_09, &sDebugValue09 },
-    { DMV_LABEL_10, &sDebugValue10 },
-    { DMV_LABEL_11, &sDebugValue11 },
-    { DMV_LABEL_12, &sDebugValue12 },
-    { DMV_LABEL_13, &sDebugValue13 },
-    { DMV_LABEL_14, &sDebugValue14 },
-    { DMV_LABEL_15, &sDebugValue15 },
-    { DMV_LABEL_16, &sDebugValue16 },
-    { DMV_LABEL_17, &sDebugValue17 },
-    { DMV_LABEL_18, &sDebugValue18 },
-    { DMV_LABEL_19, &sDebugValue19 },
-    { DMV_LABEL_20, &sDebugValue20 },
-    { DMV_LABEL_21, &sDebugValue21 },
-    { DMV_LABEL_22, &sDebugValue22 },
-    { DMV_LABEL_23, &sDebugValue23 },
-    { DMV_LABEL_24, &sDebugValue24 },
-    { DMV_LABEL_25, &sDebugValue25 },
-    { DMV_LABEL_26, &sDebugValue26 },
-    { DMV_LABEL_27, &sDebugValue27 },
-    { DMV_LABEL_28, &sDebugValue28 },
-    { DMV_LABEL_29, &sDebugValue29 },
-    { DMV_LABEL_30, &sDebugValue30 },
-    { DMV_LABEL_31, &sDebugValue31 },
-    { DMV_LABEL_32, &sDebugValue32 },
-    { DMV_LABEL_33, &sDebugValue33 },
-    { DMV_LABEL_34, &sDebugValue34 },
-    { DMV_LABEL_35, &sDebugValue00 },
-    { DMV_LABEL_36, &sDebugValue00 },
-    { DMV_LABEL_37, &sDebugValue00 },
-    { DMV_LABEL_38, &sDebugValue00 },
-    { DMV_LABEL_39, &sDebugValue00 },
-    { DMV_LABEL_40, &sDebugValue00 },
-    { DMV_LABEL_41, &sDebugValue41 },
-    { DMV_LABEL_42, &sDebugValue42 },
-    { DMV_LABEL_43, &sDebugValue43 },
-    { DMV_LABEL_44, &sDebugValue44 },
-    { DMV_LABEL_45, &sDebugValue45 },
-    { DMV_LABEL_46, &sDebugValue46 },
-    { DMV_LABEL_47, &sDebugValue47 },
-    { DMV_LABEL_49, &sDebugValue48 },
-    { DMV_LABEL_50, &sDebugValue49 },
-    { DMV_LABEL_51, &sDebugValue50 },
-    { DMV_LABEL_48, &sDebugValue51 },
-    { DMV_LABEL_49, &sDebugValue52 },
-    { DMV_LABEL_50, &sDebugValue53 },
-    { DMV_LABEL_51, &sDebugValue54 },
-    { DMV_LABEL_52, &sDebugValue55 },
+    { dmm_label_species, &sDebugValue00 },
+    { dmm_label_level, &sDebugValue01 },
+    { dmm_label_exp_points, &sDebugValue02 },
+    { dmm_label_ot_id, &sDebugValue03 },
+    { dmm_label_personality, &sDebugValue04 },
+    { dmm_label_gender, &sDebugValue05 },
+    { dmm_label_nature, &sDebugValue06 },
+    { dmm_label_move_1, &sDebugValue07 },
+    { dmm_label_move_2, &sDebugValue08 },
+    { dmm_label_move_3, &sDebugValue09 },
+    { dmm_label_move_4, &sDebugValue10 },
+    { dmm_label_held_item, &sDebugValue11 },
+    { dmm_label_ability, &sDebugValue12 },
+    { dmm_label_hp_iv, &sDebugValue13 },
+    { dmm_label_hp_ev, &sDebugValue14 },
+    { dmm_label_attack_iv, &sDebugValue15 },
+    { dmm_label_attack_ev, &sDebugValue16 },
+    { dmm_label_defense_iv, &sDebugValue17 },
+    { dmm_label_defense_ev, &sDebugValue18 },
+    { dmm_label_speed_iv, &sDebugValue19 },
+    { dmm_label_speed_ev, &sDebugValue20 },
+    { dmm_label_sp_attack_iv, &sDebugValue21 },
+    { dmm_label_sp_attack_ev, &sDebugValue22 },
+    { dmm_label_sp_defense_iv, &sDebugValue23 },
+    { dmm_label_sp_defense_ev, &sDebugValue24 },
+    { dmm_label_cool, &sDebugValue25 },
+    { dmm_label_beauty, &sDebugValue26 },
+    { dmm_label_cute, &sDebugValue27 },
+    { dmm_label_smart, &sDebugValue28 },
+    { dmm_label_tough, &sDebugValue29 },
+    { dmm_label_sheen, &sDebugValue30 },
+    { dmm_label_friendship, &sDebugValue31 },
+    { dmm_label_pokerus, &sDebugValue32 },
+    { dmm_label_egg, &sDebugValue33 },
+    { dmm_label_status, &sDebugValue34 },
+    { dmm_label_hp, &sDebugValue00 },
+    { dmm_label_attack, &sDebugValue00 },
+    { dmm_label_defense, &sDebugValue00 },
+    { dmm_label_speed, &sDebugValue00 },
+    { dmm_label_sp_attack, &sDebugValue00 },
+    { dmm_label_sp_defense, &sDebugValue00 },
+    { dmm_label_fateful_encounter, &sDebugValue41 },
+    { dmm_label_met_location, &sDebugValue42 },
+    { dmm_label_met_level, &sDebugValue43 },
+    { dmm_label_met_game, &sDebugValue44 },
+    { dmm_label_pokeball, &sDebugValue45 },
+    { dmm_label_met_region, &sDebugValue46 },
+    { dmm_label_form, &sDebugValue47 },
+    { dmm_label_year, &sDebugValue48 },
+    { dmm_label_month, &sDebugValue49 },
+    { dmm_label_day, &sDebugValue50 },
+    { dmm_label_hatch_location, &sDebugValue51 },
+    { dmm_label_year, &sDebugValue52 },
+    { dmm_label_month, &sDebugValue53 },
+    { dmm_label_day, &sDebugValue54 },
+    { dmm_label_nickname, &sDebugValue55 },
 };
 
 static const u32 sDebugMonIncrements[] = {
@@ -176,13 +178,13 @@ static const u32 sDebugMonIncrements[] = {
 };
 
 static const u32 sStatusConditionTable[][2] = {
-    { DMV_STATUS_LABEL_01, 0x00000000 },
-    { DMV_STATUS_LABEL_02, 0x00000001 },
-    { DMV_STATUS_LABEL_03, 0x00000008 },
-    { DMV_STATUS_LABEL_04, 0x00000010 },
-    { DMV_STATUS_LABEL_05, 0x00000020 },
-    { DMV_STATUS_LABEL_06, 0x00000040 },
-    { DMV_STATUS_LABEL_07, 0x00000080 },
+    { dmm_label_status_normal, 0x00000000 },
+    { dmm_label_status_sleep, 0x00000001 },
+    { dmm_label_status_poison, 0x00000008 },
+    { dmm_label_status_burned, 0x00000010 },
+    { dmm_label_status_frozen, 0x00000020 },
+    { dmm_label_status_paralysed, 0x00000040 },
+    { dmm_label_status_badly_poisoned, 0x00000080 },
 };
 
 static const u8 sDebugMonPage1[] = {
@@ -310,12 +312,12 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
         Window_FillRectWithColor(&monMenu->mainWindow, 15, 24, 64, 30 * 8 - 24, 32);
 
         if (result == 1) {
-            DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, DMV_INFO_01, 32, 72, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+            DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, dmm_mon_added_to_pc, 32, 72, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
         } else {
             if (monMenu->mode != DEBUG_MON_MENU_MODE_EDIT) {
-                DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, DMV_INFO_00, 32, 72, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+                DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, dmm_mon_added_to_party, 32, 72, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
             } else {
-                DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, DMV_EDIT_CONFIRMATION, 32, 72, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+                DebugMonMenu_PrintString(&monMenu->mainWindow, monMenu->msgLoader, dmm_mon_edited, 32, 72, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
             }
         }
 
@@ -437,9 +439,9 @@ void DebugMonMenu_Init(DebugMonMenu *monMenu)
 {
     Window_FillTilemap(&monMenu->titleWindow, 15);
     if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
-        DebugMonMenu_PrintString(&monMenu->titleWindow, monMenu->msgLoader, DMV_EDIT_INSTRUCTIONS, 0, 0, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+        DebugMonMenu_PrintString(&monMenu->titleWindow, monMenu->msgLoader, dmm_instructions_edit_mon, 0, 0, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
     } else {
-        DebugMonMenu_PrintString(&monMenu->titleWindow, monMenu->msgLoader, DMV_INFO_02, 0, 0, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
+        DebugMonMenu_PrintString(&monMenu->titleWindow, monMenu->msgLoader, dmm_instructions_create_mon, 0, 0, TEXT_SPEED_INSTANT, DMM_COLOR_BLACK);
     }
 
     monMenu->mon.monData = Pokemon_New(HEAP_ID_APPLICATION);
@@ -809,12 +811,12 @@ static void DebugMon_CalcFullStats(DebugMonMenu *monMenu, DebugMon *mon)
     Strbuf *buf;
 
     if (mon->stats[DEBUG_MON_IS_EGG]) {
-        buf = MessageLoader_GetNewStrbuf(monMenu->msgLoader, DMV_EGG_NAME);
+        buf = MessageLoader_GetNewStrbuf(monMenu->msgLoader, dmm_debug_egg_name);
         Pokemon_SetValue(mon->monData, MON_DATA_NICKNAME_STRBUF, buf);
         Strbuf_Free(buf);
     }
 
-    buf = MessageLoader_GetNewStrbuf(monMenu->msgLoader, DMV_OT_NAME);
+    buf = MessageLoader_GetNewStrbuf(monMenu->msgLoader, dmm_debug_ot);
     Pokemon_SetValue(mon->monData, MON_DATA_OTNAME_STRBUF, buf);
     Strbuf_Free(buf);
 
@@ -1053,25 +1055,25 @@ static u8 DebugMonValue_Display(DebugMonMenu *monMenu, u8 statID, u32 color, u8 
     DebugMon *mon = &monMenu->mon;
 
     if (statID == DEBUG_MON_BATTLE_PARAM1) {
-        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_LABEL_35, 12, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
+        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, dmm_label_hp, 12, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
         DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[DEBUG_MON_MAX_HP], 3, 12 + 24, y + 16, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
 
-        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_LABEL_36, 12 + 72, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
+        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, dmm_label_attack, 12 + 72, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
         DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[DEBUG_MON_ATK], 3, 12 + 72 + 24, y + 16, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
 
-        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_LABEL_37, 12 + 72 + 72, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
+        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, dmm_label_defense, 12 + 72 + 72, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
         DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[DEBUG_MON_DEF], 3, 12 + 72 + 72 + 24, y + 16, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
         return 0;
     }
 
     if (statID == DEBUG_MON_BATTLE_PARAM2) {
-        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_LABEL_38, 12, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
+        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, dmm_label_speed, 12, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
         DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[DEBUG_MON_SPEED], 3, 12 + 24, y + 16, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
 
-        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_LABEL_39, 12 + 72, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
+        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, dmm_label_sp_attack, 12 + 72, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
         DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[DEBUG_MON_SP_ATK], 3, 12 + 72 + 24, y + 16, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
 
-        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_LABEL_40, 12 + 72 + 72, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
+        DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, dmm_label_sp_defense, 12 + 72 + 72, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_GREEN);
         DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[DEBUG_MON_SP_DEF], 3, 12 + 72 + 72 + 24, y + 16, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
         return 0;
     }
@@ -1088,14 +1090,14 @@ static u8 DebugMonValue_Display(DebugMonMenu *monMenu, u8 statID, u32 color, u8 
 
     case DEBUG_MON_GENDER:
         switch (mon->stats[statID]) {
-        case 0:
-            DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_STRING_01, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
+        case GENDER_MALE:
+            DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, dmm_symbol_male, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
             break;
-        case 1:
-            DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_STRING_02, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
+        case GENDER_FEMALE:
+            DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, dmm_symbol_female, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
             break;
-        case 2:
-            DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_STRING_00, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
+        case GENDER_NONE:
+            DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, dmm_none, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
             break;
         }
         break;
@@ -1106,18 +1108,18 @@ static u8 DebugMonValue_Display(DebugMonMenu *monMenu, u8 statID, u32 color, u8 
     case DEBUG_MON_MOVE4:
         DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[statID], count, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, color);
         StringTemplate_SetMoveName(monMenu->strTemplate, 0, mon->stats[statID]);
-        DebugMonValue_PrintStrExpanded(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, DMV_STRING_08, 12 + 72 + 24 + 32, y, TEXT_SPEED_NO_TRANSFER, color);
+        DebugMonValue_PrintStrExpanded(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, dmm_template_move_name, 12 + 72 + 24 + 32, y, TEXT_SPEED_NO_TRANSFER, color);
         break;
 
     case DEBUG_MON_HELD_ITEM:
         DebugMonValue_PrintNum(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, mon, mon->stats[statID], count, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, color);
         StringTemplate_SetItemName(monMenu->strTemplate, 0, mon->stats[statID]);
-        DebugMonValue_PrintStrExpanded(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, DMV_STRING_09, 12 + 72 + 24 + 32, y, TEXT_SPEED_NO_TRANSFER, color);
+        DebugMonValue_PrintStrExpanded(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, dmm_template_held_item, 12 + 72 + 24 + 32, y, TEXT_SPEED_NO_TRANSFER, color);
         break;
 
     case DEBUG_MON_ABILITY:
         StringTemplate_SetAbilityName(monMenu->strTemplate, 0, PokemonPersonalData_GetSpeciesValue(mon->stats[DEBUG_MON_SPECIES], MON_DATA_ABILITY + mon->stats[statID]));
-        DebugMonValue_PrintStrExpanded(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, DMV_STRING_10, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, color);
+        DebugMonValue_PrintStrExpanded(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, dmm_template_ability, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, color);
         break;
 
     case DEBUG_MON_STATUS_CONDITION:
@@ -1168,15 +1170,15 @@ static u8 DebugMonValue_Display(DebugMonMenu *monMenu, u8 statID, u32 color, u8 
     case DEBUG_MON_FATEFUL_ENCOUNTER:
     case DEBUG_MON_HAS_NICKNAME:
         if (mon->stats[statID]) {
-            DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_STRING_04, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
+            DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, dmm_on, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
         } else {
-            DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, DMV_STRING_05, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
+            DebugMonValue_PrintStr(&monMenu->mainWindow, monMenu->msgLoader, dmm_off, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, DMM_COLOR_BLACK);
         }
         break;
 
     case DEBUG_MON_NATURE:
         StringTemplate_SetNatureName(monMenu->strTemplate, 0, mon->stats[statID]);
-        DebugMonValue_PrintStrExpanded(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, DMV_STRING_11, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, color);
+        DebugMonValue_PrintStrExpanded(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, dmm_template_nature, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, color);
         break;
 
     default:
@@ -1208,7 +1210,7 @@ static void DebugMonValue_PrintStrExpanded(Window *window, MessageLoader *msgLoa
 
 static void DebugMonValue_PrintNum(Window *window, MessageLoader *msgLoader, StringTemplate *strTemplate, DebugMon *mon, u32 num, u32 digits, u32 x, u32 y, u32 delay, u32 color)
 {
-    Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, DMV_STRING_06);
+    Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, dmm_template_number);
     Strbuf *bufExp = Strbuf_Init(32, HEAP_ID_APPLICATION);
 
     u32 i;
