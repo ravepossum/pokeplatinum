@@ -126,6 +126,34 @@
             "x": 109,
             "z": 856,
             "y": 0
+        },
+        {
+            "graphics_id": 84,
+            "movement_type": 3,
+            "trainer_type": 0,
+            "flag": 0,
+            "script": 0,
+            "initial_dir": 2,
+            "data": [],
+            "movement_range_x": 0,
+            "movement_range_z": 0,
+            "x": 107,
+            "z": 891,
+            "y": 1
+        },
+        {
+            "graphics_id": 84,
+            "movement_type": 3,
+            "trainer_type": 0,
+            "flag": 0,
+            "script": 0,
+            "initial_dir": 2,
+            "data": [],
+            "movement_range_x": 0,
+            "movement_range_z": 0,
+            "x": 111,
+            "z": 886,
+            "y": 1
         }
     ],
     "warp_events": [

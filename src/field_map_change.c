@@ -266,7 +266,8 @@ void FieldMapChange_UpdateGameData(FieldSystem *fieldSystem, BOOL noWarp)
         weather = OVERWORLD_WEATHER_CLEAR;
     }
 
-    FieldOverworldState_SetWeather(fieldState, weather);
+    // FieldOverworldState_SetWeather(fieldState, weather);
+    FieldOverworldState_SetWeather(fieldState, OVERWORLD_WEATHER_HEAVY_SNOW);
 
     if (noWarp) {
         int cam1 = FieldOverworldState_GetCameraType(fieldState);

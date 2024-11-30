@@ -3674,8 +3674,8 @@ int BattleSystem_TriggerEffectOnSwitch(BattleSystem *battleSys, BattleContext *b
                 case OVERWORLD_WEATHER_SNOWING:
                 case OVERWORLD_WEATHER_HEAVY_SNOW:
                 case OVERWORLD_WEATHER_BLIZZARD:
-                    subscript = subscript_overworld_hail;
-                    result = SWITCH_IN_CHECK_RESULT_BREAK;
+                    // subscript = subscript_overworld_hail;
+                    // result = SWITCH_IN_CHECK_RESULT_BREAK;
                     break;
 
                 case OVERWORLD_WEATHER_SANDSTORM:

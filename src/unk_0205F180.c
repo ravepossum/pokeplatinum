@@ -459,6 +459,9 @@ static u32 sub_0205F644(PlayerAvatar *playerAvatar, int param1)
         return 0;
     }
 
+    if (!TileBehavior_IsTallGrass(v1))
+        return Unk_020EDB84[0].unk_04;
+    
     do {
         if (Unk_020EDB84[v0].unk_00(v1) == 1) {
             return Unk_020EDB84[v0].unk_04;
