@@ -1144,8 +1144,8 @@ static void SetMonDataFromMon(PokemonSummaryScreen *summaryScreen, Pokemon *mon,
     } else if (Pokemon_InfectedWithPokerus(mon) == TRUE) {
         monData->pokerus = SUMMARY_POKERUS_INFECTED;
 
-        if (monData->status == 7) {
-            monData->status = 0;
+        if (monData->status == SUMMARY_STATUS_NONE) {
+            monData->status = SUMMARY_STATUS_POKERUS;
         }
     } else {
         monData->pokerus = SUMMARY_POKERUS_NONE;
@@ -1165,7 +1165,7 @@ static void SetMonDataFromMon(PokemonSummaryScreen *summaryScreen, Pokemon *mon,
 
     for (i = 0; i < RIBBON_MAX; i++) {
         if (Pokemon_GetValue(mon, Ribbon_GetData(i, RIBBON_DATA_RIBBON_ID), NULL) != 0) {
-            monData->ribbons[i / 32] |= (1 << (i & 0x1F));
+            monData->ribbons[i / 32] |= (1 << (i & 31));
             summaryScreen->ribbonMax++;
         }
     }
@@ -2188,7 +2188,7 @@ void PokemonSummaryScreen_SetPlayerProfile(PokemonSummary *summary, const Traine
 {
     summary->OTName = TrainerInfo_Name(trainerInfo);
     summary->OTID = TrainerInfo_ID(trainerInfo);
-    summary->OTGender = (u8)TrainerInfo_Gender(trainerInfo);
+    summary->OTGender = TrainerInfo_Gender(trainerInfo);
 }
 
 u32 PokemonSummaryScreen_StatusIconChar(void)
@@ -2215,19 +2215,19 @@ u32 PokemonSummaryScreen_StatusIconAnimIdx(Pokemon *mon)
 {
     u32 statusCondition = Pokemon_GetValue(mon, MON_DATA_STATUS_CONDITION, NULL);
 
-    if (Pokemon_GetValue(mon, MON_DATA_CURRENT_HP, NULL) == 0) {
-        return 6;
-    } else if ((statusCondition & (0x8 | 0x80)) != 0) {
-        return 4;
-    } else if ((statusCondition & 0x7) != 0) {
-        return 3;
-    } else if ((statusCondition & 0x10) != 0) {
-        return 5;
-    } else if ((statusCondition & 0x20) != 0) {
-        return 2;
-    } else if ((statusCondition & 0x40) != 0) {
-        return 1;
+    if (Pokemon_GetValue(mon, MON_DATA_CURRENT_HP, NULL) == STATUS1_NONE) {
+        return SUMMARY_STATUS_FAINTED;
+    } else if ((statusCondition & (STATUS1_POISON | STATUS1_TOXIC_POISON)) != STATUS1_NONE) {
+        return SUMMARY_STATUS_POISON;
+    } else if ((statusCondition & STATUS1_SLEEP) != STATUS1_NONE) {
+        return SUMMARY_STATUS_SLEEP;
+    } else if ((statusCondition & STATUS1_BURN) != STATUS1_NONE) {
+        return SUMMARY_STATUS_BURN;
+    } else if ((statusCondition & STATUS1_FREEZE) != STATUS1_NONE) {
+        return SUMMARY_STATUS_FREEZE;
+    } else if ((statusCondition & STATUS1_PARALYSIS) != STATUS1_NONE) {
+        return SUMMARY_STATUS_PARALYSIS;
     }
 
-    return 7;
+    return SUMMARY_STATUS_NONE;
 }

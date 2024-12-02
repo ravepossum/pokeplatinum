@@ -399,10 +399,10 @@ void PokemonSummaryScreen_SetCaughtBallGfx(PokemonSummaryScreen *summaryScreen)
 
 void PokemonSummaryScreen_UpdateStatusIcon(PokemonSummaryScreen *summaryScreen)
 {
-    if (summaryScreen->monData.status == 7) {
+    if (summaryScreen->monData.status == SUMMARY_STATUS_NONE) {
         CellActor_SetDrawFlag(summaryScreen->sprites[SUMMARY_SPRITE_STATUS_ICON], FALSE);
         CellActor_SetDrawFlag(summaryScreen->sprites[SUMMARY_SPRITE_POKERUS_ICON], FALSE);
-    } else if (summaryScreen->monData.status != 0) {
+    } else if (summaryScreen->monData.status != SUMMARY_STATUS_POKERUS) {
         CellActor_SetDrawFlag(summaryScreen->sprites[SUMMARY_SPRITE_POKERUS_ICON], FALSE);
         CellActor_SetDrawFlag(summaryScreen->sprites[SUMMARY_SPRITE_STATUS_ICON], TRUE);
         CellActor_SetAnim(summaryScreen->sprites[SUMMARY_SPRITE_STATUS_ICON], summaryScreen->monData.status);
