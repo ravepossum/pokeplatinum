@@ -675,7 +675,7 @@ void PokemonSummaryScreen_UpdateMiscMonDataSprites(PokemonSummaryScreen *summary
     }
 }
 
-void PokemonSummaryScreen_ButtonTapAnim(PokemonSummaryScreen *summaryScreen)
+void PokemonSummaryScreen_InitButtonTapAnim(PokemonSummaryScreen *summaryScreen)
 {
     CellActor_SetDrawFlag(summaryScreen->sprites[SUMMARY_SPRITE_BUTTON_TAP_CIRCLE], TRUE);
     SpriteActor_SetAnimFrame(summaryScreen->sprites[SUMMARY_SPRITE_BUTTON_TAP_CIRCLE], 0);
