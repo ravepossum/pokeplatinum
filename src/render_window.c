@@ -856,7 +856,7 @@ static void LoadAndDrawPokemonPreviewSprite(UnkStruct_ov5_021D30A8 *param0, u16 
     void *buf = sub_0200762C(param0->unk_1C6);
 
     PokemonSpriteTemplate sprite;
-    BuildArchivedPokemonSprite(&sprite, species, gender, FACE_FRONT, FALSE, NULL, NULL);
+    BuildPokemonSpriteTemplate(&sprite, species, gender, FACE_FRONT, FALSE, NULL, NULL);
     DrawPokemonPreviewSprite(param0, &sprite);
     sub_02007B6C(buf);
 }
@@ -866,7 +866,7 @@ static void LoadAndDrawPokemonPreviewSpriteFromStruct(UnkStruct_ov5_021D30A8 *pa
     void *buf = sub_0200762C(param0->unk_1C6);
 
     PokemonSpriteTemplate sprite;
-    Pokemon_BuildArchivedSprite(&sprite, mon, FACE_FRONT);
+    Pokemon_BuildSpriteTemplate(&sprite, mon, FACE_FRONT);
     DrawPokemonPreviewSprite(param0, &sprite);
     sub_02007B6C(buf);
 }
