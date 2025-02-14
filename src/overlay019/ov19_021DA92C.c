@@ -157,7 +157,7 @@ void ov19_021DAA80(UnkStruct_ov19_021DA9E0 *param0)
 
 void ov19_021DAA90(UnkStruct_ov19_021DA9E0 *param0)
 {
-    ArchivedSprite v0;
+    PokemonSpriteTemplate v0;
 
     BuildArchivedPokemonSprite(&v0, 1, 0, 0, 0, 0, 0);
     param0->unk_24 = sub_02007C34(param0->unk_20, &v0, 44, 84, 0, 0, NULL, NULL);
@@ -524,7 +524,7 @@ void ov19_021DB078(UnkStruct_ov19_021DA9E0 *param0)
 
 static void ov19_021DB0E4(UnkStruct_ov19_021DA9E0 *param0)
 {
-    ArchivedSprite v0;
+    PokemonSpriteTemplate v0;
     const UnkStruct_ov19_021D5BAC *v1;
 
     v1 = ov19_021D5E70(param0->unk_10);

@@ -158,7 +158,7 @@ void ov21_021D217C(const UnkStruct_ov21_021D13FC *param0, BOOL param1)
 
 void ov21_021D2188(UnkStruct_ov21_021D13FC *param0, int param1, int param2, int param3, int param4, u8 param5, u32 param6, int param7, int param8, int param9)
 {
-    ArchivedSprite v0;
+    PokemonSpriteTemplate v0;
     s16 v1;
 
     if (param0->unk_154[param9]) {

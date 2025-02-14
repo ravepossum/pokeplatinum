@@ -584,7 +584,7 @@ void ov94_0223DA78(MessageLoader *param0, Window param1[], u16 *param2, Pokemon 
 
 void ov94_0223DB2C(Pokemon *param0)
 {
-    ArchivedSprite v0;
+    PokemonSpriteTemplate v0;
     u8 *v1 = Heap_AllocFromHeap(62, (0x20 * 10 * 10));
 
     Pokemon_BuildArchivedSprite(&v0, param0, 2);
