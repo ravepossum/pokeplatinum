@@ -13,7 +13,6 @@
 #include "generated/sdat.h"
 
 #include "struct_decls/battle_system.h"
-#include "struct_decls/struct_02007768_decl.h"
 #include "struct_decls/struct_020797DC_decl.h"
 #include "struct_defs/archived_sprite.h"
 #include "struct_defs/battle_system.h"
