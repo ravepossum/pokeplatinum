@@ -25,7 +25,7 @@ typedef struct {
     SpriteList *unk_138;
     SpriteResourceCollection *unk_13C[4];
     UnkStruct_ov21_021D4C0C *unk_14C;
-    UnkStruct_02007768 *unk_150;
+    PokemonSpriteManager *unk_150;
     PokemonSprite *unk_154[4];
     UnkStruct_02015064 *unk_164;
     UnkStruct_ov21_021D23F8 unk_168;
