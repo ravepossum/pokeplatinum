@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include "struct_decls/struct_02015920_decl.h"
-#include "struct_defs/archived_sprite.h"
 #include "struct_defs/struct_02015958.h"
 #include "struct_defs/struct_0208737C.h"
 #include "struct_defs/struct_02099F80.h"
