@@ -46,7 +46,6 @@ static StringList *DebugMenu_CreateSubList(int count);
 static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc);
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data);
 static void CB_DebugMenu_ListHeader(ListMenu *listMenu, u32 param, u8 y);
-static void DebugFunction_Dummy(SysTask *task, DebugMenu *menu);
 
 static void DebugFunction_Fly(SysTask *task, DebugMenu *menu);
 static void DebugMenu_Fly_CreateTask(FieldSystem *sys);
@@ -66,12 +65,12 @@ static void DebugFunction_ExecuteFunction(SysTask *task, DebugMenu *menu);
 
 static const WindowTemplate DebugMenu_List_WindowTemplate = {
     .bgLayer = BG_LAYER_MAIN_3,
-    .tilemapLeft = 0,
-    .tilemapTop = 5,
+    .tilemapLeft = 1,
+    .tilemapTop = 6,
     .width = 13,
-    .height = 18,
+    .height = 17,
     .palette = 13,
-    .baseTile = 8
+    .baseTile = 8,
 };
 
 static const ListMenuTemplate DebugMenu_List_Header = {
@@ -98,7 +97,6 @@ static const ListMenuTemplate DebugMenu_List_Header = {
 
 static const DebugMenuItem DebugMenu_ItemList[] = {
     // clang-format off
-    { DEBUG_ITEM_HEADER,            DebugFunction_Dummy },
     { DEBUG_ITEM_FLY,               DebugFunction_Fly },
     { DEBUG_ITEM_CREATE_MON,        DebugFunction_CreateMon },
     { DEBUG_ITEM_EDIT_MON,          DebugFunction_EditMon },
@@ -117,6 +115,7 @@ void DebugMenu_Init(FieldSystem *sys)
 
 static void DebugMenu_Free(DebugMenu *menu)
 {
+    Window_EraseStandardFrame(menu->window, TRUE);
     Window_ClearAndCopyToVRAM(menu->window);
     StringList_Free(menu->stringList);
     ListMenu_Free(menu->listMenu, &(menu->debugList), &(menu->cursor));
@@ -164,10 +163,10 @@ static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *sys, int arcID, const
     }
 
     DebugMenu_List_Init(menu, list);
-    LoadStandardWindowGraphics(menu->sys->bgConfig, BG_LAYER_MAIN_3, 473, 11, STANDARD_WINDOW_SYSTEM, HEAP_ID_FIELD);
-
+    LoadStandardWindowGraphics(menu->sys->bgConfig, BG_LAYER_MAIN_3, 660, 11, STANDARD_WINDOW_SYSTEM, HEAP_ID_FIELD);
     menu->window = Window_New(HEAP_ID_FIELD, 1);
     Window_AddFromTemplate(menu->sys->bgConfig, menu->window, &DebugMenu_List_WindowTemplate);
+    Window_DrawStandardFrame(menu->window, TRUE, 660, 11);
 
     if (list != NULL) {
         menu->stringList = DebugMenu_CreateList(arcID, list, count);
@@ -189,7 +188,7 @@ static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, in
     MessageLoader *msgLoader = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, arcID, HEAP_ID_FIELD);
 
     for (int i = 0; i < count; i++) {
-        StringList_AddFromMessageBank(stringList, msgLoader, list[i].index, list[i].function);
+        StringList_AddFromMessageBank(stringList, msgLoader, list[i].index + 1, list[i].function);
     }
     MessageLoader_Free(msgLoader);
 
@@ -200,8 +199,7 @@ static void DebugMenu_List_Init(DebugMenu *menu, const DebugMenuItem *list)
 {
     if (menu->debugList == 0
         && menu->cursor == 0
-        && list != NULL
-        && list[menu->debugList].function == DebugFunction_Dummy) {
+        && list != NULL) {
 
         menu->debugList = 0;
         menu->cursor = 1;
@@ -231,10 +229,6 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
             DebugMenu_Exit(task, menu);
         }
     }
-}
-
-static void DebugFunction_Dummy(SysTask *task, DebugMenu *menu)
-{
 }
 
 // Fly section
@@ -357,7 +351,7 @@ static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *sys, enum DebugMon
 {
     DebugMonMenu *monMenu = (DebugMonMenu *)SysTask_GetParam(SysTask_StartAndAllocateParam(Task_DebugMenu_CreateOrEditMon, sizeof(DebugMonMenu), 0, HEAP_ID_APPLICATION));
     monMenu->sys = sys;
-    monMenu->state = 0;
+    monMenu->state = DMM_STATE_DRAW_MENU;
     monMenu->mode = mode;
     monMenu->msgLoader = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, DEBUG_MON_MENU_MESSAGE_BANK, HEAP_ID_APPLICATION);
     monMenu->strTemplate = StringTemplate_Default(HEAP_ID_APPLICATION);
@@ -382,27 +376,25 @@ static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
     DebugMonMenu *monMenu = (DebugMonMenu *)data;
 
     switch (monMenu->state) {
-    case 0:
+    case DMM_STATE_DRAW_MENU:
         DebugMonMenu_DisplayPageAndCursor(monMenu);
         break;
-    case 1:
+    case DMM_STATE_HANDLE_INPUT:
         DebugMonMenu_HandleInput(monMenu);
         break;
-    case 2:
+    case DMM_STATE_HANDLE_VALUE_INPUT:
         DebugMonMenu_HandleValueInput(monMenu);
         break;
-    case 3:
-        DebugMonMenu_WaitButtonPress(monMenu);
+    case DMM_STATE_WAIT_A_BUTTON_PRESS:
+        DebugMonMenu_WaitButtonPress(monMenu, PAD_BUTTON_A);
         break;
-    case 4:
+    case DMM_STATE_EXIT_MENU:
         DebugMonMenu_Free(monMenu);
         SysTask_FinishAndFreeParam(task);
         FieldSystem_ResumeProcessing();
         break;
-    case 5:
-        if (JOY_NEW(PAD_BUTTON_X | PAD_BUTTON_Y)) {
-            monMenu->state = 0;
-        }
+    case DMM_STATE_WAIT_XY_BUTTON_PRESS:
+        DebugMonMenu_WaitButtonPress(monMenu, PAD_BUTTON_X | PAD_BUTTON_Y);
         break;
     }
 }

@@ -19,51 +19,18 @@
 #define DMM_COLOR_PINK  TEXT_COLOR(7, 8, 15)
 #define DMM_COLOR_GREEN TEXT_COLOR(9, 10, 15)
 
-typedef struct DebugMon {
-    Pokemon *monData;
-    u32 stats[DEBUG_MON_MENU_STATS_SIZE];
-    u32 dataBackup; // ravetodo better name?
-    u16 str[0x100]; // ravetodo better name? unused?
-    u8 page;
-    u8 cursor;
-    u8 value;
-} DebugMon;
-
-typedef struct DebugMonMenu {
-    FieldSystem *sys;
-    Window mainWindow;
-    Window titleWindow;
-    MessageLoader *msgLoader;
-    StringTemplate *strTemplate;
-    ColoredArrow *cursor;
-    DebugMon mon;
-    u32 state;
-    u32 mode;
-    u8 partySlot;
-} DebugMonMenu;
-
-#define DMV_COUNT_NONE 0xFF
-
-typedef struct DebugMonValue {
-    u32 min;
-    u32 max;
-    u8 mode;
-    u8 count;
-} DebugMonValue;
-
-typedef struct DebugMonValueEntry {
-    u32 label;
-    const DebugMonValue *value;
-} DebugMonValueEntry;
-
-typedef struct DebugMonMenuPage {
-    const u8 *page;
-    u8 count;
-} DebugMonMenuPage;
-
 enum DebugMonMenuMode {
     DEBUG_MON_MENU_MODE_CREATE = 0,
     DEBUG_MON_MENU_MODE_EDIT,
+};
+
+enum DebugMonMenuState {
+    DMM_STATE_DRAW_MENU = 0,
+    DMM_STATE_HANDLE_INPUT,
+    DMM_STATE_HANDLE_VALUE_INPUT,
+    DMM_STATE_WAIT_A_BUTTON_PRESS,
+    DMM_STATE_EXIT_MENU,
+    DMM_STATE_WAIT_XY_BUTTON_PRESS,
 };
 
 enum DebugMonMenuDirection {
@@ -136,11 +103,52 @@ enum DebugMonStatID {
     DEBUG_MON_PAGE_END
 };
 
+typedef struct DebugMon {
+    Pokemon *monData;
+    u32 stats[DEBUG_MON_MENU_STATS_SIZE];
+    u32 statBackup;
+    u8 page;
+    u8 cursor;
+    u8 value;
+} DebugMon;
+
+typedef struct DebugMonMenu {
+    FieldSystem *sys;
+    Window mainWindow;
+    Window titleWindow;
+    MessageLoader *msgLoader;
+    StringTemplate *strTemplate;
+    ColoredArrow *cursor;
+    DebugMon mon;
+    enum DebugMonMenuState state;
+    u32 mode;
+    u8 partySlot;
+} DebugMonMenu;
+
+#define DMV_COUNT_NONE 0xFF
+
+typedef struct DebugMonValue {
+    u32 min;
+    u32 max;
+    u8 mode;
+    u8 count;
+} DebugMonValue;
+
+typedef struct DebugMonValueEntry {
+    u32 label;
+    const DebugMonValue *value;
+} DebugMonValueEntry;
+
+typedef struct DebugMonMenuPage {
+    const u8 *page;
+    u8 count;
+} DebugMonMenuPage;
+
 void DebugMonMenu_Init(DebugMonMenu *monMenu);
 void DebugMonMenu_HandleInput(DebugMonMenu *monMenu);
 void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu);
 void DebugMonMenu_DisplayPageAndCursor(DebugMonMenu *monMenu);
-void DebugMonMenu_WaitButtonPress(DebugMonMenu *monMenu);
+void DebugMonMenu_WaitButtonPress(DebugMonMenu *monMenu, int buttonMask);
 void DebugMonMenu_Free(DebugMonMenu *monMenu);
 
 #endif // POKEPLATINUM_DEBUG_MON_MENU_H

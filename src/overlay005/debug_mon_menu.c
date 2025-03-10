@@ -261,21 +261,20 @@ static const DebugMonMenuPage sDebugMonMenuPages[DEBUG_MON_MENU_MAX_PAGES] = {
     { sDebugMonPage8, 8 }
 };
 
-// ravetodo name the states?
 void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
 {
     u8 result;
 
     if (JOY_NEW(PAD_BUTTON_A)) {
-        monMenu->mon.dataBackup = monMenu->mon.stats[sDebugMonMenuPages[monMenu->mon.page].page[monMenu->mon.cursor]];
+        monMenu->mon.statBackup = monMenu->mon.stats[sDebugMonMenuPages[monMenu->mon.page].page[monMenu->mon.cursor]];
         monMenu->mon.value = 0;
         DebugMonMenu_DisplayValues(monMenu);
-        monMenu->state = 2;
+        monMenu->state = DMM_STATE_HANDLE_VALUE_INPUT;
         return;
     }
 
     if (JOY_NEW(PAD_BUTTON_B)) {
-        monMenu->state = 4;
+        monMenu->state = DMM_STATE_EXIT_MENU;
         return;
     }
 
@@ -300,7 +299,7 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
             }
         }
 
-        monMenu->state = 3;
+        monMenu->state = DMM_STATE_WAIT_A_BUTTON_PRESS;
         return;
     }
 
@@ -317,14 +316,14 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
     if (JOY_NEW(PAD_BUTTON_L) && monMenu->mon.page > 0) {
         monMenu->mon.page--;
         monMenu->mon.cursor = 0;
-        monMenu->state = 0;
+        monMenu->state = DMM_STATE_DRAW_MENU;
         return;
     }
 
     if (JOY_NEW(PAD_BUTTON_R) && monMenu->mon.page < DEBUG_MON_MENU_MAX_PAGES - 1) {
         monMenu->mon.page++;
         monMenu->mon.cursor = 0;
-        monMenu->state = 0;
+        monMenu->state = DMM_STATE_DRAW_MENU;
         return;
     }
 
@@ -339,10 +338,10 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
             }
 
             DebugMonMenu_SetEditMon(monMenu, monMenu->partySlot);
-            monMenu->state = 0;
+            monMenu->state = DMM_STATE_DRAW_MENU;
         } else {
             DebugMonMenu_SetTrainerMemo(monMenu, TRUE);
-            monMenu->state = 5;
+            monMenu->state = DMM_STATE_WAIT_XY_BUTTON_PRESS;
         }
         return;
     }
@@ -358,10 +357,10 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
             }
 
             DebugMonMenu_SetEditMon(monMenu, monMenu->partySlot);
-            monMenu->state = 0;
+            monMenu->state = DMM_STATE_DRAW_MENU;
         } else {
             DebugMonMenu_SetTrainerMemo(monMenu, TRUE);
-            monMenu->state = 5;
+            monMenu->state = DMM_STATE_WAIT_XY_BUTTON_PRESS;
         }
     }
 }
@@ -371,13 +370,13 @@ void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu)
     u8 statID = sDebugMonMenuPages[monMenu->mon.page].page[monMenu->mon.cursor];
 
     if (JOY_NEW(PAD_BUTTON_A)) {
-        monMenu->state = 0;
+        monMenu->state = DMM_STATE_DRAW_MENU;
         return;
     }
 
     if (JOY_NEW(PAD_BUTTON_B)) {
-        monMenu->mon.stats[statID] = monMenu->mon.dataBackup;
-        monMenu->state = 0;
+        monMenu->mon.stats[statID] = monMenu->mon.statBackup;
+        monMenu->state = DMM_STATE_DRAW_MENU;
         return;
     }
 
@@ -393,7 +392,6 @@ void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu)
         return;
     }
 
-    // ravetodo better names
     if (sDebugMonValueList[statID].value->count != DMV_COUNT_NONE) {
         if (JOY_NEW(PAD_KEY_LEFT) && monMenu->mon.value < sDebugMonValueList[statID].value->count - 1) {
             monMenu->mon.value++;
@@ -407,10 +405,10 @@ void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu)
     }
 }
 
-void DebugMonMenu_WaitButtonPress(DebugMonMenu *monMenu)
+void DebugMonMenu_WaitButtonPress(DebugMonMenu *monMenu, int buttonMask)
 {
-    if (JOY_NEW(PAD_BUTTON_A)) {
-        monMenu->state = 0;
+    if (JOY_NEW(buttonMask)) {
+        monMenu->state = DMM_STATE_DRAW_MENU;
     }
 }
 
@@ -563,7 +561,7 @@ void DebugMonMenu_DisplayPageAndCursor(DebugMonMenu *monMenu)
 {
     DebugMonMenu_DisplayPage(monMenu);
     DebugMonMenu_DisplayCursor(monMenu, DMMD_BOTH);
-    monMenu->state = 1;
+    monMenu->state = DMM_STATE_HANDLE_INPUT;
 }
 
 static void DebugMonMenu_DisplayPage(DebugMonMenu *monMenu)
@@ -1212,7 +1210,6 @@ static void DebugMonValue_PrintNum(Window *window, MessageLoader *msgLoader, Str
     Strbuf_Free(bufExp);
 }
 
-// ravetodo better name probably
 static u32 DebugMonValue_GetColor(DebugMon *mon, u8 digit, u32 color)
 {
     if (color == DMM_COLOR_RED) {

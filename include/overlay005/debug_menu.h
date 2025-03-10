@@ -31,7 +31,6 @@ typedef struct DebugMenuItem {
 
 enum DebugItem {
     DEBUG_ITEM_NONE,
-    DEBUG_ITEM_HEADER,
     DEBUG_ITEM_FLY,
     DEBUG_ITEM_CREATE_MON,
     DEBUG_ITEM_EDIT_MON,
