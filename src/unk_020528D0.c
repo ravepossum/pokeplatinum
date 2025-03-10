@@ -9,7 +9,7 @@
 #include "field/field_system.h"
 
 #include "bg_window.h"
-#include "core_sys.h"
+#include "brightness_controller.h"
 #include "field_map_change.h"
 #include "field_overworld_state.h"
 #include "field_system.h"
@@ -28,9 +28,9 @@
 #include "script_manager.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "unk_02005474.h"
-#include "unk_0200A9DC.h"
 #include "unk_0200F174.h"
 #include "unk_0203A7D8.h"
 #include "unk_020553DC.h"
@@ -98,12 +98,12 @@ static void sub_020528D0(BgConfig *param0)
     GXLayers_SetBanks(&v0);
     SetAllGraphicsModes(&v1);
     Bg_InitFromTemplate(param0, 3, &v2, 0);
-    Graphics_LoadPalette(14, 6, 0, 13 * 0x20, 0x20, 11);
+    Graphics_LoadPalette(14, 6, 0, 13 * 0x20, 0x20, HEAP_ID_FIELDMAP);
 }
 
 static void sub_02052914(FieldSystem *fieldSystem, FieldTask *task)
 {
-    UnkStruct_02052AA4 *v0 = Heap_AllocFromHeap(11, sizeof(UnkStruct_02052AA4));
+    UnkStruct_02052AA4 *v0 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_02052AA4));
 
     if (v0 == NULL) {
         GF_ASSERT(FALSE);
@@ -113,12 +113,12 @@ static void sub_02052914(FieldSystem *fieldSystem, FieldTask *task)
 
     v0->unk_00 = 0;
     v0->fieldSystem = fieldSystem;
-    v0->unk_08 = BgConfig_New(11);
+    v0->unk_08 = BgConfig_New(HEAP_ID_FIELDMAP);
 
     sub_020528D0(v0->unk_08);
 
-    v0->unk_1C = MessageLoader_Init(1, 26, 373, 11);
-    v0->unk_20 = StringTemplate_Default(11);
+    v0->unk_1C = MessageLoader_Init(1, 26, 373, HEAP_ID_FIELDMAP);
+    v0->unk_20 = StringTemplate_Default(HEAP_ID_FIELDMAP);
 
     Window_AddFromTemplate(v0->unk_08, &v0->unk_0C, &Unk_020EC2F0);
     StringTemplate_SetPlayerName(v0->unk_20, 0, SaveData_GetTrainerInfo(FieldSystem_GetSaveData(fieldSystem)));
@@ -141,7 +141,7 @@ static BOOL sub_020529C4(FieldTask *task)
 
     switch (v0->unk_00) {
     case 0:
-        StartScreenTransition(3, 1, 42, 0x0, 8, 1, 32);
+        StartScreenTransition(3, 1, 42, 0x0, 8, 1, HEAP_ID_FIELD_TASK);
         v0->unk_00++;
         break;
     case 1:
@@ -150,8 +150,8 @@ static BOOL sub_020529C4(FieldTask *task)
         }
         break;
     case 2:
-        if ((gCoreSys.pressedKeys & PAD_BUTTON_A) || (gCoreSys.pressedKeys & PAD_BUTTON_B)) {
-            StartScreenTransition(0, 0, 0, 0x0, 8, 1, 32);
+        if ((gSystem.pressedKeys & PAD_BUTTON_A) || (gSystem.pressedKeys & PAD_BUTTON_B)) {
+            StartScreenTransition(0, 0, 0, 0x0, 8, 1, HEAP_ID_FIELD_TASK);
             v0->unk_00++;
         }
         break;
@@ -178,8 +178,8 @@ static BOOL sub_020529C4(FieldTask *task)
 
 static void sub_02052AA4(UnkStruct_02052AA4 *param0, u16 param1, u8 param2, u8 param3)
 {
-    Strbuf *v0 = Strbuf_Init(1024, 11);
-    Strbuf *v1 = Strbuf_Init(1024, 11);
+    Strbuf *v0 = Strbuf_Init(1024, HEAP_ID_FIELDMAP);
+    Strbuf *v1 = Strbuf_Init(1024, HEAP_ID_FIELDMAP);
 
     Window_FillTilemap(&param0->unk_0C, 0);
     MessageLoader_GetStrbuf(param0->unk_1C, param1, v0);
@@ -217,7 +217,7 @@ BOOL sub_02052B2C(FieldTask *task)
             sub_0203A824(warpId, &location);
             sub_0203A7F0(warpId, FieldOverworldState_GetExitLocation(fieldState));
             FieldTask_ChangeMapByLocation(task, &location);
-            sub_020705B4(fieldSystem);
+            FieldSystem_ClearPartnerTrainer(fieldSystem);
         }
         (*state)++;
         break;
@@ -232,8 +232,8 @@ BOOL sub_02052B2C(FieldTask *task)
         }
         break;
     case 3:
-        sub_0200AB4C(-16, ((GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD) ^ GX_BLEND_PLANEMASK_BG3), 1);
-        sub_0200AB4C(-16, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), 2);
+        BrightnessController_SetScreenBrightness(-16, ((GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD) ^ GX_BLEND_PLANEMASK_BG3), BRIGHTNESS_MAIN_SCREEN);
+        BrightnessController_SetScreenBrightness(-16, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), BRIGHTNESS_SUB_SCREEN);
         sub_02052914(fieldSystem, task);
         (*state)++;
         break;
@@ -242,7 +242,7 @@ BOOL sub_02052B2C(FieldTask *task)
         (*state)++;
         break;
     case 5:
-        sub_0200AB4C(0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), 3);
+        BrightnessController_SetScreenBrightness(0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), BRIGHTNESS_BOTH_SCREENS);
 
         if (sub_0203A7EC()
             == FieldOverworldState_GetWarpId(SaveData_GetFieldOverworldState(fieldSystem->saveData))) {

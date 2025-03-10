@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/hearthome_city_east_gate_to_amity_square.h"
 
     .data
 
     ScriptEntry _002D
     ScriptEntry _0040
     ScriptEntry _000E
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     ScrCmd_238 13, 0x4000

@@ -1,15 +1,14 @@
 #ifndef POKEPLATINUM_UNK_02054884_H
 #define POKEPLATINUM_UNK_02054884_H
 
-#include "struct_decls/struct_party_decl.h"
-
+#include "party.h"
 #include "pokemon.h"
 #include "savedata.h"
 
 #define PARTY_SLOT_NONE 0xFF
 
 BOOL Pokemon_CanBattle(Pokemon *mon);
-BOOL sub_020548B0(int heapID, SaveData *saveData, u16 param2, u8 param3, u16 param4, int param5, int param6);
+BOOL Pokemon_GiveMonFromScript(enum HeapId heapID, SaveData *saveData, u16 species, u8 level, u16 heldItem, int metLocation, int metTerrain);
 BOOL sub_02054930(int unused, SaveData *saveData, u16 param2, u8 param3, int param4, int param5);
 void sub_02054988(Party *party, int param1, int param2, u16 param3);
 int Party_HasMonWithMove(Party *party, u16 moveID);

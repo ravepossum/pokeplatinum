@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/unk_0007.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _001C
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     LockAll

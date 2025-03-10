@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/global_terminal_3f.h"
 
     .data
 
@@ -15,7 +16,7 @@
     ScriptEntry _00E1
     ScriptEntry _00F2
     ScriptEntry _0105
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0036:
     PlayFanfare SEQ_SE_CONFIRM

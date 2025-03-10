@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/veilstone_city_southeast_house.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _018C
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -14,7 +15,7 @@ _000A:
     Message 0
     Message 1
     CloseMessage
-    ScrCmd_1BD 0x800C
+    GetPlayerDir 0x800C
     GoToIfEq 0x800C, 2, _005F
     GoToIfEq 0x800C, 0, _006F
     GoToIfEq 0x800C, 3, _007F
@@ -47,7 +48,7 @@ _009F:
     ScrCmd_042 174, 0
     ScrCmd_042 175, 1
     ScrCmd_043
-    ScrCmd_1B7 0x800C, 2
+    GetRandom 0x800C, 2
     GoToIfEq 0x800C, 0, _00E4
     Message 4
     SetVar 0x8004, 0x1BC
@@ -75,49 +76,49 @@ _00EF:
     .balign 4, 0
 _00FC:
     MoveAction_000
-    MoveAction_03D
+    MoveAction_061
     MoveAction_003
-    MoveAction_03D
+    MoveAction_061
     MoveAction_001
-    MoveAction_03D
+    MoveAction_061
     MoveAction_002
-    MoveAction_03D
+    MoveAction_061
     EndMovement
 
     .balign 4, 0
 _0120:
     MoveAction_003
-    MoveAction_03D
+    MoveAction_061
     MoveAction_001
-    MoveAction_03D
+    MoveAction_061
     MoveAction_002
-    MoveAction_03D
+    MoveAction_061
     MoveAction_000
-    MoveAction_03D
+    MoveAction_061
     EndMovement
 
     .balign 4, 0
 _0144:
     MoveAction_001
-    MoveAction_03D
+    MoveAction_061
     MoveAction_002
-    MoveAction_03D
+    MoveAction_061
     MoveAction_000
-    MoveAction_03D
+    MoveAction_061
     MoveAction_003
-    MoveAction_03D
+    MoveAction_061
     EndMovement
 
     .balign 4, 0
 _0168:
     MoveAction_002
-    MoveAction_03D
+    MoveAction_061
     MoveAction_000
-    MoveAction_03D
+    MoveAction_061
     MoveAction_003
-    MoveAction_03D
+    MoveAction_061
     MoveAction_001
-    MoveAction_03D
+    MoveAction_061
     EndMovement
 
 _018C:

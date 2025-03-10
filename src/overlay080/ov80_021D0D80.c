@@ -15,15 +15,15 @@
 #include "font.h"
 #include "gx_layers.h"
 #include "heap.h"
+#include "map_matrix.h"
 #include "message.h"
 #include "narc.h"
 #include "overlay_manager.h"
 #include "strbuf.h"
+#include "system.h"
 #include "unk_020041CC.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
 #include "unk_0201E3D8.h"
-#include "unk_02039C80.h"
 #include "unk_0208C098.h"
 
 int ov80_021D0D80(OverlayManager *param0, int *param1);
@@ -98,9 +98,9 @@ int ov80_021D0D80(OverlayManager *param0, int *param1)
     UnkStruct_ov80_021D2A08 *v0 = NULL;
     UnkStruct_0203D8AC *v1 = (UnkStruct_0203D8AC *)OverlayManager_Args(param0);
 
-    Heap_Create(3, 17, 0x20000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_17, 0x20000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov80_021D2A08), 17);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov80_021D2A08), HEAP_ID_17);
     memset(v0, 0, sizeof(UnkStruct_ov80_021D2A08));
     v0->unk_2C = v1;
 
@@ -111,7 +111,7 @@ int ov80_021D0D80(OverlayManager *param0, int *param1)
     }
 
     v0->unk_02 = v1->unk_13C;
-    v0->unk_04 = 17;
+    v0->heapID = HEAP_ID_17;
 
     sub_02004550(55, 0, 0);
 
@@ -157,7 +157,7 @@ int ov80_021D0E50(OverlayManager *param0, int *param1)
     UnkStruct_ov80_021D2A08 *v1 = OverlayManager_Data(param0);
 
     OverlayManager_FreeData(param0);
-    Heap_Destroy(17);
+    Heap_Destroy(HEAP_ID_17);
 
     return 1;
 }
@@ -200,7 +200,7 @@ static int ov80_021D0EC8(UnkStruct_ov80_021D2A08 *param0)
 {
     switch (param0->unk_0C) {
     case 0:
-        SetMainCallback(NULL, NULL);
+        SetVBlankCallback(NULL, NULL);
         DisableHBlank();
         GXLayers_DisableEngineALayers();
         GXLayers_DisableEngineBLayers();
@@ -218,15 +218,15 @@ static int ov80_021D0EC8(UnkStruct_ov80_021D2A08 *param0)
 
         param0->unk_18 = param0->unk_20;
         param0->unk_1C = param0->unk_24;
-        param0->unk_80 = MessageLoader_Init(1, 26, 433, param0->unk_04);
-        param0->unk_84 = MessageLoader_Init(1, 26, 615, param0->unk_04);
-        param0->unk_88 = Strbuf_Init(22, param0->unk_04);
-        param0->unk_30 = sub_02039EBC(param0->unk_04);
-        param0->unk_40 = ov80_021D2D70("data/tmap_block.dat", param0->unk_04);
+        param0->unk_80 = MessageLoader_Init(1, 26, 433, param0->heapID);
+        param0->unk_84 = MessageLoader_Init(1, 26, 615, param0->heapID);
+        param0->unk_88 = Strbuf_Init(22, param0->heapID);
+        param0->unk_30 = MainMapMatrixData_Load(param0->heapID);
+        param0->unk_40 = ov80_021D2D70("data/tmap_block.dat", param0->heapID);
         break;
     case 1:
         ov80_021D0EA8();
-        param0->unk_28 = BgConfig_New(param0->unk_04);
+        param0->unk_28 = BgConfig_New(param0->heapID);
         ov80_021D1088(param0, param0->unk_28);
         ov80_021D1158(param0);
         sub_0201E3D8();
@@ -234,7 +234,7 @@ static int ov80_021D0EC8(UnkStruct_ov80_021D2A08 *param0)
         ov80_021D2A08(param0);
         break;
     case 2:
-        SetMainCallback(ov80_021D0E68, param0);
+        SetVBlankCallback(ov80_021D0E68, param0);
         param0->unk_38 = Unk_ov80_021D2E94[param0->unk_00].unk_10;
         param0->unk_0C = 0;
         return 1;
@@ -251,7 +251,7 @@ static void ov80_021D0FF4(UnkStruct_ov80_021D2A08 *param0)
     sub_0201E530();
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG0 | GX_PLANEMASK_BG1 | GX_PLANEMASK_BG2 | GX_PLANEMASK_BG3 | GX_PLANEMASK_OBJ, 0);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG0 | GX_PLANEMASK_BG1 | GX_PLANEMASK_BG2 | GX_PLANEMASK_BG3 | GX_PLANEMASK_OBJ, 0);
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
 
     ov80_021D2AC0(param0);
@@ -263,7 +263,7 @@ static void ov80_021D0FF4(UnkStruct_ov80_021D2A08 *param0)
 
     Heap_FreeToHeap(param0->unk_28);
     ov80_021D2E10(param0->unk_40);
-    sub_02039EF0(param0->unk_30);
+    MainMapMatrixData_Free(param0->unk_30);
     Strbuf_Free(param0->unk_88);
     MessageLoader_Free(param0->unk_84);
     MessageLoader_Free(param0->unk_80);
@@ -422,14 +422,14 @@ static void ov80_021D1088(UnkStruct_ov80_021D2A08 *param0, BgConfig *param1)
         }
     }
 
-    Bg_ClearTilesRange(0, 32, 0, param0->unk_04);
-    Bg_ClearTilesRange(1, 32, 0, param0->unk_04);
-    Bg_ClearTilesRange(2, 32, 0, param0->unk_04);
-    Bg_ClearTilesRange(3, 32, 0, param0->unk_04);
-    Bg_ClearTilesRange(4, 32, 0, param0->unk_04);
-    Bg_ClearTilesRange(5, 32, 0, param0->unk_04);
-    Bg_ClearTilesRange(6, 32, 0, param0->unk_04);
-    Bg_ClearTilesRange(7, 32, 0, param0->unk_04);
+    Bg_ClearTilesRange(0, 32, 0, param0->heapID);
+    Bg_ClearTilesRange(1, 32, 0, param0->heapID);
+    Bg_ClearTilesRange(2, 32, 0, param0->heapID);
+    Bg_ClearTilesRange(3, 32, 0, param0->heapID);
+    Bg_ClearTilesRange(4, 32, 0, param0->heapID);
+    Bg_ClearTilesRange(5, 32, 0, param0->heapID);
+    Bg_ClearTilesRange(6, 32, 0, param0->heapID);
+    Bg_ClearTilesRange(7, 32, 0, param0->heapID);
 }
 
 static void ov80_021D1158(UnkStruct_ov80_021D2A08 *param0)
@@ -439,27 +439,27 @@ static void ov80_021D1158(UnkStruct_ov80_021D2A08 *param0)
     NARC *v3;
 
     v2 = 17;
-    v3 = NARC_ctor(NARC_INDEX_GRAPHIC__TMAP_GRA, param0->unk_04);
+    v3 = NARC_ctor(NARC_INDEX_GRAPHIC__TMAP_GRA, param0->heapID);
 
-    sub_0208C210(param0->unk_28, param0->unk_04, v3, v2, 19, 1, 0, 0, 0);
-    sub_0208C210(param0->unk_28, param0->unk_04, v3, v2, 20, 6, 0, 0, 0);
-    sub_0208C210(param0->unk_28, param0->unk_04, v3, v2, 21, 5, 0, 0, 0);
+    sub_0208C210(param0->unk_28, param0->heapID, v3, v2, 19, 1, 0, 0, 0);
+    sub_0208C210(param0->unk_28, param0->heapID, v3, v2, 20, 6, 0, 0, 0);
+    sub_0208C210(param0->unk_28, param0->heapID, v3, v2, 21, 5, 0, 0, 0);
 
-    sub_0208C210(param0->unk_28, param0->unk_04, v3, v2, 0, 0, 2, 0, 0);
-    sub_0208C210(param0->unk_28, param0->unk_04, v3, v2, 1, 4, 2, 0, 0);
+    sub_0208C210(param0->unk_28, param0->heapID, v3, v2, 0, 0, 2, 0, 0);
+    sub_0208C210(param0->unk_28, param0->heapID, v3, v2, 1, 4, 2, 0, 0);
 
-    param0->unk_98 = sub_0208C2F4(v3, v2, 24, &param0->unk_B8, param0->unk_04);
-    param0->unk_9C = sub_0208C2F4(v3, v2, 22, &param0->unk_BC, param0->unk_04);
-    param0->unk_A0 = sub_0208C2F4(v3, v2, 23, &param0->unk_C0, param0->unk_04);
-    param0->unk_A4 = sub_0208C2F4(v3, v2, 25, &param0->unk_C4, param0->unk_04);
-    param0->unk_A8 = sub_0208C2F4(v3, v2, 26, &param0->unk_C8, param0->unk_04);
-    param0->unk_AC = sub_0208C2F4(v3, v2, 27, &param0->unk_CC, param0->unk_04);
-    param0->unk_B0 = sub_0208C2F4(v3, v2, 28, &param0->unk_D0, param0->unk_04);
-    param0->unk_B4 = sub_0208C2F4(v3, v2, 29, &param0->unk_D4, param0->unk_04);
+    param0->unk_98 = sub_0208C2F4(v3, v2, 24, &param0->unk_B8, param0->heapID);
+    param0->unk_9C = sub_0208C2F4(v3, v2, 22, &param0->unk_BC, param0->heapID);
+    param0->unk_A0 = sub_0208C2F4(v3, v2, 23, &param0->unk_C0, param0->heapID);
+    param0->unk_A4 = sub_0208C2F4(v3, v2, 25, &param0->unk_C4, param0->heapID);
+    param0->unk_A8 = sub_0208C2F4(v3, v2, 26, &param0->unk_C8, param0->heapID);
+    param0->unk_AC = sub_0208C2F4(v3, v2, 27, &param0->unk_CC, param0->heapID);
+    param0->unk_B0 = sub_0208C2F4(v3, v2, 28, &param0->unk_D0, param0->heapID);
+    param0->unk_B4 = sub_0208C2F4(v3, v2, 29, &param0->unk_D4, param0->heapID);
 
     NARC_dtor(v3);
-    Font_LoadTextPalette(0, 15 * 32, param0->unk_04);
-    Font_LoadTextPalette(4, 15 * 32, param0->unk_04);
+    Font_LoadTextPalette(0, 15 * 32, param0->heapID);
+    Font_LoadTextPalette(4, 15 * 32, param0->heapID);
 }
 
 static void ov80_021D12D8(UnkStruct_ov80_021D2A08 *param0)

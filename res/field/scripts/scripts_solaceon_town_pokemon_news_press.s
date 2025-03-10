@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/solaceon_town_pokemon_news_press.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _02BB
     ScriptEntry _02CE
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     PlayFanfare SEQ_SE_CONFIRM
@@ -29,8 +30,8 @@ _0057:
 _0060:
     ScrCmd_218 0x800C
     SetVar 0x40E5, 0x800C
-    ScrCmd_219 1
-    ScrCmd_0DA 0, 0x40E5, 0, 0
+    SetNewsPressDeadline 1
+    BufferSpeciesNameFromVar 0, 0x40E5, 0, 0
     Message 2
     WaitABXPadPress
     CloseMessage
@@ -39,16 +40,16 @@ _0060:
 
 _0081:
     Message 3
-    ScrCmd_21A 0x800C
+    GetNewsPressDeadline 0x800C
     GoToIfEq 0x800C, 0, _029F
     ScrCmd_1C0 0x800C, 0x40E5
     GoToIfEq 0x800C, 0, _0283
     GoTo _00AE
 
 _00AE:
-    ScrCmd_0DA 0, 0x40E5, 0, 0
+    BufferSpeciesNameFromVar 0, 0x40E5, 0, 0
     Message 4
-    ScrCmd_1B7 0x800C, 12
+    GetRandom 0x800C, 12
     CallIfEq 0x800C, 0, _0189
     CallIfEq 0x800C, 1, _0191
     CallIfEq 0x800C, 2, _0199
@@ -164,8 +165,8 @@ _025C:
     End
 
 _0283:
-    ScrCmd_0DA 0, 0x40E5, 0, 0
-    ScrCmd_21A 0x800C
+    BufferSpeciesNameFromVar 0, 0x40E5, 0, 0
+    GetNewsPressDeadline 0x800C
     BufferNumber 1, 0x800C
     Message 8
     WaitABXPadPress

@@ -3,13 +3,13 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/game_records.h"
 
 #include "struct_defs/struct_02049A68.h"
 #include "struct_defs/struct_0204AFC4.h"
 
 #include "field/field_system.h"
-#include "overlay005/ov5_021DC018.h"
+#include "overlay005/field_menu.h"
 
 #include "bg_window.h"
 #include "communication_system.h"
@@ -32,10 +32,8 @@ static u16 sub_02049AE0(UnkStruct_0204AFC4 *param0, u8 param1);
 
 BOOL ScrCmd_1DB(ScriptContext *param0)
 {
-    u16 v0, v1;
-
-    v0 = ScriptContext_ReadHalfWord(param0);
-    v1 = ScriptContext_ReadHalfWord(param0);
+    u16 v0 = ScriptContext_ReadHalfWord(param0);
+    u16 v1 = ScriptContext_ReadHalfWord(param0);
 
     param0->fieldSystem->unk_AC = sub_0204A124(FieldSystem_GetSaveData(param0->fieldSystem), v0, v1);
     return 0;
@@ -135,7 +133,7 @@ BOOL ScrCmd_1DD(ScriptContext *param0)
         sub_0204A660(v6, param0->fieldSystem->saveData);
         break;
     case (30 + 8):
-        sub_0204A7A4(v6, param0->fieldSystem->saveData, param0->fieldSystem->journal);
+        sub_0204A7A4(v6, param0->fieldSystem->saveData, param0->fieldSystem->journalEntry);
         break;
     case (30 + 9):
         sub_0204A8C8(v6);
@@ -395,7 +393,7 @@ BOOL ScrCmd_294(ScriptContext *param0)
     Window **v3;
 
     v3 = FieldSystem_GetScriptMemberPtr(fieldSystem, SCRIPT_MANAGER_COIN_WINDOW);
-    *v3 = ov5_021DD140(param0->fieldSystem, v1, v2);
+    *v3 = FieldMenu_CreateBPWindow(param0->fieldSystem, v1, v2);
 
     return 0;
 }
@@ -405,7 +403,7 @@ BOOL ScrCmd_295(ScriptContext *param0)
     FieldSystem *fieldSystem = param0->fieldSystem;
     Window **v1 = FieldSystem_GetScriptMemberPtr(fieldSystem, SCRIPT_MANAGER_COIN_WINDOW);
 
-    ov5_021DD084(*v1);
+    FieldMenu_DeleteCoinsBPWindow(*v1);
     return 0;
 }
 
@@ -414,7 +412,7 @@ BOOL ScrCmd_296(ScriptContext *param0)
     FieldSystem *fieldSystem = param0->fieldSystem;
     Window **v1 = FieldSystem_GetScriptMemberPtr(fieldSystem, SCRIPT_MANAGER_COIN_WINDOW);
 
-    ov5_021DD1A4(param0->fieldSystem, *v1);
+    FieldMenu_PrintBPToWindow(param0->fieldSystem, *v1);
     return 0;
 }
 

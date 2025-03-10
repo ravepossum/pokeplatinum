@@ -1,9 +1,10 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/hearthome_city_northwest_house.h"
 
     .data
 
     ScriptEntry _0006
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0006:
     PlayFanfare SEQ_SE_CONFIRM
@@ -22,8 +23,8 @@ _0033:
     End
 
 _003E:
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0057
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0057
     GoTo _00FA
     End
 
@@ -35,12 +36,12 @@ _0057:
     BufferPlayerName 0
     Message 3
     WaitSound
-    ScrCmd_096 133, 20, 0, 0x800C
+    GivePokemon SPECIES_EEVEE, 20, ITEM_NONE, 0x800C
     SetFlag 0x131
     Message 4
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00A8
-    GoToIfEq 0x800C, 1, _00E9
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00A8
+    GoToIfEq 0x800C, MENU_NO, _00E9
     End
 
 _00A8:

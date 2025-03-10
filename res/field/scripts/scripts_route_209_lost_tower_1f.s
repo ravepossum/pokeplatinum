@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_209_lost_tower_1f.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _0014
     ScriptEntry _0027
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     SetFlag 0x9E8

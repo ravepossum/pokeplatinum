@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/sandgem_town_mart.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _0028
     ScriptEntry _002A
     ScriptEntry _003D
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     PlayFanfare SEQ_SE_CONFIRM
@@ -14,7 +15,7 @@ _0012:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_147 0
+    PokeMartCommon 0
     ReleaseAll
     End
 

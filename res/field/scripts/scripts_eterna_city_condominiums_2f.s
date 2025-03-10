@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/eterna_city_condominiums_2f.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _0068
     ScriptEntry _007B
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     PlayFanfare SEQ_SE_CONFIRM

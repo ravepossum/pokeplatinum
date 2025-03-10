@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/hearthome_city_west_gate_to_amity_square.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _0044
     ScriptEntry _0057
     ScriptEntry _0012
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     ScrCmd_238 13, 0x4000
@@ -43,7 +44,7 @@ _0057:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 25, 0
+    PlayCry SPECIES_PIKACHU
     Message 2
     ScrCmd_04D
     WaitABXPadPress

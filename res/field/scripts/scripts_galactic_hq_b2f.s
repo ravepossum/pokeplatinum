@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/galactic_hq_b2f.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _0021
     ScriptEntry _0034
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     PlayFanfare SEQ_SE_CONFIRM
@@ -41,9 +42,9 @@ _0034:
 
 _005C:
     Message 3
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _007F
-    GoToIfEq 0x800C, 1, _00B3
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _007F
+    GoToIfEq 0x800C, MENU_NO, _00B3
     End
 
 _007F:
@@ -56,8 +57,8 @@ _007F:
     ApplyMovement 7, _00C4
     WaitMovement
     SetFlag 0x227
-    ScrCmd_065 6
-    ScrCmd_065 7
+    RemoveObject 6
+    RemoveObject 7
     CloseMessage
     ReleaseAll
     End
@@ -69,10 +70,10 @@ _00B3:
 
     .balign 4, 0
 _00BC:
-    MoveAction_012
+    MoveAction_018
     EndMovement
 
     .balign 4, 0
 _00C4:
-    MoveAction_013
+    MoveAction_019
     EndMovement

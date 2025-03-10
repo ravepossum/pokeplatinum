@@ -279,7 +279,7 @@ static void ov99_021D4104(SysTask *param0, void *param1);
 
 UnkStruct_ov99_021D3E78 *ov99_021D3E78(BgConfig *param0, int param1, int param2, int param3, MessageLoader *param4)
 {
-    UnkStruct_ov99_021D3E78 *v0 = Heap_AllocFromHeap(75, sizeof(UnkStruct_ov99_021D3E78));
+    UnkStruct_ov99_021D3E78 *v0 = Heap_AllocFromHeap(HEAP_ID_75, sizeof(UnkStruct_ov99_021D3E78));
 
     if (v0) {
         v0->unk_20 = param0;
@@ -292,15 +292,15 @@ UnkStruct_ov99_021D3E78 *ov99_021D3E78(BgConfig *param0, int param1, int param2,
         v0->unk_14 = 0;
         v0->unk_18 = 0;
         v0->unk_1C = 0;
-        v0->unk_30 = Strbuf_Init(256, 75);
-        v0->unk_24 = Window_New(75, 1);
+        v0->unk_30 = Strbuf_Init(256, HEAP_ID_75);
+        v0->unk_24 = Window_New(HEAP_ID_75, 1);
 
         Window_Add(param0, v0->unk_24, param2, 0, 0, 32, 32, param3, 0);
         Window_FillTilemap(v0->unk_24, 0x0);
         Window_PutToTilemap(v0->unk_24);
         Window_CopyToVRAM(v0->unk_24);
 
-        v0->unk_28 = Window_New(75, 1);
+        v0->unk_28 = Window_New(HEAP_ID_75, 1);
         Window_Add(param0, v0->unk_28, param2, 0, 0, 32, 2, param3, 0);
         v0->unk_34 = SysTask_ExecuteAfterVBlank(ov99_021D4104, v0, 0);
     }

@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/pokemon_league_south_pokecenter_1f.h"
 
     .data
 
@@ -8,7 +9,7 @@
     ScriptEntry _001A
     ScriptEntry _0058
     ScriptEntry _006B
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001A:
     SetFlag 0x9C0
@@ -25,7 +26,7 @@ _002C:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_147 1
+    PokeMartCommon
     ReleaseAll
     End
 
@@ -35,7 +36,7 @@ _0042:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_148 18
+    PokeMartSpecialties MART_SPECIALTIES_ID_POKEMON_LEAGUE
     ReleaseAll
     End
 

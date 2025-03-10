@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/jubilife_tv_3f_group_ranking_room.h"
 
     .data
 
@@ -8,7 +9,7 @@
     ScriptEntry _0044
     ScriptEntry _0057
     ScriptEntry _006A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001A:
     PlayFanfare SEQ_SE_CONFIRM

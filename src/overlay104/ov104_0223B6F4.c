@@ -3,10 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/battle.h"
-
 #include "struct_decls/struct_0203068C_decl.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/struct_0204B184.h"
 
 #include "overlay104/ov104_0222DCE0.h"
@@ -188,7 +185,7 @@ FieldBattleDTO *ov104_0223B810(UnkStruct_ov104_0223BA10 *param0, UnkStruct_ov104
         v4 = 2;
     }
 
-    v6 = Pokemon_New(11);
+    v6 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v0 = 0; v0 < v2; v0++) {
         Pokemon_Copy(Party_GetPokemonBySlotIndex(param0->unk_28, (v4 + v0)), v6);
@@ -206,10 +203,10 @@ FieldBattleDTO *ov104_0223B810(UnkStruct_ov104_0223BA10 *param0, UnkStruct_ov104
     Party_InitWithCapacity(v5->parties[1], ov104_0223B7DC(param0->unk_10, 0));
 
     for (v0 = 0; v0 < 4; v0++) {
-        v5->trainerData[v0].aiMask = ov104_0223BB10(param0);
+        v5->trainer[v0].header.aiMask = ov104_0223BB10(param0);
     }
 
-    v6 = Pokemon_New(11);
+    v6 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v0 = 0; v0 < v3; v0++) {
         Pokemon_Copy(Party_GetPokemonBySlotIndex(param0->unk_2C, v0), v6);
@@ -232,7 +229,7 @@ FieldBattleDTO *ov104_0223B810(UnkStruct_ov104_0223BA10 *param0, UnkStruct_ov104
         ov104_0222E284(v5, &v7, v3, 3, 11);
         Party_InitWithCapacity(v5->parties[3], ov104_0223B7DC(param0->unk_10, 0));
 
-        v6 = Pokemon_New(11);
+        v6 = Pokemon_New(HEAP_ID_FIELDMAP);
 
         for (v0 = 0; v0 < v3; v0++) {
             Pokemon_Copy(Party_GetPokemonBySlotIndex(param0->unk_2C, (v3 + v0)), v6);
@@ -327,7 +324,7 @@ void ov104_0223BAB8(UnkStruct_ov104_0223BA10 *param0)
     Party_Init(param0->unk_2C);
 
     v2 = ov104_0223B7DC(param0->unk_10, 1);
-    v3 = Pokemon_New(11);
+    v3 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v0 = 0; v0 < v2; v0++) {
         ov104_0222DF40(&param0->unk_288[v0], v3, ov104_0223BA10(param0));
@@ -368,9 +365,7 @@ static u16 ov104_0223BB10(UnkStruct_ov104_0223BA10 *param0)
 
 u16 ov104_0223BB60(UnkStruct_ov104_0223BA10 *param0)
 {
-    u16 v0;
-
-    v0 = param0->unk_16;
+    u16 v0 = param0->unk_16;
 
     if (ov104_0223BA14(param0->unk_10) == 1) {
         if (param0->unk_A12 > param0->unk_16) {

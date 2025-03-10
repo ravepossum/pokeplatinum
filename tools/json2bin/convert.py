@@ -2,7 +2,19 @@
 import collections
 import functools
 
-from consts import items, moves, species, trainer, trainer_ai
+from generated import (
+    ai_flags,
+    bg_event_dirs,
+    items,
+    genders,
+    map_headers,
+    moves,
+    movement_types,
+    object_events,
+    species,
+    trainer_classes,
+    trainer_types
+)
 
 def pad(len: int) -> bytes:
     return (0).to_bytes(len, 'little')
@@ -23,13 +35,31 @@ def from_move(s: str) -> int:
     return moves.Move[s].value
 
 def from_species(s: str) -> int:
-    return species.PokemonSpecies[s].value
+    return species.Species[s].value
 
 def from_trainer_class(s: str) -> int:
-    return trainer.TrainerClass[s].value
+    return trainer_classes.TrainerClass[s].value
 
 def from_trainer_ai_flag(s: str) -> int:
-    return trainer_ai.AIFlag[s].value
+    return ai_flags.AIFlag[s].value
+
+def from_gender(s: str) -> int:
+    return genders.Gender[s].value
+
+def from_bg_event_dir(s: str) -> int:
+    return bg_event_dirs.BgEventDir[s].value
+
+def from_object_event_gfx(s: str) -> int:
+    return object_events.ObjectEventGfx[s].value
+
+def from_movement_type(s: str) -> int:
+    return movement_types.MovementType[s].value
+
+def from_trainer_type(s: str) -> int:
+    return trainer_types.TrainerType[s].value
+
+def from_map_header(s: str) -> int:
+    return map_headers.MapHeader[s].value
 
 TrainerDataFlags = collections.namedtuple('TrainerDataFlags', ['has_moves', 'has_items'])
 

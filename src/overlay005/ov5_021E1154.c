@@ -34,7 +34,7 @@ static void ov5_021E1350(void *param0);
 int ov5_021E1154(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, int param2)
 {
     MapObject *v0 = Player_MapObject(playerAvatar);
-    u8 v1 = sub_02062BE8(v0);
+    u8 v1 = MapObject_GetCurrTileBehavior(v0);
     int v2;
 
     if (TileBehavior_IsSlideEastward(v1) == 1) {
@@ -85,11 +85,11 @@ static BOOL ov5_021E120C(FieldTask *param0)
 {
     UnkStruct_ov5_021E11B0 *v0 = FieldTask_GetEnv(param0);
     MapObject *v1 = Player_MapObject(v0->playerAvatar);
-    u8 v2 = sub_02062BE8(v1);
+    u8 v2 = MapObject_GetCurrTileBehavior(v1);
 
     switch (v0->unk_08) {
     case 0:
-        MapObject_SetStatusFlagOn(v1, (1 << 8));
+        MapObject_SetStatusFlagOn(v1, MAP_OBJ_STATUS_PAUSE_ANIMATION);
         v0->unk_08++;
         break;
     case 1:
@@ -136,8 +136,8 @@ static BOOL ov5_021E120C(FieldTask *param0)
                 if (v4 == 0) {
                     v0->unk_08 = 1;
                 } else {
-                    MapObject_SetStatusFlagOff(v1, (1 << 7));
-                    MapObject_SetStatusFlagOff(v1, (1 << 8));
+                    MapObject_SetStatusFlagOff(v1, MAP_OBJ_STATUS_LOCK_DIR);
+                    MapObject_SetStatusFlagOff(v1, MAP_OBJ_STATUS_PAUSE_ANIMATION);
                     Player_SetDir(v0->playerAvatar, v0->unk_00);
                     ov5_021E1350(v0);
                     Sound_StopEffect(1624, 0);
@@ -163,5 +163,5 @@ static void *ov5_021E132C(int param0)
 
 static void ov5_021E1350(void *param0)
 {
-    Heap_FreeToHeapExplicit(4, param0);
+    Heap_FreeToHeapExplicit(HEAP_ID_FIELD, param0);
 }

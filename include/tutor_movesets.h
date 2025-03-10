@@ -1,13 +1,8 @@
 #ifndef POKEPLATINUM_TUTOR_MOVESETS_H
 #define POKEPLATINUM_TUTOR_MOVESETS_H
 
-#include "consts/moves.h"
-
-enum TutorLocation {
-    TUTOR_LOCATION_ROUTE_212 = 0,
-    TUTOR_LOCATION_SURVIVAL_AREA,
-    TUTOR_LOCATION_SNOWPOINT_CITY,
-};
+#include "generated/moves.h"
+#include "generated/tutor_locations.h"
 
 typedef struct TeachableMove {
     u16 moveID;
@@ -18,7 +13,7 @@ typedef struct TeachableMove {
     enum TutorLocation location;
 } TeachableMove;
 
-#include "res/field/tutorable_moves.h"
+#include "res/pokemon/tutorable_moves.h"
 
 #define MOVESET_MASK_SIZE (s32)((NELEMS(sTeachableMoves) + 7) / 8)
 

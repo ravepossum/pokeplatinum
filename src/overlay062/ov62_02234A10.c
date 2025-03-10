@@ -18,11 +18,11 @@
 #include "math.h"
 #include "message.h"
 #include "palette.h"
+#include "sprite_system.h"
 #include "strbuf.h"
 #include "text.h"
 #include "touch_screen.h"
 #include "unk_02005474.h"
-#include "unk_0200C6E4.h"
 #include "unk_0200F174.h"
 #include "unk_02012744.h"
 #include "unk_0208B284.h"
@@ -70,7 +70,7 @@ static BOOL ov62_02234AB4(UnkStruct_0208C06C *param0)
             break;
         }
 
-        StartScreenTransition(0, 1, 1, 0x0, 6, 1, 102);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_102);
         PaletteData_BlendMulti(param0->unk_14.unk_14, 2, 0xFFFE, 16, ov62_022316D0(param0));
         PaletteData_BlendMulti(param0->unk_14.unk_14, 0, 0xBFFF, 16, ov62_022316D0(param0));
         PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0x3FFE, 16, ov62_022316D0(param0));
@@ -163,9 +163,9 @@ static BOOL ov62_02234CDC(UnkStruct_0208C06C *param0)
 
         if (ov62_022300BC(param0) == 1) {
             if (param0->unk_00 == 0) {
-                Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_14.unk_00, 69, param0->unk_14.unk_10, 5, 0, 0, 0, 102);
+                Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_14.unk_00, 69, param0->unk_14.unk_10, 5, 0, 0, 0, HEAP_ID_102);
             } else {
-                Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_14.unk_00, 55, param0->unk_14.unk_10, 5, 0, 0, 0, 102);
+                Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_14.unk_00, 55, param0->unk_14.unk_10, 5, 0, 0, 0, HEAP_ID_102);
             }
 
             sub_0208B948(param0->unk_6F0, 256 / 2, 192 + 32);
@@ -202,9 +202,9 @@ static BOOL ov62_02234CDC(UnkStruct_0208C06C *param0)
         break;
     case 2:
         if (param0->unk_00 == 0) {
-            Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_14.unk_00, 69, param0->unk_14.unk_10, 5, 0, 0, 0, 102);
+            Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_14.unk_00, 69, param0->unk_14.unk_10, 5, 0, 0, 0, HEAP_ID_102);
         } else {
-            Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_14.unk_00, 55, param0->unk_14.unk_10, 5, 0, 0, 0, 102);
+            Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_14.unk_00, 55, param0->unk_14.unk_10, 5, 0, 0, 0, HEAP_ID_102);
         }
 
         param0->unk_08++;
@@ -278,7 +278,7 @@ BOOL ov62_02235008(UnkStruct_0208C06C *param0)
     switch (param0->unk_08) {
     case 0:
 
-        v0 = Heap_AllocFromHeap(102, sizeof(UnkStruct_ov62_02235008));
+        v0 = Heap_AllocFromHeap(HEAP_ID_102, sizeof(UnkStruct_ov62_02235008));
         MI_CpuFill8(v0, 0, sizeof(UnkStruct_ov62_02235008));
         param0->unk_860 = v0;
         v0->unk_50 = 16;
@@ -295,8 +295,8 @@ BOOL ov62_02235008(UnkStruct_0208C06C *param0)
                 v0->unk_00[v1].unk_08 = (25 + (36 * (v1)) + (16 * (5 - (param0->unk_534.unk_1AC))));
 
                 ov62_02230E68(param0->unk_534.unk_C8[v1].unk_00, 42, (25 + (36 * (5 - 1)) + (16 * (5 - (param0->unk_534.unk_1AC)))));
-                sub_0200D638(param0->unk_534.unk_C8[v1].unk_00, &v0->unk_00[v1].unk_0C, &v2);
-                sub_0200D614(param0->unk_534.unk_C8[v1].unk_00, v0->unk_00[v1].unk_0C, (25 + (36 * (5 - 1)) + (16 * (5 - (param0->unk_534.unk_1AC)))) * FX32_ONE);
+                ManagedSprite_GetPositionFxXY(param0->unk_534.unk_C8[v1].unk_00, &v0->unk_00[v1].unk_0C, &v2);
+                ManagedSprite_SetPositionFxXY(param0->unk_534.unk_C8[v1].unk_00, v0->unk_00[v1].unk_0C, (25 + (36 * (5 - 1)) + (16 * (5 - (param0->unk_534.unk_1AC)))) * FX32_ONE);
                 sub_020128C4(param0->unk_534.unk_C8[v1].unk_14, 36, -8);
                 sub_020129D0(param0->unk_534.unk_C8[v1].unk_14, 1);
             }
@@ -339,7 +339,7 @@ BOOL ov62_02235008(UnkStruct_0208C06C *param0)
                 v7 = v0->unk_00[v3].unk_0C + (CalcSineDegrees_Wraparound((v0->unk_00[v3].unk_04 * 0xffff) / 360) * 16);
                 v0->unk_00[v3].unk_04 += (-4 * 1);
 
-                sub_0200D614(param0->unk_534.unk_C8[v3].unk_00, v7, v8);
+                ManagedSprite_SetPositionFxXY(param0->unk_534.unk_C8[v3].unk_00, v7, v8);
                 sub_020128C4(param0->unk_534.unk_C8[v3].unk_14, 36, -8);
             }
             if (v4 == param0->unk_534.unk_1AC) {

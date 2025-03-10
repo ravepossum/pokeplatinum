@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/unk_0221.h"
 
     .data
 
@@ -19,7 +20,7 @@
     ScriptEntry _005B
     ScriptEntry _005B
     ScriptEntry _0763
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0046:
     CallIfNe 0x40D5, 0, _0055
@@ -48,14 +49,14 @@ _008F:
     ScrCmd_168 0, 0, 0x4000, 0x4002, 77
     Call _050B
     ScrCmd_1B1 0xFF
-    ApplyMovement 0xFF, _00F0
+    ApplyMovement LOCALID_PLAYER, _00F0
     WaitMovement
     Call _0513
-    ApplyMovement 0xFF, _00F8
+    ApplyMovement LOCALID_PLAYER, _00F8
     WaitMovement
     ScrCmd_168 0, 0, 0x4000, 0x4001, 77
     Call _050B
-    ApplyMovement 0xFF, _0100
+    ApplyMovement LOCALID_PLAYER, _0100
     WaitMovement
     Call _0513
     ClearFlag 0x966
@@ -65,17 +66,17 @@ _008F:
 
     .balign 4, 0
 _00F0:
-    MoveAction_00D
+    MoveAction_013
     EndMovement
 
     .balign 4, 0
 _00F8:
-    MoveAction_00D
+    MoveAction_013
     EndMovement
 
     .balign 4, 0
 _0100:
-    MoveAction_00D 2
+    MoveAction_013 2
     EndMovement
 
 _0108:
@@ -292,8 +293,8 @@ _037F:
 
 _0384:
     Message 124
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0305
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0305
     CloseMessage
     ScrCmd_0F2 0x8004, 0x8005, 0, 0x800C
     GoToIfEq 0x800C, 1, _03D3
@@ -325,8 +326,8 @@ _03EA:
 
 _03F7:
     Message 124
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0305
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0305
     CloseMessage
     ScrCmd_0F3 0x8004, 0x8005, 0, 0x800C
     GoToIfEq 0x800C, 1, _0446
@@ -365,14 +366,14 @@ _046A:
     CloseMessage
     ScrCmd_168 0, 0, 13, 5, 77
     Call _050B
-    ApplyMovement 0xFF, _0524
+    ApplyMovement LOCALID_PLAYER, _0524
     WaitMovement
     Call _0513
-    ApplyMovement 0xFF, _0530
+    ApplyMovement LOCALID_PLAYER, _0530
     WaitMovement
     ScrCmd_168 0, 0, 13, 2, 77
     Call _050B
-    ApplyMovement 0xFF, _0538
+    ApplyMovement LOCALID_PLAYER, _0538
     WaitMovement
     Call _0513
     GoToIfEq 0x8004, 4, _04F3
@@ -405,19 +406,19 @@ _051E:
 
     .balign 4, 0
 _0524:
-    MoveAction_00F
-    MoveAction_00C 2
+    MoveAction_015
+    MoveAction_012 2
     EndMovement
 
     .balign 4, 0
 _0530:
-    MoveAction_00C
+    MoveAction_012
     EndMovement
 
     .balign 4, 0
 _0538:
-    MoveAction_00C
-    MoveAction_045
+    MoveAction_012
+    MoveAction_069
     EndMovement
 
 _0544:
@@ -445,8 +446,8 @@ _0565:
 
 _05B3:
     Message 58
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _05CF
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _05CF
     GoTo _01D3
     End
 
@@ -454,8 +455,8 @@ _05CF:
     SetVar 0x8004, 9
     HealParty
     Message 124
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _01D3
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _01D3
     ScrCmd_31D 0x800C
     GoToIfEq 0x800C, 0xFF, _068E
     SetVar 0x40D5, 2
@@ -474,14 +475,14 @@ _062D:
     CloseMessage
     ScrCmd_168 0, 0, 8, 5, 77
     Call _050B
-    ApplyMovement 0xFF, _0524
+    ApplyMovement LOCALID_PLAYER, _0524
     WaitMovement
     Call _0513
-    ApplyMovement 0xFF, _0530
+    ApplyMovement LOCALID_PLAYER, _0530
     WaitMovement
     ScrCmd_168 0, 0, 8, 2, 77
     Call _050B
-    ApplyMovement 0xFF, _0538
+    ApplyMovement LOCALID_PLAYER, _0538
     WaitMovement
     Call _0513
     ReleaseAll
@@ -513,7 +514,7 @@ _069E:
 _06A0:
     ScrCmd_1F8
     ScrCmd_0A3
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     End
@@ -551,7 +552,7 @@ _0724:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_12B
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoTo _074A

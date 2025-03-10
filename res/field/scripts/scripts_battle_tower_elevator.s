@@ -6,7 +6,7 @@
     ScriptEntry _0146
     ScriptEntry _015C
     ScriptEntry _0172
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     CallIfNe 0x40DB, 0, _008A
@@ -45,7 +45,7 @@ _00A6:
     GoToIfEq 0x800C, 5, _01F8
     ScrCmd_1F8
     ScrCmd_2C4 5
-    ScrCmd_0A1
+    ReturnToField
     Warp MAP_HEADER_BATTLE_TOWER, 0, 15, 6, 0
     End
 
@@ -54,7 +54,7 @@ _00E9:
     WaitFadeScreen
     ScrCmd_1F8
     ScrCmd_2C4 6
-    ScrCmd_0A1
+    ReturnToField
     Warp MAP_HEADER_BATTLE_TOWER, 0, 11, 6, 0
     End
 
@@ -95,13 +95,13 @@ _0172:
     End
 
 _0188:
-    ApplyMovement 0xFF, _01BC
+    ApplyMovement LOCALID_PLAYER, _01BC
     WaitMovement
     Return
 
 _0194:
     ApplyMovement 0, _01C8
-    ApplyMovement 0xFF, _01E4
+    ApplyMovement LOCALID_PLAYER, _01E4
     WaitMovement
     Return
 
@@ -128,32 +128,32 @@ _0194:
 
     .balign 4, 0
 _01BC:
-    MoveAction_00C 2
+    MoveAction_012 2
     MoveAction_001
     EndMovement
 
     .balign 4, 0
 _01C8:
-    MoveAction_00D
+    MoveAction_013
     MoveAction_002
-    MoveAction_00E
+    MoveAction_014
     MoveAction_001
-    MoveAction_00D
-    MoveAction_045
+    MoveAction_013
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _01E4:
-    MoveAction_03F 2
-    MoveAction_03D
-    MoveAction_00D 2
-    MoveAction_045
+    MoveAction_063 2
+    MoveAction_061
+    MoveAction_013 2
+    MoveAction_069
     EndMovement
 
 _01F8:
     ScrCmd_1F8
     ScrCmd_2C4 5
-    ScrCmd_0A1
+    ReturnToField
     Warp MAP_HEADER_BATTLE_TOWER, 0, 19, 6, 0
     End
 

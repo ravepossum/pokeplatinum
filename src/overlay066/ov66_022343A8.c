@@ -71,7 +71,7 @@ typedef struct UnkStruct_ov66_02234548_t {
 static const UnkStruct_ov66_02258B38 *ov66_022348B0(u32 param0);
 static u32 ov66_022348D8(BOOL param0, u32 param1);
 static fx32 ov66_022348E4(u16 param0, u16 param1, u32 param2);
-static void ov66_022348FC(UnkStruct_ov66_02234958 *param0, NARC *param1, u32 param2, u32 param3);
+static void ov66_022348FC(UnkStruct_ov66_02234958 *param0, NARC *param1, u32 param2, u32 heapID);
 static void ov66_02234958(UnkStruct_ov66_02234958 *param0);
 static void ov66_02234960(UnkStruct_ov66_02234958 *param0, u32 param1);
 static u32 ov66_0223496C(const UnkStruct_ov66_02234958 *param0);
@@ -142,17 +142,15 @@ static const UnkStruct_ov66_02258B38 Unk_ov66_02258B38[20] = {
     { 0xEA, 0x18D, 0x0 }
 };
 
-UnkStruct_ov66_02234548 *ov66_022343A8(u32 param0, u32 param1, u32 param2, u32 param3)
+UnkStruct_ov66_02234548 *ov66_022343A8(u32 param0, u32 param1, u32 heapID, u32 heapID2)
 {
-    UnkStruct_ov66_02234548 *v0;
-
-    v0 = Heap_AllocFromHeap(param2, sizeof(UnkStruct_ov66_02234548));
+    UnkStruct_ov66_02234548 *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov66_02234548));
     memset(v0, 0, sizeof(UnkStruct_ov66_02234548));
 
     {
         int v1;
 
-        v0->unk_10 = Heap_AllocFromHeap(param2, sizeof(UnkStruct_ov66_02234798) * param0);
+        v0->unk_10 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov66_02234798) * param0);
         v0->unk_14 = param0;
 
         for (v1 = 0; v1 < v0->unk_14; v1++) {
@@ -160,17 +158,17 @@ UnkStruct_ov66_02234548 *ov66_022343A8(u32 param0, u32 param1, u32 param2, u32 p
         }
     }
 
-    v0->unk_00 = ResourceCollection_New(1, param2);
-    v0->unk_04 = ResourceCollection_New(2, param2);
-    v0->unk_08 = TextureResourceManager_New(20, param2);
+    v0->unk_00 = ResourceCollection_New(1, heapID);
+    v0->unk_04 = ResourceCollection_New(2, heapID);
+    v0->unk_08 = TextureResourceManager_New(20, heapID);
 
     {
         UnkStruct_ov5_021EDDAC v2;
 
-        sub_02020B90(1, param2);
+        sub_02020B90(1, heapID);
 
         v2.unk_00 = param0;
-        v2.unk_04 = param2;
+        v2.heapID = heapID;
         v0->unk_0C = sub_02020C44(&v2);
     }
 
@@ -180,11 +178,11 @@ UnkStruct_ov66_02234548 *ov66_022343A8(u32 param0, u32 param1, u32 param2, u32 p
         void *v5;
         int v6;
 
-        v3 = NARC_ctor(NARC_INDEX_DATA__MMODEL__MMODEL, param2);
-        v4 = NARC_ctor(NARC_INDEX_GRAPHIC__WIFI_LOBBY_OTHER, param2);
+        v3 = NARC_ctor(NARC_INDEX_DATA__MMODEL__MMODEL, heapID);
+        v4 = NARC_ctor(NARC_INDEX_GRAPHIC__WIFI_LOBBY_OTHER, heapID);
 
         {
-            v5 = LoadMemberFromOpenNARC(v4, 127, 0, param3, 0);
+            v5 = LoadMemberFromOpenNARC(v4, 127, 0, heapID2, 0);
             ResourceCollection_Add(v0->unk_00, v5, 127);
             ov66_02231668(v5);
 
@@ -200,7 +198,7 @@ UnkStruct_ov66_02234548 *ov66_022343A8(u32 param0, u32 param1, u32 param2, u32 p
 
         {
             for (v6 = 0; v6 < 2; v6++) {
-                v5 = LoadMemberFromOpenNARC(v3, Unk_ov66_02258B28[v6], 0, param3, 0);
+                v5 = LoadMemberFromOpenNARC(v3, Unk_ov66_02258B28[v6], 0, heapID2, 0);
                 ResourceCollection_Add(v0->unk_04, v5, Unk_ov66_02258B28[v6]);
             }
         }
@@ -227,8 +225,8 @@ UnkStruct_ov66_02234548 *ov66_022343A8(u32 param0, u32 param1, u32 param2, u32 p
                     v11 = 0;
                 }
 
-                v5 = LoadMemberFromOpenNARC(v3, Unk_ov66_02258B38[v6].unk_02_0, 0, param3, 0);
-                v9 = TextureResourceManager_AddTexture(v0->unk_08, v5, Unk_ov66_02258B38[v6].unk_02_0, v11, param3);
+                v5 = LoadMemberFromOpenNARC(v3, Unk_ov66_02258B38[v6].unk_02_0, 0, heapID2, 0);
+                v9 = TextureResourceManager_AddTexture(v0->unk_08, v5, Unk_ov66_02258B38[v6].unk_02_0, v11, heapID2);
 
                 if (v11 == 1) {
                     TextureResource_AllocVRam(v9);
@@ -238,7 +236,7 @@ UnkStruct_ov66_02234548 *ov66_022343A8(u32 param0, u32 param1, u32 param2, u32 p
             }
         }
 
-        ov66_022348FC(&v0->unk_18, v4, 128, param3);
+        ov66_022348FC(&v0->unk_18, v4, 128, heapID2);
 
         NARC_dtor(v3);
         NARC_dtor(v4);
@@ -305,9 +303,7 @@ void ov66_02234610(UnkStruct_ov66_02234548 *param0, u32 param1)
 
 UnkStruct_ov66_02234798 *ov66_0223461C(UnkStruct_ov66_02234548 *param0, const UnkStruct_ov63_0222BEC0 *param1)
 {
-    UnkStruct_ov66_02234798 *v0;
-
-    v0 = ov66_02234980(param0);
+    UnkStruct_ov66_02234798 *v0 = ov66_02234980(param0);
     v0->unk_04 = param1;
 
     {
@@ -430,17 +426,13 @@ void ov66_022347F8(UnkStruct_ov66_02234798 *param0, const VecFx32 *param1)
 
 void ov66_0223481C(const UnkStruct_ov66_02234798 *param0, VecFx32 *param1)
 {
-    const VecFx32 *v0;
-
-    v0 = sub_020212C0(param0->unk_08);
+    const VecFx32 *v0 = sub_020212C0(param0->unk_08);
     *param1 = *v0;
 }
 
 void ov66_02234834(UnkStruct_ov66_02234798 *param0, int param1)
 {
-    u32 v0;
-
-    v0 = ov66_022348D8(1, param1);
+    u32 v0 = ov66_022348D8(1, param1);
 
     sub_02021344(param0->unk_08, v0);
     sub_020213A4(param0->unk_08, 0);
@@ -510,11 +502,11 @@ static fx32 ov66_022348E4(u16 param0, u16 param1, u32 param2)
     return v0;
 }
 
-static void ov66_022348FC(UnkStruct_ov66_02234958 *param0, NARC *param1, u32 param2, u32 param3)
+static void ov66_022348FC(UnkStruct_ov66_02234958 *param0, NARC *param1, u32 param2, u32 heapID)
 {
     void *v0;
 
-    ov70_0225C730(&v0, param1, param2, param3);
+    ov70_0225C730(&v0, param1, param2, heapID);
 
     param0->unk_00.data = v0;
     param0->unk_00.set = NNS_G3dGetMdlSet(param0->unk_00.data);
@@ -664,9 +656,7 @@ static void ov66_02234B10(UnkStruct_ov66_02234798 *param0)
 {
     u32 v0;
     u32 v1;
-    u16 v2;
-
-    v2 = ov63_0222BF90(param0->unk_04, 8);
+    u16 v2 = ov63_0222BF90(param0->unk_04, 8);
 
     if (v2 < 4) {
         sub_020213A4(param0->unk_08, 4 * FX32_ONE);
@@ -824,9 +814,7 @@ static void ov66_02234D3C(UnkStruct_ov66_02234798 *param0)
 static void ov66_02234D78(UnkStruct_020216E0 *param0, void *param1)
 {
     UnkStruct_ov66_02234798 *v0 = param1;
-    NNSG3dResMdl *v1;
-
-    v1 = sub_02021430(param0);
+    NNSG3dResMdl *v1 = sub_02021430(param0);
     NNS_G3dMdlSetMdlLightEnableFlagAll(v1, v0->unk_8C);
 }
 

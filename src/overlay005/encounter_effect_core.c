@@ -21,21 +21,21 @@
 #include "overlay115/camera_angle.h"
 
 #include "bg_window.h"
+#include "brightness_controller.h"
 #include "camera.h"
-#include "cell_actor.h"
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
 #include "message.h"
 #include "save_player.h"
 #include "screen_scroll_manager.h"
+#include "sprite.h"
 #include "strbuf.h"
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "text.h"
 #include "trainer_info.h"
-#include "unk_0200A9DC.h"
 #include "unk_0200F174.h"
 #include "unk_0202419C.h"
 
@@ -115,7 +115,7 @@ void EncounterEffect_Grass_HigherLevel(SysTask *task, void *param)
 
     switch (encEffect->state) {
     case 0:
-        encEffect->param = Heap_AllocFromHeap(4, sizeof(GrassEncounterEffect));
+        encEffect->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(GrassEncounterEffect));
         memset(encEffect->param, 0, sizeof(GrassEncounterEffect));
         grassEffect = encEffect->param;
         grassEffect->screenSliceEfx = ScreenSliceEffect_New();
@@ -299,7 +299,7 @@ void EncounterEffect_Water_LowerLevel(SysTask *task, void *param)
 
     switch (encEffect->state) {
     case 0:
-        encEffect->param = Heap_AllocFromHeap(4, sizeof(WaterEncounterEffect));
+        encEffect->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(WaterEncounterEffect));
         memset(encEffect->param, 0, sizeof(WaterEncounterEffect));
         waterEffect = encEffect->param;
         ScreenShakeEffect_Init(&waterEffect->screenShakeEfx, 4);
@@ -328,7 +328,7 @@ void EncounterEffect_Water_LowerLevel(SysTask *task, void *param)
         }
         break;
     case 4:
-        StartScreenTransition(3, 30, 0, 0x0, 8, 1, 4);
+        StartScreenTransition(3, 30, 0, 0x0, 8, 1, HEAP_ID_FIELD);
         encEffect->state++;
         break;
     case 5:
@@ -357,7 +357,7 @@ void EncounterEffect_Water_HigherLevel(SysTask *task, void *param)
 
     switch (encEffect->state) {
     case 0:
-        encEffect->param = Heap_AllocFromHeap(4, sizeof(WaterEncounterEffect));
+        encEffect->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(WaterEncounterEffect));
         memset(encEffect->param, 0, sizeof(WaterEncounterEffect));
         waterEffect = encEffect->param;
         ScreenShakeEffect_Init(&waterEffect->screenShakeEfx, 4);
@@ -386,7 +386,7 @@ void EncounterEffect_Water_HigherLevel(SysTask *task, void *param)
         }
         break;
     case 4:
-        StartScreenTransition(3, 30, 0, 0x0, 8, 1, 4);
+        StartScreenTransition(3, 30, 0, 0x0, 8, 1, HEAP_ID_FIELD);
         encEffect->state++;
         break;
     case 5:
@@ -468,7 +468,7 @@ void EncounterEffect_Cave_LowerLevel(SysTask *task, void *param)
 
     switch (encEffect->state) {
     case 0:
-        encEffect->param = Heap_AllocFromHeap(4, sizeof(CaveEncounterEffect));
+        encEffect->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(CaveEncounterEffect));
         memset(encEffect->param, 0, sizeof(CaveEncounterEffect));
         caveEffect = encEffect->param;
         encEffect->state++;
@@ -484,7 +484,7 @@ void EncounterEffect_Cave_LowerLevel(SysTask *task, void *param)
         break;
     case 3:
         HBlankSystem_Stop(encEffect->fieldSystem->unk_04->hBlankSystem);
-        StartScreenTransition(3, 16, 16, 0x0, 12, 1, 4);
+        StartScreenTransition(3, 16, 16, 0x0, 12, 1, HEAP_ID_FIELD);
 
         caveEffect->camera = encEffect->fieldSystem->camera;
         distance = Camera_GetDistance(caveEffect->camera);
@@ -526,7 +526,7 @@ void EncounterEffect_Cave_HigherLevel(SysTask *task, void *param)
 
     switch (encEffect->state) {
     case 0:
-        encEffect->param = Heap_AllocFromHeap(4, sizeof(CaveEncounterEffect));
+        encEffect->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(CaveEncounterEffect));
         memset(encEffect->param, 0, sizeof(CaveEncounterEffect));
         caveEffect = encEffect->param;
         encEffect->state++;
@@ -542,7 +542,7 @@ void EncounterEffect_Cave_HigherLevel(SysTask *task, void *param)
         break;
     case 3:
         HBlankSystem_Stop(encEffect->fieldSystem->unk_04->hBlankSystem);
-        StartScreenTransition(3, 16, 16, 0x0, 12, 1, 4);
+        StartScreenTransition(3, 16, 16, 0x0, 12, 1, HEAP_ID_FIELD);
 
         caveEffect->camera = encEffect->fieldSystem->camera;
         distance = Camera_GetDistance(caveEffect->camera);
@@ -583,7 +583,7 @@ typedef struct TrainerGrassEncounterEffect {
     ScreenSliceEffect *screenSliceEfx;
     UnkStruct_ov5_021DE47C unk_48;
     UnkStruct_ov5_021DE5A4 unk_1E8;
-    CellActor *pokeballSprites[2];
+    Sprite *pokeballSprites[2];
     Camera *camera;
     QuadraticInterpolationTaskFX32 unk_228;
     s32 unk_240;
@@ -595,7 +595,7 @@ typedef struct {
     ScreenSplitEffect *unk_28;
     UnkStruct_ov5_021DE47C unk_2C;
     UnkStruct_ov5_021DE5A4 unk_1CC;
-    CellActor *unk_200[2];
+    Sprite *unk_200[2];
     Camera *camera;
     QuadraticInterpolationTaskFX32 unk_20C;
     s32 unk_224;
@@ -609,7 +609,7 @@ typedef struct {
     BOOL unk_4C;
     UnkStruct_ov5_021DE47C unk_50;
     UnkStruct_ov5_021DE5A4 unk_1F0;
-    CellActor *unk_224[2];
+    Sprite *unk_224[2];
     Camera *camera;
     QuadraticInterpolationTaskFX32 unk_230;
     s32 unk_248;
@@ -618,7 +618,7 @@ typedef struct {
 typedef struct {
     UnkStruct_ov5_021DE47C unk_00;
     UnkStruct_ov5_021DE5A4 unk_1A0;
-    CellActor *unk_1D4[3];
+    Sprite *unk_1D4[3];
     LinearInterpolationTaskS32 unk_1E0[3];
     LinearInterpolationTaskS32 unk_21C[3];
     UnkStruct_ov5_021DE6BC *unk_258[3];
@@ -638,7 +638,7 @@ typedef struct {
     LinearInterpolationTaskS32 unk_48;
     UnkStruct_ov5_021DE47C unk_5C;
     UnkStruct_ov5_021DE5A4 unk_1FC;
-    CellActor *unk_230;
+    Sprite *unk_230;
     Camera *camera;
     QuadraticInterpolationTaskFX32 unk_238;
     s32 unk_250;
@@ -647,7 +647,7 @@ typedef struct {
 typedef struct {
     UnkStruct_ov5_021DE47C unk_00;
     UnkStruct_ov5_021DE5A4 unk_1A0;
-    CellActor *unk_1D4[3];
+    Sprite *unk_1D4[3];
     LinearInterpolationTaskS32 unk_1E0[3];
     LinearInterpolationTaskS32 unk_21C[3];
     BOOL unk_258[3];
@@ -670,7 +670,7 @@ void EncounterEffect_Trainer_Grass_LowerLevel(SysTask *task, void *param)
 
     switch (encEffect->state) {
     case 0:
-        encEffect->param = Heap_AllocFromHeap(4, sizeof(TrainerGrassEncounterEffect));
+        encEffect->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(TrainerGrassEncounterEffect));
         memset(encEffect->param, 0, sizeof(TrainerGrassEncounterEffect));
         trainerEffect = encEffect->param;
 
@@ -685,8 +685,8 @@ void EncounterEffect_Trainer_Grass_LowerLevel(SysTask *task, void *param)
         for (i = 0; i < 2; i++) {
             trainerEffect->pokeballSprites[i] = ov5_021DE62C(
                 &trainerEffect->unk_48, &trainerEffect->unk_1E8, (128 * FX32_ONE), (96 * FX32_ONE), 0, 0);
-            CellActor_SetDrawFlag(trainerEffect->pokeballSprites[i], 0);
-            CellActor_SetPriority(trainerEffect->pokeballSprites[i], i * 2);
+            Sprite_SetDrawFlag(trainerEffect->pokeballSprites[i], 0);
+            Sprite_SetPriority(trainerEffect->pokeballSprites[i], i * 2);
         }
 
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
@@ -715,11 +715,11 @@ void EncounterEffect_Trainer_Grass_LowerLevel(SysTask *task, void *param)
             trainerEffect->pokeballScale.currentValue);
 
         for (i = 0; i < 2; i++) {
-            CellActor_SetDrawFlag(
+            Sprite_SetDrawFlag(
                 trainerEffect->pokeballSprites[i], 1);
-            CellActor_SetAffineOverwriteMode(
+            Sprite_SetAffineOverwriteMode(
                 trainerEffect->pokeballSprites[i], 2);
-            CellActor_SetAffineScale(
+            Sprite_SetAffineScale(
                 trainerEffect->pokeballSprites[i], &v5);
         }
 
@@ -736,14 +736,14 @@ void EncounterEffect_Trainer_Grass_LowerLevel(SysTask *task, void *param)
         LinearInterpolationTaskS32_Update(&trainerEffect->pokeballRotation);
 
         for (i = 0; i < 2; i++) {
-            CellActor_SetAffineScale(
+            Sprite_SetAffineScale(
                 trainerEffect->pokeballSprites[i], &v5);
         }
 
-        CellActor_SetAffineZRotation(
+        Sprite_SetAffineZRotation(
             trainerEffect->pokeballSprites[0], 0xffff & trainerEffect->pokeballRotation.currentValue);
 
-        CellActor_SetAffineZRotation(
+        Sprite_SetAffineZRotation(
             trainerEffect->pokeballSprites[1], 0xffff & (trainerEffect->pokeballRotation.currentValue - 0x100));
 
         if (done == TRUE) {
@@ -756,9 +756,9 @@ void EncounterEffect_Trainer_Grass_LowerLevel(SysTask *task, void *param)
 
         EncounterEffect_ScreenSlice(encEffect, trainerEffect->screenSliceEfx, 96, 6, 0, (255 * FX32_ONE), (FX32_ONE * 10));
 
-        CellActor_SetAnim(
+        Sprite_SetAnim(
             trainerEffect->pokeballSprites[0], 1);
-        CellActor_SetAnim(
+        Sprite_SetAnim(
             trainerEffect->pokeballSprites[1], 2);
 
         QuadraticInterpolationTaskFX32_Init(&trainerEffect->unk_2C, 0, (255 * FX32_ONE), (FX32_ONE * 10), 6);
@@ -766,9 +766,9 @@ void EncounterEffect_Trainer_Grass_LowerLevel(SysTask *task, void *param)
         v3 = Camera_GetDistance(trainerEffect->camera);
         QuadraticInterpolationTaskFX32_Init(&trainerEffect->unk_228, v3, v3 + (-FX32_CONST(500)), (-FX32_CONST(10)), 6);
 
-        CellActor_SetAffineZRotation(
+        Sprite_SetAffineZRotation(
             trainerEffect->pokeballSprites[0], 0xffff & 0);
-        CellActor_SetAffineZRotation(
+        Sprite_SetAffineZRotation(
             trainerEffect->pokeballSprites[1], 0xffff & 0);
 
         encEffect->state++;
@@ -781,9 +781,9 @@ void EncounterEffect_Trainer_Grass_LowerLevel(SysTask *task, void *param)
             VecFx32 v7 = VecFx32_FromXYZ((128 * FX32_ONE) - trainerEffect->unk_2C.currentValue, (96 * FX32_ONE), 0);
             VecFx32 v8 = VecFx32_FromXYZ((128 * FX32_ONE) + trainerEffect->unk_2C.currentValue, (96 * FX32_ONE), 0);
 
-            CellActor_SetPosition(
+            Sprite_SetPosition(
                 trainerEffect->pokeballSprites[0], &v7);
-            CellActor_SetPosition(
+            Sprite_SetPosition(
                 trainerEffect->pokeballSprites[1], &v8);
         }
 
@@ -807,7 +807,7 @@ void EncounterEffect_Trainer_Grass_LowerLevel(SysTask *task, void *param)
             int v9;
 
             for (v9 = 0; v9 < 2; v9++) {
-                CellActor_Delete(trainerEffect->pokeballSprites[v9]);
+                Sprite_Delete(trainerEffect->pokeballSprites[v9]);
             }
         }
         ov5_021DE5A4(&trainerEffect->unk_48, &trainerEffect->unk_1E8);
@@ -818,7 +818,7 @@ void EncounterEffect_Trainer_Grass_LowerLevel(SysTask *task, void *param)
     }
 
     if (encEffect->state != 7) {
-        CellActorCollection_Update(trainerEffect->unk_48.unk_00);
+        SpriteList_Update(trainerEffect->unk_48.unk_00);
     }
 }
 
@@ -831,7 +831,7 @@ void EncounterEffect_Trainer_Grass_HigherLevel(SysTask *param0, void *param1)
 
     switch (encEffect->state) {
     case 0:
-        encEffect->param = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021E2EB0));
+        encEffect->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021E2EB0));
         memset(encEffect->param, 0, sizeof(UnkStruct_ov5_021E2EB0));
         v1 = encEffect->param;
 
@@ -850,8 +850,8 @@ void EncounterEffect_Trainer_Grass_HigherLevel(SysTask *param0, void *param1)
             for (v4 = 0; v4 < 2; v4++) {
                 v1->unk_200[v4] = ov5_021DE62C(
                     &v1->unk_2C, &v1->unk_1CC, (128 * FX32_ONE), 0, 0, 0);
-                CellActor_SetDrawFlag(v1->unk_200[v4], 0);
-                CellActor_SetAffineOverwriteMode(v1->unk_200[v4], 2);
+                Sprite_SetDrawFlag(v1->unk_200[v4], 0);
+                Sprite_SetAffineOverwriteMode(v1->unk_200[v4], 2);
             }
         }
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
@@ -874,18 +874,18 @@ void EncounterEffect_Trainer_Grass_HigherLevel(SysTask *param0, void *param1)
 
     case 3:
         LinearInterpolationTaskFX32_Init(&v1->unk_00, (-192 * FX32_ONE), (192 * FX32_ONE), 8);
-        CellActor_SetDrawFlag(
+        Sprite_SetDrawFlag(
             v1->unk_200[0], 1);
-        CellActor_SetDrawFlag(
+        Sprite_SetDrawFlag(
             v1->unk_200[1], 1);
 
         {
             VecFx32 v5 = VecFx32_FromXYZ((128 * FX32_ONE) - v1->unk_00.currentValue, (64 * FX32_ONE), 0);
             VecFx32 v6 = VecFx32_FromXYZ((128 * FX32_ONE) + v1->unk_00.currentValue, (128 * FX32_ONE), 0);
 
-            CellActor_SetPosition(
+            Sprite_SetPosition(
                 v1->unk_200[0], &v5);
-            CellActor_SetPosition(
+            Sprite_SetPosition(
                 v1->unk_200[1], &v6);
         }
 
@@ -901,16 +901,16 @@ void EncounterEffect_Trainer_Grass_HigherLevel(SysTask *param0, void *param1)
             VecFx32 v7 = VecFx32_FromXYZ((128 * FX32_ONE) - v1->unk_00.currentValue, (64 * FX32_ONE), 0);
             VecFx32 v8 = VecFx32_FromXYZ((128 * FX32_ONE) + v1->unk_00.currentValue, (128 * FX32_ONE), 0);
 
-            CellActor_SetPosition(
+            Sprite_SetPosition(
                 v1->unk_200[0], &v7);
-            CellActor_SetPosition(
+            Sprite_SetPosition(
                 v1->unk_200[1], &v8);
         }
 
         LinearInterpolationTaskS32_Update(&v1->unk_14);
-        CellActor_SetAffineZRotation(
+        Sprite_SetAffineZRotation(
             v1->unk_200[0], v1->unk_14.currentValue);
-        CellActor_SetAffineZRotation(
+        Sprite_SetAffineZRotation(
             v1->unk_200[1], -v1->unk_14.currentValue);
 
         if (v2 == 1) {
@@ -951,7 +951,7 @@ void EncounterEffect_Trainer_Grass_HigherLevel(SysTask *param0, void *param1)
             int v9;
 
             for (v9 = 0; v9 < 2; v9++) {
-                CellActor_Delete(v1->unk_200[v9]);
+                Sprite_Delete(v1->unk_200[v9]);
             }
         }
         ov5_021DE5A4(&v1->unk_2C, &v1->unk_1CC);
@@ -962,7 +962,7 @@ void EncounterEffect_Trainer_Grass_HigherLevel(SysTask *param0, void *param1)
     }
 
     if (encEffect->state != 7) {
-        CellActorCollection_Update(v1->unk_2C.unk_00);
+        SpriteList_Update(v1->unk_2C.unk_00);
     }
 }
 
@@ -978,7 +978,7 @@ void EncounterEffect_Trainer_Water_LowerLevel(SysTask *param0, void *param1)
 
     switch (v0->state) {
     case 0:
-        v0->param = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021E31A4));
+        v0->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021E31A4));
         memset(v0->param, 0, sizeof(UnkStruct_ov5_021E31A4));
         v1 = v0->param;
 
@@ -995,8 +995,8 @@ void EncounterEffect_Trainer_Water_LowerLevel(SysTask *param0, void *param1)
         for (v5 = 0; v5 < 2; v5++) {
             v1->unk_224[v5] = ov5_021DE62C(
                 &v1->unk_50, &v1->unk_1F0, (128 * FX32_ONE), (96 * FX32_ONE), 0, 0);
-            CellActor_SetDrawFlag(v1->unk_224[v5], 0);
-            CellActor_SetPriority(v1->unk_224[v5], v5);
+            Sprite_SetDrawFlag(v1->unk_224[v5], 0);
+            Sprite_SetPriority(v1->unk_224[v5], v5);
         }
 
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
@@ -1029,12 +1029,12 @@ void EncounterEffect_Trainer_Water_LowerLevel(SysTask *param0, void *param1)
         G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, v1->unk_18.currentValue, 16 - v1->unk_18.currentValue);
 
         for (v5 = 0; v5 < 2; v5++) {
-            CellActor_SetDrawFlag(
+            Sprite_SetDrawFlag(
                 v1->unk_224[v5], 1);
 
-            CellActor_SetAffineOverwriteMode(
+            Sprite_SetAffineOverwriteMode(
                 v1->unk_224[v5], 2);
-            CellActor_SetExplicitOAMMode(v1->unk_224[v5], GX_OAM_MODE_XLU);
+            Sprite_SetExplicitOAMMode(v1->unk_224[v5], GX_OAM_MODE_XLU);
         }
 
         LinearInterpolationTaskS32_Init(&v1->unk_2C, 0, 0xffff, 8);
@@ -1050,18 +1050,18 @@ void EncounterEffect_Trainer_Water_LowerLevel(SysTask *param0, void *param1)
         v3 = LinearInterpolationTaskS32_Update(&v1->unk_2C);
 
         if (v3 == 0) {
-            CellActor_SetAffineZRotation(v1->unk_224[0], 0xffff & v1->unk_2C.currentValue);
-            CellActor_SetAffineZRotation(v1->unk_224[1], 0xffff & v6);
+            Sprite_SetAffineZRotation(v1->unk_224[0], 0xffff & v1->unk_2C.currentValue);
+            Sprite_SetAffineZRotation(v1->unk_224[1], 0xffff & v6);
         } else {
-            CellActor_SetAffineZRotation(v1->unk_224[0], 0);
-            CellActor_SetAffineZRotation(v1->unk_224[1], 0);
+            Sprite_SetAffineZRotation(v1->unk_224[0], 0);
+            Sprite_SetAffineZRotation(v1->unk_224[1], 0);
         }
 
         if (v2 == 1) {
             G2_BlendNone();
 
             for (v5 = 0; v5 < 2; v5++) {
-                CellActor_SetExplicitOAMMode(v1->unk_224[v5], GX_OAM_MODE_NORMAL);
+                Sprite_SetExplicitOAMMode(v1->unk_224[v5], GX_OAM_MODE_NORMAL);
             }
 
             v0->state++;
@@ -1077,7 +1077,7 @@ void EncounterEffect_Trainer_Water_LowerLevel(SysTask *param0, void *param1)
             VecFx32 v7 = VecFx32_FromXYZ(v1->unk_00.currentValue, v1->unk_00.currentValue, v1->unk_00.currentValue);
 
             for (v5 = 0; v5 < 2; v5++) {
-                CellActor_SetAffineScale(
+                Sprite_SetAffineScale(
                     v1->unk_224[v5], &v7);
             }
         }
@@ -1085,7 +1085,7 @@ void EncounterEffect_Trainer_Water_LowerLevel(SysTask *param0, void *param1)
         v4 = Camera_GetDistance(v1->camera);
         QuadraticInterpolationTaskFX32_Init(&v1->unk_230, v4, v4 + (-FX32_CONST(500)), (-FX32_CONST(10)), 8);
 
-        StartScreenTransition(3, 24, 0, 0x0, 8, 1, 4);
+        StartScreenTransition(3, 24, 0, 0x0, 8, 1, HEAP_ID_FIELD);
         v0->state++;
         break;
 
@@ -1095,7 +1095,7 @@ void EncounterEffect_Trainer_Water_LowerLevel(SysTask *param0, void *param1)
             VecFx32 v8 = VecFx32_FromXYZ(v1->unk_00.currentValue, v1->unk_00.currentValue, v1->unk_00.currentValue);
 
             for (v5 = 0; v5 < 2; v5++) {
-                CellActor_SetAffineScale(
+                Sprite_SetAffineScale(
                     v1->unk_224[v5], &v8);
             }
         }
@@ -1120,7 +1120,7 @@ void EncounterEffect_Trainer_Water_LowerLevel(SysTask *param0, void *param1)
         v1->unk_4C = 0;
 
         for (v5 = 0; v5 < 2; v5++) {
-            CellActor_Delete(v1->unk_224[v5]);
+            Sprite_Delete(v1->unk_224[v5]);
         }
 
         ov5_021DE5A4(&v1->unk_50, &v1->unk_1F0);
@@ -1134,7 +1134,7 @@ void EncounterEffect_Trainer_Water_LowerLevel(SysTask *param0, void *param1)
     }
 
     if (v0->state != 7) {
-        CellActorCollection_Update(v1->unk_50.unk_00);
+        SpriteList_Update(v1->unk_50.unk_00);
     }
 }
 
@@ -1149,7 +1149,7 @@ void EncounterEffect_Trainer_Water_HigherLevel(SysTask *param0, void *param1)
 
     switch (v0->state) {
     case 0:
-        v0->param = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021E3560));
+        v0->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021E3560));
         memset(v0->param, 0, sizeof(UnkStruct_ov5_021E3560));
         v1 = v0->param;
 
@@ -1166,15 +1166,15 @@ void EncounterEffect_Trainer_Water_HigherLevel(SysTask *param0, void *param1)
         for (v3 = 0; v3 < 3; v3++) {
             v1->unk_1D4[v3] = ov5_021DE62C(
                 &v1->unk_00, &v1->unk_1A0, 0, 0, 0, 0);
-            CellActor_SetDrawFlag(v1->unk_1D4[v3], 0);
-            CellActor_SetAffineOverwriteMode(v1->unk_1D4[v3], 2);
+            Sprite_SetDrawFlag(v1->unk_1D4[v3], 0);
+            Sprite_SetAffineOverwriteMode(v1->unk_1D4[v3], 2);
 
-            v1->unk_258[v3] = ov5_021DE6A4(4);
+            v1->unk_258[v3] = ov5_021DE6A4(HEAP_ID_FIELD);
         }
 
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
 
-        v1->unk_270 = Window_New(4, 1);
+        v1->unk_270 = Window_New(HEAP_ID_FIELD, 1);
         Window_Add(v0->fieldSystem->bgConfig, v1->unk_270, 3, 0, 0, 32, 32, 0, 0);
 
         {
@@ -1228,8 +1228,8 @@ void EncounterEffect_Trainer_Water_HigherLevel(SysTask *param0, void *param1)
 
         v4 = VecFx32_FromXYZ(
             43 * FX32_ONE, 231 * FX32_ONE, 0);
-        CellActor_SetPosition(v1->unk_1D4[0], &v4);
-        CellActor_SetDrawFlag(v1->unk_1D4[0], 1);
+        Sprite_SetPosition(v1->unk_1D4[0], &v4);
+        Sprite_SetDrawFlag(v1->unk_1D4[0], 1);
         v1->unk_264[0] = 1;
         v0->state++;
         v1->unk_2A0 = 4;
@@ -1249,8 +1249,8 @@ void EncounterEffect_Trainer_Water_HigherLevel(SysTask *param0, void *param1)
         ov5_021DE6C4(v1->unk_258[1], 215, 215, 312, 0, 6, v1->unk_270, 86, 64, 15);
         v4 = VecFx32_FromXYZ(
             215 * FX32_ONE, 231 * FX32_ONE, 1);
-        CellActor_SetPosition(v1->unk_1D4[1], &v4);
-        CellActor_SetDrawFlag(v1->unk_1D4[1], 1);
+        Sprite_SetPosition(v1->unk_1D4[1], &v4);
+        Sprite_SetDrawFlag(v1->unk_1D4[1], 1);
         v1->unk_264[1] = 1;
         v0->state++;
         v1->unk_2A0 = 2;
@@ -1270,8 +1270,8 @@ void EncounterEffect_Trainer_Water_HigherLevel(SysTask *param0, void *param1)
         ov5_021DE6C4(v1->unk_258[2], 129, 129, 312, 0, 6, v1->unk_270, 86, 64, 15);
         v4 = VecFx32_FromXYZ(
             129 * FX32_ONE, 231 * FX32_ONE, 2);
-        CellActor_SetPosition(v1->unk_1D4[2], &v4);
-        CellActor_SetDrawFlag(v1->unk_1D4[2], 1);
+        Sprite_SetPosition(v1->unk_1D4[2], &v4);
+        Sprite_SetDrawFlag(v1->unk_1D4[2], 1);
         v1->unk_264[2] = 1;
 
         v0->state++;
@@ -1299,7 +1299,7 @@ void EncounterEffect_Trainer_Water_HigherLevel(SysTask *param0, void *param1)
         v1->unk_280 = 0;
 
         for (v3 = 0; v3 < 3; v3++) {
-            CellActor_Delete(v1->unk_1D4[v3]);
+            Sprite_Delete(v1->unk_1D4[v3]);
             ov5_021DE6BC(v1->unk_258[v3]);
         }
 
@@ -1310,7 +1310,7 @@ void EncounterEffect_Trainer_Water_HigherLevel(SysTask *param0, void *param1)
         Window_Remove(v1->unk_270);
         Windows_Delete(v1->unk_270, 1);
 
-        Bg_ClearTilesRange(3, 32, 0, 4);
+        Bg_ClearTilesRange(3, 32, 0, HEAP_ID_FIELD);
         Bg_ClearTilemap(v0->fieldSystem->bgConfig, 3);
 
         EncounterEffect_Finish(v0, param0);
@@ -1335,19 +1335,19 @@ void EncounterEffect_Trainer_Water_HigherLevel(SysTask *param0, void *param1)
             LinearInterpolationTaskS32_Update(&v1->unk_1E0[v3]);
             LinearInterpolationTaskS32_Update(&v1->unk_21C[v3]);
 
-            CellActor_SetAffineZRotation(v1->unk_1D4[v3], v1->unk_21C[v3].currentValue);
+            Sprite_SetAffineZRotation(v1->unk_1D4[v3], v1->unk_21C[v3].currentValue);
 
-            v7 = CellActor_GetPosition(v1->unk_1D4[v3]);
+            v7 = Sprite_GetPosition(v1->unk_1D4[v3]);
             v8 = *v7;
             v8.y = v1->unk_1E0[v3].currentValue * FX32_ONE;
-            CellActor_SetPosition(v1->unk_1D4[v3], &v8);
+            Sprite_SetPosition(v1->unk_1D4[v3], &v8);
         }
     }
 
     Window_ScheduleCopyToVRAM(v1->unk_270);
 
     if (v0->state != 7) {
-        CellActorCollection_Update(v1->unk_00.unk_00);
+        SpriteList_Update(v1->unk_00.unk_00);
     }
 }
 
@@ -1361,7 +1361,7 @@ void EncounterEffect_Trainer_Cave_LowerLevel(SysTask *param0, void *param1)
 
     switch (v0->state) {
     case 0:
-        v0->param = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021E3AD0));
+        v0->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021E3AD0));
         memset(v0->param, 0, sizeof(UnkStruct_ov5_021E3AD0));
         v1 = v0->param;
 
@@ -1374,7 +1374,7 @@ void EncounterEffect_Trainer_Cave_LowerLevel(SysTask *param0, void *param1)
 
         v1->unk_230 = ov5_021DE62C(
             &v1->unk_5C, &v1->unk_1FC, (128 * FX32_ONE), (-32 * FX32_ONE), 0, 0);
-        CellActor_SetDrawFlag(v1->unk_230, 0);
+        Sprite_SetDrawFlag(v1->unk_230, 0);
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
 
         v0->state++;
@@ -1395,7 +1395,7 @@ void EncounterEffect_Trainer_Cave_LowerLevel(SysTask *param0, void *param1)
 
     case 3:
         QuadraticInterpolationTaskFX32_Init(&v1->unk_00, 0, (256 * FX32_ONE), (2 * FX32_ONE), 12);
-        CellActor_SetDrawFlag(
+        Sprite_SetDrawFlag(
             v1->unk_230, 1);
 
         QuadraticInterpolationTaskFX32_Init(&v1->unk_18, (FX32_CONST(0.10f)), (FX32_CONST(2.0f)), (FX32_CONST(0.0f)), 12);
@@ -1403,7 +1403,7 @@ void EncounterEffect_Trainer_Cave_LowerLevel(SysTask *param0, void *param1)
         QuadraticInterpolationTaskFX32_Init(&v1->unk_30, (FX32_CONST(0.10f)), (FX32_CONST(2.0f)), (FX32_CONST(0.0f)), 12);
 
         v4 = VecFx32_FromXYZ(v1->unk_18.currentValue, v1->unk_30.currentValue, 0);
-        CellActor_SetAffineScaleEx(v1->unk_230, &v4, 2);
+        Sprite_SetAffineScaleEx(v1->unk_230, &v4, 2);
 
         LinearInterpolationTaskS32_Init(&v1->unk_48, 0, (0xffff * 1), 12);
         v0->state++;
@@ -1414,19 +1414,19 @@ void EncounterEffect_Trainer_Cave_LowerLevel(SysTask *param0, void *param1)
         {
             VecFx32 v5 = VecFx32_FromXYZ((128 * FX32_ONE), (-32 * FX32_ONE) + (v1->unk_00.currentValue), 0);
 
-            CellActor_SetPosition(
+            Sprite_SetPosition(
                 v1->unk_230, &v5);
         }
         QuadraticInterpolationTaskFX32_Update(&v1->unk_18);
         QuadraticInterpolationTaskFX32_Update(&v1->unk_30);
         v4 = VecFx32_FromXYZ(v1->unk_18.currentValue, v1->unk_30.currentValue, 0);
-        CellActor_SetAffineScale(v1->unk_230, &v4);
+        Sprite_SetAffineScale(v1->unk_230, &v4);
 
         LinearInterpolationTaskS32_Update(&v1->unk_48);
-        CellActor_SetAffineZRotation(v1->unk_230, v1->unk_48.currentValue);
+        Sprite_SetAffineZRotation(v1->unk_230, v1->unk_48.currentValue);
 
         if (v2 == 1) {
-            CellActor_SetDrawFlag(
+            Sprite_SetDrawFlag(
                 v1->unk_230, 0);
             v0->state++;
         }
@@ -1440,7 +1440,7 @@ void EncounterEffect_Trainer_Cave_LowerLevel(SysTask *param0, void *param1)
         v3 = Camera_GetDistance(v1->camera);
         QuadraticInterpolationTaskFX32_Init(&v1->unk_238, v3, v3 + (-FX32_CONST(1000)), (FX32_CONST(10)), 8);
 
-        StartScreenTransition(3, 18, 0, 0x0, 8, 1, 4);
+        StartScreenTransition(3, 18, 0, 0x0, 8, 1, HEAP_ID_FIELD);
         v0->state++;
         break;
 
@@ -1464,7 +1464,7 @@ void EncounterEffect_Trainer_Cave_LowerLevel(SysTask *param0, void *param1)
             *(v0->done) = 1;
         }
 
-        CellActor_Delete(v1->unk_230);
+        Sprite_Delete(v1->unk_230);
         ov5_021DE5A4(&v1->unk_5C, &v1->unk_1FC);
         ov5_021DE4AC(&v1->unk_5C);
         EncounterEffect_Finish(v0, param0);
@@ -1472,7 +1472,7 @@ void EncounterEffect_Trainer_Cave_LowerLevel(SysTask *param0, void *param1)
     }
 
     if (v0->state != 7) {
-        CellActorCollection_Update(v1->unk_5C.unk_00);
+        SpriteList_Update(v1->unk_5C.unk_00);
     }
 }
 
@@ -1487,7 +1487,7 @@ void EncounterEffect_Trainer_Cave_HigherLevel(SysTask *param0, void *param1)
 
     switch (v0->state) {
     case 0:
-        v0->param = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021E3D8C));
+        v0->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021E3D8C));
         memset(v0->param, 0, sizeof(UnkStruct_ov5_021E3D8C));
         v1 = v0->param;
 
@@ -1501,12 +1501,12 @@ void EncounterEffect_Trainer_Cave_HigherLevel(SysTask *param0, void *param1)
         for (v4 = 0; v4 < 3; v4++) {
             v1->unk_1D4[v4] = ov5_021DE62C(
                 &v1->unk_00, &v1->unk_1A0, 0, -32, 0, 0);
-            CellActor_SetDrawFlag(v1->unk_1D4[v4], 0);
+            Sprite_SetDrawFlag(v1->unk_1D4[v4], 0);
         }
 
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
 
-        v1->unk_264 = Window_New(4, 1);
+        v1->unk_264 = Window_New(HEAP_ID_FIELD, 1);
         Window_Add(v0->fieldSystem->bgConfig, v1->unk_264, 3, 0, 0, 32, 32, 0, 0);
 
         {
@@ -1518,7 +1518,7 @@ void EncounterEffect_Trainer_Cave_HigherLevel(SysTask *param0, void *param1)
         Window_FillTilemap(v1->unk_264, 0);
         Window_ScheduleCopyToVRAM(v1->unk_264);
 
-        v1->unk_268 = ov5_021DE8F8(4);
+        v1->unk_268 = ov5_021DE8F8(HEAP_ID_FIELD);
 
         v0->state++;
         break;
@@ -1547,12 +1547,12 @@ void EncounterEffect_Trainer_Cave_HigherLevel(SysTask *param0, void *param1)
         LinearInterpolationTaskS32_Init(&v1->unk_1E0[0], -32, 224, 5);
         v2 = VecFx32_FromXYZ(
             128 * FX32_ONE, -32 * FX32_ONE, 0);
-        CellActor_SetPosition(v1->unk_1D4[0], &v2);
-        CellActor_SetDrawFlag(
+        Sprite_SetPosition(v1->unk_1D4[0], &v2);
+        Sprite_SetDrawFlag(
             v1->unk_1D4[0], 1);
 
         LinearInterpolationTaskS32_Init(&v1->unk_21C[0], 0, (0xffff * 1), 5);
-        CellActor_SetAffineOverwriteMode(v1->unk_1D4[0], 2);
+        Sprite_SetAffineOverwriteMode(v1->unk_1D4[0], 2);
 
         v1->unk_258[0] = 1;
         v0->state++;
@@ -1569,13 +1569,13 @@ void EncounterEffect_Trainer_Cave_HigherLevel(SysTask *param0, void *param1)
         LinearInterpolationTaskS32_Init(&v1->unk_1E0[1], -32, 224, 5);
         v2 = VecFx32_FromXYZ(
             208 * FX32_ONE, -32 * FX32_ONE, 0);
-        CellActor_SetPosition(v1->unk_1D4[1], &v2);
-        CellActor_SetDrawFlag(
+        Sprite_SetPosition(v1->unk_1D4[1], &v2);
+        Sprite_SetDrawFlag(
             v1->unk_1D4[1], 1);
 
         LinearInterpolationTaskS32_Init(&v1->unk_21C[1], 0, (0xffff * -1), 5);
 
-        CellActor_SetAffineOverwriteMode(v1->unk_1D4[1], 2);
+        Sprite_SetAffineOverwriteMode(v1->unk_1D4[1], 2);
         v1->unk_258[1] = 1;
         v0->state++;
         v1->unk_288 = 3;
@@ -1591,12 +1591,12 @@ void EncounterEffect_Trainer_Cave_HigherLevel(SysTask *param0, void *param1)
         LinearInterpolationTaskS32_Init(&v1->unk_1E0[2], -32, 224, 5);
         v2 = VecFx32_FromXYZ(
             48 * FX32_ONE, -32 * FX32_ONE, 0);
-        CellActor_SetPosition(v1->unk_1D4[2], &v2);
-        CellActor_SetDrawFlag(
+        Sprite_SetPosition(v1->unk_1D4[2], &v2);
+        Sprite_SetDrawFlag(
             v1->unk_1D4[2], 1);
 
         LinearInterpolationTaskS32_Init(&v1->unk_21C[2], 0, (0xffff * 1), 5);
-        CellActor_SetAffineOverwriteMode(v1->unk_1D4[2], 2);
+        Sprite_SetAffineOverwriteMode(v1->unk_1D4[2], 2);
 
         v1->unk_258[2] = 1;
         v0->state++;
@@ -1606,7 +1606,7 @@ void EncounterEffect_Trainer_Cave_HigherLevel(SysTask *param0, void *param1)
 
         if ((v1->unk_258[0] == 0) && (v1->unk_258[1] == 0) && (v1->unk_258[2] == 0)) {
             for (v4 = 0; v4 < 3; v4++) {
-                CellActor_SetDrawFlag(
+                Sprite_SetDrawFlag(
                     v1->unk_1D4[v4], 0);
             }
 
@@ -1645,7 +1645,7 @@ void EncounterEffect_Trainer_Cave_HigherLevel(SysTask *param0, void *param1)
         }
 
         for (v4 = 0; v4 < 3; v4++) {
-            CellActor_Delete(v1->unk_1D4[v4]);
+            Sprite_Delete(v1->unk_1D4[v4]);
         }
 
         ov5_021DE5A4(&v1->unk_00, &v1->unk_1A0);
@@ -1657,7 +1657,7 @@ void EncounterEffect_Trainer_Cave_HigherLevel(SysTask *param0, void *param1)
         Window_Remove(v1->unk_264);
         Windows_Delete(v1->unk_264, 1);
 
-        Bg_ClearTilesRange(3, 32, 0, 4);
+        Bg_ClearTilesRange(3, 32, 0, HEAP_ID_FIELD);
         Bg_ClearTilemap(v0->fieldSystem->bgConfig, 3);
 
         EncounterEffect_Finish(v0, param0);
@@ -1676,16 +1676,16 @@ void EncounterEffect_Trainer_Cave_HigherLevel(SysTask *param0, void *param1)
                 v1->unk_258[v4] = 0;
             }
 
-            v7 = CellActor_GetPosition(v1->unk_1D4[v4]);
+            v7 = Sprite_GetPosition(v1->unk_1D4[v4]);
             v8 = *v7;
             v8.y = v1->unk_1E0[v4].currentValue * FX32_ONE;
-            CellActor_SetPosition(v1->unk_1D4[v4], &v8);
-            CellActor_SetAffineZRotation(v1->unk_1D4[v4], (0xffff & v1->unk_21C[v4].currentValue));
+            Sprite_SetPosition(v1->unk_1D4[v4], &v8);
+            Sprite_SetAffineZRotation(v1->unk_1D4[v4], (0xffff & v1->unk_21C[v4].currentValue));
         }
     }
 
     if (v0->state != 9) {
-        CellActorCollection_Update(v1->unk_00.unk_00);
+        SpriteList_Update(v1->unk_00.unk_00);
     }
 }
 
@@ -1694,14 +1694,14 @@ typedef struct {
     QuadraticInterpolationTaskFX32 unk_14;
     UnkStruct_ov5_021DE47C unk_2C;
     UnkStruct_ov5_021DE5A4 unk_1CC;
-    CellActor *unk_200;
+    Sprite *unk_200;
     s32 unk_204;
 } UnkStruct_ov5_021E4260;
 
 typedef struct {
     UnkStruct_ov5_021DE47C unk_00;
     UnkStruct_ov5_021DE5A4 unk_1A0;
-    CellActor *unk_1D4[4];
+    Sprite *unk_1D4[4];
     QuadraticInterpolationTaskFX32 unk_1E4[2];
 } UnkStruct_ov5_021E44C0;
 
@@ -1713,7 +1713,7 @@ void EncounterEffect_Frontier(SysTask *param0, void *param1)
 
     switch (v0->state) {
     case 0:
-        v0->param = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021E4260));
+        v0->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021E4260));
         memset(v0->param, 0, sizeof(UnkStruct_ov5_021E4260));
         v1 = v0->param;
 
@@ -1724,8 +1724,8 @@ void EncounterEffect_Frontier(SysTask *param0, void *param1)
 
         v1->unk_200 = ov5_021DE62C(
             &v1->unk_2C, &v1->unk_1CC, (128 * FX32_ONE), (96 * FX32_ONE), 0, 0);
-        CellActor_SetDrawFlag(v1->unk_200, 0);
-        CellActor_SetExplicitOAMMode(v1->unk_200, GX_OAM_MODE_XLU);
+        Sprite_SetDrawFlag(v1->unk_200, 0);
+        Sprite_SetExplicitOAMMode(v1->unk_200, GX_OAM_MODE_XLU);
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
 
         v0->state++;
@@ -1748,7 +1748,7 @@ void EncounterEffect_Frontier(SysTask *param0, void *param1)
         LinearInterpolationTaskS32_Init(&v1->unk_00, 0, 16, 12);
         G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, v1->unk_00.currentValue, 16 - v1->unk_00.currentValue);
 
-        CellActor_SetDrawFlag(
+        Sprite_SetDrawFlag(
             v1->unk_200, 1);
         v0->state++;
         break;
@@ -1759,7 +1759,7 @@ void EncounterEffect_Frontier(SysTask *param0, void *param1)
 
         if (v2 == 1) {
             G2_BlendNone();
-            CellActor_SetExplicitOAMMode(v1->unk_200, GX_OAM_MODE_NORMAL);
+            Sprite_SetExplicitOAMMode(v1->unk_200, GX_OAM_MODE_NORMAL);
             v0->state++;
         }
 
@@ -1768,17 +1768,17 @@ void EncounterEffect_Frontier(SysTask *param0, void *param1)
     case 5:
         QuadraticInterpolationTaskFX32_Init(&v1->unk_14, (FX32_CONST(1.0f)), (FX32_CONST(0.1f)), 1, 6);
 
-        CellActor_SetAffineOverwriteMode(
+        Sprite_SetAffineOverwriteMode(
             v1->unk_200, 2);
         {
             VecFx32 v3 = VecFx32_FromXYZ(v1->unk_14.currentValue, v1->unk_14.currentValue, v1->unk_14.currentValue);
 
-            CellActor_SetAffineScale(
+            Sprite_SetAffineScale(
                 v1->unk_200, &v3);
         }
 
         HBlankSystem_Stop(v0->fieldSystem->unk_04->hBlankSystem);
-        StartScreenTransition(3, 16, 0, 0x0, 6, 1, 4);
+        StartScreenTransition(3, 16, 0, 0x0, 6, 1, HEAP_ID_FIELD);
         v0->state++;
         break;
 
@@ -1787,7 +1787,7 @@ void EncounterEffect_Frontier(SysTask *param0, void *param1)
         {
             VecFx32 v4 = VecFx32_FromXYZ(v1->unk_14.currentValue, v1->unk_14.currentValue, v1->unk_14.currentValue);
 
-            CellActor_SetAffineScale(
+            Sprite_SetAffineScale(
                 v1->unk_200, &v4);
         }
 
@@ -1806,7 +1806,7 @@ void EncounterEffect_Frontier(SysTask *param0, void *param1)
             *(v0->done) = 1;
         }
 
-        CellActor_Delete(v1->unk_200);
+        Sprite_Delete(v1->unk_200);
         ov5_021DE5A4(&v1->unk_2C, &v1->unk_1CC);
         ov5_021DE4AC(&v1->unk_2C);
         EncounterEffect_Finish(v0, param0);
@@ -1814,7 +1814,7 @@ void EncounterEffect_Frontier(SysTask *param0, void *param1)
     }
 
     if (v0->state != 7) {
-        CellActorCollection_Update(v1->unk_2C.unk_00);
+        SpriteList_Update(v1->unk_2C.unk_00);
     }
 }
 
@@ -1828,7 +1828,7 @@ void EncounterEffect_Double(SysTask *param0, void *param1)
 
     switch (v0->state) {
     case 0:
-        v0->param = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021E44C0));
+        v0->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021E44C0));
         memset(v0->param, 0, sizeof(UnkStruct_ov5_021E44C0));
         v1 = v0->param;
 
@@ -1840,7 +1840,7 @@ void EncounterEffect_Double(SysTask *param0, void *param1)
         for (v3 = 0; v3 < 4; v3++) {
             v1->unk_1D4[v3] = ov5_021DE62C(
                 &v1->unk_00, &v1->unk_1A0, (128 * FX32_ONE), (96 * FX32_ONE), 0, 0);
-            CellActor_SetDrawFlag(v1->unk_1D4[v3], 0);
+            Sprite_SetDrawFlag(v1->unk_1D4[v3], 0);
         }
 
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
@@ -1866,7 +1866,7 @@ void EncounterEffect_Double(SysTask *param0, void *param1)
         QuadraticInterpolationTaskFX32_Init(&v1->unk_1E4[1], 0, (160 * FX32_ONE), (FX32_CONST(0.1f)), 4);
 
         for (v3 = 0; v3 < 4; v3++) {
-            CellActor_SetDrawFlag(v1->unk_1D4[v3], 1);
+            Sprite_SetDrawFlag(v1->unk_1D4[v3], 1);
         }
 
         v0->state++;
@@ -1879,19 +1879,19 @@ void EncounterEffect_Double(SysTask *param0, void *param1)
 
         v4 = VecFx32_FromXYZ(
             (128 * FX32_ONE), (96 * FX32_ONE) - v1->unk_1E4[0].currentValue, 0);
-        CellActor_SetPosition(v1->unk_1D4[0], &v4);
+        Sprite_SetPosition(v1->unk_1D4[0], &v4);
 
         v4 = VecFx32_FromXYZ(
             (128 * FX32_ONE), (96 * FX32_ONE) + v1->unk_1E4[0].currentValue, 0);
-        CellActor_SetPosition(v1->unk_1D4[1], &v4);
+        Sprite_SetPosition(v1->unk_1D4[1], &v4);
 
         v4 = VecFx32_FromXYZ(
             (128 * FX32_ONE) - v1->unk_1E4[1].currentValue, (96 * FX32_ONE), 0);
-        CellActor_SetPosition(v1->unk_1D4[2], &v4);
+        Sprite_SetPosition(v1->unk_1D4[2], &v4);
 
         v4 = VecFx32_FromXYZ(
             (128 * FX32_ONE) + v1->unk_1E4[1].currentValue, (96 * FX32_ONE), 0);
-        CellActor_SetPosition(v1->unk_1D4[3], &v4);
+        Sprite_SetPosition(v1->unk_1D4[3], &v4);
 
         if (v2 == 1) {
             v0->state++;
@@ -1902,7 +1902,7 @@ void EncounterEffect_Double(SysTask *param0, void *param1)
     case 5:
 
         HBlankSystem_Stop(v0->fieldSystem->unk_04->hBlankSystem);
-        StartScreenTransition(3, 34, 0, 0x0, 8, 1, 4);
+        StartScreenTransition(3, 34, 0, 0x0, 8, 1, HEAP_ID_FIELD);
         v0->state++;
         break;
 
@@ -1923,7 +1923,7 @@ void EncounterEffect_Double(SysTask *param0, void *param1)
         }
 
         for (v3 = 0; v3 < 4; v3++) {
-            CellActor_Delete(v1->unk_1D4[v3]);
+            Sprite_Delete(v1->unk_1D4[v3]);
         }
 
         ov5_021DE5A4(&v1->unk_00, &v1->unk_1A0);
@@ -1933,7 +1933,7 @@ void EncounterEffect_Double(SysTask *param0, void *param1)
     }
 
     if (v0->state != 7) {
-        CellActorCollection_Update(v1->unk_00.unk_00);
+        SpriteList_Update(v1->unk_00.unk_00);
     }
 }
 
@@ -1949,7 +1949,7 @@ static const s32 Unk_ov5_021F9E94[6][8] = {
 typedef struct {
     UnkStruct_ov5_021DE47C unk_00;
     UnkStruct_ov5_021DE5A4 unk_1A0;
-    CellActor *unk_1D4[6];
+    Sprite *unk_1D4[6];
     QuadraticInterpolationTaskFX32 unk_1EC[6];
     QuadraticInterpolationTaskFX32 unk_27C[6];
     QuadraticInterpolationTaskFX32 unk_30C[6];
@@ -1964,7 +1964,7 @@ typedef struct {
     UnkStruct_ov5_021DEC18 *unk_04;
     UnkStruct_ov5_021DE47C unk_08;
     UnkStruct_ov5_021DE5A4 unk_1A8;
-    CellActor *unk_1DC;
+    Sprite *unk_1DC;
     LinearInterpolationTaskS32 unk_1E0;
     LinearInterpolationTaskS32 unk_1F4;
     LinearInterpolationTaskS32 unk_208;
@@ -1982,7 +1982,7 @@ void EncounterEffect_GalacticGrunt(SysTask *param0, void *param1)
 
     switch (v0->state) {
     case 0:
-        v0->param = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021E4738));
+        v0->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021E4738));
         memset(v0->param, 0, sizeof(UnkStruct_ov5_021E4738));
         v1 = v0->param;
 
@@ -1994,7 +1994,7 @@ void EncounterEffect_GalacticGrunt(SysTask *param0, void *param1)
         for (v3 = 0; v3 < 6; v3++) {
             v1->unk_1D4[v3] = ov5_021DE62C(
                 &v1->unk_00, &v1->unk_1A0, 0, 0, 0, 0);
-            CellActor_SetDrawFlag(v1->unk_1D4[v3], 0);
+            Sprite_SetDrawFlag(v1->unk_1D4[v3], 0);
         }
 
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
@@ -2029,13 +2029,13 @@ void EncounterEffect_GalacticGrunt(SysTask *param0, void *param1)
 
             LinearInterpolationTaskS32_Init(&v1->unk_39C[v1->unk_42C], 0, Unk_ov5_021F9E94[v1->unk_42C][7], 8);
 
-            CellActor_SetDrawFlag(v1->unk_1D4[v1->unk_42C], 1);
+            Sprite_SetDrawFlag(v1->unk_1D4[v1->unk_42C], 1);
             v4 = VecFx32_FromXYZ(
                 Unk_ov5_021F9E94[v1->unk_42C][0], Unk_ov5_021F9E94[v1->unk_42C][3], 0);
-            CellActor_SetPosition(v1->unk_1D4[v1->unk_42C], &v4);
+            Sprite_SetPosition(v1->unk_1D4[v1->unk_42C], &v4);
             v5 = VecFx32_FromXYZ(
                 (FX32_CONST(2.0f)), (FX32_CONST(2.0f)), 0);
-            CellActor_SetAffineScaleEx(v1->unk_1D4[v1->unk_42C], &v5, 2);
+            Sprite_SetAffineScaleEx(v1->unk_1D4[v1->unk_42C], &v5, 2);
 
             v1->unk_414[v1->unk_42C] = 1;
 
@@ -2062,7 +2062,7 @@ void EncounterEffect_GalacticGrunt(SysTask *param0, void *param1)
 
         HBlankSystem_Stop(v0->fieldSystem->unk_04->hBlankSystem);
 
-        StartScreenTransition(3, 34, 0, 0x0, 12, 1, 4);
+        StartScreenTransition(3, 34, 0, 0x0, 12, 1, HEAP_ID_FIELD);
         v0->state++;
         break;
 
@@ -2083,7 +2083,7 @@ void EncounterEffect_GalacticGrunt(SysTask *param0, void *param1)
         }
 
         for (v3 = 0; v3 < 6; v3++) {
-            CellActor_Delete(v1->unk_1D4[v3]);
+            Sprite_Delete(v1->unk_1D4[v3]);
         }
 
         ov5_021DE5A4(&v1->unk_00, &v1->unk_1A0);
@@ -2102,21 +2102,21 @@ void EncounterEffect_GalacticGrunt(SysTask *param0, void *param1)
 
             if (v2) {
                 v1->unk_414[v3] = 0;
-                CellActor_SetDrawFlag(v1->unk_1D4[v3], 0);
+                Sprite_SetDrawFlag(v1->unk_1D4[v3], 0);
             }
 
             v4 = VecFx32_FromXYZ(
                 v1->unk_27C[v3].currentValue, v1->unk_30C[v3].currentValue, 0);
-            CellActor_SetPosition(v1->unk_1D4[v3], &v4);
+            Sprite_SetPosition(v1->unk_1D4[v3], &v4);
             v5 = VecFx32_FromXYZ(
                 v1->unk_1EC[v3].currentValue, v1->unk_1EC[v3].currentValue, 0);
-            CellActor_SetAffineScale(v1->unk_1D4[v3], &v5);
-            CellActor_SetAffineZRotation(v1->unk_1D4[v3], v1->unk_39C[v3].currentValue);
+            Sprite_SetAffineScale(v1->unk_1D4[v3], &v5);
+            Sprite_SetAffineZRotation(v1->unk_1D4[v3], v1->unk_39C[v3].currentValue);
         }
     }
 
     if (v0->state != 7) {
-        CellActorCollection_Update(v1->unk_00.unk_00);
+        SpriteList_Update(v1->unk_00.unk_00);
     }
 }
 
@@ -2128,7 +2128,7 @@ void EncounterEffect_GalacticBoss(SysTask *param0, void *param1)
 
     switch (v0->state) {
     case 0:
-        v0->param = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021E4B3C));
+        v0->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021E4B3C));
         memset(v0->param, 0, sizeof(UnkStruct_ov5_021E4B3C));
         v1 = v0->param;
 
@@ -2139,14 +2139,14 @@ void EncounterEffect_GalacticBoss(SysTask *param0, void *param1)
 
         v1->unk_1DC = ov5_021DE62C(
             &v1->unk_08, &v1->unk_1A8, (128 * FX32_ONE), (96 * FX32_ONE), 0, 0);
-        CellActor_SetDrawFlag(v1->unk_1DC, 0);
-        CellActor_SetExplicitOAMMode(v1->unk_1DC, GX_OAM_MODE_XLU);
-        CellActor_SetExplicitPriority(v1->unk_1DC, 1);
+        Sprite_SetDrawFlag(v1->unk_1DC, 0);
+        Sprite_SetExplicitOAMMode(v1->unk_1DC, GX_OAM_MODE_XLU);
+        Sprite_SetExplicitPriority(v1->unk_1DC, 1);
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
 
-        v1->unk_04 = ov5_021DEBEC(4);
+        v1->unk_04 = ov5_021DEBEC(HEAP_ID_FIELD);
 
-        v1->unk_00 = Window_New(4, 1);
+        v1->unk_00 = Window_New(HEAP_ID_FIELD, 1);
         Window_Add(v0->fieldSystem->bgConfig, v1->unk_00, 3, 0, 0, 32, 32, 0, 0);
 
         {
@@ -2176,7 +2176,7 @@ void EncounterEffect_GalacticBoss(SysTask *param0, void *param1)
 
     case 3:
         LinearInterpolationTaskS32_Init(&v1->unk_1F4, 0, 16, 15);
-        CellActor_SetDrawFlag(v1->unk_1DC, 1);
+        Sprite_SetDrawFlag(v1->unk_1DC, 1);
         G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3, v1->unk_1F4.currentValue, 16 - v1->unk_1F4.currentValue);
         v0->state++;
         break;
@@ -2187,7 +2187,7 @@ void EncounterEffect_GalacticBoss(SysTask *param0, void *param1)
 
         if (v2 == 1) {
             G2_BlendNone();
-            CellActor_SetExplicitOAMMode(v1->unk_1DC, GX_OAM_MODE_NORMAL);
+            Sprite_SetExplicitOAMMode(v1->unk_1DC, GX_OAM_MODE_NORMAL);
             v0->state++;
             v1->unk_21C = 16;
         }
@@ -2226,7 +2226,7 @@ void EncounterEffect_GalacticBoss(SysTask *param0, void *param1)
             *(v0->done) = 1;
         }
 
-        CellActor_Delete(v1->unk_1DC);
+        Sprite_Delete(v1->unk_1DC);
         ov5_021DE5A4(&v1->unk_08, &v1->unk_1A8);
         ov5_021DE4AC(&v1->unk_08);
 
@@ -2234,7 +2234,7 @@ void EncounterEffect_GalacticBoss(SysTask *param0, void *param1)
         Window_Remove(v1->unk_00);
         Windows_Delete(v1->unk_00, 1);
 
-        Bg_ClearTilesRange(3, 32, 0, 4);
+        Bg_ClearTilesRange(3, 32, 0, HEAP_ID_FIELD);
         Bg_ClearTilemap(v0->fieldSystem->bgConfig, 3);
 
         G2_SetOBJMosaicSize(0, 0);
@@ -2244,7 +2244,7 @@ void EncounterEffect_GalacticBoss(SysTask *param0, void *param1)
     }
 
     if (v0->state != 7) {
-        CellActorCollection_Update(v1->unk_08.unk_00);
+        SpriteList_Update(v1->unk_08.unk_00);
     }
 }
 
@@ -2406,7 +2406,7 @@ void EncounterEffect_Mythical(SysTask *task, void *param)
 
     switch (encEffect->state) {
     case 0:
-        encEffect->param = Heap_AllocFromHeap(4, sizeof(MythicalEncounterEffect));
+        encEffect->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(MythicalEncounterEffect));
         memset(encEffect->param, 0, sizeof(MythicalEncounterEffect));
 
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG1, 0);
@@ -2452,7 +2452,7 @@ void EncounterEffect_Mythical(SysTask *task, void *param)
         break;
 
     case 5:
-        StartScreenTransition(3, 0, 0, 0x7fff, 10, 1, 4);
+        StartScreenTransition(3, 0, 0, 0x7fff, 10, 1, HEAP_ID_FIELD);
         encEffect->state++;
         break;
 
@@ -2489,7 +2489,7 @@ void EncounterEffect_Legendary(SysTask *task, void *param)
 
     switch (encEffect->state) {
     case 0:
-        encEffect->param = Heap_AllocFromHeap(4, sizeof(LegendaryEncounterEffect));
+        encEffect->param = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(LegendaryEncounterEffect));
         memset(encEffect->param, 0, sizeof(LegendaryEncounterEffect));
 
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG1, 0);
@@ -2555,7 +2555,7 @@ void EncounterEffect_Legendary(SysTask *task, void *param)
         break;
 
     case 7:
-        StartScreenTransition(3, 0, 0, 0x7fff, 60, 1, 4);
+        StartScreenTransition(3, 0, 0, 0x7fff, 60, 1, HEAP_ID_FIELD);
         encEffect->state++;
         break;
 
@@ -2590,13 +2590,13 @@ typedef struct GymLeaderEncounterParam {
     u16 trainerClass;
     u16 unk_0A;
     // The rest are NARC indices
-    u8 unk_0C;
-    u8 unk_0D;
-    u8 unk_0E;
-    u8 unk_0F;
-    u8 unk_10;
-    u8 unk_11;
-    u8 unk_12;
+    u8 mugshotPlttIdx;
+    u8 mugshotTileIdx;
+    u8 mugshotCellIdx;
+    u8 mugshotAnimIdx;
+    u8 bannerPlttIdx;
+    u8 bannerTileIdx;
+    u8 bannerTilemapIdx;
     u8 padding;
 } GymLeaderEncounterParam;
 
@@ -2608,13 +2608,13 @@ static const GymLeaderEncounterParam sGymLeaderEncounterParams[8] = {
         .trainerID = 246,
         .trainerClass = TRAINER_CLASS_LEADER_ROARK,
         .unk_0A = 1,
-        .unk_0C = 55,
-        .unk_0D = 56,
-        .unk_0E = 57,
-        .unk_0F = 58,
-        .unk_10 = 15,
-        .unk_11 = 16,
-        .unk_12 = 17,
+        .mugshotPlttIdx = 55,
+        .mugshotTileIdx = 56,
+        .mugshotCellIdx = 57,
+        .mugshotAnimIdx = 58,
+        .bannerPlttIdx = 15,
+        .bannerTileIdx = 16,
+        .bannerTilemapIdx = 17,
         .padding = 0,
     },
     {
@@ -2622,13 +2622,13 @@ static const GymLeaderEncounterParam sGymLeaderEncounterParams[8] = {
         .trainerID = 315,
         .trainerClass = TRAINER_CLASS_LEADER_GARDENIA,
         .unk_0A = 1,
-        .unk_0C = 59,
-        .unk_0D = 60,
-        .unk_0E = 61,
-        .unk_0F = 62,
-        .unk_10 = 18,
-        .unk_11 = 19,
-        .unk_12 = 20,
+        .mugshotPlttIdx = 59,
+        .mugshotTileIdx = 60,
+        .mugshotCellIdx = 61,
+        .mugshotAnimIdx = 62,
+        .bannerPlttIdx = 18,
+        .bannerTileIdx = 19,
+        .bannerTilemapIdx = 20,
         .padding = 0,
     },
     {
@@ -2636,13 +2636,13 @@ static const GymLeaderEncounterParam sGymLeaderEncounterParams[8] = {
         .trainerID = 316,
         .trainerClass = TRAINER_CLASS_LEADER_WAKE,
         .unk_0A = 0,
-        .unk_0C = 63,
-        .unk_0D = 64,
-        .unk_0E = 65,
-        .unk_0F = 66,
-        .unk_10 = 21,
-        .unk_11 = 22,
-        .unk_12 = 23,
+        .mugshotPlttIdx = 63,
+        .mugshotTileIdx = 64,
+        .mugshotCellIdx = 65,
+        .mugshotAnimIdx = 66,
+        .bannerPlttIdx = 21,
+        .bannerTileIdx = 22,
+        .bannerTilemapIdx = 23,
         .padding = 0,
     },
     {
@@ -2650,13 +2650,13 @@ static const GymLeaderEncounterParam sGymLeaderEncounterParams[8] = {
         .trainerID = 317,
         .trainerClass = TRAINER_CLASS_LEADER_MAYLENE,
         .unk_0A = 1,
-        .unk_0C = 67,
-        .unk_0D = 68,
-        .unk_0E = 69,
-        .unk_0F = 70,
-        .unk_10 = 24,
-        .unk_11 = 25,
-        .unk_12 = 26,
+        .mugshotPlttIdx = 67,
+        .mugshotTileIdx = 68,
+        .mugshotCellIdx = 69,
+        .mugshotAnimIdx = 70,
+        .bannerPlttIdx = 24,
+        .bannerTileIdx = 25,
+        .bannerTilemapIdx = 26,
         .padding = 0,
     },
     {
@@ -2664,13 +2664,13 @@ static const GymLeaderEncounterParam sGymLeaderEncounterParams[8] = {
         .trainerID = 318,
         .trainerClass = TRAINER_CLASS_LEADER_FANTINA,
         .unk_0A = 1,
-        .unk_0C = 71,
-        .unk_0D = 72,
-        .unk_0E = 73,
-        .unk_0F = 74,
-        .unk_10 = 27,
-        .unk_11 = 28,
-        .unk_12 = 29,
+        .mugshotPlttIdx = 71,
+        .mugshotTileIdx = 72,
+        .mugshotCellIdx = 73,
+        .mugshotAnimIdx = 74,
+        .bannerPlttIdx = 27,
+        .bannerTileIdx = 28,
+        .bannerTilemapIdx = 29,
         .padding = 0,
     },
     {
@@ -2678,13 +2678,13 @@ static const GymLeaderEncounterParam sGymLeaderEncounterParams[8] = {
         .trainerID = 319,
         .trainerClass = TRAINER_CLASS_LEADER_CANDICE,
         .unk_0A = 1,
-        .unk_0C = 75,
-        .unk_0D = 76,
-        .unk_0E = 77,
-        .unk_0F = 78,
-        .unk_10 = 30,
-        .unk_11 = 31,
-        .unk_12 = 32,
+        .mugshotPlttIdx = 75,
+        .mugshotTileIdx = 76,
+        .mugshotCellIdx = 77,
+        .mugshotAnimIdx = 78,
+        .bannerPlttIdx = 30,
+        .bannerTileIdx = 31,
+        .bannerTilemapIdx = 32,
         .padding = 0,
     },
     {
@@ -2692,13 +2692,13 @@ static const GymLeaderEncounterParam sGymLeaderEncounterParams[8] = {
         .trainerID = 250,
         .trainerClass = TRAINER_CLASS_LEADER_BYRON,
         .unk_0A = 1,
-        .unk_0C = 79,
-        .unk_0D = 80,
-        .unk_0E = 81,
-        .unk_0F = 82,
-        .unk_10 = 33,
-        .unk_11 = 34,
-        .unk_12 = 35,
+        .mugshotPlttIdx = 79,
+        .mugshotTileIdx = 80,
+        .mugshotCellIdx = 81,
+        .mugshotAnimIdx = 82,
+        .bannerPlttIdx = 33,
+        .bannerTileIdx = 34,
+        .bannerTilemapIdx = 35,
         .padding = 0,
     },
     {
@@ -2706,48 +2706,48 @@ static const GymLeaderEncounterParam sGymLeaderEncounterParams[8] = {
         .trainerID = 320,
         .trainerClass = TRAINER_CLASS_LEADER_VOLKNER,
         .unk_0A = 1,
-        .unk_0C = 83,
-        .unk_0D = 84,
-        .unk_0E = 85,
-        .unk_0F = 86,
-        .unk_10 = 36,
-        .unk_11 = 37,
-        .unk_12 = 38,
+        .mugshotPlttIdx = 83,
+        .mugshotTileIdx = 84,
+        .mugshotCellIdx = 85,
+        .mugshotAnimIdx = 86,
+        .bannerPlttIdx = 36,
+        .bannerTileIdx = 37,
+        .bannerTilemapIdx = 38,
         .padding = 0,
     },
 };
 
 typedef struct EliterFourChampionEncounterParam {
-    u16 unk_00;
-    u8 unk_02;
+    u16 mugshotPlttIdx;
+    u8 bannerPlttIdx;
     u8 facePanFrames;
     u16 trainerClass;
     u16 trainerID;
 } EliterFourChampionEncounterParam;
 
 static const EliterFourChampionEncounterParam sEliteFourChampionEncounterParams[5] = {
-    { .unk_00 = 87,
-        .unk_02 = 39,
+    { .mugshotPlttIdx = 87, // Narc indices of the Elite Four and Champion
+        .bannerPlttIdx = 39,
         .facePanFrames = 32,
         .trainerClass = TRAINER_CLASS_ELITE_FOUR_AARON,
         .trainerID = 261 },
-    { .unk_00 = 91,
-        .unk_02 = 43,
+    { .mugshotPlttIdx = 91,
+        .bannerPlttIdx = 43,
         .facePanFrames = 32,
         .trainerClass = TRAINER_CLASS_ELITE_FOUR_BERTHA,
         .trainerID = 262 },
-    { .unk_00 = 95,
-        .unk_02 = 44,
+    { .mugshotPlttIdx = 95,
+        .bannerPlttIdx = 44,
         .facePanFrames = 32,
         .trainerClass = TRAINER_CLASS_ELITE_FOUR_FLINT,
         .trainerID = 263 },
-    { .unk_00 = 99,
-        .unk_02 = 45,
+    { .mugshotPlttIdx = 99,
+        .bannerPlttIdx = 45,
         .facePanFrames = 32,
         .trainerClass = TRAINER_CLASS_ELITE_FOUR_LUCIAN,
         .trainerID = 264 },
-    { .unk_00 = 103,
-        .unk_02 = 46,
+    { .mugshotPlttIdx = 103,
+        .bannerPlttIdx = 46,
         .facePanFrames = 9,
         .trainerClass = TRAINER_CLASS_CHAMPION_CYNTHIA,
         .trainerID = 267 },
@@ -2756,7 +2756,7 @@ static const EliterFourChampionEncounterParam sEliteFourChampionEncounterParams[
 typedef struct {
     s16 unk_00;
     s16 unk_02;
-    CellActor *unk_04[4];
+    Sprite *unk_04[4];
     LinearInterpolationTaskFX32 unk_14[4];
 } UnkStruct_ov5_021E5128;
 
@@ -2767,7 +2767,7 @@ typedef struct {
     UnkStruct_ov5_021DED04 *unk_40;
     UnkStruct_ov5_021DE47C unk_44;
     UnkStruct_ov5_021DE5A4 unk_1E4[2];
-    CellActor *unk_24C;
+    Sprite *unk_24C;
     UnkStruct_ov5_021E5128 unk_250;
     UnkStruct_ov5_021E52A8_sub1 unk_2B4;
     UnkStruct_ov5_021E52A8_sub2 unk_2BC;
@@ -2784,7 +2784,7 @@ typedef struct {
     LinearInterpolationTaskS32 unk_48;
     UnkStruct_ov5_021DE47C unk_5C;
     UnkStruct_ov5_021DE5A4 unk_1FC[4];
-    CellActor *unk_2CC[4];
+    Sprite *unk_2CC[4];
     VecFx32 unk_2DC;
     VecFx32 unk_2E8;
     UnkStruct_ov5_021E5128 unk_2F4;
@@ -2804,11 +2804,11 @@ static void ov5_021E5128(UnkStruct_ov5_021E5128 *param0, UnkStruct_ov5_021DE47C 
     for (v0 = 0; v0 < 4; v0++) {
         param0->unk_04[v0] = ov5_021DE62C(
             param1, param2, param3, param4, 0, 0);
-        CellActor_SetDrawFlag(param0->unk_04[v0], 0);
+        Sprite_SetDrawFlag(param0->unk_04[v0], 0);
 
         if (v0 != 3) {
-            CellActor_SetAffineOverwriteMode(param0->unk_04[v0], 2);
-            CellActor_SetAnim(param0->unk_04[v0], 1);
+            Sprite_SetAffineOverwriteMode(param0->unk_04[v0], 2);
+            Sprite_SetAnim(param0->unk_04[v0], 1);
 
             LinearInterpolationTaskFX32_Init(&param0->unk_14[v0], FX32_CONST(2), FX32_CONST(1), 6);
         } else {
@@ -2822,7 +2822,7 @@ static void ov5_021E519C(UnkStruct_ov5_021E5128 *param0)
     int v0;
 
     for (v0 = 0; v0 < 4; v0++) {
-        CellActor_Delete(param0->unk_04[v0]);
+        Sprite_Delete(param0->unk_04[v0]);
     }
 }
 
@@ -2848,8 +2848,8 @@ static BOOL ov5_021E51B4(UnkStruct_ov5_021E5128 *param0)
 
         v3 = VecFx32_FromXYZ(
             param0->unk_14[v0].currentValue, param0->unk_14[v0].currentValue, param0->unk_14[v0].currentValue);
-        CellActor_SetAffineScale(param0->unk_04[v0], &v3);
-        CellActor_SetDrawFlag(param0->unk_04[v0], 1);
+        Sprite_SetAffineScale(param0->unk_04[v0], &v3);
+        Sprite_SetDrawFlag(param0->unk_04[v0], 1);
 
         if (v1 == 0) {
             v2 = 0;
@@ -2909,14 +2909,14 @@ static BOOL EncounterEffect_GymLeader(EncounterEffect *encEffect, enum HeapId he
         ov5_021DE47C(&v0->unk_44, 8, 3);
 
         ov5_021DE4CC(
-            encEffect->narc, &v0->unk_44, &v0->unk_1E4[0], param->unk_0C, 1, param->unk_0D, param->unk_0E, param->unk_0F, 600000);
+            encEffect->narc, &v0->unk_44, &v0->unk_1E4[0], param->mugshotPlttIdx, 1, param->mugshotTileIdx, param->mugshotCellIdx, param->mugshotAnimIdx, 600000);
 
         ov5_021DE4CC(
             encEffect->narc, &v0->unk_44, &v0->unk_1E4[1], 51, 1, 52, 53, 54, 600000 + 1);
 
         v0->unk_24C = ov5_021DE62C(
             &v0->unk_44, &v0->unk_1E4[0], (272 * FX32_ONE), (66 * FX32_ONE), 0, 0);
-        CellActor_SetDrawFlag(v0->unk_24C, 0);
+        Sprite_SetDrawFlag(v0->unk_24C, 0);
         ov5_021E5128(&v0->unk_250, &v0->unk_44, &v0->unk_1E4[1], (FX32_CONST(72)), (FX32_CONST(74)), heapID);
 
         ov5_021DE5D0(v0->unk_24C, heapID, param->trainerClass, 14, (GX_RGB(0, 0, 0)));
@@ -2942,7 +2942,7 @@ static BOOL EncounterEffect_GymLeader(EncounterEffect *encEffect, enum HeapId he
     case 3:
 
         ov5_021DE3D0(
-            encEffect->narc, param->unk_12, param->unk_11, param->unk_10, 0, 1, encEffect->fieldSystem->bgConfig, 3);
+            encEffect->narc, param->bannerTilemapIdx, param->bannerTileIdx, param->bannerPlttIdx, 0, 1, encEffect->fieldSystem->bgConfig, 3);
         v0->unk_2F0 = 1;
 
         ov5_021DED20(encEffect, v0->unk_40, 6, 8, 16, (GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_BG1 | GX_WND_PLANEMASK_BG2 | GX_WND_PLANEMASK_BG3 | GX_WND_PLANEMASK_OBJ), (GX_WND_PLANEMASK_BG0 | GX_WND_PLANEMASK_BG1 | GX_WND_PLANEMASK_BG2 | GX_WND_PLANEMASK_OBJ));
@@ -2985,12 +2985,12 @@ static BOOL EncounterEffect_GymLeader(EncounterEffect *encEffect, enum HeapId he
     case 6:
 
         QuadraticInterpolationTaskFX32_Init(&v0->unk_00, (272 * FX32_ONE), param->endX, (-64 * FX32_ONE), 4);
-        CellActor_SetDrawFlag(v0->unk_24C, 1);
-        CellActor_SetExplicitPriority(v0->unk_24C, 0);
+        Sprite_SetDrawFlag(v0->unk_24C, 1);
+        Sprite_SetExplicitPriority(v0->unk_24C, 0);
 
         v3 = VecFx32_FromXYZ(
             v0->unk_00.currentValue, (66 * FX32_ONE), 0);
-        CellActor_SetPosition(v0->unk_24C, &v3);
+        Sprite_SetPosition(v0->unk_24C, &v3);
 
         encEffect->state++;
         break;
@@ -3000,7 +3000,7 @@ static BOOL EncounterEffect_GymLeader(EncounterEffect *encEffect, enum HeapId he
         v1 = QuadraticInterpolationTaskFX32_Update(&v0->unk_00);
         v3 = VecFx32_FromXYZ(
             v0->unk_00.currentValue, (66 * FX32_ONE), 0);
-        CellActor_SetPosition(v0->unk_24C, &v3);
+        Sprite_SetPosition(v0->unk_24C, &v3);
 
         if (v1 == 1) {
             encEffect->state++;
@@ -3027,7 +3027,7 @@ static BOOL EncounterEffect_GymLeader(EncounterEffect *encEffect, enum HeapId he
         if (v1 == 1) {
             ov5_021DE5D0(v0->unk_24C, heapID, param->trainerClass, 0, (GX_RGB(0, 0, 0)));
 
-            sub_0200AB4C(-14, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BD, 1);
+            BrightnessController_SetScreenBrightness(-14, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BD, BRIGHTNESS_MAIN_SCREEN);
 
             Bg_ScheduleScroll(encEffect->fieldSystem->bgConfig, 2, 0, -((v0->unk_00.currentValue >> FX32_SHIFT) + -92));
             GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG2, 1);
@@ -3064,7 +3064,7 @@ static BOOL EncounterEffect_GymLeader(EncounterEffect *encEffect, enum HeapId he
 
     case 13:
 
-        StartScreenTransition(3, 0, 0, 0x7fff, 15, 1, 4);
+        StartScreenTransition(3, 0, 0, 0x7fff, 15, 1, HEAP_ID_FIELD);
         encEffect->state++;
         break;
 
@@ -3083,7 +3083,7 @@ static BOOL EncounterEffect_GymLeader(EncounterEffect *encEffect, enum HeapId he
             *(encEffect->done) = 1;
         }
 
-        CellActor_Delete(v0->unk_24C);
+        Sprite_Delete(v0->unk_24C);
         ov5_021E519C(&v0->unk_250);
         ov5_021DE5A4(&v0->unk_44, &v0->unk_1E4[0]);
         ov5_021DE5A4(&v0->unk_44, &v0->unk_1E4[1]);
@@ -3093,7 +3093,7 @@ static BOOL EncounterEffect_GymLeader(EncounterEffect *encEffect, enum HeapId he
 
         GX_SetVisibleWnd(GX_WNDMASK_NONE);
 
-        sub_0200AB4C(0, GX_BLEND_PLANEMASK_NONE, 1);
+        BrightnessController_SetScreenBrightness(0, GX_BLEND_PLANEMASK_NONE, BRIGHTNESS_MAIN_SCREEN);
 
         Bg_SetOffset(encEffect->fieldSystem->bgConfig, 2, 0, 0);
 
@@ -3107,7 +3107,7 @@ static BOOL EncounterEffect_GymLeader(EncounterEffect *encEffect, enum HeapId he
     }
 
     if (encEffect->state != 15) {
-        CellActorCollection_Update(v0->unk_44.unk_00);
+        SpriteList_Update(v0->unk_44.unk_00);
     }
 
     return 0;
@@ -3229,10 +3229,10 @@ static BOOL EncounterEffect_EliteFourChampion(EncounterEffect *encEffect, enum H
         }
 
         ov5_021DE4CC(
-            encEffect->narc, &v0->unk_5C, &v0->unk_1FC[1], param->unk_00, 1, param->unk_00 + 1, param->unk_00 + 2, param->unk_00 + 3, 600000 + 1);
+            encEffect->narc, &v0->unk_5C, &v0->unk_1FC[1], param->mugshotPlttIdx, 1, param->mugshotPlttIdx + 1, param->mugshotPlttIdx + 2, param->mugshotPlttIdx + 3, 600000 + 1);
 
         ov5_021DE4CC(
-            encEffect->narc, &v0->unk_5C, &v0->unk_1FC[2], param->unk_02, 0xC, 40, 41, 42, 600000 + 2);
+            encEffect->narc, &v0->unk_5C, &v0->unk_1FC[2], param->bannerPlttIdx, 0xC, 40, 41, 42, 600000 + 2);
 
         ov5_021DE4CC(
             encEffect->narc, &v0->unk_5C, &v0->unk_1FC[3], 51, 1, 52, 53, 54, 600000 + 3);
@@ -3256,9 +3256,9 @@ static BOOL EncounterEffect_EliteFourChampion(EncounterEffect *encEffect, enum H
 
             v0->unk_2CC[v5] = ov5_021DE62C(
                 &v0->unk_5C, v7, 0, 0, 0, 0);
-            CellActor_SetDrawFlag(v0->unk_2CC[v5], 0);
-            CellActor_SetAnim(v0->unk_2CC[v5], v8);
-            CellActor_SetExplicitPriority(v0->unk_2CC[v5], 1);
+            Sprite_SetDrawFlag(v0->unk_2CC[v5], 0);
+            Sprite_SetAnim(v0->unk_2CC[v5], v8);
+            Sprite_SetExplicitPriority(v0->unk_2CC[v5], 1);
         }
 
         if (v0->unk_368) {
@@ -3312,22 +3312,22 @@ static BOOL EncounterEffect_EliteFourChampion(EncounterEffect *encEffect, enum H
         QuadraticInterpolationTaskFX32_Init(&v0->unk_00, (-128 * FX32_ONE), (56 * FX32_ONE), (80 * FX32_ONE), 6);
         v3 = VecFx32_FromXYZ(
             v0->unk_00.currentValue, (92 * FX32_ONE), 0);
-        CellActor_SetPosition(v0->unk_2CC[0], &v3);
+        Sprite_SetPosition(v0->unk_2CC[0], &v3);
         v3.y += (4 * FX32_ONE);
         v3.x += (16 * FX32_ONE);
-        CellActor_SetPosition(v0->unk_2CC[2], &v3);
-        CellActor_SetDrawFlag(v0->unk_2CC[0], 1);
-        CellActor_SetDrawFlag(v0->unk_2CC[2], 1);
+        Sprite_SetPosition(v0->unk_2CC[2], &v3);
+        Sprite_SetDrawFlag(v0->unk_2CC[0], 1);
+        Sprite_SetDrawFlag(v0->unk_2CC[2], 1);
 
         QuadraticInterpolationTaskFX32_Init(&v0->unk_30, (384 * FX32_ONE), (200 * FX32_ONE), (-80 * FX32_ONE), 6);
         v3 = VecFx32_FromXYZ(
             v0->unk_30.currentValue, (92 * FX32_ONE), 0);
-        CellActor_SetPosition(v0->unk_2CC[1], &v3);
+        Sprite_SetPosition(v0->unk_2CC[1], &v3);
         v3.y += (4 * FX32_ONE);
         v3.x += (-16 * FX32_ONE);
-        CellActor_SetPosition(v0->unk_2CC[3], &v3);
-        CellActor_SetDrawFlag(v0->unk_2CC[1], 1);
-        CellActor_SetDrawFlag(v0->unk_2CC[3], 1);
+        Sprite_SetPosition(v0->unk_2CC[3], &v3);
+        Sprite_SetDrawFlag(v0->unk_2CC[1], 1);
+        Sprite_SetDrawFlag(v0->unk_2CC[3], 1);
 
         {
             Strbuf *v9;
@@ -3366,19 +3366,19 @@ static BOOL EncounterEffect_EliteFourChampion(EncounterEffect *encEffect, enum H
         v3 = VecFx32_FromXYZ(
             v0->unk_00.currentValue, (92 * FX32_ONE), 0);
         v0->unk_2DC = v3;
-        CellActor_SetPosition(v0->unk_2CC[0], &v3);
+        Sprite_SetPosition(v0->unk_2CC[0], &v3);
         v3.y += (4 * FX32_ONE);
         v3.x += (16 * FX32_ONE);
-        CellActor_SetPosition(v0->unk_2CC[2], &v3);
+        Sprite_SetPosition(v0->unk_2CC[2], &v3);
 
         v1 = QuadraticInterpolationTaskFX32_Update(&v0->unk_30);
         v3 = VecFx32_FromXYZ(
             v0->unk_30.currentValue, (92 * FX32_ONE), 0);
         v0->unk_2E8 = v3;
-        CellActor_SetPosition(v0->unk_2CC[1], &v3);
+        Sprite_SetPosition(v0->unk_2CC[1], &v3);
         v3.y += (4 * FX32_ONE);
         v3.x += (-16 * FX32_ONE);
-        CellActor_SetPosition(v0->unk_2CC[3], &v3);
+        Sprite_SetPosition(v0->unk_2CC[3], &v3);
 
         if (v1 == 1) {
             encEffect->state++;
@@ -3410,10 +3410,10 @@ static BOOL EncounterEffect_EliteFourChampion(EncounterEffect *encEffect, enum H
 
             ov5_021DE5D0(v0->unk_2CC[1], heapID, param->trainerClass, 0, (GX_RGB(0, 0, 0)));
 
-            CellActor_SetAnimateFlag(v0->unk_2CC[2], 1);
-            CellActor_SetAnimSpeed(v0->unk_2CC[2], FX32_ONE * 2);
-            CellActor_SetAnimateFlag(v0->unk_2CC[3], 1);
-            CellActor_SetAnimSpeed(v0->unk_2CC[3], FX32_ONE * 2);
+            Sprite_SetAnimateFlag(v0->unk_2CC[2], 1);
+            Sprite_SetAnimSpeed(v0->unk_2CC[2], FX32_ONE * 2);
+            Sprite_SetAnimateFlag(v0->unk_2CC[3], 1);
+            Sprite_SetAnimSpeed(v0->unk_2CC[3], FX32_ONE * 2);
 
             ov5_021DF0CC(encEffect->narc, 108);
 
@@ -3477,10 +3477,10 @@ static BOOL EncounterEffect_EliteFourChampion(EncounterEffect *encEffect, enum H
             v0->unk_2DC = v3;
         }
 
-        CellActor_SetPosition(v0->unk_2CC[0], &v3);
+        Sprite_SetPosition(v0->unk_2CC[0], &v3);
         v3.y += (4 * FX32_ONE);
         v3.x += (16 * FX32_ONE);
-        CellActor_SetPosition(v0->unk_2CC[2], &v3);
+        Sprite_SetPosition(v0->unk_2CC[2], &v3);
 
         if (((encEffect->effectComplete / 2) % 2) == 0) {
             v3 = VecFx32_FromXYZ(
@@ -3494,10 +3494,10 @@ static BOOL EncounterEffect_EliteFourChampion(EncounterEffect *encEffect, enum H
             v0->unk_2E8 = v3;
         }
 
-        CellActor_SetPosition(v0->unk_2CC[1], &v3);
+        Sprite_SetPosition(v0->unk_2CC[1], &v3);
         v3.y += (4 * FX32_ONE);
         v3.x += (-16 * FX32_ONE);
-        CellActor_SetPosition(v0->unk_2CC[3], &v3);
+        Sprite_SetPosition(v0->unk_2CC[3], &v3);
 
         if (v1) {
             encEffect->state++;
@@ -3507,7 +3507,7 @@ static BOOL EncounterEffect_EliteFourChampion(EncounterEffect *encEffect, enum H
             QuadraticInterpolationTaskFX32_Init(&v0->unk_00, 0, (FX32_CONST(192.0f)), (FX32_CONST(24.0f)), 16);
             QuadraticInterpolationTaskFX32_Init(&v0->unk_18, 0, (FX32_CONST(192.0f)), (FX32_CONST(24.0f)), 16);
 
-            StartScreenTransition(3, 0, 0, 0x7fff, 8, 1, 4);
+            StartScreenTransition(3, 0, 0, 0x7fff, 8, 1, HEAP_ID_FIELD);
         }
 
         break;
@@ -3518,17 +3518,17 @@ static BOOL EncounterEffect_EliteFourChampion(EncounterEffect *encEffect, enum H
 
         v3 = VecFx32_FromXYZ(
             v0->unk_2DC.x - v0->unk_00.currentValue, v0->unk_2DC.y - v0->unk_18.currentValue, 0);
-        CellActor_SetPosition(v0->unk_2CC[0], &v3);
+        Sprite_SetPosition(v0->unk_2CC[0], &v3);
         v3.y += (4 * FX32_ONE);
         v3.x += (16 * FX32_ONE);
-        CellActor_SetPosition(v0->unk_2CC[2], &v3);
+        Sprite_SetPosition(v0->unk_2CC[2], &v3);
 
         v3 = VecFx32_FromXYZ(
             v0->unk_2E8.x + v0->unk_00.currentValue, v0->unk_2E8.y + v0->unk_18.currentValue, 0);
-        CellActor_SetPosition(v0->unk_2CC[1], &v3);
+        Sprite_SetPosition(v0->unk_2CC[1], &v3);
         v3.y += (4 * FX32_ONE);
         v3.x += (-16 * FX32_ONE);
-        CellActor_SetPosition(v0->unk_2CC[3], &v3);
+        Sprite_SetPosition(v0->unk_2CC[3], &v3);
 
         if (IsScreenTransitionDone()) {
             encEffect->state++;
@@ -3548,7 +3548,7 @@ static BOOL EncounterEffect_EliteFourChampion(EncounterEffect *encEffect, enum H
         Window_Remove(&v0->unk_358);
 
         for (v5 = 0; v5 < 4; v5++) {
-            CellActor_Delete(v0->unk_2CC[v5]);
+            Sprite_Delete(v0->unk_2CC[v5]);
         }
 
         for (v5 = 0; v5 < 4; v5++) {
@@ -3567,7 +3567,7 @@ static BOOL EncounterEffect_EliteFourChampion(EncounterEffect *encEffect, enum H
     }
 
     if (encEffect->state != 14) {
-        CellActorCollection_Update(v0->unk_5C.unk_00);
+        SpriteList_Update(v0->unk_5C.unk_00);
 
         if (4 < encEffect->state) {
             sub_020241B4();

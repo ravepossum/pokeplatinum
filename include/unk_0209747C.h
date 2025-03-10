@@ -8,7 +8,7 @@
 
 #include "savedata.h"
 
-UnkStruct_0209747C *sub_0209747C(u32 param0, u32 param1, SaveData *param2, u32 param3);
+UnkStruct_0209747C *sub_0209747C(u32 param0, u32 param1, SaveData *param2, u32 heapID);
 void sub_020974EC(UnkStruct_0209747C *param0);
 void sub_020974F4(UnkStruct_0209747C *param0, u16 param1);
 void sub_020974F8(UnkStruct_0209747C *param0, u16 param1, u16 param2);
@@ -23,7 +23,7 @@ void sub_02097540(const UnkStruct_0209747C *param0, Sentence *param1);
 u32 sub_02097550(const UnkStruct_0209747C *param0);
 u32 sub_02097554(const UnkStruct_0209747C *param0);
 int sub_02097558(const UnkStruct_0209747C *param0);
-const PokedexData *sub_0209755C(const UnkStruct_0209747C *param0);
+const Pokedex *sub_0209755C(const UnkStruct_0209747C *param0);
 const UnkStruct_02014EC4 *sub_02097560(const UnkStruct_0209747C *param0);
 BOOL sub_02097564(const UnkStruct_0209747C *param0);
 BOOL sub_02097568(const UnkStruct_0209747C *param0);

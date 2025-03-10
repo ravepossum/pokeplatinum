@@ -17,8 +17,6 @@
 #include "savedata/save_table.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
-#include "core_sys.h"
 #include "enums.h"
 #include "font.h"
 #include "game_options.h"
@@ -29,17 +27,19 @@
 #include "message.h"
 #include "message_util.h"
 #include "overlay_manager.h"
+#include "pokedex.h"
 #include "render_window.h"
 #include "rtc.h"
 #include "save_player.h"
 #include "savedata.h"
+#include "sprite.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "trainer_info.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
-#include "unk_0202631C.h"
 #include "unk_0202DAB4.h"
 #include "unk_02033200.h"
 #include "unk_020393C8.h"
@@ -346,10 +346,10 @@ UnkStruct_ov97_0223E0B0 Unk_ov97_0223E0B0[] = {
 };
 
 typedef struct {
-    int unk_00;
+    int heapID;
     BgConfig *unk_04;
     SaveData *unk_08;
-    PokedexData *unk_0C;
+    Pokedex *unk_0C;
     TrainerInfo *unk_10;
     Options *unk_14;
     Window unk_18;
@@ -370,7 +370,7 @@ typedef struct {
     int unk_168;
     u8 unk_16C[12288];
     OverlayManager *unk_316C;
-    CellActor *unk_3170;
+    Sprite *unk_3170;
     MysteryGift *unk_3174;
     int unk_3178;
     int unk_317C;
@@ -434,7 +434,7 @@ enum {
 static void ov97_0222C388(UnkStruct_ov97_0222C388 *param0);
 int ov97_0222CB10(UnkStruct_ov97_0222C388 *param0);
 MysteryGift *SaveData_MysteryGift(SaveData *param0);
-void ov97_02231FFC(BgConfig *param0, void *, int param2);
+void ov97_02231FFC(BgConfig *param0, void *, int heapID);
 
 static u16 ov97_0222C174(u16 param0)
 {
@@ -496,9 +496,7 @@ static void ov97_0222C210(UnkStruct_ov97_0222C388 *param0)
 {
     int v0;
     u32 v1;
-    const u16 *v2;
-
-    v2 = TrainerInfo_Name(param0->unk_10);
+    const u16 *v2 = TrainerInfo_Name(param0->unk_10);
 
     for (v0 = 0; v0 < 7 + 1; v0++) {
         Unk_ov97_0223F180[v0] = ov97_0222C174(v2[v0]);
@@ -540,15 +538,15 @@ static void ov97_0222C254(UnkStruct_ov97_0222C388 *param0)
     ov97_022376FC(param0->unk_04, 5, 1, 0x7000, 0x4000);
 
     Text_ResetAllPrinters();
-    Font_LoadTextPalette(0, 0 * 32, param0->unk_00);
-    LoadStandardWindowGraphics(param0->unk_04, 0, 1, 1, 0, param0->unk_00);
+    Font_LoadTextPalette(0, 0 * 32, param0->heapID);
+    LoadStandardWindowGraphics(param0->unk_04, 0, 1, 1, 0, param0->heapID);
 
     v0 = Options_Frame(param0->unk_14);
 
-    LoadMessageBoxGraphics(param0->unk_04, 0, (1 + 9), 2, v0, param0->unk_00);
-    Graphics_LoadPalette(116, 0, 0, 16 * 2 * 8, 16 * 2, param0->unk_00);
-    Graphics_LoadTilesToBgLayer(116, 1, param0->unk_04, 1, 0, 10 * 16 * 0x20, 1, param0->unk_00);
-    Graphics_LoadTilemapToBgLayer(116, 2, param0->unk_04, 1, 0, 32 * 24 * 2, 1, param0->unk_00);
+    LoadMessageBoxGraphics(param0->unk_04, 0, (1 + 9), 2, v0, param0->heapID);
+    Graphics_LoadPalette(116, 0, 0, 16 * 2 * 8, 16 * 2, param0->heapID);
+    Graphics_LoadTilesToBgLayer(116, 1, param0->unk_04, 1, 0, 10 * 16 * 0x20, 1, param0->heapID);
+    Graphics_LoadTilemapToBgLayer(116, 2, param0->unk_04, 1, 0, 32 * 24 * 2, 1, param0->heapID);
     Bg_ChangeTilemapRectPalette(param0->unk_04, 1, 0, 0, 32, 24, 8);
     Bg_CopyTilemapBufferToVRAM(param0->unk_04, 1);
 
@@ -557,9 +555,9 @@ static void ov97_0222C254(UnkStruct_ov97_0222C388 *param0)
 
 static void ov97_0222C388(UnkStruct_ov97_0222C388 *param0)
 {
-    Graphics_LoadPalette(116, 0, 4, 16 * 2 * 8, 16 * 2, param0->unk_00);
-    Graphics_LoadTilesToBgLayer(116, 1, param0->unk_04, 4, 0, 10 * 16 * 0x20, 1, param0->unk_00);
-    Graphics_LoadTilemapToBgLayer(116, 2, param0->unk_04, 4, 0, 32 * 24 * 2, 1, param0->unk_00);
+    Graphics_LoadPalette(116, 0, 4, 16 * 2 * 8, 16 * 2, param0->heapID);
+    Graphics_LoadTilesToBgLayer(116, 1, param0->unk_04, 4, 0, 10 * 16 * 0x20, 1, param0->heapID);
+    Graphics_LoadTilemapToBgLayer(116, 2, param0->unk_04, 4, 0, 32 * 24 * 2, 1, param0->heapID);
     Bg_ChangeTilemapRectPalette(param0->unk_04, 4, 0, 0, 32, 24, 8);
     Bg_CopyTilemapBufferToVRAM(param0->unk_04, 4);
 }
@@ -574,7 +572,7 @@ static BOOL ov97_0222C404(UnkStruct_ov97_0222C388 *param0)
         ov97_0223795C(param0->unk_04, &v0, 5, 4, 2);
         return 1;
     } else {
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             Window_EraseStandardFrame(&param0->unk_18, 0);
             Window_Remove(&param0->unk_18);
             return 0;
@@ -616,9 +614,7 @@ static void ov97_0222C578(UnkStruct_ov97_0222C388 *param0)
     u32 v0, v1, v2, v3;
     u8 v4[6];
     UnkStruct_ov97_022335A8 v5;
-    StringTemplate *v6;
-
-    v6 = StringTemplate_Default(param0->unk_00);
+    StringTemplate *v6 = StringTemplate_Default(param0->heapID);
 
     ov97_02237808(&param0->unk_F0, &param0->unk_38, 0, 421, 1, 1);
     ov97_02237858(&param0->unk_F0, 26, 4, param0->unk_144);
@@ -673,18 +669,16 @@ static void ov97_0222C688(OverlayManager *param0)
 
 static int ov97_0222C6F8(OverlayManager *param0, int *param1)
 {
-    UnkStruct_ov97_0222C388 *v0;
+    UnkStruct_ov97_0222C388 *v0 = ov97_022376C4(param0, HEAP_ID_85, sizeof(UnkStruct_ov97_0222C388), 0x20000);
 
-    v0 = ov97_022376C4(param0, 85, sizeof(UnkStruct_ov97_0222C388), 0x20000);
-
-    v0->unk_00 = 85;
-    v0->unk_04 = BgConfig_New(v0->unk_00);
+    v0->heapID = HEAP_ID_85;
+    v0->unk_04 = BgConfig_New(v0->heapID);
     v0->unk_08 = ((ApplicationArgs *)OverlayManager_Args(param0))->saveData;
     v0->unk_10 = SaveData_GetTrainerInfo(v0->unk_08);
-    v0->unk_0C = SaveData_Pokedex(v0->unk_08);
+    v0->unk_0C = SaveData_GetPokedex(v0->unk_08);
     v0->unk_14 = SaveData_Options(v0->unk_08);
 
-    ov97_02237694(v0->unk_00);
+    ov97_02237694(v0->heapID);
 
     v0->unk_3174 = SaveData_MysteryGift(v0->unk_08);
     v0->unk_14C = UnkEnum_ov97_0222C78C_09;
@@ -693,7 +687,7 @@ static int ov97_0222C6F8(OverlayManager *param0, int *param1)
     v0->unk_15C = UnkEnum_ov97_0222C6F8_00;
     v0->unk_158 = 0;
 
-    Heap_Create(0, 91, 0x300);
+    Heap_Create(HEAP_ID_SYSTEM, HEAP_ID_91, 0x300);
     sub_02004550(9, 1174, 1);
 
     return 1;
@@ -732,7 +726,7 @@ static int ov97_0222C78C(OverlayManager *param0, int *param1)
         }
         break;
     case UnkEnum_ov97_0222C78C_03:
-        if ((Text_IsPrinterActive(v0->unk_317C) == 0) && gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if ((Text_IsPrinterActive(v0->unk_317C) == 0) && gSystem.pressedKeys & PAD_BUTTON_A) {
             ov97_02237784(1);
             ov97_02237790(0, UnkEnum_ov97_0222C78C_12, param1, UnkEnum_ov97_0222C78C_13);
         }
@@ -754,12 +748,12 @@ static int ov97_0222C78C(OverlayManager *param0, int *param1)
         GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG0, 1);
         GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG1, 0);
 
-        ov97_02231FFC(v0->unk_04, &v0->unk_3180, 85);
+        ov97_02231FFC(v0->unk_04, &v0->unk_3180, HEAP_ID_85);
         ov97_02237790(1, UnkEnum_ov97_0222C78C_06, param1, UnkEnum_ov97_0222C78C_13);
         v0->unk_3180.unk_104.unk_4E_2 = 0;
         break;
     case UnkEnum_ov97_0222C78C_06:
-        if (gCoreSys.pressedKeys) {
+        if (gSystem.pressedKeys) {
             ov97_02237790(0, UnkEnum_ov97_0222C78C_11, param1, UnkEnum_ov97_0222C78C_13);
         }
         break;
@@ -782,10 +776,10 @@ static int ov97_0222C78C(OverlayManager *param0, int *param1)
 
 static int ov97_0222C948(OverlayManager *param0, int *param1)
 {
-    Heap_Destroy(91);
+    Heap_Destroy(HEAP_ID_91);
     EnqueueApplication(FS_OVERLAY_ID(overlay77), &gTitleScreenOverlayTemplate);
     OverlayManager_FreeData(param0);
-    Heap_Destroy(85);
+    Heap_Destroy(HEAP_ID_85);
 
     return 1;
 }
@@ -800,11 +794,11 @@ static void ov97_0222C974(UnkStruct_ov97_0222C388 *param0)
 
     MI_CpuClear8(v4, sizeof(UnkStruct_0202DBAC));
 
-    v3 = MessageLoader_Init(1, 26, 421, param0->unk_00);
-    v2 = StringTemplate_Default(param0->unk_00);
+    v3 = MessageLoader_Init(1, 26, 421, param0->heapID);
+    v2 = StringTemplate_Default(param0->heapID);
 
     v4->unk_00 = 7;
-    v1 = MessageUtil_ExpandedStrbuf(v2, v3, 76, param0->unk_00);
+    v1 = MessageUtil_ExpandedStrbuf(v2, v3, 76, param0->heapID);
 
     Strbuf_ToChars((const Strbuf *)v1, v4->unk_104.unk_00, 36);
     Strbuf_Free(v1);
@@ -817,7 +811,7 @@ static void ov97_0222C974(UnkStruct_ov97_0222C388 *param0)
     v4->unk_104.unk_4E_3 = 1;
     v4->unk_104.unk_4E_5 = 0;
 
-    v1 = MessageUtil_ExpandedStrbuf(v2, v3, 75, param0->unk_00);
+    v1 = MessageUtil_ExpandedStrbuf(v2, v3, 75, param0->heapID);
 
     Strbuf_ToChars((const Strbuf *)v1, v4->unk_154, 250);
     Strbuf_Free(v1);
@@ -859,7 +853,7 @@ static int ov97_0222CAB4(UnkStruct_ov97_0222C388 *param0, int *param1, int param
         }
     }
 
-    if (param3 && gCoreSys.pressedKeys & param3) {
+    if (param3 && gSystem.pressedKeys & param3) {
         ov97_022333BC();
         *param1 = UnkEnum_ov97_0222C6F8_26;
         return 1;
@@ -931,7 +925,7 @@ int ov97_0222CB10(UnkStruct_ov97_0222C388 *param0)
         break;
     case UnkEnum_ov97_0222C6F8_29:
         ov97_0223795C(param0->unk_04, &param0->unk_48, 2, 19, 30);
-        CellActor_SetDrawFlag(param0->unk_3170, 0);
+        Sprite_SetDrawFlag(param0->unk_3170, 0);
         DestroyWaitDial(param0->unk_34D8);
         param0->unk_34D8 = NULL;
         Sound_PlayEffect(1500);
@@ -939,7 +933,7 @@ int ov97_0222CB10(UnkStruct_ov97_0222C388 *param0)
         *v3 = UnkEnum_ov97_0222C6F8_30;
         break;
     case UnkEnum_ov97_0222C6F8_30:
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             *v3 = UnkEnum_ov97_0222C6F8_08;
         }
 
@@ -968,7 +962,7 @@ int ov97_0222CB10(UnkStruct_ov97_0222C388 *param0)
     case UnkEnum_ov97_0222C6F8_10:
         if (ov97_022332F4()) {
             ov97_0223795C(param0->unk_04, &param0->unk_48, 2, 19, 71);
-            CellActor_SetDrawFlag(param0->unk_3170, 1);
+            Sprite_SetDrawFlag(param0->unk_3170, 1);
             ov97_0222C578(param0);
             *v3 = UnkEnum_ov97_0222C6F8_11;
         }
@@ -1062,7 +1056,7 @@ int ov97_0222CB10(UnkStruct_ov97_0222C388 *param0)
 
             ov97_0223795C(param0->unk_04, &param0->unk_48, 2, 19, 73);
 
-            CellActor_SetDrawFlag(param0->unk_3170, 0);
+            Sprite_SetDrawFlag(param0->unk_3170, 0);
             DestroyWaitDial(param0->unk_34D8);
             Sound_PlayEffect(1500);
 
@@ -1077,7 +1071,7 @@ int ov97_0222CB10(UnkStruct_ov97_0222C388 *param0)
                 param0->unk_148 = 0;
             }
 
-            if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+            if (gSystem.pressedKeys & PAD_BUTTON_A) {
                 *v3 = UnkEnum_ov97_0222C6F8_27;
                 return 4;
             }
@@ -1087,7 +1081,7 @@ int ov97_0222CB10(UnkStruct_ov97_0222C388 *param0)
         *v3 = UnkEnum_ov97_0222C6F8_23;
     case UnkEnum_ov97_0222C6F8_23:
         ov97_0223795C(param0->unk_04, &param0->unk_48, 2, 19, 74);
-        CellActor_SetDrawFlag(param0->unk_3170, 0);
+        Sprite_SetDrawFlag(param0->unk_3170, 0);
 
         if (param0->unk_34D8) {
             DestroyWaitDial(param0->unk_34D8);
@@ -1104,7 +1098,7 @@ int ov97_0222CB10(UnkStruct_ov97_0222C388 *param0)
                 param0->unk_148 = 0;
             }
 
-            if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+            if (gSystem.pressedKeys & PAD_BUTTON_A) {
                 OS_ResetSystem(0);
             }
         }

@@ -11,7 +11,7 @@
 
 #include "bg_window.h"
 #include "colored_arrow.h"
-#include "core_sys.h"
+#include "field_message.h"
 #include "field_task.h"
 #include "heap.h"
 #include "message.h"
@@ -19,13 +19,13 @@
 #include "save_player.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_02014A84.h"
 #include "unk_0202D05C.h"
 #include "unk_0203D1B8.h"
-#include "unk_0205D8CC.h"
 #include "unk_0209747C.h"
 
 typedef struct {
@@ -66,12 +66,12 @@ void sub_0209ACF4(FieldTask *param0)
     UnkStruct_0209AD84 *v1 = Heap_AllocFromHeap(HEAP_ID_FIELD_TASK, sizeof(UnkStruct_0209AD84));
 
     v1->fieldSystem = fieldSystem;
-    v1->unk_04 = Strbuf_Init(400, 32);
-    v1->unk_08 = Strbuf_Init(400, 32);
-    v1->unk_0C = StringTemplate_Default(32);
-    v1->unk_10 = MessageLoader_Init(1, 26, 420, 32);
-    v1->unk_14 = ColoredArrow_New(32);
-    v1->unk_50 = sub_0209747C(2, 0, v1->fieldSystem->saveData, 32);
+    v1->unk_04 = Strbuf_Init(400, HEAP_ID_FIELD_TASK);
+    v1->unk_08 = Strbuf_Init(400, HEAP_ID_FIELD_TASK);
+    v1->unk_0C = StringTemplate_Default(HEAP_ID_FIELD_TASK);
+    v1->unk_10 = MessageLoader_Init(1, 26, 420, HEAP_ID_FIELD_TASK);
+    v1->unk_14 = ColoredArrow_New(HEAP_ID_FIELD_TASK);
+    v1->unk_50 = sub_0209747C(2, 0, v1->fieldSystem->saveData, HEAP_ID_FIELD_TASK);
 
     sub_02097520(v1->unk_50);
     Window_Init(&(v1->unk_18));
@@ -239,7 +239,7 @@ static BOOL sub_0209AE14(FieldTask *param0)
         break;
     case 12:
         if (sub_0209B100(v0)) {
-            if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_PLUS_KEY_MASK)) {
+            if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_PLUS_KEY_MASK)) {
                 sub_0209B110(v0);
                 v0->unk_54 = 13;
             }
@@ -268,7 +268,7 @@ static void sub_0209B084(UnkStruct_0209AD84 *param0, int param1, BOOL param2)
         FieldMessage_AddWindow(param0->fieldSystem->bgConfig, v0, 3);
         FieldMessage_DrawWindow(v0, SaveData_Options(param0->fieldSystem->saveData));
     } else {
-        sub_0205D988(v0);
+        FieldMessage_ClearWindow(v0);
         Window_DrawMessageBoxWithScrollCursor(v0, 0, 1024 - (18 + 12), 10);
     }
 
@@ -296,7 +296,7 @@ static void sub_0209B12C(UnkStruct_0209AD84 *param0)
     if (Window_IsInUse(v0) == 0) {
         int v1;
 
-        LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 155, 11, 0, 32);
+        LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 155, 11, 0, HEAP_ID_FIELD_TASK);
         Window_Add(param0->fieldSystem->bgConfig, v0, 3, 1, 1, 13, 10, 13, 1);
         Window_FillTilemap(v0, 15);
 
@@ -328,7 +328,7 @@ static void sub_0209B1D8(UnkStruct_0209AD84 *param0)
     if (Window_IsInUse(v0) == 0) {
         int v1;
 
-        LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 155, 11, 0, 32);
+        LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 155, 11, 0, HEAP_ID_FIELD_TASK);
         Window_Add(param0->fieldSystem->bgConfig, v0, 3, 25, 13, 6, 4, 13, 131);
         Window_FillTilemap(v0, 15);
 
@@ -356,7 +356,7 @@ static void sub_0209B27C(UnkStruct_0209AD84 *param0)
 static int sub_0209B288(UnkStruct_0209AD84 *param0)
 {
     do {
-        if (gCoreSys.pressedKeys & PAD_KEY_UP) {
+        if (gSystem.pressedKeys & PAD_KEY_UP) {
             param0->unk_5C--;
 
             if (param0->unk_5C < 0) {
@@ -369,7 +369,7 @@ static int sub_0209B288(UnkStruct_0209AD84 *param0)
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_KEY_DOWN) {
+        if (gSystem.pressedKeys & PAD_KEY_DOWN) {
             param0->unk_5C++;
 
             if (param0->unk_5C >= param0->unk_60) {
@@ -382,12 +382,12 @@ static int sub_0209B288(UnkStruct_0209AD84 *param0)
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             Sound_PlayEffect(1500);
             return param0->unk_5C;
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        if (gSystem.pressedKeys & PAD_BUTTON_B) {
             Sound_PlayEffect(1500);
             return param0->unk_60 - 1;
         }

@@ -353,7 +353,13 @@ RomSpec
 	File graphic/pst_gra.narc
 	File graphic/ranking.narc
 	File graphic/record.narc
-	File graphic/shop_gra.narc
+
+	Root /graphic/
+	HostRoot res/graphics/shop_menu
+	File shop_gra.narc
+
+	Root /
+	HostRoot res/prebuilt
 	File graphic/tmap_gra.narc
 	File graphic/touch_subwindow.narc
 	File graphic/trainer_case.narc
@@ -414,8 +420,14 @@ RomSpec
 	File fielddata/land_data/land_data.narc
 	File contest/data/contest_data.narc
 	File particledata/particledata.narc
-	File application/zukanlist/zkn_data/zukan_data.narc
-	File application/zukanlist/zkn_data/zukan_data_gira.narc
+
+	Root /application/zukanlist/zkn_data
+	HostRoot res/pokemon
+	File zukan_data.narc
+	File zukan_data_gira.narc
+
+	Root /
+	HostRoot res/prebuilt
 	File application/wifi_earth/wifi_earth.narc
 	File application/wifi_earth/wifi_earth_place.narc
 	File application/custom_ball/data/cb_data.narc
@@ -432,10 +444,22 @@ RomSpec
 	File arc/codein_gra.narc
 	File arc/demo_tengan_gra.narc
 	File arc/email_gra.narc
-	File arc/encdata_ex.narc
+
+	Root /arc
+	HostRoot res/field/encounters
+	File encdata_ex.narc
+
+	Root /
+	HostRoot res/prebuilt
 	File arc/manene.narc
 	File arc/plgym_ghost.narc
-	File arc/ppark.narc
+
+	Root /arc
+	HostRoot res/pokemon
+	File ppark.narc
+
+	Root /
+	HostRoot res/prebuilt
 	File arc/ship_demo.narc
 	File arc/ship_demo_pl.narc
 	File arc/tv.narc
@@ -459,7 +483,10 @@ RomSpec
 	File battle/b_tower/btdtr.narc
 	File application/zukanlist/zkn_data/zukan_enc_diamond.narc
 	File application/zukanlist/zkn_data/zukan_enc_pearl.narc
-	File application/zukanlist/zkn_data/zukan_enc_platinum.narc
+
+	Root /application/zukanlist/zkn_data
+	HostRoot res/field/encounters
+	File zukan_enc_platinum.narc
 
 	Root /poketool/poke_edit
 	HostRoot res/pokemon
@@ -485,7 +512,14 @@ RomSpec
 	File contest/graphic/contest_obj.narc
 	File demo/title/op_demo.narc
 	File demo/title/titledemo.narc
-	File fielddata/pokemon_trade/fld_trade.narc
+
+	Root /fielddata/pokemon_trade
+	HostRoot res/field/trades
+	File fld_trade.narc
+
+	Root /
+	HostRoot res/prebuilt
+
 	File resource/eng/zukan/zukan.narc
 	File resource/eng/batt_rec/batt_rec_gra.narc
 	File resource/eng/wifi_lobby_minigame/wlmngm_tool.narc

@@ -3,6 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "generated/journal_location_events.h"
+
 #include "struct_decls/struct_0203A790_decl.h"
 #include "struct_decls/struct_02061AB4_decl.h"
 
@@ -114,9 +116,9 @@ static int ov6_022471C0(FieldTask *task, FieldSystem *fieldSystem, UnkStruct_ov6
     }
 
     if (param2->unk_08 == 2) {
-        StartScreenTransition(0, 0, 0, 0x0, 6, 1, 4);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_FIELD);
     } else {
-        StartScreenTransition(0, 0, 0, 0x7fff, 6, 1, 4);
+        StartScreenTransition(0, 0, 0, 0x7fff, 6, 1, HEAP_ID_FIELD);
     }
 
     param2->unk_00++;
@@ -200,23 +202,23 @@ BOOL ov6_022472E8(FieldTask *task)
 
 static void ov6_0224732C(FieldSystem *fieldSystem, UnkStruct_ov6_02247100 *param1)
 {
-    void *v0;
+    void *journalEntryLocationEvent;
 
     if (param1->unk_08 == 2) {
-        v0 = sub_0202BE00((28 - 19), fieldSystem->location->mapId, 4);
+        journalEntryLocationEvent = JournalEntry_CreateEventUsedMove(LOCATION_EVENT_WARPED_TO_LOCATION - LOCATION_EVENT_USED_CUT, fieldSystem->location->mapId, HEAP_ID_FIELD);
     } else {
         return;
     }
 
-    Journal_SaveData(fieldSystem->journal, v0, 1);
+    JournalEntry_SaveData(fieldSystem->journalEntry, journalEntryLocationEvent, JOURNAL_LOCATION);
 }
 
 static int ov6_02247354(FieldTask *task, FieldSystem *fieldSystem, UnkStruct_ov6_02247100 *param2)
 {
     if (param2->unk_08 == 2) {
-        StartScreenTransition(0, 1, 1, 0x0, 6, 1, 4);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_FIELD);
     } else {
-        StartScreenTransition(0, 1, 1, 0x7fff, 6, 1, 4);
+        StartScreenTransition(0, 1, 1, 0x7fff, 6, 1, HEAP_ID_FIELD);
     }
 
     param2->unk_14 = ov5_021F0EB0(fieldSystem, 4);

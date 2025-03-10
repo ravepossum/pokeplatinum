@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/pastoria_city_gym.h"
 
     .data
 
@@ -9,7 +10,7 @@
     ScriptEntry _0076
     ScriptEntry _0171
     ScriptEntry _01A5
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001E:
     SetVar 0x4001, 0
@@ -45,12 +46,12 @@ _0076:
     FacePlayer
     CheckBadgeAcquired BADGE_ID_FEN, 0x800C
     GoToIfEq 0x800C, 1, _0155
-    ScrCmd_1CD 9, 122, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_GYM_WAS_TOO_TOUGH, 122, 0, 0, 0
     Message 0
     CloseMessage
-    StartTrainerBattle trainer_leader_wake
+    StartTrainerBattle TRAINER_LEADER_WAKE
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _016B
+    GoToIfEq 0x800C, FALSE, _016B
     Message 1
     BufferPlayerName 0
     Message 2
@@ -58,16 +59,16 @@ _0076:
     WaitSound
     GiveBadge BADGE_ID_FEN
     ScrCmd_260 23
-    SetTrainerFlag trainer_fisherman_erick
-    SetTrainerFlag trainer_sailor_damian
-    SetTrainerFlag trainer_fisherman_walter
-    SetTrainerFlag trainer_sailor_samson
-    SetTrainerFlag trainer_tuber_jacky
-    SetTrainerFlag trainer_tuber_caitlyn
+    SetTrainerFlag TRAINER_FISHERMAN_ERICK
+    SetTrainerFlag TRAINER_SAILOR_DAMIAN
+    SetTrainerFlag TRAINER_FISHERMAN_WALTER
+    SetTrainerFlag TRAINER_SAILOR_SAMSON
+    SetTrainerFlag TRAINER_TUBER_JACKY
+    SetTrainerFlag TRAINER_TUBER_CAITLYN
     SetVar 0x407C, 3
     SetFlag 0x20C
     SetFlag 0x156
-    ScrCmd_1CD 10, 122, trainer_leader_wake, 0, 0
+    CreateJournalEvent LOCATION_EVENT_BEAT_GYM_LEADER, 122, TRAINER_LEADER_WAKE, 0, 0
     Message 3
     GoTo _010D
     End
@@ -102,7 +103,7 @@ _0155:
     End
 
 _016B:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 

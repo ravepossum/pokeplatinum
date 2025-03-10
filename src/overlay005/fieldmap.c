@@ -3,7 +3,9 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/field/map.h"
 #include "constants/field/map_load.h"
+#include "constants/heap.h"
 
 #include "struct_decls/struct_02020C44_decl.h"
 #include "struct_decls/struct_02027860_decl.h"
@@ -14,46 +16,45 @@
 #include "field/field_system.h"
 #include "field/field_system_sub2_decl.h"
 #include "field/field_system_sub2_t.h"
+#include "overlay005/area_data.h"
+#include "overlay005/area_light.h"
 #include "overlay005/const_ov5_021FF6B8.h"
 #include "overlay005/const_ov5_021FF744.h"
 #include "overlay005/const_ov5_021FF7D0.h"
 #include "overlay005/hblank_system.h"
+#include "overlay005/honey_tree.h"
+#include "overlay005/land_data.h"
+#include "overlay005/map_name_popup.h"
+#include "overlay005/map_prop.h"
+#include "overlay005/map_prop_animation.h"
+#include "overlay005/model_attributes.h"
 #include "overlay005/ov5_021D1A94.h"
-#include "overlay005/ov5_021D37AC.h"
-#include "overlay005/ov5_021D521C.h"
 #include "overlay005/ov5_021D57BC.h"
-#include "overlay005/ov5_021D5878.h"
 #include "overlay005/ov5_021D5B40.h"
 #include "overlay005/ov5_021D5BC0.h"
 #include "overlay005/ov5_021D5CB0.h"
 #include "overlay005/ov5_021D5EB8.h"
-#include "overlay005/ov5_021DD6FC.h"
 #include "overlay005/ov5_021DF440.h"
-#include "overlay005/ov5_021E15F4.h"
-#include "overlay005/ov5_021E1B08.h"
-#include "overlay005/ov5_021E779C.h"
 #include "overlay005/ov5_021EA714.h"
 #include "overlay005/ov5_021ECC20.h"
 #include "overlay005/ov5_021ECE40.h"
 #include "overlay005/ov5_021EE75C.h"
 #include "overlay005/ov5_021EF250.h"
 #include "overlay005/ov5_021EF4BC.h"
-#include "overlay005/ov5_021EF75C.h"
-#include "overlay005/ov5_021EFB0C.h"
 #include "overlay005/ov5_021F0824.h"
 #include "overlay005/ov5_021F10E8.h"
+#include "overlay005/signpost.h"
 #include "overlay005/struct_ov5_021D1A68_decl.h"
-#include "overlay005/struct_ov5_021D5894.h"
 #include "overlay005/struct_ov5_021ED0A4.h"
 #include "overlay009/ov9_02249960.h"
-#include "overlay022/struct_ov22_022559F8.h"
 
 #include "bg_window.h"
 #include "camera.h"
+#include "char_transfer.h"
 #include "comm_player_manager.h"
-#include "core_sys.h"
 #include "easy3d.h"
 #include "field_map_change.h"
+#include "field_message.h"
 #include "field_overworld_state.h"
 #include "field_system.h"
 #include "field_task.h"
@@ -63,29 +64,27 @@
 #include "inlines.h"
 #include "map_header.h"
 #include "map_header_data.h"
+#include "map_matrix.h"
 #include "map_object.h"
 #include "narc.h"
 #include "overlay_manager.h"
 #include "player_avatar.h"
+#include "pltt_transfer.h"
 #include "pokeradar.h"
+#include "render_oam.h"
 #include "savedata_misc.h"
 #include "script_manager.h"
-#include "unk_0200A784.h"
+#include "system.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
-#include "unk_0201DBEC.h"
-#include "unk_0201E86C.h"
-#include "unk_0201F834.h"
 #include "unk_02020AEC.h"
 #include "unk_0202419C.h"
 #include "unk_02027F50.h"
-#include "unk_02039C80.h"
 #include "unk_020553DC.h"
 #include "unk_020556C4.h"
 #include "unk_020559DC.h"
 #include "unk_02055C50.h"
-#include "unk_0205D8CC.h"
 #include "unk_02068344.h"
+#include "vram_transfer.h"
 
 FS_EXTERN_OVERLAY(overlay6);
 FS_EXTERN_OVERLAY(overlay7);
@@ -101,7 +100,7 @@ static void ov5_021D1444(BgConfig *bgl);
 static void ov5_021D1524(BgConfig *bgl);
 static void ov5_021D154C(void);
 static void ov5_021D1570(void);
-static void ov5_021D1578(UnkStruct_ov5_021D5894 *param0);
+static void FieldMap_InitModelAttributes(ModelAttributes *modelAttrs);
 static void ov5_021D15F4(FieldSystem *fieldSystem);
 static void ov5_021D173C(FieldSystem *fieldSystem);
 static void ov5_021D1414(void);
@@ -139,8 +138,8 @@ static void fieldmap(void *param0)
     FieldSystem *fieldSystem = param0;
 
     Bg_RunScheduledUpdates(fieldSystem->bgConfig);
-    sub_0201DCAC();
-    sub_0200A858();
+    VramTransfer_Process();
+    RenderOam_Transfer();
 
     inline_fieldmap(fieldSystem);
 }
@@ -154,7 +153,7 @@ static BOOL FieldMap_Init(OverlayManager *overlayMan, int *param1)
 
     switch (*param1) {
     case 0:
-        SetMainCallback(NULL, NULL);
+        SetVBlankCallback(NULL, NULL);
         DisableHBlank();
 
         G2_BlendNone();
@@ -181,33 +180,33 @@ static BOOL FieldMap_Init(OverlayManager *overlayMan, int *param1)
             }
         }
 
-        Heap_Create(3, 4, fieldSystem->mapLoadMode->unk_04);
+        Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_FIELD, fieldSystem->mapLoadMode->unk_04);
         GF_ASSERT(fieldSystem->unk_04 == NULL);
 
-        fieldSystem->unk_04 = Heap_AllocFromHeap(4, sizeof(FieldSystem_sub2));
+        fieldSystem->unk_04 = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(FieldSystem_sub2));
         MI_CpuClear8(fieldSystem->unk_04, sizeof(FieldSystem_sub2));
-        fieldSystem->unk_04->unk_04 = ov5_021D1A94(fieldSystem, 4, 8);
+        fieldSystem->unk_04->unk_04 = ov5_021D1A94(fieldSystem, HEAP_ID_FIELD, 8);
 
         ov5_021D1414();
 
-        VRAMTransferManager_New(128, 4);
-        sub_02020B90(4, 4);
-        Easy3D_Init(4);
+        VramTransfer_New(128, HEAP_ID_FIELD);
+        sub_02020B90(4, HEAP_ID_FIELD);
+        Easy3D_Init(HEAP_ID_FIELD);
 
         ov5_021D15B4();
         ov5_021D154C();
 
         GXLayers_SwapDisplay();
-        fieldSystem->bgConfig = BgConfig_New(4);
+        fieldSystem->bgConfig = BgConfig_New(HEAP_ID_FIELD);
         ov5_021D1444(fieldSystem->bgConfig);
-        sub_0205D8CC(0, 1);
+        FieldMessage_LoadTextPalettes(0, TRUE);
         sub_0203F5C0(fieldSystem, 4);
         break;
     case 1:
         ov5_021D1790(fieldSystem);
-        ov5_021EF7A0(fieldSystem->unk_30);
+        AreaDataManager_Load(fieldSystem->areaDataManager);
 
-        fieldSystem->unk_A4 = ov5_021E15F4(4);
+        fieldSystem->mapPropManager = MapPropManager_New(HEAP_ID_FIELD);
 
         ov5_021F0824(fieldSystem);
         ov5_021D17EC(fieldSystem);
@@ -224,7 +223,7 @@ static BOOL FieldMap_Init(OverlayManager *overlayMan, int *param1)
 
         fieldSystem->unk_04->hBlankSystem = HBlankSystem_New(4);
         HBlankSystem_Start(fieldSystem->unk_04->hBlankSystem);
-        fieldSystem->unk_04->unk_20 = ov5_021EF4BC(4, fieldSystem->unk_04->hBlankSystem);
+        fieldSystem->unk_04->unk_20 = ov5_021EF4BC(HEAP_ID_FIELD, fieldSystem->unk_04->hBlankSystem);
         break;
     case 2:
         ov5_021D5BD8(fieldSystem);
@@ -265,12 +264,12 @@ static BOOL FieldMap_Main(OverlayManager *overlayMan, int *param1)
 static BOOL FieldMap_Exit(OverlayManager *overlayMan, int *param1)
 {
     FieldSystem *fieldSystem = OverlayManager_Args(overlayMan);
-    ov5_021E8188(fieldSystem, fieldSystem->unk_28);
+    LandDataManager_Tick(fieldSystem, fieldSystem->landDataMan);
 
     switch (*param1) {
     case 0:
         sub_02068368(fieldSystem);
-        ov5_021E9338(fieldSystem->unk_28);
+        LandDataManager_ForgetTrackedTarget(fieldSystem->landDataMan);
 
         fieldSystem->location->x = Player_GetXPos(fieldSystem->playerAvatar);
         fieldSystem->location->z = Player_GetZPos(fieldSystem->playerAvatar);
@@ -279,13 +278,13 @@ static BOOL FieldMap_Exit(OverlayManager *overlayMan, int *param1)
         ov5_021EF300(fieldSystem->unk_A0);
 
         {
-            GF_ASSERT(fieldSystem->unk_50 != 0);
-            ov5_021E924C(fieldSystem->unk_28);
+            GF_ASSERT(fieldSystem->mapPropAnimMan != 0);
+            LandDataManager_End(fieldSystem->landDataMan);
         }
 
-        ov5_021D3CAC(fieldSystem->unk_50);
-        ov5_021D3D7C(fieldSystem->unk_50);
-        ov5_021D41B4(&fieldSystem->unk_54);
+        MapPropAnimationManager_UnloadAllAnimations(fieldSystem->mapPropAnimMan);
+        MapPropAnimationManager_Free(fieldSystem->mapPropAnimMan);
+        MapPropOneShotAnimationManager_Free(&fieldSystem->mapPropOneShotAnimMan);
         ov5_021D5E8C(fieldSystem->unk_04->unk_10);
         ov5_021D5EAC(fieldSystem->unk_04->unk_10);
 
@@ -299,19 +298,19 @@ static BOOL FieldMap_Exit(OverlayManager *overlayMan, int *param1)
 
         ov5_021D1A70(fieldSystem->unk_34);
         fieldSystem->unk_34 = NULL;
-        ov5_021E1608(fieldSystem->unk_A4);
+        MapPropManager_Free(fieldSystem->mapPropManager);
 
         (*param1)++;
         break;
     case 1:
-        if (ov5_021E9300(fieldSystem->unk_28) == 1) {
-            ov5_021EFA10(&fieldSystem->unk_30);
-            ov5_021E92E4(fieldSystem->unk_28);
-            ov5_021EFB30(&fieldSystem->unk_A8);
+        if (LandDataManager_HasEnded(fieldSystem->landDataMan) == TRUE) {
+            AreaDataManager_Free(&fieldSystem->areaDataManager);
+            LandDataManager_FreeNARCAndLoadedMapBuffers(fieldSystem->landDataMan);
+            HoneyTree_FreeShakeData(&fieldSystem->unk_A8);
             ov5_021D5BA8(fieldSystem);
-            ov5_021D5278(&fieldSystem->unk_4C);
-            ov5_021E1B20(fieldSystem->unk_64);
-            ov5_021DD9C8(fieldSystem->unk_04->unk_08);
+            AreaLightManager_Free(&fieldSystem->areaLightMan);
+            Signpost_Free(fieldSystem->signpost);
+            MapNamePopUp_Destroy(fieldSystem->unk_04->unk_08);
 
             if (fieldSystem->unk_04->unk_0C != NULL) {
                 ov5_021D5EF8(fieldSystem->unk_04->unk_0C);
@@ -321,7 +320,7 @@ static BOOL FieldMap_Exit(OverlayManager *overlayMan, int *param1)
             HBlankSystem_Delete(fieldSystem->unk_04->hBlankSystem);
             sub_02055CBC(fieldSystem->unk_04->unk_18);
             ov5_021D57D8(&fieldSystem->unk_48);
-            ov5_021D5894(&fieldSystem->unk_44);
+            ModelAttributes_Free(&fieldSystem->areaModelAttrs);
             ov5_021D1570();
             ov5_021D1524(fieldSystem->bgConfig);
             ov5_021D5C14(fieldSystem);
@@ -332,16 +331,16 @@ static BOOL FieldMap_Exit(OverlayManager *overlayMan, int *param1)
         if (ov5_021D5C30(fieldSystem)) {
             ov5_021D15E8();
             sub_02020BD0();
-            VRAMTransferManager_Destroy();
+            VramTransfer_Free();
             Easy3D_Shutdown();
             ov5_021D1AE4(fieldSystem->unk_04->unk_04);
-            SetMainCallback(NULL, NULL);
+            SetVBlankCallback(NULL, NULL);
             Heap_FreeToHeap(fieldSystem->bgConfig);
             Heap_FreeToHeap(fieldSystem->unk_04);
 
             fieldSystem->unk_04 = NULL;
 
-            Heap_Destroy(4);
+            Heap_Destroy(HEAP_ID_FIELD);
 
             if (fieldSystem->mapLoadMode->unk_00_20) {
                 Overlay_UnloadByID(FS_OVERLAY_ID(overlay6));
@@ -383,10 +382,8 @@ static int ov5_021D1178(FieldSystem *fieldSystem)
 
 static BOOL ov5_021D119C(FieldSystem *fieldSystem)
 {
-    int x, y;
-
-    x = Player_GetXPos(fieldSystem->playerAvatar);
-    y = Player_GetZPos(fieldSystem->playerAvatar);
+    int x = Player_GetXPos(fieldSystem->playerAvatar);
+    int y = Player_GetZPos(fieldSystem->playerAvatar);
 
     if ((x != fieldSystem->location->x) || (y != fieldSystem->location->z)) {
         fieldSystem->location->x = x;
@@ -408,9 +405,9 @@ static BOOL FieldMap_ChangeZone(FieldSystem *fieldSystem)
         return FALSE;
     }
 
-    x = (Player_GetXPos(fieldSystem->playerAvatar) - ov5_021EA6AC(fieldSystem->unk_28)) / 32;
-    y = (Player_GetZPos(fieldSystem->playerAvatar) - ov5_021EA6B4(fieldSystem->unk_28)) / 32;
-    v0 = sub_02039E30(fieldSystem->unk_2C, x, y);
+    x = (Player_GetXPos(fieldSystem->playerAvatar) - LandDataManager_GetOffsetTileX(fieldSystem->landDataMan)) / MAP_TILES_COUNT_X;
+    y = (Player_GetZPos(fieldSystem->playerAvatar) - LandDataManager_GetOffsetTileY(fieldSystem->landDataMan)) / MAP_TILES_COUNT_Y;
+    v0 = MapMatrix_GetMapHeaderIDAtCoords(fieldSystem->mapMatrix, x, y);
     mapId = fieldSystem->location->mapId;
 
     if (v0 == mapId) {
@@ -450,7 +447,7 @@ static BOOL FieldMap_ChangeZone(FieldSystem *fieldSystem)
             v9--;
         }
 
-        ov5_021DD9E8(fieldSystem->unk_04->unk_08, v8, v9);
+        MapNamePopUp_Show(fieldSystem->unk_04->unk_08, v8, v9);
     }
 
     return TRUE;
@@ -488,19 +485,19 @@ static void ov5_021D134C(FieldSystem *fieldSystem, u8 param1)
         sub_020559DC(fieldSystem);
     }
 
-    ov5_021D5298(fieldSystem->unk_4C);
-    ov5_021E1B68(fieldSystem);
+    AreaLightManager_UpdateActiveTemplate(fieldSystem->areaLightMan);
+    Signpost_DoCurrentCommand(fieldSystem);
 
     if ((param1 & 1) != 0) {
         ov5_021D5DEC(fieldSystem->unk_04->unk_10);
     }
 
     if ((param1 & 8) != 0) {
-        ov5_021D3F10(fieldSystem->unk_50);
+        MapPropAnimationManager_AdvanceAnimations(fieldSystem->mapPropAnimMan);
     }
 
     if ((param1 & 2) != 0) {
-        ov5_021E8188(fieldSystem, fieldSystem->unk_28);
+        LandDataManager_Tick(fieldSystem, fieldSystem->landDataMan);
 
         if (FieldMap_InDistortionWorld(fieldSystem) == TRUE) {
             ov9_0224CA5C(fieldSystem);
@@ -522,8 +519,8 @@ static void ov5_021D13B4(FieldSystem *fieldSystem)
     }
 
     v0 = sub_0203A76C(SaveData_GetFieldOverworldState(fieldSystem->saveData));
-    v1 = (Player_GetXPos(fieldSystem->playerAvatar) - ov5_021EA6AC(fieldSystem->unk_28)) / 32;
-    v2 = (Player_GetZPos(fieldSystem->playerAvatar) - ov5_021EA6B4(fieldSystem->unk_28)) / 32;
+    v1 = (Player_GetXPos(fieldSystem->playerAvatar) - LandDataManager_GetOffsetTileX(fieldSystem->landDataMan)) / MAP_TILES_COUNT_X;
+    v2 = (Player_GetZPos(fieldSystem->playerAvatar) - LandDataManager_GetOffsetTileY(fieldSystem->landDataMan)) / MAP_TILES_COUNT_Y;
     v3 = PlayerAvatar_GetDir(fieldSystem->playerAvatar);
 
     sub_02055740(v0, v1, v2, v3);
@@ -588,7 +585,7 @@ static void ov5_021D1444(BgConfig *bgl)
         };
 
         Bg_InitFromTemplate(bgl, 1, &v1, 0);
-        Bg_ClearTilesRange(1, 32, 0, 4);
+        Bg_ClearTilesRange(1, 32, 0, HEAP_ID_FIELD);
         Bg_ClearTilemap(bgl, 1);
     }
 
@@ -610,7 +607,7 @@ static void ov5_021D1444(BgConfig *bgl)
         };
 
         Bg_InitFromTemplate(bgl, 2, &v2, 0);
-        Bg_ClearTilesRange(2, 32, 0, 4);
+        Bg_ClearTilesRange(2, 32, 0, HEAP_ID_FIELD);
         Bg_ClearTilemap(bgl, 2);
     }
     {
@@ -631,7 +628,7 @@ static void ov5_021D1444(BgConfig *bgl)
         };
 
         Bg_InitFromTemplate(bgl, 3, &v3, 0);
-        Bg_ClearTilesRange(3, 32, 0, 4);
+        Bg_ClearTilesRange(3, 32, 0, HEAP_ID_FIELD);
         Bg_ClearTilemap(bgl, 3);
     }
 
@@ -654,42 +651,42 @@ static void ov5_021D1524(BgConfig *bgl)
 static void ov5_021D154C(void)
 {
     NNS_G2dInitOamManagerModule();
-    sub_0200A784(0, 124, 0, 31, 0, 124, 0, 31, 4);
+    RenderOam_Init(0, 124, 0, 31, 0, 124, 0, 31, 4);
 }
 
 static void ov5_021D1570(void)
 {
-    sub_0200A878();
+    RenderOam_Free();
 }
 
-static void ov5_021D1578(UnkStruct_ov5_021D5894 *param0)
+static void FieldMap_InitModelAttributes(ModelAttributes *modelAttrs)
 {
-    ov5_021D5ADC(param0, GX_POLYGONMODE_MODULATE, 0);
-    ov5_021D5AF0(param0, GX_CULL_BACK, 0);
-    ov5_021D5B04(param0, 31, 0);
-    ov5_021D5B18(param0, GX_POLYGON_ATTR_MISC_FOG, 1, 0);
-    ov5_021D58A8(param0, 1 << 22);
+    ModelAttributes_SetPolygonMode(modelAttrs, GX_POLYGONMODE_MODULATE, FALSE);
+    ModelAttributes_SetCullMode(modelAttrs, GX_CULL_BACK, FALSE);
+    ModelAttributes_SetAlpha(modelAttrs, 31, FALSE);
+    ModelAttributes_SetMiscAttrEnabled(modelAttrs, GX_POLYGON_ATTR_MISC_FOG, TRUE, FALSE);
+    ModelAttributes_ApplyGlobal(modelAttrs, MODEL_ATTRIBUTES_LAST_BIT);
 }
 
 void ov5_021D15B4(void)
 {
     {
-        UnkStruct_ov22_022559F8 v0 = {
+        CharTransferTemplate v0 = {
             20, 0x8000, 0x4000, 4
         };
 
-        sub_0201E88C(&v0, GX_OBJVRAMMODE_CHAR_1D_32K, GX_OBJVRAMMODE_CHAR_1D_32K);
+        CharTransfer_InitWithVramModes(&v0, GX_OBJVRAMMODE_CHAR_1D_32K, GX_OBJVRAMMODE_CHAR_1D_32K);
     }
 
-    sub_0201F834(20, 4);
-    sub_0201E994();
-    sub_0201F8E4();
+    PlttTransfer_Init(20, 4);
+    CharTransfer_ClearBuffers();
+    PlttTransfer_Clear();
 }
 
 void ov5_021D15E8(void)
 {
-    sub_0201E958();
-    sub_0201F8B4();
+    CharTransfer_Free();
+    PlttTransfer_Free();
 }
 
 static void ov5_021D15F4(FieldSystem *fieldSystem)
@@ -709,13 +706,13 @@ static void ov5_021D15F4(FieldSystem *fieldSystem)
     }
 
     sub_0206979C(fieldSystem);
-    ov5_021E91FC(fieldSystem->unk_28, fieldSystem->unk_44);
+    LandDataManager_RenderLoadedMaps(fieldSystem->landDataMan, fieldSystem->areaModelAttrs);
 
     if (FieldMap_InDistortionWorld(fieldSystem) == TRUE) {
         ov9_0224CA50(fieldSystem);
     }
 
-    ov5_021E1A6C(fieldSystem->unk_A4, fieldSystem->unk_30);
+    MapPropManager_Render2(fieldSystem->mapPropManager, fieldSystem->areaDataManager);
 
     {
         const MtxFx44 *v2;
@@ -771,11 +768,9 @@ static void ov5_021D173C(FieldSystem *fieldSystem)
 void ov5_021D1744(const u8 param0)
 {
     if (param0 == 1) {
-        StartScreenTransition(
-            0, 1, 1, 0x0, 6, 1, 4);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_FIELD);
     } else if (param0 == 0) {
-        StartScreenTransition(
-            0, 0, 0, 0x0, 6, 1, 4);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_FIELD);
     } else {
         GF_ASSERT(FALSE);
     }
@@ -786,14 +781,14 @@ static void ov5_021D1790(FieldSystem *fieldSystem)
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG0, 0);
     G3_SwapBuffers(GX_SORTMODE_AUTO, gBufferMode);
 
-    fieldSystem->unk_50 = ov5_021D38B8();
-    fieldSystem->unk_54 = ov5_021D4194();
+    fieldSystem->mapPropAnimMan = MapPropAnimationManager_New();
+    fieldSystem->mapPropOneShotAnimMan = MapPropOneShotAnimationManager_New();
 
     {
-        u16 v0, v1;
+        u16 areaDataArchiveID, v1;
 
-        v0 = sub_0203A038(fieldSystem->location->mapId);
-        fieldSystem->unk_30 = ov5_021EF76C(v0, fieldSystem->unk_50);
+        areaDataArchiveID = MapHeader_GetAreaDataArchiveID(fieldSystem->location->mapId);
+        fieldSystem->areaDataManager = AreaDataManager_Alloc(areaDataArchiveID, fieldSystem->mapPropAnimMan);
 
         v1 = sub_0203A04C(fieldSystem->location->mapId);
         GF_ASSERT(fieldSystem->unk_34 == NULL);
@@ -804,30 +799,30 @@ static void ov5_021D1790(FieldSystem *fieldSystem)
 
 static void ov5_021D17EC(FieldSystem *fieldSystem)
 {
-    fieldSystem->unk_28 = ov5_021E9084(fieldSystem->unk_2C, fieldSystem->unk_30, fieldSystem->unk_50, fieldSystem->unk_60);
+    fieldSystem->landDataMan = LandDataManager_New(fieldSystem->mapMatrix, fieldSystem->areaDataManager, fieldSystem->mapPropAnimMan, fieldSystem->skipMapAttributes);
 
     if (FieldMap_InDistortionWorld(fieldSystem) == TRUE) {
         int v0 = 0, v1 = 0, v2 = 0;
 
         ov9_02251094(fieldSystem->location->mapId, &v0, &v1, &v2);
-        ov5_021EA678(fieldSystem->unk_28, v0, v1, v2);
-        ov5_021EA6A4(fieldSystem->unk_28, 1);
-        ov5_021EA6D0(fieldSystem->unk_28, 1);
+        LandDataManager_DistortionWorldSetOffsets(fieldSystem->landDataMan, v0, v1, v2);
+        LandDataManager_SetInDistortionWorld(fieldSystem->landDataMan, TRUE);
+        LandDataManager_SetSkipMapProps(fieldSystem->landDataMan, TRUE);
     }
 
-    fieldSystem->unk_A0 = ov5_021EF28C(8, 4);
-    fieldSystem->unk_A8 = ov5_021EFB0C();
+    fieldSystem->unk_A0 = ov5_021EF28C(8, HEAP_ID_FIELD);
+    fieldSystem->unk_A8 = HoneyTree_ShakeDataInit();
 
     if (fieldSystem->mapLoadType == MAP_LOAD_TYPE_OVERWORLD) {
-        ov5_021E9630(fieldSystem->unk_28, ov5_021F0030, fieldSystem);
+        LandDataManager_SetMapLoadedCallback(fieldSystem->landDataMan, ov5_021F0030, fieldSystem);
     }
 
-    ov5_021E9150(fieldSystem->unk_28, fieldSystem->location->x, fieldSystem->location->z);
+    LandDataManager_InitialLoad(fieldSystem->landDataMan, fieldSystem->location->x, fieldSystem->location->z);
 }
 
 static void ov5_021D1878(FieldSystem *fieldSystem)
 {
-    fieldSystem->unk_40 = ov5_021DF440(fieldSystem, 34, 4);
+    fieldSystem->unk_40 = ov5_021DF440(fieldSystem, 34, HEAP_ID_FIELD);
 
     {
         int v0 = 80;
@@ -839,10 +834,10 @@ static void ov5_021D1878(FieldSystem *fieldSystem)
         ov5_021DF47C(fieldSystem->unk_40, v0);
     }
 
-    ov5_021DF488(fieldSystem->unk_40, 4, 32, 32, 32, 32, (0x500 * (32 / 2)), (0x80 * (32 / 2)), (0x800 * 32));
+    ov5_021DF488(fieldSystem->unk_40, HEAP_ID_FIELD, 32, 32, 32, 32, (0x500 * (32 / 2)), (0x80 * (32 / 2)), (0x800 * 32));
 
     if ((fieldSystem->mapLoadType == MAP_LOAD_TYPE_UNDERGROUND) || (fieldSystem->mapLoadType == MAP_LOAD_TYPE_UNION)) {
-        sub_02062CCC(fieldSystem->mapObjMan, 0);
+        MapObjectMan_SetEndMovement(fieldSystem->mapObjMan, 0);
     }
 
     {
@@ -883,7 +878,7 @@ static void ov5_021D1878(FieldSystem *fieldSystem)
     sub_02061C48(fieldSystem->mapObjMan);
     CommPlayerMan_ForcePos();
     sub_02062C3C(fieldSystem->mapObjMan);
-    ov5_021E931C(PlayerAvatar_PosVector(fieldSystem->playerAvatar), fieldSystem->unk_28);
+    LandDataManager_TrackTarget(PlayerAvatar_PosVector(fieldSystem->playerAvatar), fieldSystem->landDataMan);
 
     fieldSystem->unk_04->unk_18 = sub_02055C8C(fieldSystem, 4);
 }
@@ -892,8 +887,8 @@ static void ov5_021D1968(FieldSystem *fieldSystem)
 {
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG0, 1);
     GXLayers_TurnBothDispOn();
-    fieldSystem->unk_44 = ov5_021D5878();
-    ov5_021D1578(fieldSystem->unk_44);
+    fieldSystem->areaModelAttrs = ModelAttributes_New();
+    FieldMap_InitModelAttributes(fieldSystem->areaModelAttrs);
     fieldSystem->unk_48 = ov5_021D57BC();
 
     {
@@ -901,7 +896,7 @@ static void ov5_021D1968(FieldSystem *fieldSystem)
         ov5_021D5B40(PlayerAvatar_PosVector(fieldSystem->playerAvatar), fieldSystem, v0, 1);
     }
 
-    fieldSystem->unk_4C = ov5_021D521C(fieldSystem->unk_44, ov5_021EFAD8(fieldSystem->unk_30));
+    fieldSystem->areaLightMan = AreaLightManager_New(fieldSystem->areaModelAttrs, AreaDataManager_GetAreaLightArchiveID(fieldSystem->areaDataManager));
 
     if (FieldMap_InDistortionWorld(fieldSystem) == TRUE) {
         fieldSystem->unk_04->unk_0C = NULL;
@@ -909,23 +904,21 @@ static void ov5_021D1968(FieldSystem *fieldSystem)
         fieldSystem->unk_04->unk_0C = ov5_021D5EB8(fieldSystem);
     }
 
-    fieldSystem->unk_04->unk_08 = ov5_021DD98C(fieldSystem->bgConfig);
-    fieldSystem->unk_64 = ov5_021E1B08(4);
+    fieldSystem->unk_04->unk_08 = MapNamePopUp_Create(fieldSystem->bgConfig);
+    fieldSystem->signpost = Signpost_Init(HEAP_ID_FIELD);
     fieldSystem->unk_04->unk_10 = ov5_021D5CB0();
 
-    ov5_021D5CE4(fieldSystem->unk_04->unk_10, ov5_021EFA8C(fieldSystem->unk_30));
+    ov5_021D5CE4(fieldSystem->unk_04->unk_10, AreaDataManager_GetMapTexture(fieldSystem->areaDataManager));
     sub_02068344(fieldSystem);
     ov5_021EE7C0(fieldSystem);
-    SetMainCallback(fieldmap, fieldSystem);
+    SetVBlankCallback(fieldmap, fieldSystem);
 }
 
 static UnkStruct_ov5_021D1A68 *ov5_021D1A14(int fieldSystem, int param1)
 {
     int v0;
     u16 *v1;
-    UnkStruct_ov5_021D1A68 *v2;
-
-    v2 = Heap_AllocFromHeap(fieldSystem, sizeof(UnkStruct_ov5_021D1A68));
+    UnkStruct_ov5_021D1A68 *v2 = Heap_AllocFromHeap(fieldSystem, sizeof(UnkStruct_ov5_021D1A68));
     v1 = NARC_AllocAtEndAndReadWholeMemberByIndexPair(NARC_INDEX_FIELDDATA__MM_LIST__MOVE_MODEL_LIST, param1, fieldSystem);
 
     for (v0 = 0; v0 < 24; v0++) {

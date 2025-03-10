@@ -8,8 +8,8 @@
 #include "string_template.h"
 #include "sys_task_manager.h"
 
-#define DEBUG_KEY                 PAD_BUTTON_R
-#define DEBUG_FLAG_NO_COLLISION   2549
+#define DEBUG_KEY               PAD_BUTTON_R
+#define DEBUG_FLAG_NO_COLLISION 2549
 
 typedef struct DebugMenu {
     u16 data;

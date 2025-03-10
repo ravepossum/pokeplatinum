@@ -26,7 +26,6 @@
 
 #include "bg_window.h"
 #include "camera.h"
-#include "cell_actor.h"
 #include "enc_effects.h"
 #include "field_battle_data_transfer.h"
 #include "graphics.h"
@@ -35,12 +34,13 @@
 #include "narc.h"
 #include "palette.h"
 #include "pokemon.h"
+#include "sprite.h"
 #include "sprite_resource.h"
+#include "sprite_transfer.h"
+#include "sprite_util.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "unk_0200679C.h"
-#include "unk_020093B4.h"
-#include "unk_0200A328.h"
 #include "unk_02014000.h"
 #include "unk_02054884.h"
 
@@ -102,7 +102,7 @@ static void ov5_021DEDE8(SysTask *param0, void *param1);
 static void ov5_021DEE24(SysTask *param0, void *param1);
 static void ov5_021DEE50(HBlankTask *param0, void *param1);
 static void ov5_021DEE84(UnkStruct_ov5_021DED04 *param0);
-static void ov5_021DE67C(CellActor *param0, void *param1, u32 param2);
+static void ov5_021DE67C(Sprite *param0, void *param1, u32 param2);
 static void ov5_021DF258(SysTask *param0, void *param1);
 static void ov5_021DF28C(SysTask *param0, void *param1);
 static void ov5_021DF30C(FieldSystem *fieldSystem);
@@ -199,13 +199,13 @@ void EncounterEffect_Start(enum EncEffectCutIn effect, FieldSystem *fieldSystem,
 void EncounterEffect_Finish(EncounterEffect *encEffect, SysTask *effectTask)
 {
     NARC_dtor(encEffect->narc);
-    Heap_FreeToHeapExplicit(4, encEffect->param);
+    Heap_FreeToHeapExplicit(HEAP_ID_FIELD, encEffect->param);
     SysTask_FinishAndFreeParam(effectTask);
 }
 
 void EncounterEffect_Flash(enum Screen screen, u32 screenFlashColor, u32 otherScreenFlashColor, BOOL *done, u32 numFlashes)
 {
-    ScreenFlash *screenFlash = Heap_AllocFromHeap(4, sizeof(ScreenFlash));
+    ScreenFlash *screenFlash = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(ScreenFlash));
     memset(screenFlash, 0, sizeof(ScreenFlash));
     SysTask_Start(EncounterEffect_FlashTask, screenFlash, 5);
 
@@ -714,10 +714,10 @@ void ov5_021DE3D0(NARC *param0, u32 param1, u32 param2, u32 param3, u32 param4, 
     void *v0;
     NNSG2dScreenData *v1;
 
-    Graphics_LoadPaletteFromOpenNARC(param0, param3, 0, param4 * 32, param5 * 32, 4);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param0, param2, param6, param7, 0, 0, 0, 4);
+    Graphics_LoadPaletteFromOpenNARC(param0, param3, 0, param4 * 32, param5 * 32, HEAP_ID_FIELD);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param0, param2, param6, param7, 0, 0, 0, HEAP_ID_FIELD);
 
-    v0 = Graphics_GetScrnDataFromOpenNARC(param0, param1, 0, &v1, 4);
+    v0 = Graphics_GetScrnDataFromOpenNARC(param0, param1, 0, &v1, HEAP_ID_FIELD);
 
     Bg_LoadToTilemapRect(param6, param7, v1->rawData, 0, 0, v1->screenWidth / 8, v1->screenHeight / 8);
     Bg_ChangeTilemapRectPalette(param6, param7, 0, 0, v1->screenWidth / 8, v1->screenHeight / 8, param4);
@@ -729,7 +729,7 @@ void ov5_021DE47C(UnkStruct_ov5_021DE47C *param0, int param1, int param2)
 {
     int v0;
 
-    param0->unk_00 = sub_020095C4(param1, &param0->unk_04, 4);
+    param0->unk_00 = SpriteList_InitRendering(param1, &param0->unk_04, 4);
 
     for (v0 = 0; v0 < 4; v0++) {
         param0->unk_190[v0] = SpriteResourceCollection_New(param2, v0, 4);
@@ -740,7 +740,7 @@ void ov5_021DE4AC(UnkStruct_ov5_021DE47C *param0)
 {
     int v0;
 
-    CellActorCollection_Delete(param0->unk_00);
+    SpriteList_Delete(param0->unk_00);
 
     for (v0 = 0; v0 < 4; v0++) {
         SpriteResourceCollection_Delete(param0->unk_190[v0]);
@@ -754,25 +754,25 @@ void ov5_021DE4CC(NARC *param0, UnkStruct_ov5_021DE47C *param1, UnkStruct_ov5_02
     param2->unk_00[2] = SpriteResourceCollection_AddFrom(param1->unk_190[2], param0, param6, 0, param8, 2, 4);
     param2->unk_00[3] = SpriteResourceCollection_AddFrom(param1->unk_190[3], param0, param7, 0, param8, 3, 4);
 
-    sub_0200A3DC(param2->unk_00[0]);
+    SpriteTransfer_RequestCharAtEnd(param2->unk_00[0]);
     SpriteResource_ReleaseData(param2->unk_00[0]);
-    sub_0200A640(param2->unk_00[1]);
-    sub_020093B4(&param2->unk_10, param8, param8, param8, param8, 0xffffffff, 0xffffffff, 0, 0, param1->unk_190[0], param1->unk_190[1], param1->unk_190[2], param1->unk_190[3], NULL, NULL);
+    SpriteTransfer_RequestPlttFreeSpace(param2->unk_00[1]);
+    SpriteResourcesHeader_Init(&param2->unk_10, param8, param8, param8, param8, 0xffffffff, 0xffffffff, 0, 0, param1->unk_190[0], param1->unk_190[1], param1->unk_190[2], param1->unk_190[3], NULL, NULL);
 }
 
 void ov5_021DE5A4(UnkStruct_ov5_021DE47C *param0, UnkStruct_ov5_021DE5A4 *param1)
 {
     int v0;
 
-    sub_0200A4E4(param1->unk_00[0]);
-    sub_0200A6DC(param1->unk_00[1]);
+    SpriteTransfer_ResetCharTransfer(param1->unk_00[0]);
+    SpriteTransfer_ResetPlttTransfer(param1->unk_00[1]);
 
     for (v0 = 0; v0 < 4; v0++) {
         SpriteResourceCollection_Remove(param0->unk_190[v0], param1->unk_00[v0]);
     }
 }
 
-void ov5_021DE5D0(CellActor *param0, u32 param1, u32 param2, u8 param3, u16 param4)
+void ov5_021DE5D0(Sprite *param0, u32 heapID, u32 param2, u8 param3, u16 param4)
 {
     UnkStruct_ov5_021DE5D0 v0;
     NNSG2dPaletteData *v1;
@@ -780,8 +780,8 @@ void ov5_021DE5D0(CellActor *param0, u32 param1, u32 param2, u8 param3, u16 para
     u16 *v3;
 
     sub_02076AAC(param2, 2, &v0);
-    v3 = Heap_AllocFromHeap(param1, 32);
-    v2 = Graphics_GetPlttData(v0.unk_00, v0.unk_08, &v1, param1);
+    v3 = Heap_AllocFromHeap(heapID, 32);
+    v2 = Graphics_GetPlttData(v0.unk_00, v0.unk_08, &v1, heapID);
     BlendPalette(v1->pRawData, v3, 16, param3, param4);
 
     ov5_021DE67C(param0, v3, 32);
@@ -790,12 +790,12 @@ void ov5_021DE5D0(CellActor *param0, u32 param1, u32 param2, u8 param3, u16 para
     Heap_FreeToHeap(v2);
 }
 
-CellActor *ov5_021DE62C(UnkStruct_ov5_021DE47C *param0, UnkStruct_ov5_021DE5A4 *param1, fx32 param2, fx32 param3, fx32 param4, int param5)
+Sprite *ov5_021DE62C(UnkStruct_ov5_021DE47C *param0, UnkStruct_ov5_021DE5A4 *param1, fx32 param2, fx32 param3, fx32 param4, int param5)
 {
-    CellActorInitParams v0;
-    CellActor *v1;
+    SpriteListTemplate v0;
+    Sprite *v1;
 
-    v0.collection = param0->unk_00;
+    v0.list = param0->unk_00;
     v0.resourceData = &param1->unk_10;
     v0.position.x = param2;
     v0.position.y = param3;
@@ -804,7 +804,7 @@ CellActor *ov5_021DE62C(UnkStruct_ov5_021DE47C *param0, UnkStruct_ov5_021DE5A4 *
     v0.vramType = NNS_G2D_VRAM_TYPE_2DMAIN;
     v0.heapID = 4;
 
-    v1 = CellActorCollection_Add(&v0);
+    v1 = SpriteList_Add(&v0);
     GF_ASSERT(v1);
     return v1;
 }
@@ -814,21 +814,17 @@ VecFx32 VecFx32_FromXYZ(fx32 x, fx32 y, fx32 z)
     return (VecFx32) { x, y, z };
 }
 
-static void ov5_021DE67C(CellActor *param0, void *param1, u32 param2)
+static void ov5_021DE67C(Sprite *param0, void *param1, u32 param2)
 {
-    NNSG2dImagePaletteProxy *v0;
-
-    v0 = CellActor_GetPaletteProxy(param0);
+    NNSG2dImagePaletteProxy *v0 = Sprite_GetPaletteProxy(param0);
 
     DC_FlushRange(param1, param2);
     GX_LoadOBJPltt(param1, NNS_G2dGetImagePaletteLocation(v0, NNS_G2D_VRAM_TYPE_2DMAIN), param2);
 }
 
-UnkStruct_ov5_021DE6BC *ov5_021DE6A4(u32 param0)
+UnkStruct_ov5_021DE6BC *ov5_021DE6A4(u32 heapID)
 {
-    UnkStruct_ov5_021DE6BC *v0;
-
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov5_021DE6BC));
+    UnkStruct_ov5_021DE6BC *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov5_021DE6BC));
     memset(v0, 0, sizeof(UnkStruct_ov5_021DE6BC));
 
     return v0;
@@ -875,11 +871,9 @@ BOOL ov5_021DE71C(UnkStruct_ov5_021DE6BC *param0)
     return v0;
 }
 
-UnkStruct_ov5_021DE79C *ov5_021DE784(u32 param0)
+static UnkStruct_ov5_021DE79C *ov5_021DE784(u32 heapID)
 {
-    UnkStruct_ov5_021DE79C *v0;
-
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov5_021DE79C));
+    UnkStruct_ov5_021DE79C *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov5_021DE79C));
 
     memset(v0, 0, sizeof(UnkStruct_ov5_021DE79C));
     return v0;
@@ -961,16 +955,16 @@ static void ov5_021DE89C(Window *param0, s32 param1, s32 param2, s32 param3, s32
     Window_FillRectWithColor(param0, param5, param3, param1, param4 - param3, param2 - param1);
 }
 
-UnkStruct_ov5_021DE928 *ov5_021DE8F8(u32 param0)
+UnkStruct_ov5_021DE928 *ov5_021DE8F8(u32 heapID)
 {
     UnkStruct_ov5_021DE928 *v0;
     int v1;
 
-    v0 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021DE928));
+    v0 = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021DE928));
     memset(v0, 0, sizeof(UnkStruct_ov5_021DE928));
 
     for (v1 = 0; v1 < 48; v1++) {
-        v0->unk_04[v1] = ov5_021DE784(param0);
+        v0->unk_04[v1] = ov5_021DE784(heapID);
     }
 
     return v0;
@@ -1041,11 +1035,9 @@ BOOL ov5_021DE988(UnkStruct_ov5_021DE928 *param0)
     return 0;
 }
 
-UnkStruct_ov5_021DEA98 *ov5_021DEA80(u32 param0)
+UnkStruct_ov5_021DEA98 *ov5_021DEA80(u32 heapID)
 {
-    UnkStruct_ov5_021DEA98 *v0;
-
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov5_021DEA98));
+    UnkStruct_ov5_021DEA98 *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov5_021DEA98));
     memset(v0, 0, sizeof(UnkStruct_ov5_021DEA98));
     return v0;
 }
@@ -1128,16 +1120,16 @@ static void ov5_021DEB04(Window *param0, u16 param1, u16 param2, u8 param3)
     }
 }
 
-UnkStruct_ov5_021DEC18 *ov5_021DEBEC(u32 param0)
+UnkStruct_ov5_021DEC18 *ov5_021DEBEC(u32 heapID)
 {
     UnkStruct_ov5_021DEC18 *v0;
     int v1;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov5_021DEC18));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov5_021DEC18));
     memset(v0, 0, sizeof(UnkStruct_ov5_021DEC18));
 
     for (v1 = 0; v1 < 8; v1++) {
-        v0->unk_00[v1] = ov5_021DEA80(param0);
+        v0->unk_00[v1] = ov5_021DEA80(heapID);
     }
 
     return v0;
@@ -1189,9 +1181,7 @@ BOOL ov5_021DECB8(UnkStruct_ov5_021DEC18 *param0)
 
 UnkStruct_ov5_021DED04 *ov5_021DECEC(void)
 {
-    UnkStruct_ov5_021DED04 *v0;
-
-    v0 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021DED04));
+    UnkStruct_ov5_021DED04 *v0 = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021DED04));
     memset(v0, 0, sizeof(UnkStruct_ov5_021DED04));
 
     return v0;
@@ -1274,9 +1264,7 @@ static void ov5_021DEE50(HBlankTask *param0, void *param1)
 {
     UnkStruct_ov5_021DED04 *v0 = param1;
     int v1;
-    int v2;
-
-    v2 = GX_GetVCount();
+    int v2 = GX_GetVCount();
 
     if (v2 < 192) {
         v1 = -v0->unk_18[v2] + v0->unk_00.currentValue;
@@ -1372,7 +1360,7 @@ void ov5_021DEFA0(FieldSystem *fieldSystem)
 {
     GF_ASSERT(Unk_ov5_02202120 == NULL);
 
-    Unk_ov5_02202120 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_02202120));
+    Unk_ov5_02202120 = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_02202120));
     memset(Unk_ov5_02202120, 0, sizeof(UnkStruct_ov5_02202120));
 
     Unk_ov5_02202120->unk_00 = 0;
@@ -1434,8 +1422,8 @@ void ov5_021DF0CC(NARC *param0, u32 param1)
     GF_ASSERT(Unk_ov5_02202120);
     GF_ASSERT(Unk_ov5_02202120->unk_08 == NULL);
 
-    Unk_ov5_02202120->unk_0C = Heap_AllocFromHeap(4, 0x4800);
-    Unk_ov5_02202120->unk_08 = sub_02014014(ov5_021DF3E8, ov5_021DF414, Unk_ov5_02202120->unk_0C, 0x4800, 1, 4);
+    Unk_ov5_02202120->unk_0C = Heap_AllocFromHeap(HEAP_ID_FIELD, 0x4800);
+    Unk_ov5_02202120->unk_08 = sub_02014014(ov5_021DF3E8, ov5_021DF414, Unk_ov5_02202120->unk_0C, 0x4800, 1, HEAP_ID_FIELD);
     GF_ASSERT(Unk_ov5_02202120->unk_08);
 
     sub_02014788(Unk_ov5_02202120->unk_08, 1);
@@ -1617,7 +1605,7 @@ static void ov5_021DF30C(FieldSystem *fieldSystem)
             };
 
             Bg_InitFromTemplate(fieldSystem->bgConfig, 2, &v3, 0);
-            Bg_ClearTilesRange(2, 32, 0, 4);
+            Bg_ClearTilesRange(2, 32, 0, HEAP_ID_FIELD);
             Bg_ClearTilemap(fieldSystem->bgConfig, 2);
         }
     }

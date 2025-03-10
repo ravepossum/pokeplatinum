@@ -1,9 +1,10 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/unk_0541.h"
 
     .data
 
     ScriptEntry _0006
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0006:
     PlayFanfare SEQ_SE_CONFIRM
@@ -40,8 +41,8 @@ _0041:
 _0085:
     BufferNumber 2, 1
     Message 7
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0152
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0152
     ScrCmd_29A 1, 0x800C
     GoToIfEq 0x800C, 0, _0147
     ScrCmd_299 1
@@ -56,7 +57,7 @@ _0085:
     ScrCmd_2E4 1, 0x4002, 0x4003
     ScrCmd_2E4 2, 0x4004, 0x4005
     ScrCmd_2E3
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     SetVar 0x8000, 0

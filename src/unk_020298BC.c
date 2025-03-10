@@ -144,7 +144,7 @@ static void sub_02029990(UnkStruct_0202A138 *param0, Pokemon *param1, UnkStruct_
 
 static void sub_020299C0(UnkStruct_0202A138 *param0, const Strbuf *param1, int param2)
 {
-    Strbuf_ToChars(param1, param0->unk_20, 8);
+    Strbuf_ToChars(param1, param0->unk_20, 8); // Possibly TRAINER_NAME_LEN + 1
     param0->unk_34 = param2;
 }
 
@@ -260,9 +260,7 @@ static u8 sub_02029B5C(const u32 *param0, u8 param1)
 static u8 sub_02029B80(const u32 *param0)
 {
     int v0;
-    int v1;
-
-    v1 = 0;
+    int v1 = 0;
 
     for (v0 = 0; v0 < 18; v0++) {
         if (sub_02029B5C(param0, v0) != 18) {
@@ -338,21 +336,17 @@ int sub_02029C64(void)
     return sizeof(UnkStruct_02029C88);
 }
 
-UnkStruct_02029C68 *sub_02029C68(u32 param0)
+UnkStruct_02029C68 *sub_02029C68(u32 heapID)
 {
-    UnkStruct_02029C68 *v0;
-
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_02029C68));
+    UnkStruct_02029C68 *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_02029C68));
     inline_02029BFC(v0);
 
     return v0;
 }
 
-UnkStruct_02029C88 *sub_02029C88(u32 param0)
+UnkStruct_02029C88 *sub_02029C88(u32 heapID)
 {
-    UnkStruct_02029C88 *v0;
-
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_02029C88));
+    UnkStruct_02029C88 *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_02029C88));
     inline_02029BFC_1(v0);
 
     return v0;
@@ -417,9 +411,7 @@ BOOL sub_02029D50(const UnkStruct_02029D04 *param0, u32 param1, u32 param2)
 
 BOOL sub_02029D80(const UnkStruct_02029D04 *param0, u32 param1)
 {
-    u32 v0;
-
-    v0 = sub_02029DD4(param0, param1);
+    u32 v0 = sub_02029DD4(param0, param1);
 
     if (v0 != 18) {
         return 1;
@@ -457,9 +449,7 @@ u32 sub_02029DD4(const UnkStruct_02029D04 *param0, u32 param1)
 u32 sub_02029DF0(const UnkStruct_02029D04 *param0)
 {
     int v0;
-    int v1;
-
-    v1 = 0;
+    int v1 = 0;
 
     for (v0 = 0; v0 < 100; v0++) {
         v1 += sub_02029D94(param0, v0);

@@ -6,7 +6,6 @@
 #include "constants/battle.h"
 
 #include "struct_decls/battle_system.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/chatot_cry.h"
 #include "struct_defs/struct_02027F8C.h"
 #include "struct_defs/struct_02039A58.h"
@@ -14,7 +13,7 @@
 #include "struct_defs/struct_0207A81C.h"
 #include "struct_defs/struct_0207ACB4.h"
 #include "struct_defs/struct_0207AD40.h"
-#include "struct_defs/trainer_data.h"
+#include "struct_defs/trainer.h"
 
 #include "battle/battle_io.h"
 #include "battle/ov16_0223DF00.h"
@@ -32,7 +31,7 @@
 #include "unk_02032798.h"
 #include "unk_020363E8.h"
 
-void sub_0207A81C(BattleSystem *param0, int param1, int param2, void *param3, u8 param4);
+void sub_0207A81C(BattleSystem *battleSys, int param1, int param2, void *param3, u8 param4);
 BOOL sub_0207A8F4(UnkStruct_0207A778 *param0, u32 param1);
 BOOL sub_0207A960(UnkStruct_0207A778 *param0);
 BOOL sub_0207A988(UnkStruct_0207A778 *param0);
@@ -106,8 +105,8 @@ void sub_0207A6DC(void *param0)
         return;
     }
 
-    v2 = (UnkStruct_0207ACB4 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_0207ACB4));
-    v3 = (UnkStruct_0207AD40 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_0207AD40));
+    v2 = (UnkStruct_0207ACB4 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_0207ACB4));
+    v3 = (UnkStruct_0207AD40 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_0207AD40));
 
     CommCmd_Init(Unk_020F099C, v0, param0);
 
@@ -151,7 +150,7 @@ static int sub_0207A76C(void)
 
 static int sub_0207A774(void)
 {
-    return sizeof(TrainerData);
+    return sizeof(Trainer);
 }
 
 static u8 *sub_0207A778(int param0, void *param1, int param2)
@@ -170,9 +169,9 @@ static u8 *sub_0207A798(int param0, void *param1, int param2)
     UnkStruct_0207A778 *v0 = param1;
 
     if (v0->unk_00->battleType & BATTLE_TYPE_FRONTIER) {
-        return (u8 *)&v0->unk_00->trainerData[param0 * 2];
+        return (u8 *)&v0->unk_00->trainer[param0 * 2];
     } else {
-        return (u8 *)&v0->unk_00->trainerData[param0];
+        return (u8 *)&v0->unk_00->trainer[param0];
     }
 }
 
@@ -201,13 +200,13 @@ static u8 *sub_0207A7D4(int param0, void *param1, int param2)
 static u8 *sub_0207A7F4(int param0, void *param1, int param2)
 {
     UnkStruct_0207A778 *v0 = param1;
-    return (u8 *)&v0->unk_00->trainerData[1];
+    return (u8 *)&v0->unk_00->trainer[1];
 }
 
 static u8 *sub_0207A7FC(int param0, void *param1, int param2)
 {
     UnkStruct_0207A778 *v0 = param1;
-    return (u8 *)&v0->unk_00->trainerData[3];
+    return (u8 *)&v0->unk_00->trainer[3];
 }
 
 static u8 *sub_0207A804(int param0, void *param1, int param2)
@@ -228,7 +227,7 @@ static u8 *sub_0207A814(int param0, void *param1, int param2)
     return (u8 *)v0->unk_10[param0];
 }
 
-void sub_0207A81C(BattleSystem *param0, int param1, int param2, void *param3, u8 param4)
+void sub_0207A81C(BattleSystem *battleSys, int param1, int param2, void *param3, u8 param4)
 {
     int v0;
     UnkStruct_0207A81C *v1;
@@ -237,10 +236,10 @@ void sub_0207A81C(BattleSystem *param0, int param1, int param2, void *param3, u8
     u16 *v4;
     u16 *v5;
 
-    v1 = (UnkStruct_0207A81C *)Heap_AllocFromHeap(5, sizeof(UnkStruct_0207A81C));
-    v3 = ov16_0223E06C(param0);
-    v4 = ov16_0223E08C(param0);
-    v5 = ov16_0223E098(param0);
+    v1 = (UnkStruct_0207A81C *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_0207A81C));
+    v3 = ov16_0223E06C(battleSys);
+    v4 = ov16_0223E08C(battleSys);
+    v5 = ov16_0223E098(battleSys);
 
     if (v4[0] + sizeof(UnkStruct_0207A81C) + param4 + 1 > 0x1000) {
         v5[0] = v4[0];
@@ -347,14 +346,14 @@ static void sub_0207A9BC(int param0, int param1, void *param2, void *param3)
 
 BOOL sub_0207A9CC(UnkStruct_0207A778 *param0)
 {
-    TrainerData *v0;
+    Trainer *v0;
 
     if (CommSys_SendRingRemainingSize() != 264) {
         return 0;
     }
 
-    v0 = (TrainerData *)&param0->unk_20[0];
-    *v0 = param0->unk_00->trainerData[0];
+    v0 = (Trainer *)&param0->unk_20[0];
+    *v0 = param0->unk_00->trainer[0];
 
     return 1;
 }
@@ -369,7 +368,7 @@ BOOL sub_0207A9F8(UnkStruct_0207A778 *param0)
         return 0;
     }
 
-    return CommSys_SendDataHuge(26, (void *)&param0->unk_20[0], sizeof(TrainerData));
+    return CommSys_SendDataHuge(26, (void *)&param0->unk_20[0], sizeof(Trainer));
 }
 
 static void sub_0207AA28(int param0, int param1, void *param2, void *param3)
@@ -387,7 +386,7 @@ BOOL sub_0207AA38(UnkStruct_0207A778 *param0)
     }
 
     v0 = (Party *)&param0->unk_20[0];
-    Party_cpy(param0->unk_00->parties[0], v0);
+    Party_Copy(param0->unk_00->parties[0], v0);
 
     return 1;
 }
@@ -462,7 +461,7 @@ BOOL sub_0207AAFC(UnkStruct_0207A778 *param0)
         int v2;
 
         for (v2 = 0; v2 < 4; v2++) {
-            param0->unk_10[v2] = Heap_AllocFromHeap(5, 136);
+            param0->unk_10[v2] = Heap_AllocFromHeap(HEAP_ID_BATTLE, 136);
         }
     }
 
@@ -490,14 +489,14 @@ static void sub_0207AB8C(int param0, int param1, void *param2, void *param3)
 
 BOOL sub_0207AB9C(UnkStruct_0207A778 *param0, int param1)
 {
-    TrainerData *v0;
+    Trainer *v0;
 
     if (CommSys_SendRingRemainingSize() != 264) {
         return 0;
     }
 
-    v0 = (TrainerData *)&param0->unk_20[0];
-    *v0 = param0->unk_00->trainerData[param1];
+    v0 = (Trainer *)&param0->unk_20[0];
+    *v0 = param0->unk_00->trainer[param1];
 
     return 1;
 }
@@ -513,9 +512,9 @@ BOOL sub_0207ABD0(UnkStruct_0207A778 *param0, int param1, int param2)
     }
 
     if (param1 == 1) {
-        return CommSys_SendDataHuge(29, (void *)&param0->unk_20[0], sizeof(TrainerData));
+        return CommSys_SendDataHuge(29, (void *)&param0->unk_20[0], sizeof(Trainer));
     } else {
-        return CommSys_SendDataHuge(30, (void *)&param0->unk_20[0], sizeof(TrainerData));
+        return CommSys_SendDataHuge(30, (void *)&param0->unk_20[0], sizeof(Trainer));
     }
 }
 
@@ -534,7 +533,7 @@ BOOL sub_0207AC28(UnkStruct_0207A778 *param0, int param1)
     }
 
     v0 = (Party *)&param0->unk_20[0];
-    Party_cpy(param0->unk_00->parties[param1], v0);
+    Party_Copy(param0->unk_00->parties[param1], v0);
 
     return 1;
 }
@@ -676,7 +675,7 @@ void sub_0207AE34(int param0, int param1, void *param2, void *param3)
     UnkStruct_0207A778 *v0 = (UnkStruct_0207A778 *)param3;
 
     if (CommSys_CurNetId() != param0) {
-        sub_02027FEC(v0->unk_00->unk_124, (UnkStruct_02027F8C *)param2, 1, 5);
+        sub_02027FEC(v0->unk_00->unk_124, (UnkStruct_02027F8C *)param2, 1, HEAP_ID_BATTLE);
     }
 
     v0->unk_1020++;

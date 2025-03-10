@@ -20,11 +20,11 @@
 #include "party.h"
 #include "pokemon.h"
 #include "savedata.h"
+#include "system_vars.h"
 #include "unk_02030108.h"
 #include "unk_0203061C.h"
 #include "unk_02030880.h"
 #include "unk_0205DFC4.h"
-#include "unk_0206AFE0.h"
 #include "vars_flags.h"
 
 UnkStruct_ov104_0223B5C0 *ov104_02234DB4(SaveData *param0, u16 param1, u8 param2, u8 param3, u8 param4);
@@ -56,14 +56,14 @@ UnkStruct_ov104_0223B5C0 *ov104_02234DB4(SaveData *param0, u16 param1, u8 param2
     Pokemon *v9;
     static UnkStruct_ov104_0223B5C0 *v10;
 
-    v10 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov104_0223B5C0));
+    v10 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov104_0223B5C0));
     MI_CpuClear8(v10, sizeof(UnkStruct_ov104_0223B5C0));
 
     v10->unk_6F8 = sub_02030114(param0);
     v10->unk_6FC = param0;
     v10->unk_00 = 11;
-    v10->unk_264 = Party_New(11);
-    v10->unk_D8C = Pokemon_New(11);
+    v10->unk_264 = Party_New(HEAP_ID_FIELDMAP);
+    v10->unk_D8C = Pokemon_New(HEAP_ID_FIELDMAP);
 
     v0 = v10->unk_6F8;
     v1 = sub_0203026C(param0);
@@ -76,7 +76,7 @@ UnkStruct_ov104_0223B5C0 *ov104_02234DB4(SaveData *param0, u16 param1, u8 param2
         sub_02030108(v0);
 
         if (v10->unk_04 == 3) {
-            v2 = sub_0206B6FC(SaveData_GetVarsFlags(v10->unk_6FC));
+            v2 = SystemVars_GetWiFiFrontierCleared(SaveData_GetVarsFlags(v10->unk_6FC));
         } else {
             v2 = (u8)sub_020302B4(v1, 5, v10->unk_04, 0, NULL);
         }
@@ -332,9 +332,7 @@ u16 ov104_022354C0(UnkStruct_ov104_0223B5C0 *param0, u8 param1)
 {
     UnkStruct_ov104_0223A348_sub1 v0;
     UnkStruct_0204B184 *v1;
-    u8 v2;
-
-    v2 = (param0->unk_05 * 2) + param1;
+    u8 v2 = (param0->unk_05 * 2) + param1;
     v1 = ov104_0222DD04(&v0, param0->unk_18[v2], 11, 178);
 
     Heap_FreeToHeap(v1);
@@ -426,9 +424,7 @@ u16 ov104_02235578(UnkStruct_ov104_0223B5C0 *param0)
 
 static u16 ov104_022355C0(SaveData *param0, u8 param1, u8 param2, u16 *param3, u16 *param4)
 {
-    u16 v0;
-
-    v0 = sub_02030698(sub_0203068C(param0), sub_0205E4E0(param1, param2), sub_0205E6A8(sub_0205E4E0(param1, param2)));
+    u16 v0 = sub_02030698(sub_0203068C(param0), sub_0205E4E0(param1, param2), sub_0205E6A8(sub_0205E4E0(param1, param2)));
     v0 &= 0xff;
 
     *param3 = (v0 & 0xf);
@@ -493,9 +489,7 @@ void ov104_022356A0(UnkStruct_ov104_0223B5C0 *param0)
 
 void ov104_022356F4(UnkStruct_ov104_0223B5C0 *param0)
 {
-    int v0;
-
-    v0 = ov104_0223B64C(param0);
+    int v0 = ov104_0223B64C(param0);
     param0->unk_0C = ov104_0223B6C4(v0);
 
     return;

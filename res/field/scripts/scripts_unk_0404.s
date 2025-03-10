@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/unk_0369.h"
 
     .data
 
@@ -330,7 +331,7 @@
     ScriptEntry _1E86
     ScriptEntry _1E9A
     ScriptEntry _1EAE
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0522:
     SetVar 0x8008, 17
@@ -2313,7 +2314,7 @@ _1EEA:
 
 _1EF0:
     CallCommonScript 0x7D1
-    ScrCmd_065 0x800D
+    RemoveObject 0x800D
     AddItem 0x8004, 0x8005, 0x800C
     ScrCmd_2A2 0x8004
     CallIfEq 0x8004, 0x1CF, _20C0
@@ -2330,14 +2331,14 @@ _1F33:
     BufferItemName 1, 0x8004
     GetItemPocket 0x8004, 0x800C
     SetVar 0x8008, 0x800C
-    GoToIfEq 0x8008, 7, _1FD9
-    GoToIfEq 0x8008, 0, _1FC6
-    GoToIfEq 0x8008, 4, _2025
-    GoToIfEq 0x8008, 1, _2012
-    GoToIfEq 0x8008, 2, _2038
-    GoToIfEq 0x8008, 6, _204B
-    GoToIfEq 0x8008, 5, _1FFF
-    GoToIfEq 0x8008, 3, _1FEC
+    GoToIfEq 0x8008, POCKET_KEY_ITEMS, _1FD9
+    GoToIfEq 0x8008, POCKET_ITEMS, _1FC6
+    GoToIfEq 0x8008, POCKET_BERRIES, _2025
+    GoToIfEq 0x8008, POCKET_MEDICINE, _2012
+    GoToIfEq 0x8008, POCKET_BALLS, _2038
+    GoToIfEq 0x8008, POCKET_BATTLE_ITEMS, _204B
+    GoToIfEq 0x8008, POCKET_MAIL, _1FFF
+    GoToIfEq 0x8008, POCKET_TMHMS, _1FEC
     End
 
 _1FC6:
@@ -2389,7 +2390,7 @@ _204B:
     End
 
 _205E:
-    ScrCmd_1CD 18, 0x8004, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_ITEM_WAS_OBTAINED, 0x8004, 0, 0, 0
     Message 9
     WaitABXPadPress
     SetVar 0x800C, 1

@@ -18,10 +18,10 @@
 #include "overlay022/struct_ov22_0225A0E4.h"
 #include "overlay022/struct_ov22_0225A428.h"
 
-#include "core_sys.h"
 #include "heap.h"
 #include "math.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "unk_02005474.h"
 #include "unk_0200679C.h"
 
@@ -80,7 +80,7 @@ void ov22_022589E0(UnkStruct_ov22_02258A48 *param0, UnkStruct_ov22_02257964 *par
 
     ov22_022588F0(param0);
 
-    param0->unk_00 = Heap_AllocFromHeap(13, sizeof(UnkStruct_ov22_02258EE4));
+    param0->unk_00 = Heap_AllocFromHeap(HEAP_ID_13, sizeof(UnkStruct_ov22_02258EE4));
     memset(param0->unk_00, 0, sizeof(UnkStruct_ov22_02258EE4));
     v0 = param0->unk_00;
 
@@ -273,9 +273,9 @@ static void ov22_02258D4C(UnkStruct_ov22_02258A48 *param0)
     int v1, v2;
 
     if (v0->unk_10 != NULL) {
-        if ((gCoreSys.touchX != 0xffff) && (gCoreSys.touchX != 0xffff)) {
-            v1 = gCoreSys.touchX - v0->unk_14;
-            v2 = gCoreSys.touchY - v0->unk_18;
+        if ((gSystem.touchX != 0xffff) && (gSystem.touchX != 0xffff)) {
+            v1 = gSystem.touchX - v0->unk_14;
+            v2 = gSystem.touchY - v0->unk_18;
 
             ov22_022595F8(v0->unk_10, v1, v2);
         }
@@ -310,12 +310,12 @@ static void ov22_02258DAC(UnkStruct_ov22_02258A48 *param0)
     int v9, v10;
 
     if (v0->unk_10 != NULL) {
-        if ((gCoreSys.touchX != 0xffff) && (gCoreSys.touchX != 0xffff)) {
+        if ((gSystem.touchX != 0xffff) && (gSystem.touchX != 0xffff)) {
             ov22_022596B0(v0->unk_10, &v7, &v9, &v8, &v10);
             ov22_02259698(v0->unk_10, &v1, &v2);
 
-            v3 = gCoreSys.touchX - v0->unk_14;
-            v4 = gCoreSys.touchY - v0->unk_18;
+            v3 = gSystem.touchX - v0->unk_14;
+            v4 = gSystem.touchY - v0->unk_18;
 
             v5 = v3 + v7;
             v6 = v4 + v8;
@@ -361,7 +361,7 @@ static void ov22_02258E5C(UnkStruct_ov22_02258A48 *param0)
         v1 = v0->unk_10->unk_00;
 
         ov22_02257CD4(v0->unk_04);
-        ov22_02257C88(v0->unk_04, v1->unk_00, 14);
+        ov22_02257C88(v0->unk_04, v1->unk_00, HEAP_ID_14);
     }
 }
 

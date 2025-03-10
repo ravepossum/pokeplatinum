@@ -9,6 +9,8 @@
 #define LIST_CANCEL         -2
 #define LIST_HEADER         -3
 
+#define LIST_MENU_NO_SELECTION_YET 0xeeee // Only used outside of list_menu, as a placeholder for before the player makes a choice
+
 enum ListMenuPagerMode {
     PAGER_MODE_NONE = 0,
     PAGER_MODE_LEFT_RIGHT_PAD,
@@ -43,7 +45,7 @@ enum ListMenuAttribute {
     LIST_MENU_FONT_ID,
     LIST_MENU_CURSOR_TYPE,
     LIST_MENU_WINDOW,
-    LIST_MENU_TMP,
+    LIST_MENU_PARENT,
 };
 
 typedef struct ListMenu ListMenu;
@@ -70,7 +72,7 @@ typedef struct ListMenuTemplate {
     u16 pagerMode : 2;
     u16 fontID : 6;
     u16 cursorType : 1;
-    void *tmp;
+    void *parent;
 } ListMenuTemplate;
 
 struct ListMenu {

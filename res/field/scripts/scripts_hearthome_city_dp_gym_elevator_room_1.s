@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/hearthome_city_dp_gym_elevator_room_1.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _0016
     ScriptEntry _001A
     ScriptEntry _002B
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     ScrCmd_171

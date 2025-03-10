@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/canalave_city_pokecenter_1f.h"
 
     .data
 
@@ -7,7 +8,7 @@
     ScriptEntry _0035
     ScriptEntry _0048
     ScriptEntry _005B
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0016:
     SetVar 0x8007, 1

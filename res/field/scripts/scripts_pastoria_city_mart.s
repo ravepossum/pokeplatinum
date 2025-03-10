@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/pastoria_city_mart.h"
 
     .data
 
@@ -7,7 +8,7 @@
     ScriptEntry _0042
     ScriptEntry _0055
     ScriptEntry _0068
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0016:
     PlayFanfare SEQ_SE_CONFIRM
@@ -15,7 +16,7 @@ _0016:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_147 1
+    PokeMartCommon
     ReleaseAll
     End
 
@@ -25,7 +26,7 @@ _002C:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_148 7
+    PokeMartSpecialties MART_SPECIALTIES_ID_PASTORIA
     ReleaseAll
     End
 

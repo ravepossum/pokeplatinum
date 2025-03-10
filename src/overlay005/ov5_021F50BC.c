@@ -12,8 +12,8 @@
 #include "overlay101/struct_ov101_021D5D90_decl.h"
 #include "overlay101/struct_ov101_021D86B0.h"
 
+#include "fx_util.h"
 #include "map_object.h"
-#include "unk_0201E190.h"
 #include "unk_020711EC.h"
 #include "unk_02073838.h"
 
@@ -51,9 +51,7 @@ static const UnkStruct_ov101_021D86B0 Unk_ov5_02200A50;
 
 void *ov5_021F50BC(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_021F50E8 *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_021F50E8)), 0, 0);
+    UnkStruct_021F50E8 *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_021F50E8)), 0, 0);
     v0->unk_08 = param0;
 
     ov5_021F50E8(v0);
@@ -93,7 +91,7 @@ UnkStruct_ov101_021D5D90 *ov5_021F511C(MapObject *param0)
     v2.unk_04 = ov5_021DF55C(v3, 5);
     v2.unk_08 = param0;
 
-    MapObject_PosVectorOut(param0, &v4);
+    MapObject_GetPosPtr(param0, &v4);
 
     v0 = 0;
     v5 = ov5_021DF72C(v3, &Unk_ov5_02200A50, &v4, v0, &v2, 0xff);
@@ -111,11 +109,11 @@ static int ov5_021F5158(UnkStruct_ov101_021D5D90 *param0, void *param1)
     v1 = sub_020715BC(param0);
 
     v0->unk_30 = *v1;
-    v0->unk_08 = MapObject_Id(v0->unk_30.unk_08);
+    v0->unk_08 = MapObject_GetLocalID(v0->unk_30.unk_08);
     v0->unk_0C = sub_02062918(v0->unk_30.unk_08);
     v0->unk_24.y = (FX32_ONE * 6);
 
-    MapObject_PosVectorOut(v0->unk_30.unk_08, &v2);
+    MapObject_GetPosPtr(v0->unk_30.unk_08, &v2);
     sub_020715D4(param0, &v2);
 
     return 1;
@@ -139,7 +137,7 @@ static void ov5_021F51A4(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
     switch (v0->unk_00) {
     case 0:
-        MapObject_PosVectorOut(v1, &v2);
+        MapObject_GetPosPtr(v1, &v2);
         v2.z += (FX32_ONE * -10);
         sub_020715D4(param0, &v2);
         break;
@@ -157,9 +155,7 @@ static void ov5_021F51A4(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
 static void ov5_021F5204(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
-    UnkStruct_ov5_021F5158 *v0;
-
-    v0 = param1;
+    UnkStruct_ov5_021F5158 *v0 = param1;
 
     {
         VecFx32 v1, v2 = { FX32_ONE, FX32_ONE, FX32_ONE };
@@ -174,7 +170,7 @@ static void ov5_021F5204(UnkStruct_ov101_021D5D90 *param0, void *param1)
             const MtxFx43 *v4 = NNS_G3dGlbGetInvCameraMtx();
             MtxFx33 v5;
 
-            sub_0201E2E0(&v3, 90, 0, 0);
+            MTX_Rot33Angles(&v3, 90, 0, 0);
 
             MTX_Copy43To33(v4, &v5);
             MTX_Concat33(&v3, &v5, &v3);

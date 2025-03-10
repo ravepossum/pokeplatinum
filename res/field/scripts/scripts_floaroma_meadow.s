@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/floaroma_meadow.h"
 
     .data
 
@@ -9,7 +10,7 @@
     ScriptEntry _01DA
     ScriptEntry _02EF
     ScriptEntry _0306
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001E:
     SetFlag 0x9CE
@@ -18,37 +19,37 @@ _001E:
 _0024:
     LockAll
     Call _00CC
-    StartTrainerBattle trainer_galactic_grunt_floaroma_meadow_1
+    StartTrainerBattle TRAINER_GALACTIC_GRUNT_FLOAROMA_MEADOW_1
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _006E
+    GoToIfEq 0x800C, FALSE, _006E
     Call _00EE
-    StartTrainerBattle trainer_galactic_grunt_floaroma_meadow_2
+    StartTrainerBattle TRAINER_GALACTIC_GRUNT_FLOAROMA_MEADOW_2
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _006E
+    GoToIfEq 0x800C, FALSE, _006E
     Call _010E
     SetFlag 0x989
     ReleaseAll
     End
 
 _006E:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
     .balign 4, 0
 _0074:
-    MoveAction_021
-    MoveAction_04B
+    MoveAction_033
+    MoveAction_075
     EndMovement
 
     .balign 4, 0
 _0080:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0088:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .byte 12
@@ -70,19 +71,19 @@ _0088:
 
     .balign 4, 0
 _00A0:
-    MoveAction_00D
-    MoveAction_023
-    MoveAction_03F 3
-    MoveAction_021
+    MoveAction_013
+    MoveAction_035
+    MoveAction_063 3
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _00B4:
-    MoveAction_00D
-    MoveAction_023
-    MoveAction_03F 3
-    MoveAction_00F
-    MoveAction_021
+    MoveAction_013
+    MoveAction_035
+    MoveAction_063 3
+    MoveAction_015
+    MoveAction_033
     EndMovement
 
 _00CC:
@@ -112,17 +113,17 @@ _010E:
     CloseMessage
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
-    ScrCmd_065 0
-    ScrCmd_065 1
+    RemoveObject 0
+    RemoveObject 1
     SetVar 0x40E9, 1
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ClearFlag 0x19E
-    ScrCmd_064 3
+    AddObject 3
     GetPlayerMapPos 0x8004, 0x8005
     CallIfEq 0x8004, 12, _01BA
     CallIfEq 0x8004, 13, _01C6
-    ScrCmd_065 3
+    RemoveObject 3
     Message 7
     SetVar 0x8004, 0x1B6
     SetVar 0x8005, 1
@@ -243,11 +244,7 @@ _02E2:
     End
 
 _02EF:
-    ScrCmd_036 18, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 18
     End
 
 _0306:
@@ -259,6 +256,6 @@ _0306:
     CallCommonScript 0x7FC
     CloseMessage
     SetFlag 159
-    ScrCmd_065 3
+    RemoveObject 3
     ReleaseAll
     End

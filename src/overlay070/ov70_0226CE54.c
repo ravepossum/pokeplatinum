@@ -59,7 +59,7 @@ static void ov70_0226D020(UnkStruct_ov70_0226CF38 *param0, u32 param1);
 static void ov70_0226D46C(UnkStruct_ov70_0226CF38 *param0, u32 param1);
 static void ov70_0226D0E8(UnkStruct_ov70_0226CF38 *param0, u32 param1, BOOL param2, BOOL param3, u32 param4);
 static void ov70_0226D24C(BOOL param0, BOOL param1, BOOL param2, u32 param3);
-static void ov70_0226D27C(BOOL param0, BOOL param1, BOOL param2, u32 param3);
+static void ov70_0226D27C(BOOL param0, BOOL param1, BOOL param2, u32 species);
 static BOOL ov70_0226D2A0(UnkStruct_ov70_0226D2A0 *param0, u32 param1, UnkStruct_ov70_02261E10 *param2, u32 param3);
 static BOOL ov70_0226D2D8(UnkStruct_ov70_0226D2A0 *param0, UnkStruct_ov70_02261E10 *param1, u32 param2);
 static void ov70_0226D31C(UnkStruct_ov70_0226D2A0 *param0, UnkStruct_ov70_02261E10 *param1, u32 param2);
@@ -74,7 +74,7 @@ static const UnkStruct_ov70_0226E774 Unk_ov70_0226E774[5] = {
     { 0x97, 0x97, 0xFFFE, 0x5B4, 0x5BB, 0x5B4 }
 };
 
-UnkStruct_ov70_0226CF38 *ov70_0226CE54(UnkStruct_ov70_0225DEE8 *param0, u32 param1)
+UnkStruct_ov70_0226CF38 *ov70_0226CE54(UnkStruct_ov70_0225DEE8 *param0, u32 heapID)
 {
     UnkStruct_ov70_0226CF38 *v0;
     int v1;
@@ -85,7 +85,7 @@ UnkStruct_ov70_0226CF38 *ov70_0226CE54(UnkStruct_ov70_0225DEE8 *param0, u32 para
         61,
     };
 
-    v0 = Heap_AllocFromHeap(param1, sizeof(UnkStruct_ov70_0226CF38));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov70_0226CF38));
     memset(v0, 0, sizeof(UnkStruct_ov70_0226CF38));
 
     v0->unk_00 = param0;
@@ -290,14 +290,14 @@ static void ov70_0226D24C(BOOL param0, BOOL param1, BOOL param2, u32 param3)
     }
 }
 
-static void ov70_0226D27C(BOOL param0, BOOL param1, BOOL param2, u32 param3)
+static void ov70_0226D27C(BOOL param0, BOOL param1, BOOL param2, u32 species)
 {
     if (param0) {
         if (param1) {
-            sub_02005844(param3, 0);
+            sub_02005844(species, 0);
         }
     } else {
-        sub_02005844(param3, 0);
+        sub_02005844(species, 0);
     }
 }
 

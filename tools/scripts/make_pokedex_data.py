@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import os
 import pathlib
 import subprocess
 
-from consts.species import PokemonSpecies
-from consts.pokemon import PokemonType
-from consts.pokemon import PokemonBodyShape
+from generated.pokemon_body_shapes import PokemonBodyShape
+from generated.pokemon_types import PokemonType
+from generated.species import Species
+
+
+SPECIES_DIRS = os.environ['SPECIES'].split(';')
 
 
 argparser = argparse.ArgumentParser(
     prog='make_pokedex_data_py',
     description='Packs the archive containing Pokedex sorting'
 )
-argparser.add_argument('-k', '--knarc',
+argparser.add_argument('-n', '--narc',
                        required=True,
-                       help='Path to knarc executable')
+                       help='Path to narc executable')
 argparser.add_argument('-s', '--source-dir',
                        required=True,
-                       help='Path to the source directory (res/prebuilt/application/zukanlist/zkn_data)')
+                       help='Path to the source directory (res/pokemon)')
 argparser.add_argument('-p', '--private-dir',
                        required=True,
                        help='Path to the private directory (where binaries will be made)')
@@ -56,32 +60,27 @@ def DataSize(num):
         return 1
     return 2
 
-NUM_FILES = 26 + PokemonType['NUMBER_OF_MON_TYPES'].value + PokemonBodyShape['NUMBER_OF_BODY_SHAPES'].value
-NUM_POKEMON = len(PokemonSpecies)-3
+NUM_FILES = 26 + PokemonType['NUM_POKEMON_TYPES'].value + PokemonBodyShape['NUM_BODY_SHAPES'].value
+NUM_POKEMON = len(Species)-3
 
 binData = [bytes() for f in range(NUM_FILES)]
 heightData = [0 for i in range(NUM_POKEMON)]
 weightData = [0 for i in range(NUM_POKEMON)]
 nameData = ['' for i in range(NUM_POKEMON)]
 
-for i, species in enumerate(PokemonSpecies):
-    subdir = species.name
-    subdir = subdir[8:].lower()
-    if subdir == 'none':
-        subdir = '000'
-    # Do not attempt to process eggs
-    if subdir in ['egg', 'bad_egg']:
-        continue
-    
-    with open(source_dir / subdir / 'data.json', 'r', encoding='utf-8') as data_file:
+for i, species_dir in enumerate(SPECIES_DIRS):
+    file = source_dir / species_dir / 'data.json'
+    if ((species_dir == 'giratina') and (args.giratina_form == 'giratina_origin')):
+        file = source_dir / 'giratina/forms/origin/data.json'
+    with open(file, 'r', encoding='utf-8') as data_file:
         pkdata = json.load(data_file)
+
+    # Do not attempt to process eggs
+    if species_dir in ['egg', 'bad_egg']:
+        continue
+
     pkdexdata = pkdata['pokedex_data']
-    if subdir == 'giratina':
-        if args.giratina_form == 'giratina_origin':
-            pkdexdata = pkdexdata[0]
-        if args.giratina_form == 'giratina_altered':
-            pkdexdata = pkdexdata[1]
-    
+
     for j in range(11):
         dataSize = DataSize(j)
         if j == 2:
@@ -94,13 +93,13 @@ for i, species in enumerate(PokemonSpecies):
         binData[11] = binData[11] + i.to_bytes(2, 'little')
 
         # body shape
-        bodyIdx = PokemonBodyShape[pkdexdata['body_shape']].value + PokemonType['NUMBER_OF_MON_TYPES'].value + 26
+        bodyIdx = PokemonBodyShape[pkdexdata['body_shape']].value + PokemonType['NUM_POKEMON_TYPES'].value + 26
         binData[bodyIdx] = binData[bodyIdx] + i.to_bytes(2, 'little')
 
         # pokemon types
         typeIdx = 27
         for type in PokemonType:
-            if type.name in ['TYPE_MYSTERY', 'NUMBER_OF_MON_TYPES']:
+            if type.name in ['TYPE_MYSTERY', 'NUM_POKEMON_TYPES']:
                 continue
             if type.name in pkdata['types']:
                 binData[typeIdx] = binData[typeIdx] + i.to_bytes(2, 'little')
@@ -109,14 +108,14 @@ for i, species in enumerate(PokemonSpecies):
         # store for later
         heightData[i-1] = pkdexdata['height']
         weightData[i-1] = pkdexdata['weight']
-        nameData[i-1] = subdir.replace('porygon2','porygon_z2')
+        nameData[i-1] = pkdexdata['en']['name']
 
 # sinnoh dex order
 with open(source_dir / 'sinnoh_pokedex.json') as data_file:
-    dexData = json.load(data_file)
-    for mon in dexData:
+    pokedex = json.load(data_file)
+    for mon in pokedex:
         if mon not in ['SPECIES_EGG', 'SPECIES_BAD_EGG', 'SPECIES_NONE', 'SPECIES_ARCEUS']:
-            binData[12] = binData[12] + PokemonSpecies[mon].value.to_bytes(2, 'little')
+            binData[12] = binData[12] + Species[mon].value.to_bytes(2, 'little')
 
 # alphabetical order
 alpha = sorted(range(len(nameData)), key=lambda k: nameData[k])
@@ -125,9 +124,9 @@ for idx in alpha:
     binData[13] = binData[13] + (idx+1).to_bytes(2, 'little')
 
     # first letter
-    letter = ord(nameData[idx][0])
-    if letter > 96 and letter < 123:
-        letterIDX = int((letter - 1) / 3) - 14
+    letter = ord(nameData[idx][0].upper())
+    if letter >= ord('A') and letter <= ord('Z'):
+        letterIDX = (letter - 11) // 3
         binData[letterIDX] = binData[letterIDX] + (idx+1).to_bytes(2, 'little')
 
 # heaviest to lightest
@@ -153,7 +152,7 @@ for idx in shortest:
 # save data
 if args.giratina_form == 'giratina_origin':
     output_name = 'zukan_data'
-if args.giratina_form == 'giratina_altered':
+else:
     output_name = 'zukan_data_gira'
 
 numDigits = len(str(NUM_FILES))
@@ -163,4 +162,4 @@ for i in range(NUM_FILES):
     with open(target_fname, 'wb+') as target_file:
         target_file.write(binData[i])
 
-subprocess.run([args.knarc, '-d', private_dir, '-p', str(output_dir / output_name) + '.narc'])
+subprocess.run([args.narc, 'create', '--output', str(output_dir / output_name) + '.narc', private_dir])

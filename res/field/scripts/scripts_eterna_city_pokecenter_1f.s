@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/eterna_city_pokecenter_1f.h"
 
     .data
 
@@ -7,7 +8,7 @@
     ScriptEntry _0035
     ScriptEntry _005E
     ScriptEntry _007D
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0016:
     SetVar 0x8007, 3
@@ -47,7 +48,7 @@ _005E:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 0x1AB, 0
+    PlayCry SPECIES_BUNEARY
     Message 3
     ScrCmd_04D
     WaitABXPadPress
@@ -60,7 +61,7 @@ _007D:
     LockAll
     FacePlayer
     GoToIfEq 0x4002, 1, _00F4
-    ScrCmd_134 5, 0x800C
+    CheckPoketchAppRegistered POKETCH_APPID_FRIENDSHIPCHECKER, 0x800C
     GoToIfEq 0x800C, 0, _00D9
     ScrCmd_247 0x8000
     BufferPartyMonSpecies 0, 0x8000

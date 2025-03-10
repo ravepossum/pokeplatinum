@@ -17,14 +17,14 @@ waza_seq_private_dir = relative_build_dir / waza_seq_target_name + '.p'
 
 be_seq_narc = custom_target(be_seq_target_name,
     output: be_seq_target_name,
-    input: s_to_bin_gen.process(
+    input: script_bin_gen.process(
         effect_script_files,
         extra_args: ['--out-dir', be_seq_private_dir]
     ),
     command: [
-        knarc_exe,
-        '-d', '@PRIVATE_DIR@',
-        '-p', '@OUTPUT@'
+        narc_exe, 'create',
+        '--output', '@OUTPUT@',
+        '@PRIVATE_DIR@',
     ]
 )
 
@@ -33,34 +33,34 @@ sub_seq_narc = custom_target(sub_seq_narc_name,
         sub_seq_narc_name,
         sub_seq_naix_name,
     ],
-    input: s_to_bin_gen.process(
+    input: script_bin_gen.process(
         subscript_files,
         extra_args: ['--out-dir', sub_seq_private_dir]
     ),
     command: [
-        knarc_exe,
-        '-d', '@PRIVATE_DIR@',
-        '-p', '@OUTPUT0@',
-        '-o', sub_seq_narc_order,
-        '-n'
+        narc_exe, 'create',
+        '--naix',
+        '--order', sub_seq_narc_order,
+        '--output', '@OUTPUT0@',
+        '@PRIVATE_DIR@',
     ]
 )
 
 waza_seq_narc = custom_target(waza_seq_target_name,
     output: waza_seq_target_name,
-    input: s_to_bin_gen.process(
+    input: script_bin_gen.process(
         move_script_files,
         extra_args: ['--out-dir', waza_seq_private_dir]
     ),
     command: [
-        knarc_exe,
-        '-d', '@PRIVATE_DIR@',
-        '-p', '@OUTPUT@'
+        narc_exe, 'create',
+        '--output', '@OUTPUT@',
+        '@PRIVATE_DIR@',
     ]
 )
 
 nitrofs_files += be_seq_narc
-nitrofs_files += sub_seq_narc[0]
+nitrofs_files += sub_seq_narc
 nitrofs_files += waza_seq_narc
 
 naix_headers += sub_seq_narc[1]

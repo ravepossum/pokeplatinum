@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/sendoff_spring.h"
 
     .data
 
     ScriptEntry _0021
     ScriptEntry _00C0
     ScriptEntry _000E
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     CallIfSet 0x121, _001B
@@ -23,7 +24,7 @@ _0021:
     CloseMessage
     ApplyMovement 0, _00A0
     WaitMovement
-    ApplyMovement 0xFF, _0098
+    ApplyMovement LOCALID_PLAYER, _0098
     WaitMovement
     Message 1
     CloseMessage
@@ -42,28 +43,28 @@ _0021:
     SetFlag 0x29F
     SetFlag 0x986
     ClearFlag 0x292
-    SetFlag 0x15E
+    SetFlag FLAG_GALACTIC_LEFT_LAKE_VALOR
     SetFlag 0x295
     ReleaseAll
     End
 
     .balign 4, 0
 _0098:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _00A0:
-    MoveAction_026
-    MoveAction_03F
-    MoveAction_027
-    MoveAction_03F 2
-    MoveAction_024
+    MoveAction_038
+    MoveAction_063
+    MoveAction_039
+    MoveAction_063 2
+    MoveAction_036
     EndMovement
 
     .balign 4, 0
 _00B8:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
 _00C0:

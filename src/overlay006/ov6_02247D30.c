@@ -3,15 +3,16 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/map_prop.h"
+
 #include "field/field_system.h"
-#include "overlay005/ov5_021D37AC.h"
-#include "overlay005/ov5_021E15F4.h"
-#include "overlay005/ov5_021EF75C.h"
-#include "overlay005/struct_ov5_021E1890_decl.h"
+#include "overlay005/area_data.h"
+#include "overlay005/map_prop.h"
+#include "overlay005/map_prop_animation.h"
 
 #include "field_task.h"
 #include "heap.h"
-#include "unk_02039C80.h"
+#include "map_matrix.h"
 #include "unk_02054D00.h"
 
 typedef struct {
@@ -37,7 +38,7 @@ static VecFx32 Unk_ov6_022498E4[6] = {
 void ov6_02247D30(FieldSystem *fieldSystem, const u8 param1)
 {
     BOOL v0;
-    UnkStruct_ov5_021E1890 *v1;
+    MapProp *v1;
     int v2;
     int v3 = 507;
 
@@ -54,8 +55,8 @@ void ov6_02247D30(FieldSystem *fieldSystem, const u8 param1)
         {
             VecFx32 v5;
 
-            sub_020553A4(v2, sub_02039E10(fieldSystem->unk_2C), &v5);
-            v4->unk_00 = ov5_021E1894(v1);
+            sub_020553A4(v2, MapMatrix_GetWidth(fieldSystem->mapMatrix), &v5);
+            v4->unk_00 = MapProp_GetPosition(v1);
             v4->unk_00.x += v5.x;
             v4->unk_00.z += v5.z;
         }
@@ -77,15 +78,15 @@ static BOOL ov6_02247DAC(FieldTask *param0)
         NNSG3dResFileHeader **v3;
         NNSG3dRenderObj *v4;
 
-        v3 = ov5_021EF9E8(517, fieldSystem->unk_30);
+        v3 = AreaDataManager_GetMapPropModelFile(MAP_PROP_MODEL_POKECENTER_HEALING_MACHINE_MINI_POKEBALL, fieldSystem->areaDataManager);
         v2 = NNS_G3dGetMdlByIdx(NNS_G3dGetMdlSet(*v3), 0);
 
-        ov5_021D41C8(fieldSystem->unk_50, fieldSystem->unk_54, 0x10, 517, NULL, v2, ov5_021EFAA0(fieldSystem->unk_30), 1, 1, 0);
+        MapPropOneShotAnimationManager_LoadPropAnimations(fieldSystem->mapPropAnimMan, fieldSystem->mapPropOneShotAnimMan, 0x10, MAP_PROP_MODEL_POKECENTER_HEALING_MACHINE_MINI_POKEBALL, NULL, v2, AreaDataManager_GetMapPropTexture(fieldSystem->areaDataManager), 1, 1, 0);
     }
         (v1->unk_0F)++;
         break;
     case 1: {
-        UnkStruct_ov5_021E1890 *v5;
+        MapProp *v5;
         NNSG3dRenderObj *v6;
         VecFx32 v7;
         VecFx32 v8 = { 0, 0, 0 };
@@ -94,10 +95,10 @@ static BOOL ov6_02247DAC(FieldTask *param0)
         v7.y = v1->unk_00.y + Unk_ov6_022498E4[v1->unk_0D].y;
         v7.z = v1->unk_00.z + Unk_ov6_022498E4[v1->unk_0D].z;
 
-        v1->unk_10[v1->unk_0D] = ov5_021E19CC(fieldSystem->unk_A4, fieldSystem->unk_30, 517, &v7, &v8, fieldSystem->unk_50);
-        v5 = ov5_021E18E0(fieldSystem->unk_A4, v1->unk_10[v1->unk_0D]);
-        v6 = ov5_021E18BC(v5);
-        ov5_021D4220(fieldSystem->unk_54, 0x10, v1->unk_0D, v6);
+        v1->unk_10[v1->unk_0D] = MapPropManager_LoadOne(fieldSystem->mapPropManager, fieldSystem->areaDataManager, MAP_PROP_MODEL_POKECENTER_HEALING_MACHINE_MINI_POKEBALL, &v7, &v8, fieldSystem->mapPropAnimMan);
+        v5 = MapPropManager_GetLoadedPropSafely(fieldSystem->mapPropManager, v1->unk_10[v1->unk_0D]);
+        v6 = MapProp_GetRenderObj(v5);
+        MapPropOneShotAnimationManager_SetAnimationRenderObj(fieldSystem->mapPropOneShotAnimMan, 0x10, v1->unk_0D, v6);
         (v1->unk_0F)++;
     } break;
     case 2:
@@ -117,17 +118,17 @@ static BOOL ov6_02247DAC(FieldTask *param0)
         }
         break;
     case 3:
-        ov5_021D4250(fieldSystem->unk_54, 0x10, 0);
+        MapPropOneShotAnimationManager_PlayAnimation(fieldSystem->mapPropOneShotAnimMan, 0x10, 0);
         (v1->unk_0F)++;
         break;
     case 4:
-        if (ov5_021D42F0(fieldSystem->unk_54, 0x10)) {
+        if (MapPropOneShotAnimationManager_IsAnimationLoopFinished(fieldSystem->mapPropOneShotAnimMan, 0x10)) {
             u8 v9;
 
-            ov5_021D42B0(fieldSystem->unk_50, fieldSystem->unk_54, 0x10);
+            MapPropOneShotAnimationManager_UnloadAnimation(fieldSystem->mapPropAnimMan, fieldSystem->mapPropOneShotAnimMan, 0x10);
 
             for (v9 = 0; v9 < v1->unk_0C; v9++) {
-                ov5_021E1674(v1->unk_10[v9], fieldSystem->unk_A4);
+                MapPropManager_InitOne(v1->unk_10[v9], fieldSystem->mapPropManager);
             }
 
             (v1->unk_0F)++;

@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/sdat.h"
+#include "generated/sdat.h"
 
 #include "struct_decls/struct_02061AB4_decl.h"
 
@@ -23,9 +23,9 @@
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "system_flags.h"
+#include "system_vars.h"
 #include "unk_02005474.h"
 #include "unk_020655F4.h"
-#include "unk_0206AFE0.h"
 #include "vars_flags.h"
 
 #define VS_SEEKER_SEARCH_RADIUS_LEFT  7
@@ -377,7 +377,7 @@ static const MapObjectAnimCmd sVsSeekerAnimSingleExclamationMark[] = {
 void VsSeeker_Start(FieldTask *taskMan, StringTemplate *template, u16 *outResult)
 {
     FieldSystem *fieldSystem = FieldTask_GetFieldSystem(taskMan);
-    VsSeekerSystem *vsSeeker = Heap_AllocFromHeap(4, sizeof(VsSeekerSystem));
+    VsSeekerSystem *vsSeeker = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(VsSeekerSystem));
 
     if (vsSeeker == NULL) {
         GF_ASSERT(FALSE);
@@ -425,7 +425,7 @@ static BOOL VsSeeker_ExecuteTask(FieldTask *taskMan)
     case VS_SEEKER_STATE_START:
         vsSeeker->playerStateTask = FieldSystem_StartVsSeekerTask(vsSeeker->fieldSystem);
         Sound_PlayEffect(SEQ_SE_DP_VS_SEEKER_BEEP);
-        VsSeeker_SetBattery(vsSeeker->varsFlags, 0);
+        SystemVars_SetVsSeekerBattery(vsSeeker->varsFlags, 0);
         VsSeekerSystem_SetState(vsSeeker, VS_SEEKER_STATE_WAIT_FOR_PLAYER_ANIM);
         break;
     case VS_SEEKER_STATE_WAIT_FOR_PLAYER_ANIM:
@@ -452,7 +452,7 @@ static BOOL VsSeeker_ExecuteTask(FieldTask *taskMan)
         }
         break;
     case VS_SEEKER_STATE_NO_BATTERY:
-        missingBattery = VS_SEEKER_MAX_BATTERY - VsSeeker_GetBattery(vsSeeker->varsFlags);
+        missingBattery = VS_SEEKER_MAX_BATTERY - SystemVars_GetVsSeekerBattery(vsSeeker->varsFlags);
 
         if (missingBattery / 10 == 0) {
             numDigits = 1;
@@ -483,7 +483,7 @@ static void VsSeekerSystem_SetState(VsSeekerSystem *vsSeeker, enum VsSeekerState
 
 static enum VsSeekerUsability VsSeekerSystem_CheckUsability(VsSeekerSystem *vsSeeker)
 {
-    if (VsSeeker_GetBattery(vsSeeker->varsFlags) == VS_SEEKER_MAX_BATTERY) {
+    if (SystemVars_GetVsSeekerBattery(vsSeeker->varsFlags) == VS_SEEKER_MAX_BATTERY) {
         if (vsSeeker->numVisibleTrainers == 0) {
             return VS_SEEKER_USABILITY_NO_TRAINERS;
         }
@@ -530,9 +530,7 @@ static void VsSeekerSystem_CollectViableNpcs(VsSeekerSystem *vsSeeker)
             continue;
         }
 
-        u32 eventType = MapObject_GetEventType(mapObj);
-
-        switch (eventType) {
+        switch (MapObject_GetTrainerType(mapObj)) {
         case 0x1:
         case 0x2:
         case 0x4:
@@ -540,12 +538,12 @@ static void VsSeekerSystem_CollectViableNpcs(VsSeekerSystem *vsSeeker)
         case 0x6:
         case 0x7:
         case 0x8:
-            trainerX = MapObject_GetXPos(mapObj);
-            trainerZ = MapObject_GetZPos(mapObj);
+            trainerX = MapObject_GetX(mapObj);
+            trainerZ = MapObject_GetZ(mapObj);
 
             if (trainerX >= xMin && trainerX <= xMax
                 && trainerZ >= zMin && trainerZ <= zMax
-                && VsSeeker_IsMoveCodeHidden(MapObject_GetMoveCode(mapObj)) == FALSE) {
+                && VsSeeker_IsMoveCodeHidden(MapObject_GetMovementType(mapObj)) == FALSE) {
                 vsSeeker->trainers[numVisibleTrainers] = mapObj;
                 numVisibleTrainers++;
             }
@@ -572,23 +570,23 @@ static BOOL VsSeeker_IsMoveCodeHidden(u32 moveCode)
 BOOL VsSeeker_UpdateStepCount(FieldSystem *fieldSystem)
 {
     VarsFlags *varsFlags = SaveData_GetVarsFlags(fieldSystem->saveData);
-    u16 battery = VsSeeker_GetBattery(varsFlags);
-    u16 activeStepCount = VsSeeker_GetActiveStepCount(varsFlags);
+    u16 battery = SystemVars_GetVsSeekerBattery(varsFlags);
+    u16 activeStepCount = SystemVars_GetVsSeekerStepCount(varsFlags);
 
     if (Bag_CanRemoveItem(SaveData_GetBag(fieldSystem->saveData), 443, 1, 4) == 1
         && battery < VS_SEEKER_MAX_BATTERY) {
         battery++;
-        VsSeeker_SetBattery(varsFlags, battery);
+        SystemVars_SetVsSeekerBattery(varsFlags, battery);
     }
 
     if (SystemFlag_CheckVsSeekerUsed(varsFlags) == TRUE) {
         if (activeStepCount < VS_SEEKER_MAX_NUM_ACTIVE_STEPS) {
             activeStepCount++;
-            VsSeeker_SetActiveStepCount(varsFlags, activeStepCount);
+            SystemVars_SetVsSeekerStepCount(varsFlags, activeStepCount);
         }
 
         if (activeStepCount == VS_SEEKER_MAX_NUM_ACTIVE_STEPS) {
-            VsSeeker_Reset(varsFlags);
+            SystemVars_ResetVsSeeker(varsFlags);
             VsSeeker_ClearRematchMoveCode(fieldSystem);
         }
     }
@@ -607,7 +605,7 @@ static void VsSeeker_ClearRematchMoveCode(FieldSystem *fieldSystem)
             continue;
         }
 
-        if (MapObject_GetMoveCode(mapObj) == 0x31) {
+        if (MapObject_GetMovementType(mapObj) == 0x31) {
             VsSeeker_SetTrainerMoveCode(mapObj, 0x2);
         }
     }
@@ -623,7 +621,7 @@ static void VsSeekerSystem_StartAnimation(VsSeekerSystem *vsSeeker, MapObject *m
 
 static void VsSeekerSystem_StartAnimationTask(VsSeekerSystem *vsSeeker, SysTask *animTask)
 {
-    VsSeekerAnimationTask *vssAnimTask = Heap_AllocFromHeap(4, sizeof(VsSeekerAnimationTask));
+    VsSeekerAnimationTask *vssAnimTask = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(VsSeekerAnimationTask));
     if (vssAnimTask == NULL) {
         GF_ASSERT(FALSE);
         return;
@@ -647,7 +645,7 @@ static void VsSeeker_TrackAnimation(SysTask *task, void *param)
 
         MapObject_FinishAnimation(vssAnimTask->animationTask);
         SysTask_Done(vssAnimTask->trackingTask);
-        Heap_FreeToHeapExplicit(4, param);
+        Heap_FreeToHeapExplicit(HEAP_ID_FIELD, param);
     }
 }
 
@@ -691,8 +689,7 @@ static BOOL VsSeekerSystem_PickRematchTrainers(VsSeekerSystem *vsSeeker)
 
 static u16 VsSeeker_GetTrainerIDFromMapObject(MapObject *trainerObj)
 {
-    u32 eventID = MapObject_GetEventID(trainerObj);
-    return Script_GetTrainerID(eventID);
+    return Script_GetTrainerID(MapObject_GetScript(trainerObj));
 }
 
 u16 VsSeeker_GetRematchTrainerID(FieldSystem *fieldSystem, MapObject *trainerObj, u16 trainerID)
@@ -775,7 +772,7 @@ static u16 VsSeeker_GetTrainerIDForRematchLevel(u16 rematchDataIndex, u16 level)
 
 static BOOL VsSeeker_IsTrainerDoingRematchAnimation(MapObject *trainerObj)
 {
-    return MapObject_GetMoveCode(trainerObj) == 0x31;
+    return MapObject_GetMovementType(trainerObj) == 0x31;
 }
 
 static void VsSeeker_SetTrainerMoveCode(MapObject *trainerObj, u16 moveCode)
@@ -789,7 +786,7 @@ void VsSeeker_SetMoveCodeForFacingDirection(FieldSystem *fieldSystem, MapObject 
         return;
     }
 
-    int dir = MapObject_Dir(trainerObj);
+    int dir = MapObject_GetFacingDir(trainerObj);
 
     u32 moveCode;
     if (dir == 0) {
@@ -823,10 +820,10 @@ static BOOL VsSeeker_WaitForNpcsToPause(FieldSystem *fieldSystem)
         }
 
         if (MapObject_IsMoving(mapObj) == TRUE) {
-            sub_02062DDC(mapObj);
+            MapObject_SetPauseMovementOff(mapObj);
             anyMoving = TRUE;
         } else {
-            sub_02062DD0(mapObj);
+            MapObject_SetPauseMovementOn(mapObj);
         }
     }
 
@@ -835,10 +832,10 @@ static BOOL VsSeeker_WaitForNpcsToPause(FieldSystem *fieldSystem)
 
 static MapObject *VsSeeker_GetSecondDoubleBattleTrainer(FieldSystem *fieldSystem, MapObject *trainerObj, enum VsSeeker2v2TrainerSearchMode mode)
 {
-    u32 secondTrainerEventID, secondTrainerID;
+    u32 secondScriptID, secondTrainerID;
     u32 objEventCount = MapHeaderData_GetNumObjectEvents(fieldSystem);
-    u16 eventID = MapObject_GetEventID(trainerObj);
-    u16 trainerID = Script_GetTrainerID(eventID);
+    u16 scriptID = MapObject_GetScript(trainerObj);
+    u16 trainerID = Script_GetTrainerID(scriptID);
 
     if (Script_IsTrainerDoubleBattle(trainerID) == FALSE) {
         return NULL;
@@ -852,13 +849,11 @@ static MapObject *VsSeeker_GetSecondDoubleBattleTrainer(FieldSystem *fieldSystem
         }
 
         if (mode == VS_SEEKER_2V2_TRAINER_SEARCH_MODE_REMATCH_ANIM_CHECK
-            && MapObject_GetMoveCode(mapObj) == 0x31) {
+            && MapObject_GetMovementType(mapObj) == 0x31) {
             continue;
         }
 
-        u32 eventType = MapObject_GetEventType(mapObj);
-
-        switch (eventType) {
+        switch (MapObject_GetTrainerType(mapObj)) {
         case 0x1:
         case 0x2:
         case 0x4:
@@ -866,10 +861,10 @@ static MapObject *VsSeeker_GetSecondDoubleBattleTrainer(FieldSystem *fieldSystem
         case 0x6:
         case 0x7:
         case 0x8:
-            secondTrainerEventID = MapObject_GetEventID(mapObj);
-            secondTrainerID = Script_GetTrainerID(secondTrainerEventID);
+            secondScriptID = MapObject_GetScript(mapObj);
+            secondTrainerID = Script_GetTrainerID(secondScriptID);
 
-            if (eventID != secondTrainerEventID && trainerID == secondTrainerID) {
+            if (scriptID != secondScriptID && trainerID == secondTrainerID) {
                 return mapObj;
             }
         }

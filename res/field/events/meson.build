@@ -550,13 +550,13 @@ events_narc = custom_target('zone_event.narc',
     input: event_bin_gen.process(events_files, env: json2bin_env),
     depends: [ py_consts_generators ],
     command: [
-        knarc_exe,
-        '-d', '@PRIVATE_DIR@',
-        '-p', '@OUTPUT0@',
-        '--order', events_order,
+        narc_exe, 'create',
         '--naix',
+        '--order', events_order,
+        '--output', '@OUTPUT0@',
+        '@PRIVATE_DIR@',
     ]
 )
 
-nitrofs_files += events_narc[0]
+nitrofs_files += events_narc
 naix_headers += events_narc[1]

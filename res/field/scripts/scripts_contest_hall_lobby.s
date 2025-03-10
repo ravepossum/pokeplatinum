@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/contest_hall_lobby.h"
 
     .data
 
@@ -13,7 +14,7 @@
     ScriptEntry _034E
     ScriptEntry _0361
     ScriptEntry _04A4
-    .short 0xFD13
+    ScriptEntryEnd
 
 _002E:
     LockAll
@@ -26,7 +27,7 @@ _002E:
     BufferPlayerName 0
     Message 1
     CloseMessage
-    ApplyMovement 0xFF, _0138
+    ApplyMovement LOCALID_PLAYER, _0138
     WaitMovement
     ApplyMovement 6, _014C
     WaitMovement
@@ -44,19 +45,19 @@ _002E:
     Message 6
     CloseMessage
     ApplyMovement 6, _0160
-    ApplyMovement 0xFF, _01DC
+    ApplyMovement LOCALID_PLAYER, _01DC
     WaitMovement
-    ScrCmd_065 6
+    RemoveObject 6
     SetVar 0x40F7, 1
     ApplyMovement 5, _0190
-    ApplyMovement 0xFF, _01E4
+    ApplyMovement LOCALID_PLAYER, _01E4
     WaitMovement
     BufferPlayerName 0
     Message 7
     CloseMessage
     PlaySound SEQ_FANFA4
     GetPlayerGender 0x800C
-    GoToIfEq 0x800C, 0, _00EE
+    GoToIfEq 0x800C, GENDER_MALE, _00EE
     GoTo _00F9
     End
 
@@ -75,11 +76,11 @@ _0104:
     Message 10
     CloseMessage
     WaitTime 15, 0x800C
-    ApplyMovement 0xFF, _01C8
+    ApplyMovement LOCALID_PLAYER, _01C8
     ApplyMovement 5, _01B0
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ScrCmd_065 5
+    RemoveObject 5
     WaitFanfare SEQ_SE_DP_KAIDAN2
     SetFlag 0x978
     ReleaseAll
@@ -87,43 +88,43 @@ _0104:
 
     .balign 4, 0
 _0138:
-    MoveAction_00C 2
+    MoveAction_012 2
     EndMovement
 
     .balign 4, 0
 _0140:
-    MoveAction_021
-    MoveAction_04B
+    MoveAction_033
+    MoveAction_075
     EndMovement
 
     .balign 4, 0
 _014C:
-    MoveAction_026
-    MoveAction_021
+    MoveAction_038
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0158:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0160:
-    MoveAction_00F 3
-    MoveAction_00C 3
-    MoveAction_00F 3
-    MoveAction_00C 6
+    MoveAction_015 3
+    MoveAction_012 3
+    MoveAction_015 3
+    MoveAction_012 6
     EndMovement
 
     .balign 4, 0
 _0174:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _017C:
-    MoveAction_03E
-    MoveAction_023
+    MoveAction_062
+    MoveAction_035
     EndMovement
 
     .byte 35
@@ -137,7 +138,7 @@ _017C:
 
     .balign 4, 0
 _0190:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .byte 14
@@ -167,29 +168,29 @@ _0190:
 
     .balign 4, 0
 _01B0:
-    MoveAction_00E
-    MoveAction_00D 2
-    MoveAction_00F
-    MoveAction_00D
-    MoveAction_021
+    MoveAction_014
+    MoveAction_013 2
+    MoveAction_015
+    MoveAction_013
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _01C8:
-    MoveAction_03E
-    MoveAction_022
-    MoveAction_03F
-    MoveAction_021
+    MoveAction_062
+    MoveAction_034
+    MoveAction_063
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _01DC:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _01E4:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
 _01EC:
@@ -200,7 +201,7 @@ _01EC:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A8 0, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -214,7 +215,7 @@ _0229:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A8 1, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -228,7 +229,7 @@ _0266:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A8 2, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -242,7 +243,7 @@ _02A3:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A8 3, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -256,7 +257,7 @@ _02E0:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A8 4, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -372,7 +373,7 @@ _0437:
     Return
 
 _0458:
-    ScrCmd_1BD 0x800C
+    GetPlayerDir 0x800C
     GoToIfEq 0x800C, 2, _0475
     ApplyMovement 9, _0484
     WaitMovement
@@ -385,16 +386,16 @@ _0475:
 
     .balign 4, 0
 _0484:
-    MoveAction_00F 8
-    MoveAction_025
+    MoveAction_015 8
+    MoveAction_037
     EndMovement
 
     .balign 4, 0
 _0490:
-    MoveAction_00D
-    MoveAction_00F 8
-    MoveAction_00C
-    MoveAction_025
+    MoveAction_013
+    MoveAction_015 8
+    MoveAction_012
+    MoveAction_037
     EndMovement
 
 _04A4:
@@ -402,7 +403,7 @@ _04A4:
     LockAll
     FacePlayer
     WaitTime 30, 0x800C
-    ScrCmd_1BD 0x800C
+    GetPlayerDir 0x800C
     GoToIfEq 0x800C, 0, _052B
     GoToIfEq 0x800C, 1, _053D
     GoToIfEq 0x800C, 2, _054F
@@ -412,7 +413,7 @@ _04A4:
 _04EC:
     Message 11
     CloseMessage
-    ScrCmd_1BD 0x8004
+    GetPlayerDir 0x8004
     GoToIfEq 0x8004, 1, _0573
     GoToIfEq 0x8004, 0, _058D
     GoToIfEq 0x8004, 2, _05A7
@@ -445,14 +446,14 @@ _0561:
 
 _0573:
     ApplyMovement 10, _05E8
-    ApplyMovement 0xFF, _0604
+    ApplyMovement LOCALID_PLAYER, _0604
     WaitMovement
     GoTo _05D3
     End
 
 _058D:
     ApplyMovement 10, _05E8
-    ApplyMovement 0xFF, _0604
+    ApplyMovement LOCALID_PLAYER, _0604
     WaitMovement
     GoTo _05D3
     End
@@ -465,14 +466,14 @@ _05A7:
 
 _05B9:
     ApplyMovement 10, _05F4
-    ApplyMovement 0xFF, _0610
+    ApplyMovement LOCALID_PLAYER, _0610
     WaitMovement
     GoTo _05D3
     End
 
 _05D3:
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ScrCmd_065 10
+    RemoveObject 10
     WaitFanfare SEQ_SE_DP_KAIDAN2
     SetFlag 0x18D
     ReleaseAll
@@ -480,29 +481,29 @@ _05D3:
 
     .balign 4, 0
 _05E8:
-    MoveAction_00E 6
-    MoveAction_00D 4
+    MoveAction_014 6
+    MoveAction_013 4
     EndMovement
 
     .balign 4, 0
 _05F4:
-    MoveAction_00C
-    MoveAction_00E 6
-    MoveAction_00D 5
+    MoveAction_012
+    MoveAction_014 6
+    MoveAction_013 5
     EndMovement
 
     .balign 4, 0
 _0604:
-    MoveAction_03F
-    MoveAction_022
+    MoveAction_063
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0610:
-    MoveAction_03F 2
-    MoveAction_020
-    MoveAction_03E
-    MoveAction_022
+    MoveAction_063 2
+    MoveAction_032
+    MoveAction_062
+    MoveAction_034
     EndMovement
 
     .balign 4, 0

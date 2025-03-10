@@ -168,7 +168,7 @@ static BOOL ov34_022562F0(UnkStruct_ov34_0225621C *param0)
             break;
         }
 
-        if ((PoketchSystem_IsPlayerMoving(param0->poketchSys) == 1) || (ov25_0225450C(param0->poketchSys))) {
+        if ((PoketchSystem_IsPlayerMoving(param0->poketchSys) == 1) || (PoketechSystem_IsRunningTask(param0->poketchSys))) {
             ov34_02256A0C(param0->unk_48);
             param0->unk_01 = 2;
             break;
@@ -200,7 +200,7 @@ static BOOL ov34_022562F0(UnkStruct_ov34_0225621C *param0)
 
 static BOOL ov34_022563E4(UnkStruct_ov34_0225621C *param0, u32 *param1, u32 *param2)
 {
-    if (ov25_0225450C(param0->poketchSys) == 0) {
+    if (PoketechSystem_IsRunningTask(param0->poketchSys) == 0) {
         if (TouchScreen_GetTapState(param1, param2)) {
             if (((u32)((*param1) - 24) < (u32)(200 - 24)) & ((u32)((*param2) - 24) < (u32)(168 - 24))) {
                 return 1;
@@ -218,7 +218,7 @@ static void ov34_02256428(UnkStruct_ov34_0225621C *param0, int param1, int param
         24 << FX32_SHIFT,
         48 << FX32_SHIFT,
     };
-    UnkStruct_0203F478 *v1 = sub_0203F478(PoketchSystem_GetFieldSystem(param0->poketchSys), 8);
+    UnkStruct_0203F478 *v1 = sub_0203F478(PoketchSystem_GetFieldSystem(param0->poketchSys), HEAP_ID_POKETCH_APP);
     UnkStruct_ov34_02256540_1 *v2 = &(param0->unk_04);
 
     v2->unk_08 = 0;

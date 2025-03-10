@@ -42,9 +42,7 @@ static const UnkStruct_ov101_021D86B0 Unk_ov5_022004D8;
 
 void *ov5_021F2BD0(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_ov5_021F2BFC *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F2BFC)), 0, 0);
+    UnkStruct_ov5_021F2BFC *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F2BFC)), 0, 0);
     v0->unk_00 = param0;
 
     ov5_021F2BFC(v0);
@@ -83,7 +81,7 @@ void ov5_021F2C38(MapObject *param0, int param1, int param2, int param3)
     sub_02064450(param1, param3, &v3);
 
     v3.z += ((param2) << 3) + (FX32_ONE * 0);
-    v3.y = (((MapObject_YPosPrev(param0)) << 3) * FX32_ONE) + (-FX32_ONE * 8);
+    v3.y = (((MapObject_GetYPrev(param0)) << 3) * FX32_ONE) + (-FX32_ONE * 8);
 
     v1 = 0;
     v0 = sub_02062758(param0, 2);

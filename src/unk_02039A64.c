@@ -1,10 +1,12 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/screen.h"
+
 #include "struct_defs/struct_02099F80.h"
 
 #include "bg_window.h"
-#include "core_sys.h"
+#include "brightness_controller.h"
 #include "font.h"
 #include "gx_layers.h"
 #include "heap.h"
@@ -12,14 +14,9 @@
 #include "message.h"
 #include "render_window.h"
 #include "strbuf.h"
+#include "system.h"
 #include "text.h"
-#include "unk_0200A9DC.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
-
-void sub_0201777C(void);
-
-void sub_02039A64(int param0, int param1);
 
 static const UnkStruct_02099F80 Unk_020E5F7C = {
     GX_VRAM_BG_256_AB,
@@ -67,19 +64,17 @@ static const WindowTemplate Unk_020E5F48 = {
     0x23
 };
 
-void sub_02039A64(int param0, int param1)
+void sub_02039A64(int heapID, int unused)
 {
     BgConfig *v0;
     Window v1;
     MessageLoader *v2;
     Strbuf *v3;
-    int v4;
-
-    v4 = 16;
+    int v4 = 16;
 
     sub_0200F344(0, 0x0);
     sub_0200F344(1, 0x0);
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     SetHBlankCallback(NULL, NULL);
     GXLayers_DisableEngineALayers();
     GXLayers_DisableEngineBLayers();
@@ -87,7 +82,7 @@ void sub_02039A64(int param0, int param1)
     GX_SetVisiblePlane(0);
     GXS_SetVisiblePlane(0);
     SetAutorepeat(4, 8);
-    gCoreSys.unk_65 = 0;
+    gSystem.whichScreenIs3D = DS_SCREEN_MAIN;
     GXLayers_SwapDisplay();
 
     G2_BlendNone();
@@ -96,19 +91,19 @@ void sub_02039A64(int param0, int param1)
     GXS_SetVisibleWnd(GX_WNDMASK_NONE);
 
     GXLayers_SetBanks(&Unk_020E5F7C);
-    v0 = BgConfig_New(param0);
+    v0 = BgConfig_New(heapID);
 
     SetAllGraphicsModes(&Unk_020E5F50);
     Bg_InitFromTemplate(v0, 0, &Unk_020E5F60, 0);
     Bg_ClearTilemap(v0, 0);
-    LoadStandardWindowGraphics(v0, 0, (512 - 9), 2, 0, param0);
-    Font_LoadTextPalette(0, 1 * (2 * 16), param0);
-    Bg_ClearTilesRange(0, 32, 0, param0);
+    LoadStandardWindowGraphics(v0, 0, (512 - 9), 2, 0, heapID);
+    Font_LoadTextPalette(0, 1 * (2 * 16), heapID);
+    Bg_ClearTilesRange(0, 32, 0, heapID);
     Bg_MaskPalette(0, 0x6c21);
     Bg_MaskPalette(4, 0x6c21);
 
-    v2 = MessageLoader_Init(1, 26, 695, param0);
-    v3 = Strbuf_Init(0x180, param0);
+    v2 = MessageLoader_Init(1, 26, 695, heapID);
+    v3 = Strbuf_Init(0x180, heapID);
 
     Text_ResetAllPrinters();
     Window_AddFromTemplate(v0, &v1, &Unk_020E5F48);
@@ -120,7 +115,7 @@ void sub_02039A64(int param0, int param1)
     GXLayers_TurnBothDispOn();
     sub_0200F338(0);
     sub_0200F338(1);
-    sub_0200AB4C(0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), 3);
+    BrightnessController_SetScreenBrightness(0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), BRIGHTNESS_BOTH_SCREENS);
 
     while (TRUE) {
         int v5 = PAD_Read();

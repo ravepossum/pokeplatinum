@@ -3,16 +3,15 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
-#include "consts/items.h"
-#include "consts/species.h"
+#include "generated/game_records.h"
+#include "generated/items.h"
+#include "generated/species.h"
 
 #include "struct_decls/struct_020216E0_decl.h"
 #include "struct_decls/struct_0202C878_decl.h"
 #include "struct_decls/struct_020308A0_decl.h"
 #include "struct_decls/struct_02061830_decl.h"
 #include "struct_decls/struct_02061AB4_decl.h"
-#include "struct_decls/struct_party_decl.h"
 
 #include "field/field_system.h"
 #include "overlay005/ov5_021EB1A0.h"
@@ -34,6 +33,7 @@
 #include "narc.h"
 #include "party.h"
 #include "player_avatar.h"
+#include "pokedex.h"
 #include "pokemon.h"
 #include "render_window.h"
 #include "savedata_misc.h"
@@ -43,18 +43,19 @@
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system_vars.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_02020AEC.h"
-#include "unk_0202631C.h"
 #include "unk_0202C858.h"
 #include "unk_02030880.h"
 #include "unk_02038F8C.h"
 #include "unk_0205DFC4.h"
 #include "unk_020677F4.h"
-#include "unk_0206AFE0.h"
 #include "vars_flags.h"
+
+#include "res/text/bank/battle_tower.h"
 
 typedef struct {
     s16 unk_00;
@@ -99,7 +100,7 @@ static void ov5_021F70CC(Pokemon *param0, int *param1, int *param2);
 BOOL ScrCmd_300(ScriptContext *ctx);
 BOOL ScrCmd_301(ScriptContext *ctx);
 BOOL ScrCmd_30F(ScriptContext *ctx);
-BOOL ScrCmd_2EE(ScriptContext *ctx);
+BOOL ScrCmd_JudgeStats(ScriptContext *ctx);
 BOOL ScrCmd_2F1(ScriptContext *ctx);
 static void ov5_021F661C(UnkStruct_ov5_021F6704 *param0, MessageLoader *param1);
 static void ov5_021F6624(FieldSystem *fieldSystem, UnkStruct_ov5_021F6704 *param1, u8 param2, u8 param3, u8 param4, u8 param5, u16 *param6, StringTemplate *param7, Window *param8, MessageLoader *param9, u16 *param10, u16 *param11);
@@ -145,7 +146,7 @@ BOOL ScrCmd_2DE(ScriptContext *ctx)
 
     ctx->data[0] = v13;
 
-    v6 = MessageLoader_Init(0, 26, 412, 32);
+    v6 = MessageLoader_Init(0, 26, 412, HEAP_ID_FIELD_TASK);
     v9 = ov5_021F6704(fieldSystem, 20, 1, 0, 1, FieldSystem_GetVarPointer(fieldSystem, v13), *v10, FieldSystem_GetScriptMemberPtr(ctx->fieldSystem, SCRIPT_MANAGER_WINDOW), v6, FieldSystem_GetVarPointer(fieldSystem, v14), FieldSystem_GetVarPointer(fieldSystem, v15));
     v1 = sub_020308A0(fieldSystem->saveData, 11, &v0);
 
@@ -167,7 +168,7 @@ BOOL ScrCmd_2DE(ScriptContext *ctx)
         Heap_FreeToHeap(v1);
     }
 
-    v7 = MessageLoader_Init(1, 26, 361, 32);
+    v7 = MessageLoader_Init(1, 26, 361, HEAP_ID_FIELD_TASK);
 
     ov5_021F661C(v9, v7);
     ov5_021F6760(v9, 12, 0xff, 0xfffe);
@@ -198,9 +199,7 @@ static BOOL ov5_021F65D4(ScriptContext *ctx)
 static u16 *ov5_021F65FC(int heapID, int fileIndex, int *pokedexLength)
 {
     u32 pokedexSize;
-    u16 *pokedex;
-
-    pokedex = LoadMemberFromNARC_OutFileSize(NARC_INDEX_APPLICATION__ZUKANLIST__ZKN_DATA__ZUKAN_DATA, fileIndex, 0, heapID, 0, &pokedexSize);
+    u16 *pokedex = LoadMemberFromNARC_OutFileSize(NARC_INDEX_APPLICATION__ZUKANLIST__ZKN_DATA__ZUKAN_DATA, fileIndex, 0, heapID, 0, &pokedexSize);
     *pokedexLength = pokedexSize / (sizeof(u16));
 
     return pokedex;
@@ -242,7 +241,7 @@ static void ov5_021F6624(FieldSystem *fieldSystem, UnkStruct_ov5_021F6704 *param
     }
 
     for (v0 = 0; v0 < 120; v0++) {
-        param1->unk_1C[v0] = Strbuf_Init((40 * 2), 4);
+        param1->unk_1C[v0] = Strbuf_Init((40 * 2), HEAP_ID_FIELD);
     }
 
     *param1->unk_210 = 0xeeee;
@@ -254,7 +253,7 @@ UnkStruct_ov5_021F6704 *ov5_021F6704(FieldSystem *fieldSystem, u8 param1, u8 par
     UnkStruct_ov5_021F6704 *v0;
     int v1;
 
-    v0 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021F6704));
+    v0 = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021F6704));
 
     if (v0 == NULL) {
         return NULL;
@@ -280,7 +279,7 @@ static void ov5_021F6768(UnkStruct_ov5_021F6704 *param0)
         Window_Add(param0->fieldSystem->bgConfig, &param0->unk_08, 3, param0->unk_208, param0->unk_209, 11, param0->unk_20B * 2, 13, 1);
     }
 
-    LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 1024 - (18 + 12) - 9, 11, 0, 4);
+    LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 1024 - (18 + 12) - 9, 11, 0, HEAP_ID_FIELD);
     Window_DrawStandardFrame(&param0->unk_08, 1, 1024 - (18 + 12) - 9, 11);
     ov5_021F68BC(param0);
 
@@ -296,7 +295,7 @@ static void ov5_021F6830(UnkStruct_ov5_021F6704 *param0, u32 param1, u32 param2,
     void *v1;
 
     {
-        Strbuf *v2 = Strbuf_Init((40 * 2), 4);
+        Strbuf *v2 = Strbuf_Init((40 * 2), HEAP_ID_FIELD);
 
         MessageLoader_GetStrbuf(param0->unk_1FC, param1, v2);
         StringTemplate_Format(param0->unk_200, param0->unk_1C[param0->unk_20B], v2);
@@ -336,7 +335,7 @@ static void ov5_021F68BC(UnkStruct_ov5_021F6704 *param0)
     param0->unk_21C.pagerMode = PAGER_MODE_LEFT_RIGHT_PAD;
     param0->unk_21C.fontID = FONT_SYSTEM;
     param0->unk_21C.cursorType = 0;
-    param0->unk_21C.tmp = (void *)param0;
+    param0->unk_21C.parent = (void *)param0;
 
     return;
 }
@@ -371,9 +370,7 @@ static void ov5_021F6A34(SysTask *param0, void *param1)
 {
     u16 v0;
     u32 v1;
-    UnkStruct_ov5_021F6704 *v2;
-
-    v2 = (UnkStruct_ov5_021F6704 *)param1;
+    UnkStruct_ov5_021F6704 *v2 = (UnkStruct_ov5_021F6704 *)param1;
 
     if (v2->unk_204 != 0) {
         v2->unk_204--;
@@ -436,57 +433,56 @@ static void ov5_021F6AD4(UnkStruct_ov5_021F6704 *param0)
     return;
 }
 
-static const u16 Unk_ov5_02200C84[] = {
-    0x7A,
-    0x7B,
-    0x7C,
-    0x7F,
-    0x7D,
-    0x7E
+static const u16 sHighestIVMessageIndices[] = {
+    pl_msg_00000304_00122,
+    pl_msg_00000304_00123,
+    pl_msg_00000304_00124,
+    pl_msg_00000304_00127,
+    pl_msg_00000304_00125,
+    pl_msg_00000304_00126
 };
 
-BOOL ScrCmd_2EE(ScriptContext *param0)
+BOOL ScrCmd_JudgeStats(ScriptContext *ctx)
 {
-    u8 v0;
-    u32 v1[6];
-    Pokemon *v2;
-    FieldSystem *fieldSystem = param0->fieldSystem;
-    u16 v4 = ScriptContext_GetVar(param0);
-    u16 *v5 = ScriptContext_GetVarPointer(param0);
-    u16 *v6 = ScriptContext_GetVarPointer(param0);
-    u16 *v7 = ScriptContext_GetVarPointer(param0);
+    FieldSystem *fieldSystem = ctx->fieldSystem;
+    u16 selectedIndex = ScriptContext_GetVar(ctx);
+    u16 *totalIVs = ScriptContext_GetVarPointer(ctx);
+    u16 *highestIVIndex = ScriptContext_GetVarPointer(ctx);
+    u16 *highestIVValue = ScriptContext_GetVarPointer(ctx);
 
-    v2 = Party_GetPokemonBySlotIndex(Party_GetFromSavedata(fieldSystem->saveData), v4);
+    Pokemon *targetPokemon = Party_GetPokemonBySlotIndex(Party_GetFromSavedata(fieldSystem->saveData), selectedIndex);
 
-    v1[0] = Pokemon_GetValue(v2, MON_DATA_HP_IV, NULL);
-    v1[1] = Pokemon_GetValue(v2, MON_DATA_ATK_IV, NULL);
-    v1[2] = Pokemon_GetValue(v2, MON_DATA_DEF_IV, NULL);
-    v1[3] = Pokemon_GetValue(v2, MON_DATA_SPEED_IV, NULL);
-    v1[4] = Pokemon_GetValue(v2, MON_DATA_SPATK_IV, NULL);
-    v1[5] = Pokemon_GetValue(v2, MON_DATA_SPDEF_IV, NULL);
+    u32 pokemonIVs[6];
+    pokemonIVs[0] = Pokemon_GetValue(targetPokemon, MON_DATA_HP_IV, NULL);
+    pokemonIVs[1] = Pokemon_GetValue(targetPokemon, MON_DATA_ATK_IV, NULL);
+    pokemonIVs[2] = Pokemon_GetValue(targetPokemon, MON_DATA_DEF_IV, NULL);
+    pokemonIVs[3] = Pokemon_GetValue(targetPokemon, MON_DATA_SPEED_IV, NULL);
+    pokemonIVs[4] = Pokemon_GetValue(targetPokemon, MON_DATA_SPATK_IV, NULL);
+    pokemonIVs[5] = Pokemon_GetValue(targetPokemon, MON_DATA_SPDEF_IV, NULL);
 
-    *v5 = 0;
+    *totalIVs = 0;
+    u8 i;
 
-    for (v0 = 0; v0 < 6; v0++) {
-        *v5 += v1[v0];
+    for (i = 0; i < 6; i++) {
+        *totalIVs += pokemonIVs[i];
     }
 
-    *v6 = 0;
-    *v7 = v1[0];
+    *highestIVIndex = 0;
+    *highestIVValue = pokemonIVs[0];
 
-    for (v0 = 1; v0 < 6; v0++) {
-        if (v1[*v6] < v1[v0]) {
-            *v6 = v0;
-            *v7 = v1[v0];
-        } else if (v1[*v6] == v1[v0]) {
+    for (i = 1; i < 6; i++) {
+        if (pokemonIVs[*highestIVIndex] < pokemonIVs[i]) {
+            *highestIVIndex = i;
+            *highestIVValue = pokemonIVs[i];
+        } else if (pokemonIVs[*highestIVIndex] == pokemonIVs[i]) {
             if ((LCRNG_Next() % 2) == 0) {
-                *v6 = v0;
-                *v7 = v1[v0];
+                *highestIVIndex = i;
+                *highestIVValue = pokemonIVs[i];
             }
         }
     }
 
-    *v6 = Unk_ov5_02200C84[*v6];
+    *highestIVIndex = sHighestIVMessageIndices[*highestIVIndex];
     return 0;
 }
 
@@ -676,7 +672,7 @@ BOOL ScrCmd_304(ScriptContext *param0)
     v4 = Party_GetPokemonBySlotIndex(v5, v7);
 
     Pokemon_SetRotomForm(v4, v10, v8);
-    sub_0202736C(SaveData_Pokedex(fieldSystem->saveData), v4);
+    Pokedex_Capture(SaveData_GetPokedex(fieldSystem->saveData), v4);
 
     return 0;
 }
@@ -838,23 +834,23 @@ BOOL ScrCmd_30F(ScriptContext *param0)
     case 14:
         *v4 = 0;
 
-        if (sub_0206B588(v0) >= 2) {
+        if (SystemVars_GetBattleFactoryPrintState(v0) >= 2) {
             *v4 = 1;
         }
 
-        if (sub_0206B598(v0) >= 2) {
+        if (SystemVars_GetBattleHallPrintState(v0) >= 2) {
             *v4 = 1;
         }
 
-        if (sub_0206B5A8(v0) >= 2) {
+        if (SystemVars_GetBattleCastlePrintState(v0) >= 2) {
             *v4 = 1;
         }
 
-        if (sub_0206B5B8(v0) >= 2) {
+        if (SystemVars_GetBattleArcadePrintState(v0) >= 2) {
             *v4 = 1;
         }
 
-        if (sub_0206B5C8(v0) >= 2) {
+        if (SystemVars_GetBattleTowerPrintState(v0) >= 2) {
             *v4 = 1;
         }
         break;
@@ -985,23 +981,23 @@ BOOL ScrCmd_32D(ScriptContext *ctx)
     MapObject *v6 = Player_MapObject(fieldSystem->playerAvatar);
     MapObject *v7;
 
-    MapObject_PosVectorOut(v6, &v1);
+    MapObject_GetPosPtr(v6, &v1);
     v0 = v1.y;
 
-    while (sub_020625B0(mapObjMan, &v7, &v3, (1 << 0)) == 1) {
+    while (sub_020625B0(mapObjMan, &v7, &v3, MAP_OBJ_STATUS_0) == 1) {
         if (v7 != v6) {
-            MapObject_SetStatusFlagOn(v7, (1 << 13));
+            MapObject_SetStatusFlagOn(v7, MAP_OBJ_STATUS_13);
 
-            if (MapObject_GetStateFlag(v7, (1 << 12)) == 1) {
-                MapObject_PosVectorOut(v7, &v1);
+            if (MapObject_CheckStatusFlag(v7, MAP_OBJ_STATUS_12) == 1) {
+                MapObject_GetPosPtr(v7, &v1);
                 v1.y = v0;
-                MapObject_SetPosVec(v7, &v1);
+                MapObject_SetPos(v7, &v1);
                 MapObject_SetY(v7, (((v0) >> 3) / FX32_ONE));
             }
 
             v2 = ov5_021EB1A0(v7);
 
-            if ((v2 == NULL) && sub_020677F4(sub_02062920(v7))) {
+            if ((v2 == NULL) && sub_020677F4(MapObject_GetGraphicsID(v7))) {
                 if (sub_02062D4C(v7)) {
                     sub_02062B68(v7);
                     v2 = sub_02067A58(v7);
@@ -1026,9 +1022,9 @@ BOOL ScrCmd_32E(ScriptContext *ctx)
     MapObject *v3 = Player_MapObject(fieldSystem->playerAvatar);
     MapObject *v4;
 
-    while (sub_020625B0(mapObjMan, &v4, &v0, (1 << 0)) == 1) {
+    while (sub_020625B0(mapObjMan, &v4, &v0, MAP_OBJ_STATUS_0) == 1) {
         if (v4 != v3) {
-            MapObject_SetStatusFlagOff(v4, (1 << 13));
+            MapObject_SetStatusFlagOff(v4, MAP_OBJ_STATUS_13);
         }
     }
 
@@ -1040,12 +1036,12 @@ static void ov5_021F7654(MapObject *param0, int param1)
     VecFx32 v0;
     UnkStruct_020216E0 *v1;
 
-    MapObject_SetStatusFlagOn(param0, (1 << 13));
-    MapObject_PosVectorOut(param0, &v0);
+    MapObject_SetStatusFlagOn(param0, MAP_OBJ_STATUS_13);
+    MapObject_GetPosPtr(param0, &v0);
 
     v0.y = (((param1) << 4) * FX32_ONE);
 
-    MapObject_SetPosVec(param0, &v0);
+    MapObject_SetPos(param0, &v0);
     MapObject_SetY(param0, ((param1) * 2));
 
     v1 = ov5_021EB1A0(param0);
@@ -1085,13 +1081,13 @@ BOOL ScrCmd_332(ScriptContext *ctx)
     v0 = MapObjMan_LocalMapObjByIndex(v1, 32);
 
     if (v0 != NULL) {
-        MapObject_SetStatusFlagOff(v0, (1 << 13));
+        MapObject_SetStatusFlagOff(v0, MAP_OBJ_STATUS_13);
     }
 
     v0 = MapObjMan_LocalMapObjByIndex(v1, 2);
 
     if (v0 != NULL) {
-        MapObject_SetStatusFlagOff(v0, (1 << 13));
+        MapObject_SetStatusFlagOff(v0, MAP_OBJ_STATUS_13);
     }
 
     return 0;
@@ -1102,7 +1098,7 @@ BOOL ScrCmd_338(ScriptContext *ctx)
     int v0;
     MapObject *v1 = MapObjMan_LocalMapObjByIndex(ctx->fieldSystem->mapObjMan, 15);
     if (v1 != NULL) {
-        switch (MapObject_GetXPos(v1)) {
+        switch (MapObject_GetX(v1)) {
         case 28:
             v0 = 6;
             break;

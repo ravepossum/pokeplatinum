@@ -39,14 +39,12 @@ static BOOL (*const Unk_020F951C[6])(UnkStruct_0209C1EC *);
 static const OverlayManagerTemplate Unk_020F94FC;
 static const OverlayManagerTemplate Unk_020F950C;
 
-UnkStruct_0209C194 *sub_0209C194(UnkStruct_0209C194_1 *param0, u32 param1)
+UnkStruct_0209C194 *sub_0209C194(UnkStruct_0209C194_1 *param0, u32 heapID)
 {
-    UnkStruct_0209C194 *v0;
-
-    v0 = Heap_AllocFromHeap(param1, sizeof(UnkStruct_0209C194));
+    UnkStruct_0209C194 *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_0209C194));
     memset(v0, 0, sizeof(UnkStruct_0209C194));
     v0->unk_14 = *param0;
-    v0->unk_34 = sub_0209BDF8(v0, param1);
+    v0->unk_34 = sub_0209BDF8(v0, heapID);
 
     return v0;
 }
@@ -65,9 +63,7 @@ BOOL sub_0209C1E8(UnkStruct_0209C194 *param0)
 
 void *sub_0209C1EC(FieldSystem *fieldSystem)
 {
-    UnkStruct_0209C1EC *v0;
-
-    v0 = Heap_AllocFromHeap(11, sizeof(UnkStruct_0209C1EC));
+    UnkStruct_0209C1EC *v0 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_0209C1EC));
     memset(v0, 0, sizeof(UnkStruct_0209C1EC));
 
     v0->fieldSystem = fieldSystem;
@@ -96,7 +92,7 @@ BOOL sub_0209C238(void *param0)
 
 static BOOL sub_0209C25C(UnkStruct_0209C1EC *param0)
 {
-    param0->unk_28 = sub_0209C194(&param0->unk_08, 11);
+    param0->unk_28 = sub_0209C194(&param0->unk_08, HEAP_ID_FIELDMAP);
     param0->unk_00 = 1;
     FieldSystem_StartChildProcess(param0->fieldSystem, &Unk_020F94FC, param0->unk_28);
     return 0;
@@ -129,8 +125,8 @@ static BOOL sub_0209C2C0(UnkStruct_0209C1EC *param0)
         if (param0->unk_30->unk_23 == 1) {
             param0->unk_34 = sub_0203D670(param0->fieldSystem, 3, 0);
             param0->unk_04 = v0;
-            param0->unk_34->pos = v0;
-            sub_0203D334(param0->fieldSystem, param0->unk_34);
+            param0->unk_34->monIndex = v0;
+            FieldSystem_OpenSummaryScreen(param0->fieldSystem, param0->unk_34);
             param0->unk_00 = 3;
         } else {
             param0->unk_28->unk_04 = v0;

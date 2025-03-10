@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/team_galactic_eterna_building_4f.h"
 
     .data
 
@@ -8,7 +9,7 @@
     ScriptEntry _01B7
     ScriptEntry _01D6
     ScriptEntry _01FF
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001A:
     ScrCmd_2CD
@@ -27,18 +28,18 @@ _0022:
     WaitMovement
     Message 0
     CloseMessage
-    StartTrainerBattle trainer_commander_jupiter_team_galactic_eterna_building
+    StartTrainerBattle TRAINER_COMMANDER_JUPITER_TEAM_GALACTIC_ETERNA_BUILDING
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _0135
+    GoToIfEq 0x800C, FALSE, _0135
     Message 1
     CloseMessage
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
-    ScrCmd_065 0
+    RemoveObject 0
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     WaitTime 15, 0x800C
-    ScrCmd_1BD 0x8004
+    GetPlayerDir 0x8004
     GoToIfEq 0x8004, 0, _00A4
     GoToIfEq 0x8004, 2, _00BE
     GoToIfEq 0x8004, 3, _00D0
@@ -46,7 +47,7 @@ _0022:
 
 _00A4:
     ApplyMovement 2, _0144
-    ApplyMovement 0xFF, _0174
+    ApplyMovement LOCALID_PLAYER, _0174
     WaitMovement
     GoTo _00E2
     End
@@ -75,9 +76,9 @@ _00E2:
     ClearFlag 0x192
     ClearFlag 0x200
     ClearFlag 0x1FE
-    ScrCmd_065 2
-    ScrCmd_065 1
-    ScrCmd_065 3
+    RemoveObject 2
+    RemoveObject 1
+    RemoveObject 3
     SetVar 0x407A, 3
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
@@ -86,18 +87,18 @@ _00E2:
     End
 
 _0135:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
     .balign 4, 0
 _013C:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0144:
-    MoveAction_00C
+    MoveAction_012
     EndMovement
 
     .byte 63
@@ -119,20 +120,20 @@ _0144:
 
     .balign 4, 0
 _015C:
-    MoveAction_00C 3
-    MoveAction_023
+    MoveAction_012 3
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0168:
-    MoveAction_00C 3
-    MoveAction_022
+    MoveAction_012 3
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0174:
-    MoveAction_03F
-    MoveAction_021
+    MoveAction_063
+    MoveAction_033
     EndMovement
 
     .byte 34
@@ -165,7 +166,7 @@ _0198:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 35, 0
+    PlayCry SPECIES_CLEFAIRY
     Message 2
     ScrCmd_04D
     WaitABXPadPress
@@ -178,7 +179,7 @@ _01B7:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 0x1AB, 0
+    PlayCry SPECIES_BUNEARY
     Message 5
     ScrCmd_04D
     WaitABXPadPress

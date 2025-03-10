@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/stark_mountain_outside.h"
 
     .data
 
@@ -6,18 +7,14 @@
     ScriptEntry _0018
     ScriptEntry _002F
     ScriptEntry _0118
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     SetFlag 0x9D1
     End
 
 _0018:
-    ScrCmd_036 9, 2, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowLandmarkSign 9
     End
 
 _002F:
@@ -42,8 +39,8 @@ _002F:
     ApplyMovement 7, _0108
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ScrCmd_065 6
-    ScrCmd_065 7
+    RemoveObject 6
+    RemoveObject 7
     WaitFanfare SEQ_SE_DP_KAIDAN2
     SetVar 0x40A0, 1
     ReleaseAll
@@ -51,14 +48,14 @@ _002F:
 
     .balign 4, 0
 _00A4:
-    MoveAction_00F 4
+    MoveAction_015 4
     EndMovement
 
     .balign 4, 0
 _00AC:
-    MoveAction_00D 2
-    MoveAction_00F 4
-    MoveAction_00C
+    MoveAction_013 2
+    MoveAction_015 4
+    MoveAction_012
     EndMovement
 
     .byte 34
@@ -72,41 +69,41 @@ _00AC:
 
     .balign 4, 0
 _00C4:
-    MoveAction_022
-    MoveAction_03F 2
-    MoveAction_020
+    MoveAction_034
+    MoveAction_063 2
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _00D4:
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _00E0:
-    MoveAction_00C
-    MoveAction_00F 3
+    MoveAction_012
+    MoveAction_015 3
     EndMovement
 
     .balign 4, 0
 _00EC:
-    MoveAction_00F
-    MoveAction_00D 2
-    MoveAction_00F 3
-    MoveAction_00C
+    MoveAction_015
+    MoveAction_013 2
+    MoveAction_015 3
+    MoveAction_012
     EndMovement
 
     .balign 4, 0
 _0100:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0108:
-    MoveAction_00F
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_015
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
 _0118:
@@ -134,18 +131,18 @@ _0118:
     Message 7
     CloseMessage
     ApplyMovement 5, _0214
-    ApplyMovement 0xFF, _0238
+    ApplyMovement LOCALID_PLAYER, _0238
     WaitMovement
-    ScrCmd_065 5
+    RemoveObject 5
     ApplyMovement 4, _01E8
-    ApplyMovement 0xFF, _0240
+    ApplyMovement LOCALID_PLAYER, _0240
     WaitMovement
     BufferPlayerName 0
     Message 8
     CloseMessage
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
-    ScrCmd_065 4
+    RemoveObject 4
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     SetVar 0x40A0, 3
@@ -154,58 +151,58 @@ _0118:
 
     .balign 4, 0
 _01CC:
-    MoveAction_022
-    MoveAction_03F 2
-    MoveAction_021
+    MoveAction_034
+    MoveAction_063 2
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _01DC:
-    MoveAction_03F
-    MoveAction_022
+    MoveAction_063
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _01E8:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _01F0:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _01F8:
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _0204:
-    MoveAction_046
-    MoveAction_00D
-    MoveAction_023
+    MoveAction_070
+    MoveAction_013
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0214:
-    MoveAction_00D 2
-    MoveAction_00E 5
-    MoveAction_00C 2
-    MoveAction_00E 3
-    MoveAction_015 9
-    MoveAction_017 10
-    MoveAction_00C 6
-    MoveAction_00F 8
+    MoveAction_013 2
+    MoveAction_014 5
+    MoveAction_012 2
+    MoveAction_014 3
+    MoveAction_021 9
+    MoveAction_023 10
+    MoveAction_012 6
+    MoveAction_015 8
     EndMovement
 
     .balign 4, 0
 _0238:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0240:
-    MoveAction_020
+    MoveAction_032
     EndMovement

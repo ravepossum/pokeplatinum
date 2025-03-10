@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_206.h"
 
     .data
 
@@ -7,7 +8,7 @@
     ScriptEntry _00A4
     ScriptEntry _00B7
     ScriptEntry _00CE
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0016:
     SetFlag 0x9E6
@@ -15,9 +16,9 @@ _0016:
 
 _001C:
     CallIfSet 0x994, _009F
-    ScrCmd_200 0x4000
-    GoToIfEq 0x4000, 80, _0047
-    GoToIfEq 0x4000, 0x15F, _0047
+    GetPreviousMapID 0x4000
+    GoToIfEq 0x4000, MAP_HEADER_ROUTE_206_CYCLING_ROAD_NORTH_GATE, _0047
+    GoToIfEq 0x4000, MAP_HEADER_ROUTE_206_CYCLING_ROAD_SOUTH_GATE, _0047
     End
 
 _0047:
@@ -54,19 +55,11 @@ _00A4:
     End
 
 _00B7:
-    ScrCmd_036 1, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 1
     End
 
 _00CE:
-    ScrCmd_036 2, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 2
     End
 
     .byte 0

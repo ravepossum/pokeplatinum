@@ -3,8 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/sprite_decl.h"
-#include "struct_defs/struct_0200D0F4.h"
+#include "struct_defs/pokemon_sprite.h"
 
 #include "overlay012/funcptr_ov12_02226274.h"
 #include "overlay012/ov12_0221FC20.h"
@@ -16,16 +15,16 @@
 #include "overlay012/struct_ov12_02226454.h"
 
 #include "buffer_manager.h"
-#include "cell_actor.h"
 #include "heap.h"
 #include "inlines.h"
 #include "palette.h"
+#include "pltt_transfer.h"
 #include "screen_scroll_manager.h"
+#include "sprite.h"
+#include "sprite_system.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "unk_0200762C.h"
-#include "unk_0200C6E4.h"
-#include "unk_0201F834.h"
 
 typedef struct {
     s16 unk_00;
@@ -147,9 +146,9 @@ s16 ov12_022258E0(UnkStruct_ov12_0221FCDC *param0, int param1, int param2)
     return 0;
 }
 
-u8 ov12_02225950(CellActorData *param0)
+u8 ov12_02225950(ManagedSprite *param0)
 {
-    return sub_0201FAB4(CellActor_GetPaletteProxy(param0->unk_00), NNS_G2D_VRAM_TYPE_2DMAIN);
+    return PlttTransfer_GetPlttOffset(Sprite_GetPaletteProxy(param0->sprite), NNS_G2D_VRAM_TYPE_2DMAIN);
 }
 
 int ov12_02225964(UnkStruct_ov12_0221FCDC *param0, int param1)
@@ -213,26 +212,26 @@ u32 ov12_022259AC(fx32 param0, fx32 param1, fx32 param2)
     return v0 >> FX32_SHIFT;
 }
 
-void ov12_022259DC(UnkStruct_ov12_02225F6C *param0, CellActorData *param1, s16 param2, s16 param3)
+void ov12_022259DC(UnkStruct_ov12_02225F6C *param0, ManagedSprite *param1, s16 param2, s16 param3)
 {
-    SpriteActor_SetSpritePositionXY(param1, param2 + param0->unk_00, param3 + param0->unk_02);
+    ManagedSprite_SetPositionXY(param1, param2 + param0->unk_00, param3 + param0->unk_02);
 }
 
-void ov12_022259FC(UnkStruct_ov12_02225F6C *param0, CellActorData *param1)
+void ov12_022259FC(UnkStruct_ov12_02225F6C *param0, ManagedSprite *param1)
 {
     f32 v0, v1;
 
     ov12_02225FA4(param0, &v0, &v1);
-    sub_0200D6E8(param1, v0, v1);
+    ManagedSprite_SetAffineScale(param1, v0, v1);
 }
 
-void ov12_02225A18(UnkStruct_ov12_02225F6C *param0, Sprite *param1, s16 param2, s16 param3)
+void ov12_02225A18(UnkStruct_ov12_02225F6C *param0, PokemonSprite *param1, s16 param2, s16 param3)
 {
     sub_02007DEC(param1, 0, param2 + param0->unk_00);
     sub_02007DEC(param1, 1, param3 + param0->unk_02);
 }
 
-void ov12_02225A3C(UnkStruct_ov12_02225F6C *param0, Sprite *param1)
+void ov12_02225A3C(UnkStruct_ov12_02225F6C *param0, PokemonSprite *param1)
 {
     sub_02007DEC(param1, 12, param0->unk_00);
     sub_02007DEC(param1, 13, param0->unk_02);
@@ -294,7 +293,7 @@ BOOL ov12_02225AE0(UnkStruct_ov12_02225F6C *param0)
     return 0;
 }
 
-BOOL ov12_02225B78(UnkStruct_ov12_02225F6C *param0, s16 param1, s16 param2, CellActorData *param3)
+BOOL ov12_02225B78(UnkStruct_ov12_02225F6C *param0, s16 param1, s16 param2, ManagedSprite *param3)
 {
     if (ov12_02225AE0(param0)) {
         ov12_022259DC(param0, param3, param1, param2);
@@ -304,7 +303,7 @@ BOOL ov12_02225B78(UnkStruct_ov12_02225F6C *param0, s16 param1, s16 param2, Cell
     return 0;
 }
 
-BOOL ov12_02225BA0(UnkStruct_ov12_02225F6C *param0, s16 param1, s16 param2, Sprite *param3)
+BOOL ov12_02225BA0(UnkStruct_ov12_02225F6C *param0, s16 param1, s16 param2, PokemonSprite *param3)
 {
     if (ov12_02225AE0(param0)) {
         ov12_02225A18(param0, param3, param1, param2);
@@ -344,7 +343,7 @@ BOOL ov12_02225C14(UnkStruct_ov12_02225F6C *param0)
     return 0;
 }
 
-BOOL ov12_02225C50(UnkStruct_ov12_02225F6C *param0, CellActorData *param1)
+BOOL ov12_02225C50(UnkStruct_ov12_02225F6C *param0, ManagedSprite *param1)
 {
     if (ov12_02225C14(param0)) {
         ov12_022259DC(param0, param1, 0, 0);
@@ -354,7 +353,7 @@ BOOL ov12_02225C50(UnkStruct_ov12_02225F6C *param0, CellActorData *param1)
     return 0;
 }
 
-BOOL ov12_02225C74(UnkStruct_ov12_02225F6C *param0, Sprite *param1)
+BOOL ov12_02225C74(UnkStruct_ov12_02225F6C *param0, PokemonSprite *param1)
 {
     if (ov12_02225C14(param0)) {
         ov12_02225A18(param0, param1, 0, 0);
@@ -392,7 +391,7 @@ BOOL ov12_02225CE4(UnkStruct_ov12_02225F6C *param0, UnkStruct_ov12_02225F6C *par
     return 1;
 }
 
-BOOL ov12_02225D2C(UnkStruct_ov12_02225F6C *param0, UnkStruct_ov12_02225F6C *param1, CellActorData *param2)
+BOOL ov12_02225D2C(UnkStruct_ov12_02225F6C *param0, UnkStruct_ov12_02225F6C *param1, ManagedSprite *param2)
 {
     if (ov12_02225CE4(param0, param1)) {
         ov12_022259DC(param0, param2, 0, 0);
@@ -587,12 +586,10 @@ s16 ov12_02225FD4(s16 param0, int param1, fx32 param2)
     return v5;
 }
 
-void ov12_02226024(Sprite *param0, s16 param1, s16 param2, fx32 param3, int param4)
+void ov12_02226024(PokemonSprite *param0, s16 param1, s16 param2, fx32 param3, int param4)
 {
     s16 v0;
-    s16 v1;
-
-    v1 = param1;
+    s16 v1 = param1;
     v0 = ov12_02225FD4(param1, param2, param3);
 
     if (param4 == 1) {
@@ -603,7 +600,7 @@ void ov12_02226024(Sprite *param0, s16 param1, s16 param2, fx32 param3, int para
     sub_02007DEC(param0, 1, v1 + v0);
 }
 
-void ov12_0222605C(CellActorData *param0, s16 param1, s16 param2, fx32 param3, int param4)
+void ov12_0222605C(ManagedSprite *param0, s16 param1, s16 param2, fx32 param3, int param4)
 {
     s16 v0;
     s16 v1;
@@ -618,11 +615,11 @@ void ov12_0222605C(CellActorData *param0, s16 param1, s16 param2, fx32 param3, i
         v1 = param1 - param2;
     }
 
-    SpriteActor_GetSpritePositionXY(param0, &v2, &v3);
-    SpriteActor_SetSpritePositionXY(param0, v2, v1 + v0);
+    ManagedSprite_GetPositionXY(param0, &v2, &v3);
+    ManagedSprite_SetPositionXY(param0, v2, v1 + v0);
 }
 
-BOOL ov12_022260A8(UnkStruct_ov12_02225F6C *param0, CellActorData *param1)
+BOOL ov12_022260A8(UnkStruct_ov12_02225F6C *param0, ManagedSprite *param1)
 {
     if (ov12_02225EB8(param0)) {
         ov12_022259FC(param0, param1);
@@ -632,7 +629,7 @@ BOOL ov12_022260A8(UnkStruct_ov12_02225F6C *param0, CellActorData *param1)
     return 0;
 }
 
-BOOL ov12_022260C8(UnkStruct_ov12_02225F6C *param0, Sprite *param1)
+BOOL ov12_022260C8(UnkStruct_ov12_02225F6C *param0, PokemonSprite *param1)
 {
     if (ov12_02225EB8(param0)) {
         ov12_02225A3C(param0, param1);
@@ -642,7 +639,7 @@ BOOL ov12_022260C8(UnkStruct_ov12_02225F6C *param0, Sprite *param1)
     return 0;
 }
 
-BOOL ov12_022260E8(UnkStruct_ov12_02225F6C *param0, Sprite *param1)
+BOOL ov12_022260E8(UnkStruct_ov12_02225F6C *param0, PokemonSprite *param1)
 {
     if (ov12_02225F6C(param0)) {
         ov12_02225A3C(param0, param1);
@@ -714,7 +711,7 @@ BOOL ov12_02226138(UnkStruct_ov12_02225F6C *param0)
     return 0;
 }
 
-BOOL ov12_0222619C(UnkStruct_ov12_02225F6C *param0, s16 param1, s16 param2, Sprite *param3)
+BOOL ov12_0222619C(UnkStruct_ov12_02225F6C *param0, s16 param1, s16 param2, PokemonSprite *param3)
 {
     if (ov12_02226138(param0)) {
         ov12_02225A18(param0, param3, param1, param2);
@@ -724,7 +721,7 @@ BOOL ov12_0222619C(UnkStruct_ov12_02225F6C *param0, s16 param1, s16 param2, Spri
     return 0;
 }
 
-void ov12_022261C4(UnkStruct_ov12_02226274 *param0, UnkStruct_ov12_02225F6C *param1, UnkFuncPtr_ov12_02226274 param2, s16 param3, s16 param4, u16 param5, u8 param6, u8 param7, CellActorData *param8, CellActorData *param9, CellActorData *param10, CellActorData *param11)
+void ov12_022261C4(UnkStruct_ov12_02226274 *param0, UnkStruct_ov12_02225F6C *param1, UnkFuncPtr_ov12_02226274 param2, s16 param3, s16 param4, u16 param5, u8 param6, u8 param7, ManagedSprite *param8, ManagedSprite *param9, ManagedSprite *param10, ManagedSprite *param11)
 {
     int v0;
 
@@ -747,7 +744,7 @@ void ov12_022261C4(UnkStruct_ov12_02226274 *param0, UnkStruct_ov12_02225F6C *par
     param0->unk_98[3] = param11;
 
     for (v0 = 0; v0 < param0->unk_AC; v0++) {
-        SpriteActor_EnableObject(param0->unk_98[v0], 0);
+        ManagedSprite_SetDrawFlag(param0->unk_98[v0], 0);
     }
 }
 
@@ -762,7 +759,7 @@ BOOL ov12_02226274(UnkStruct_ov12_02226274 *param0)
     }
 
     if (param0->unk_A8 <= param0->unk_AA) {
-        SpriteActor_EnableObject(param0->unk_98[param0->unk_AD], 1);
+        ManagedSprite_SetDrawFlag(param0->unk_98[param0->unk_AD], 1);
         param0->unk_AD++;
         param0->unk_AA = 0;
     }
@@ -776,13 +773,13 @@ BOOL ov12_02226274(UnkStruct_ov12_02226274 *param0)
 
         if (v1[v0]) {
             if (param0->unk_AE == 0) {
-                SpriteActor_SetSpritePositionXY(param0->unk_98[v0], param0->unk_00 + param0->unk_04[v0].unk_00, param0->unk_02 + param0->unk_04[v0].unk_02);
+                ManagedSprite_SetPositionXY(param0->unk_98[v0], param0->unk_00 + param0->unk_04[v0].unk_00, param0->unk_02 + param0->unk_04[v0].unk_02);
             } else {
                 ov12_02225FA4(&param0->unk_04[v0], &v2, &v3);
-                sub_0200D6E8(param0->unk_98[v0], v2, v3);
+                ManagedSprite_SetAffineScale(param0->unk_98[v0], v2, v3);
             }
         } else {
-            SpriteActor_EnableObject(param0->unk_98[v0], 0);
+            ManagedSprite_SetDrawFlag(param0->unk_98[v0], 0);
         }
     }
 
@@ -897,9 +894,7 @@ static void ov12_022264F4(UnkStruct_ov12_02226490 *param0)
 
 static void ov12_02226504(UnkStruct_ov12_02226504 *param0)
 {
-    const void *v0;
-
-    v0 = BufferManager_GetReadBuffer(param0->bufferManager);
+    const void *v0 = BufferManager_GetReadBuffer(param0->bufferManager);
 
     BufferManager_StopDMA();
     BufferManager_StartDMA(v0, (void *)param0->unk_620, 4, 1);
@@ -919,15 +914,13 @@ static void ov12_0222653C(void *param0)
     ov12_02226504(v0);
 }
 
-UnkStruct_ov12_02226504 *ov12_02226544(u32 param0, u32 param1, int param2)
+UnkStruct_ov12_02226504 *ov12_02226544(u32 param0, u32 param1, int heapID)
 {
-    UnkStruct_ov12_02226504 *v0;
-
-    v0 = Heap_AllocFromHeap(param2, sizeof(UnkStruct_ov12_02226504));
+    UnkStruct_ov12_02226504 *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov12_02226504));
     memset(v0, 0, sizeof(UnkStruct_ov12_02226504));
 
     GF_ASSERT(v0);
-    v0->bufferManager = BufferManager_New(param2, v0->unk_20, v0->unk_320);
+    v0->bufferManager = BufferManager_New(heapID, v0->unk_20, v0->unk_320);
 
     GF_ASSERT(v0->bufferManager);
     v0->unk_620 = param0;
@@ -979,20 +972,20 @@ static void ov12_02226620(void *param0)
     ScreenScrollManager_RestartDMA(v0->screenScrollMgr);
 }
 
-UnkStruct_ov12_0222660C *ov12_0222662C(u8 param0, u8 param1, u16 param2, fx32 param3, s16 param4, u32 param5, u32 param6, u32 param7, int param8)
+UnkStruct_ov12_0222660C *ov12_0222662C(u8 param0, u8 param1, u16 param2, fx32 param3, s16 param4, u32 param5, u32 param6, u32 param7, int heapID)
 {
     UnkStruct_ov12_0222660C *v0;
     u32 v1;
     void *v2;
     const void *v3;
 
-    v0 = Heap_AllocFromHeap(param8, sizeof(UnkStruct_ov12_0222660C));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov12_0222660C));
     GF_ASSERT(v0);
 
     memset(v0, 0, sizeof(UnkStruct_ov12_0222660C));
 
     v1 = ov12_022266F0(param5);
-    v0->screenScrollMgr = ScreenScrollManager_New(param8);
+    v0->screenScrollMgr = ScreenScrollManager_New(heapID);
 
     ScreenScrollManager_ScrollX(v0->screenScrollMgr, param0, param1, param2, param3, param4, v1, param7, param6);
     ov12_02226490(&v0->unk_00, v0, ov12_0222660C, ov12_02226620);
@@ -1152,11 +1145,11 @@ void ov12_02226858(UnkStruct_ov12_022267D4 *param0)
     Heap_FreeToHeap(param0);
 }
 
-UnkStruct_ov12_022267D4 *ov12_02226870(PaletteData *param0, int param1, int param2, u16 param3, u16 param4, s8 param5, s8 param6, u8 param7, u8 param8, u16 param9, int param10)
+UnkStruct_ov12_022267D4 *ov12_02226870(PaletteData *param0, int heapID, int param2, u16 param3, u16 param4, s8 param5, s8 param6, u8 param7, u8 param8, u16 param9, int param10)
 {
     UnkStruct_ov12_022267D4 *v0 = NULL;
 
-    v0 = Heap_AllocFromHeap(param1, sizeof(UnkStruct_ov12_022267D4));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov12_022267D4));
 
     GF_ASSERT(v0 != NULL);
 
@@ -1216,9 +1209,7 @@ void ov12_02226924(UnkStruct_ov12_0221FCDC *param0)
 
 void ov12_02226954(UnkStruct_ov12_0221FCDC *param0)
 {
-    PaletteData *v0;
-
-    v0 = ov12_0222332C(param0);
+    PaletteData *v0 = ov12_0222332C(param0);
 
     if (ov12_0221FDD4(param0) == 1) {
         PaletteData_CopyBuffer(v0, 0, 0, 0, 0, 16 * 3 * 2);

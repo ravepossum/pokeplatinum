@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_218.h"
 
     .data
 
@@ -9,22 +10,14 @@
     ScriptEntry _006E
     ScriptEntry _008B
     ScriptEntry _00A8
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001E:
-    ScrCmd_036 5, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 5
     End
 
 _0035:
-    ScrCmd_036 6, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 6
     End
 
 _004C:
@@ -49,7 +42,7 @@ _006E:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 35, 0
+    PlayCry SPECIES_CLEFAIRY
     Message 1
     ScrCmd_04D
     WaitABXPadPress
@@ -61,7 +54,7 @@ _008B:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 35, 0
+    PlayCry SPECIES_CLEFAIRY
     Message 2
     ScrCmd_04D
     WaitABXPadPress
@@ -73,7 +66,7 @@ _00A8:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 25, 0
+    PlayCry SPECIES_PIKACHU
     Message 3
     ScrCmd_04D
     WaitABXPadPress

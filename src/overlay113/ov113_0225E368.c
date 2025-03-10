@@ -540,7 +540,7 @@ static UnkStruct_ov113_0225E6B8 *ov113_0225E6B8(UnkStruct_ov113_0225DBCC *param0
     fx32 v1, v2;
     BOOL v3;
 
-    v0 = Heap_AllocFromHeap(118, sizeof(UnkStruct_ov113_0225E6B8));
+    v0 = Heap_AllocFromHeap(HEAP_ID_118, sizeof(UnkStruct_ov113_0225E6B8));
     MI_CpuClear8(v0, sizeof(UnkStruct_ov113_0225E6B8));
 
     v0->unk_240_24 = 0xff;
@@ -671,9 +671,7 @@ static void ov113_0225E920(NNSG3dResTex *param0, NARC *param1, NARC *param2, con
     u16 *v0;
     u8 *v1, *v2;
     NNSG2dCharacterData *v3;
-    int v4;
-
-    v4 = PokemonHasOverworldFootprint(param3->unk_02, param3->unk_08, param4);
+    int v4 = PokemonHasOverworldFootprint(param3->unk_02, param3->unk_08, param4);
     v1 = (u8 *)((u8 *)param0 + param0->texInfo.ofsTex);
 
     if (v4 == 1) {
@@ -778,7 +776,7 @@ static void ov113_0225EA60(NNSG3dResTex *param0, int param1)
     int v2, v3, v4, v5, v6;
 
     v0 = (u32 *)((u8 *)param0 + param0->texInfo.ofsTex);
-    v1 = Heap_AllocFromHeap(118, (16 * 16 / 4));
+    v1 = Heap_AllocFromHeap(HEAP_ID_118, (16 * 16 / 4));
 
     MI_CpuCopy16(v0, v1, (16 * 16 / 4));
     MI_CpuClear16(v0, (16 * 16 / 4));
@@ -839,9 +837,7 @@ static void ov113_0225EB20(UnkStruct_ov113_0225EB20 *param0, UnkStruct_ov113_022
 
 static void ov113_0225EB64(UnkStruct_ov113_0225DBCC *param0, int param1, int param2, fx32 *param3, fx32 *param4)
 {
-    int v0;
-
-    v0 = param1 / 16;
+    int v0 = param1 / 16;
 
     if (v0 >= NELEMS(Unk_ov113_02260C68)) {
         v0 = NELEMS(Unk_ov113_02260C68) - 1;
@@ -950,9 +946,7 @@ static BOOL ov113_0225EDA4(const UnkStruct_ov113_0225EDA4 *param0, const UnkStru
 static void ov113_0225EDCC(UnkStruct_ov113_0225EB20 *param0, UnkStruct_ov113_0225E6B8 *param1)
 {
     int v0;
-    UnkStruct_ov113_0225EDCC *v1;
-
-    v1 = param0->unk_53C;
+    UnkStruct_ov113_0225EDCC *v1 = param0->unk_53C;
 
     for (v0 = 0; v0 < 128; v0++) {
         if (v1->unk_01 == 0) {
@@ -1027,9 +1021,7 @@ static BOOL ov113_0225EEBC(UnkStruct_ov113_0225E6B8 *param0, int param1)
 
 static u8 ov113_0225EEF8(const UnkStruct_ov113_02260818 *param0)
 {
-    u8 v0;
-
-    v0 = Pokemon_GetNatureOf(param0->unk_04);
+    u8 v0 = Pokemon_GetNatureOf(param0->unk_04);
     return Unk_ov113_02260D30[v0];
 }
 

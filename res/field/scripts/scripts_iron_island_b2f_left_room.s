@@ -1,4 +1,6 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/iron_island_b2f_left_room.h"
+#include "res/text/bank/special_met_location_names.h"
 
     .data
 
@@ -11,7 +13,7 @@
     ScriptEntry _0466
     ScriptEntry _0468
     ScriptEntry _01AA
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0026:
     ScrCmd_25B
@@ -24,7 +26,7 @@ _0035:
     End
 
 _004A:
-    ScrCmd_186 4, 19, 41
+    SetObjectEventPos 4, 19, 41
     ScrCmd_188 4, 17
     ScrCmd_189 4, 3
     End
@@ -35,7 +37,7 @@ _0060:
 
 _0064:
     LockAll
-    SetPlayerBike 0
+    SetPlayerBike FALSE
     GetPlayerMapPos 0x8004, 0x8005
     CallIfEq 0x8005, 2, _00D1
     CallIfEq 0x8005, 3, _00DD
@@ -51,7 +53,7 @@ _0064:
     Message 2
     WaitABXPadPress
     CloseMessage
-    SetVar 0x403F, 0x261
+    SetVar VAR_PARTNER_TRAINER_ID, TRAINER_RILEY_IRON_ISLAND
     SetHasPartner
     ScrCmd_06D 4, 48
     ReleaseAll
@@ -77,7 +79,7 @@ _00EE:
 
 _00F3:
     LockAll
-    ApplyMovement 0xFF, _0158
+    ApplyMovement LOCALID_PLAYER, _0158
     ApplyMovement 4, _0160
     WaitMovement
     Message 4
@@ -103,7 +105,7 @@ _014A:
 
     .balign 4, 0
 _0158:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
@@ -122,28 +124,28 @@ _0160:
 
     .balign 4, 0
 _0170:
-    MoveAction_023
-    MoveAction_04B
-    MoveAction_00C
-    MoveAction_023
+    MoveAction_035
+    MoveAction_075
+    MoveAction_012
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0184:
-    MoveAction_023
-    MoveAction_04B
+    MoveAction_035
+    MoveAction_075
     EndMovement
 
     .balign 4, 0
 _0190:
-    MoveAction_00E
-    MoveAction_00D
-    MoveAction_022
+    MoveAction_014
+    MoveAction_013
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _01A0:
-    MoveAction_00E
+    MoveAction_014
     EndMovement
 
 _01A8:
@@ -172,10 +174,10 @@ _01AA:
     Message 8
     CloseMessage
     SetHasPartner
-    StartTrainerBattle trainer_galactic_grunt_iron_island_1, trainer_galactic_grunt_iron_island_2
+    StartTrainerBattle TRAINER_GALACTIC_GRUNT_IRON_ISLAND_1, TRAINER_GALACTIC_GRUNT_IRON_ISLAND_2
     ClearHasPartner
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _037D
+    GoToIfEq 0x800C, FALSE, _037D
     ApplyMovement 5, _0394
     WaitMovement
     Message 9
@@ -186,8 +188,8 @@ _01AA:
     CloseMessage
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
-    ScrCmd_065 5
-    ScrCmd_065 6
+    RemoveObject 5
+    RemoveObject 6
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GetPlayerMapPos 0x8004, 0x8005
@@ -200,13 +202,13 @@ _01AA:
 
 _0291:
     ApplyMovement 4, _03D4
-    ApplyMovement 0xFF, _0434
+    ApplyMovement LOCALID_PLAYER, _0434
     WaitMovement
     Return
 
 _02A5:
     ApplyMovement 4, _03E4
-    ApplyMovement 0xFF, _044C
+    ApplyMovement LOCALID_PLAYER, _044C
     WaitMovement
     Return
 
@@ -237,21 +239,21 @@ _02A5:
 
 _02D1:
     ApplyMovement 4, _0414
-    ApplyMovement 0xFF, _0424
+    ApplyMovement LOCALID_PLAYER, _0424
     WaitMovement
     Return
 
 _02E5:
     ApplyMovement 4, _041C
-    ApplyMovement 0xFF, _042C
+    ApplyMovement LOCALID_PLAYER, _042C
     WaitMovement
     Return
 
 _02F9:
     Message 11
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _031C
-    GoToIfEq 0x800C, 1, _0366
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _031C
+    GoToIfEq 0x800C, MENU_NO, _0366
     End
 
 _031C:
@@ -260,7 +262,7 @@ _031C:
     PlaySound SEQ_FANFA4
     WaitSound
     Message 12
-    ScrCmd_097 0x1BF, 10
+    GiveEgg SPECIES_RIOLU, SPECIAL_METLOC_NAME_RILEY
     SetFlag 0x1E5
     ClearFlag 226
     Call _0371
@@ -288,28 +290,28 @@ _0371:
     Return
 
 _037D:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
     .balign 4, 0
 _0384:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _038C:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0394:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _039C:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .byte 14
@@ -363,16 +365,16 @@ _039C:
 
     .balign 4, 0
 _03D4:
-    MoveAction_022
-    MoveAction_00D
-    MoveAction_00E 2
+    MoveAction_034
+    MoveAction_013
+    MoveAction_014 2
     EndMovement
 
     .balign 4, 0
 _03E4:
-    MoveAction_022
-    MoveAction_00C
-    MoveAction_00E 2
+    MoveAction_034
+    MoveAction_012
+    MoveAction_014 2
     EndMovement
 
     .byte 13
@@ -402,45 +404,45 @@ _03E4:
 
     .balign 4, 0
 _040C:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0414:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _041C:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0424:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _042C:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0434:
-    MoveAction_03F 2
-    MoveAction_021
-    MoveAction_03F
-    MoveAction_03D
-    MoveAction_00E
+    MoveAction_063 2
+    MoveAction_033
+    MoveAction_063
+    MoveAction_061
+    MoveAction_014
     EndMovement
 
     .balign 4, 0
 _044C:
-    MoveAction_03F 2
-    MoveAction_020
-    MoveAction_03F
-    MoveAction_03D
-    MoveAction_00E
+    MoveAction_063 2
+    MoveAction_032
+    MoveAction_063
+    MoveAction_061
+    MoveAction_014
     EndMovement
 
 _0464:

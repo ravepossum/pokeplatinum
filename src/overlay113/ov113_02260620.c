@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "constants/species.h"
-#include "consts/pokemon.h"
+#include "generated/footprint_sizes.h"
 
 #include "overlay066/ov66_0222DDF0.h"
 #include "overlay066/ov66_022324F0.h"
@@ -34,7 +34,7 @@ __attribute__((aligned(4))) static const u16 Unk_ov113_02260D6C[][2] = {
     { 0x2D4A, 0x5651 }
 };
 
-#include "res/pokemon/footprint_data.h"
+#include "res/pokemon/species_footprints.h"
 
 static const TouchScreenRect Unk_ov113_02260D4C[] = {
     { 0xA0, 0xC0, 0x0, 0x20 },
@@ -91,7 +91,7 @@ void ov113_02260620(MessageLoader *param0, StringTemplate *param1, Window param2
     StringTemplate_SetStrbuf(param1, 0, v4, v6, 1, GAME_LANGUAGE);
 
     v2 = MessageLoader_GetNewStrbuf(param0, 0);
-    v3 = Strbuf_Init(v5, 118);
+    v3 = Strbuf_Init(v5, HEAP_ID_118);
 
     StringTemplate_Format(param1, v3, v2);
     Window_FillTilemap(&param2[v7], 0x0);
@@ -130,7 +130,7 @@ int ov113_02260748(UnkStruct_ov113_02260818 *param0, int param1)
     int v0;
     int v1 = 0xff;
 
-    v0 = sub_02022664(Unk_ov113_02260D4C);
+    v0 = TouchScreen_CheckRectanglePressed(Unk_ov113_02260D4C);
 
     if (v0 < 6) {
         if ((param1 != v0) && (param0[v0].unk_02 != 0) && (param0[v0].unk_02 <= NATIONAL_DEX_COUNT)) {
@@ -158,7 +158,7 @@ BOOL PokemonHasOverworldFootprint(int species, int form, BOOL canShowArceus)
         return FALSE;
     }
 
-    return sSpeciesFootprintData[species].hasFootprint;
+    return sSpeciesFootprints[species].has;
 }
 
 int PokemonOverworldFootprintSize(int species, int form)
@@ -167,5 +167,5 @@ int PokemonOverworldFootprintSize(int species, int form)
         return FOOTPRINT_LARGE;
     }
 
-    return sSpeciesFootprintData[species].footprintSize;
+    return sSpeciesFootprints[species].size;
 }

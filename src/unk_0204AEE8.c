@@ -3,8 +3,9 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "generated/species_data_params.h"
+
 #include "struct_decls/pokedexdata_decl.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/struct_0204AFC4.h"
 #include "struct_defs/struct_0204B184.h"
 #include "struct_defs/struct_0204B1E8.h"
@@ -21,13 +22,13 @@
 #include "message.h"
 #include "narc.h"
 #include "party.h"
+#include "pokedex.h"
 #include "pokemon.h"
 #include "save_player.h"
 #include "savedata.h"
 #include "strbuf.h"
 #include "string_template.h"
 #include "trainer_info.h"
-#include "unk_0202631C.h"
 #include "unk_0202D05C.h"
 #include "unk_02049D08.h"
 
@@ -106,14 +107,14 @@ StringTemplate *sub_0204AEE8(SaveData *param0, u16 param1, u16 param2, u8 param3
     u8 v0;
     u16 v1;
     Strbuf *v2, *v3;
-    PokedexData *v4;
+    Pokedex *pokedex;
     StringTemplate *v5;
     MessageLoader *v6;
 
-    v2 = Strbuf_Init(12 + 2, 4);
-    v3 = Strbuf_Init(2, 4);
-    v4 = SaveData_Pokedex(param0);
-    v6 = MessageLoader_Init(1, 26, 412, 4);
+    v2 = Strbuf_Init(12 + 2, HEAP_ID_FIELD);
+    v3 = Strbuf_Init(2, HEAP_ID_FIELD);
+    pokedex = SaveData_GetPokedex(param0);
+    v6 = MessageLoader_Init(1, 26, 412, HEAP_ID_FIELD);
     v5 = StringTemplate_New(18 + 1, 12 + 2, 4);
 
     StringTemplate_SetNumber(v5, 0, param1, 1, 0, 1);
@@ -121,7 +122,7 @@ StringTemplate *sub_0204AEE8(SaveData *param0, u16 param1, u16 param2, u8 param3
     for (v0 = 0; v0 < 18; v0++) {
         v1 = sub_02078824(v0);
 
-        if (Pokedex_HasSeenSpecies(v4, v1)) {
+        if (Pokedex_HasSeenSpecies(pokedex, v1)) {
             MessageLoader_GetStrbuf(v6, v1, v2);
             StringTemplate_SetStrbuf(v5, (*param4) + 1, v2, param2, param3, GAME_LANGUAGE);
             (*param4)++;
@@ -292,7 +293,7 @@ static UnkStruct_0204B184 *sub_0204B184(UnkStruct_ov104_0223A348 *param0, u16 pa
 
     v2 = MessageLoader_GetNewStrbuf(v1, param1);
 
-    Strbuf_ToChars(v2, &param0->unk_00.unk_08[0], 8);
+    Strbuf_ToChars(v2, &param0->unk_00.unk_08[0], 8); // Possibly TRAINER_NAME_LEN + 1
     Strbuf_Free(v2);
     MessageLoader_Free(v1);
 
@@ -379,16 +380,16 @@ static u32 sub_0204B1E8(UnkStruct_0204AFC4 *param0, UnkStruct_ov104_0223A348_sub
     param1->unk_1E_val2 = 0;
     param1->unk_1F = gGameLanguage;
 
-    v0 = PokemonPersonalData_GetSpeciesValue(param1->unk_00_val1_0, 25);
+    v0 = SpeciesData_GetSpeciesValue(param1->unk_00_val1_0, SPECIES_DATA_ABILITY_2);
 
     if (v0) {
         if (param1->unk_10 & 1) {
             param1->unk_20 = v0;
         } else {
-            param1->unk_20 = PokemonPersonalData_GetSpeciesValue(param1->unk_00_val1_0, 24);
+            param1->unk_20 = SpeciesData_GetSpeciesValue(param1->unk_00_val1_0, SPECIES_DATA_ABILITY_1);
         }
     } else {
-        param1->unk_20 = PokemonPersonalData_GetSpeciesValue(param1->unk_00_val1_0, 24);
+        param1->unk_20 = SpeciesData_GetSpeciesValue(param1->unk_00_val1_0, SPECIES_DATA_ABILITY_1);
     }
 
     param1->unk_21 = v3;
@@ -400,9 +401,7 @@ static u32 sub_0204B1E8(UnkStruct_0204AFC4 *param0, UnkStruct_ov104_0223A348_sub
 BOOL sub_0204B3B8(UnkStruct_0204AFC4 *param0, UnkStruct_ov104_0223A348 *param1, u16 param2, int param3, u16 *param4, u16 *param5, UnkStruct_0204B404 *param6, int param7)
 {
     BOOL v0 = 0;
-    UnkStruct_0204B184 *v1;
-
-    v1 = sub_0204B184(param1, param2, param7);
+    UnkStruct_0204B184 *v1 = sub_0204B184(param1, param2, param7);
     v0 = sub_0204B470(param0, v1, param2, &param1->unk_30[0], param3, param4, param5, param6, param7);
 
     Heap_FreeToHeap(v1);
@@ -414,9 +413,7 @@ void sub_0204B404(UnkStruct_0204AFC4 *param0, UnkStruct_ov104_0223A348 *param1, 
 {
     int v0;
     u8 v1 = 0;
-    UnkStruct_0204B184 *v2;
-
-    v2 = sub_0204B184(param1, param2, param5);
+    UnkStruct_0204B184 *v2 = sub_0204B184(param1, param2, param5);
     v1 = sub_0204AE84(param2);
 
     for (v0 = 0; v0 < 2; v0++) {

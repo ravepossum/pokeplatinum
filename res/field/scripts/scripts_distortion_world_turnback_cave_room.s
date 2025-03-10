@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/distortion_world_turnback_cave_room.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _000E
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     ScrCmd_2F2
@@ -14,8 +15,8 @@ _000E:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     Message 0
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _002E
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _002E
     CloseMessage
     ReleaseAll
     End

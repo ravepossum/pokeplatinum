@@ -8,7 +8,7 @@
 #include "struct_decls/struct_02061AB4_decl.h"
 
 #include "field/field_system.h"
-#include "overlay005/ov5_021E779C.h"
+#include "overlay005/land_data.h"
 #include "overlay005/ov5_021EAFA4.h"
 #include "overlay023/funcptr_ov23_022427DC.h"
 #include "overlay023/funcptr_ov23_022431EC.h"
@@ -31,7 +31,6 @@
 #include "comm_player_manager.h"
 #include "communication_information.h"
 #include "communication_system.h"
-#include "core_sys.h"
 #include "field_system.h"
 #include "game_options.h"
 #include "graphics.h"
@@ -44,6 +43,7 @@
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "system_flags.h"
 #include "trainer_info.h"
 #include "unk_0202854C.h"
@@ -137,15 +137,15 @@ static void CommManUnderground_Init(CommManUnderground *param0, FieldSystem *fie
     sCommManUnderground->unk_1C.unk_02 = 0;
     sCommManUnderground->unk_14B = 0;
     sCommManUnderground->unk_147 = 1;
-    sCommManUnderground->unk_118 = ov23_02253D48(634, 33, fieldSystem->bgConfig, v0, 500);
-    sCommManUnderground->unk_11C = ov23_02253D48(638, 33, fieldSystem->bgConfig, v0, 0);
-    sCommManUnderground->unk_120 = ov23_02253D48(636, 33, fieldSystem->bgConfig, v0, 1000);
-    sCommManUnderground->unk_124 = ov23_02253D48(637, 33, fieldSystem->bgConfig, v0, 0);
-    sCommManUnderground->unk_128 = ov23_02253D48(630, 33, fieldSystem->bgConfig, v0, 0);
+    sCommManUnderground->unk_118 = ov23_02253D48(634, HEAP_ID_33, fieldSystem->bgConfig, v0, 500);
+    sCommManUnderground->unk_11C = ov23_02253D48(638, HEAP_ID_33, fieldSystem->bgConfig, v0, 0);
+    sCommManUnderground->unk_120 = ov23_02253D48(636, HEAP_ID_33, fieldSystem->bgConfig, v0, 1000);
+    sCommManUnderground->unk_124 = ov23_02253D48(637, HEAP_ID_33, fieldSystem->bgConfig, v0, 0);
+    sCommManUnderground->unk_128 = ov23_02253D48(630, HEAP_ID_33, fieldSystem->bgConfig, v0, 0);
 
-    LoadMessageBoxGraphics(sCommManUnderground->fieldSystem->bgConfig, 3, (1024 - (18 + 12)), 10, 0, 4);
-    Graphics_LoadPalette(50, 52, 0, 10 * 0x20, 4 * 0x20, 4);
-    LoadStandardWindowGraphics(sCommManUnderground->fieldSystem->bgConfig, 3, 1024 - (18 + 12) - 9, 11, 2, 4);
+    LoadMessageBoxGraphics(sCommManUnderground->fieldSystem->bgConfig, 3, (1024 - (18 + 12)), 10, 0, HEAP_ID_FIELD);
+    Graphics_LoadPalette(50, 52, 0, 10 * 0x20, 4 * 0x20, HEAP_ID_FIELD);
+    LoadStandardWindowGraphics(sCommManUnderground->fieldSystem->bgConfig, 3, 1024 - (18 + 12) - 9, 11, 2, HEAP_ID_FIELD);
 
     for (v1 = 0; v1 < (7 + 1); v1++) {
         sCommManUnderground->unk_C2[v1] = 0xff;
@@ -222,8 +222,8 @@ BOOL ov23_0224223C(TrainerInfo *param0, TrainerInfo *param1, int param2, Strbuf 
     Strbuf *v1;
 
     if (param0 && param1) {
-        v0 = StringTemplate_Default(4);
-        v1 = Strbuf_Init((50 * 2), 4);
+        v0 = StringTemplate_Default(HEAP_ID_FIELD);
+        v1 = Strbuf_Init((50 * 2), HEAP_ID_FIELD);
 
         StringTemplate_SetPlayerName(v0, 0, param0);
         StringTemplate_SetPlayerName(v0, 1, param1);
@@ -244,8 +244,8 @@ BOOL ov23_022422A8(TrainerInfo *param0, int param1, int param2, Strbuf *param3)
     Strbuf *v1;
 
     if (param0) {
-        v0 = StringTemplate_Default(4);
-        v1 = Strbuf_Init((50 * 2), 4);
+        v0 = StringTemplate_Default(HEAP_ID_FIELD);
+        v1 = Strbuf_Init((50 * 2), HEAP_ID_FIELD);
 
         StringTemplate_SetPlayerName(v0, param1, param0);
         MessageLoader_GetStrbuf(ov23_02253E3C(ov23_0224219C()), param2, v1);
@@ -353,7 +353,7 @@ BOOL ov23_02242458(void)
         return 0;
     }
 
-    if (gCoreSys.touchPressed) {
+    if (gSystem.touchPressed) {
         sCommManUnderground->unk_134 = 30;
 
         if (!sCommManUnderground->unk_14B) {
@@ -366,13 +366,13 @@ BOOL ov23_02242458(void)
                     return 0;
                 }
 
-                v0 = ov5_021EAFA4(gCoreSys.touchX, gCoreSys.touchY, sCommManUnderground->fieldSystem->unk_8C);
-                ov5_021E9230(v0.x, v0.z, &v2, &v3);
+                v0 = ov5_021EAFA4(gSystem.touchX, gSystem.touchY, sCommManUnderground->fieldSystem->unk_8C);
+                LandData_ObjectPosToTilePos(v0.x, v0.z, &v2, &v3);
                 v4.unk_00 = v2;
                 v4.unk_02 = v3;
 
-                sCommManUnderground->unk_18.unk_00 = gCoreSys.touchX;
-                sCommManUnderground->unk_18.unk_02 = gCoreSys.touchY;
+                sCommManUnderground->unk_18.unk_00 = gSystem.touchX;
+                sCommManUnderground->unk_18.unk_02 = gSystem.touchY;
                 sCommManUnderground->unk_1C.unk_00 = v2;
                 sCommManUnderground->unk_1C.unk_02 = v3;
 
@@ -616,9 +616,7 @@ void ov23_022428D8(int param0, int param1, void *param2, void *param3)
     UnkStruct_ov23_02242830 *v1 = param2;
     UnkStruct_ov23_0224271C v2;
     int v3;
-    u8 v4;
-
-    v4 = param0;
+    u8 v4 = param0;
     v2.unk_00 = CommPlayer_AddXServer(param0);
     v2.unk_02 = CommPlayer_AddZServer(param0);
 
@@ -770,25 +768,25 @@ void ov23_02242BC0(FieldSystem *fieldSystem)
     void *v0;
 
     if (sCommManUnderground == NULL) {
-        v0 = Heap_AllocFromHeap(15, sizeof(CommManUnderground));
+        v0 = Heap_AllocFromHeap(HEAP_ID_COMMUNICATION, sizeof(CommManUnderground));
         CommManUnderground_Init(v0, fieldSystem);
 
-        v0 = Heap_AllocFromHeap(15, CommPlayer_Size());
+        v0 = Heap_AllocFromHeap(HEAP_ID_COMMUNICATION, CommPlayer_Size());
         CommPlayerMan_Init(v0, fieldSystem, 1);
 
-        v0 = Heap_AllocFromHeap(15, ov23_02243858());
+        v0 = Heap_AllocFromHeap(HEAP_ID_COMMUNICATION, ov23_02243858());
         ov23_022434BC(v0, fieldSystem);
 
-        v0 = Heap_AllocFromHeap(15, ov23_0224B5C4());
+        v0 = Heap_AllocFromHeap(HEAP_ID_COMMUNICATION, ov23_0224B5C4());
         ov23_0224B144(v0, fieldSystem);
 
-        v0 = Heap_AllocFromHeap(15, ov23_022417C4());
+        v0 = Heap_AllocFromHeap(HEAP_ID_COMMUNICATION, ov23_022417C4());
         ov23_022416E0(v0, fieldSystem);
 
-        v0 = Heap_AllocFromHeap(15, ov23_0223E2E8());
+        v0 = Heap_AllocFromHeap(HEAP_ID_COMMUNICATION, ov23_0223E2E8());
         ov23_0223E1E4(v0, fieldSystem);
 
-        v0 = Heap_AllocFromHeap(15, ov23_02253608());
+        v0 = Heap_AllocFromHeap(HEAP_ID_COMMUNICATION, ov23_02253608());
         ov23_02253598(v0, SaveData_SecretBaseRecord(FieldSystem_GetSaveData(fieldSystem)), FieldSystem_GetSaveData(fieldSystem));
         ov23_0224F588(sub_020298B0(FieldSystem_GetSaveData(fieldSystem)));
     }
@@ -819,7 +817,7 @@ void ov23_02242CB4(void)
         ov23_022435A8();
         ov23_0223E2F4();
         sCommManUnderground->unk_14B = 0;
-        LoadMessageBoxGraphics(sCommManUnderground->fieldSystem->bgConfig, 3, (1024 - (18 + 12)), 10, 0, 4);
+        LoadMessageBoxGraphics(sCommManUnderground->fieldSystem->bgConfig, 3, (1024 - (18 + 12)), 10, 0, HEAP_ID_FIELD);
     }
 }
 
@@ -1052,10 +1050,10 @@ void UndergroundMan_SetReturnLog(int param0)
 
     if (sCommManUnderground) {
         if (sCommManUnderground->unk_DC[param0] == NULL) {
-            sCommManUnderground->unk_DC[param0] = Strbuf_Init((50 * 2), 15);
+            sCommManUnderground->unk_DC[param0] = Strbuf_Init((50 * 2), HEAP_ID_COMMUNICATION);
 
-            v0 = StringTemplate_Default(11);
-            v1 = Strbuf_Init((50 * 2), 11);
+            v0 = StringTemplate_Default(HEAP_ID_FIELDMAP);
+            v1 = Strbuf_Init((50 * 2), HEAP_ID_FIELDMAP);
 
             StringTemplate_SetPlayerName(v0, 0, CommInfo_TrainerInfo(param0));
             MessageLoader_GetStrbuf(ov23_02253E3C(ov23_0224219C()), 115, v1);

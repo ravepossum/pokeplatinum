@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_207.h"
 
     .data
 
@@ -9,12 +10,12 @@
     ScriptEntry _01EC
     ScriptEntry _0203
     ScriptEntry _021A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001E:
     GetPlayerGender 0x4000
-    GoToIfEq 0x4000, 0, _003E
-    GoToIfEq 0x4000, 1, _0046
+    GoToIfEq 0x4000, GENDER_MALE, _003E
+    GoToIfEq 0x4000, GENDER_FEMALE, _0046
     End
 
 _003E:
@@ -28,27 +29,27 @@ _0046:
 _004E:
     LockAll
     GetPlayerMapPos 0x8004, 0x8005
-    ScrCmd_186 18, 0x14B, 0x8005
+    SetObjectEventPos 18, 0x14B, 0x8005
     Call _008E
     ApplyMovement 18, _0194
     WaitMovement
     CallCommonScript 0x7F8
     ApplyMovement 18, _01A0
     WaitMovement
-    ApplyMovement 0xFF, _0174
+    ApplyMovement LOCALID_PLAYER, _0174
     WaitMovement
     GoTo _009C
     End
 
 _008E:
     ClearFlag 0x1CC
-    ScrCmd_064 18
+    AddObject 18
     ScrCmd_062 18
     Return
 
 _009C:
     GetPlayerGender 0x800C
-    GoToIfEq 0x800C, 0, _00B3
+    GoToIfEq 0x800C, GENDER_MALE, _00B3
     GoTo _00F1
 
 _00B3:
@@ -82,7 +83,7 @@ _00F1:
     GoTo _0156
 
 _012F:
-    SetFlag 0x97F
+    SetFlag FLAG_UNLOCKED_VS_SEEKER_LVL_1
     SetVar 0x8004, 0x1BB
     SetVar 0x8005, 1
     CallCommonScript 0x7FC
@@ -98,7 +99,7 @@ _0156:
     CloseMessage
     ApplyMovement 18, _01A8
     WaitMovement
-    ScrCmd_065 18
+    RemoveObject 18
     CallCommonScript 0x7F9
     SetVar 0x408C, 1
     ReleaseAll
@@ -106,7 +107,7 @@ _0156:
 
     .balign 4, 0
 _0174:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .byte 63
@@ -136,18 +137,18 @@ _0174:
 
     .balign 4, 0
 _0194:
-    MoveAction_00F 3
-    MoveAction_04B
+    MoveAction_015 3
+    MoveAction_075
     EndMovement
 
     .balign 4, 0
 _01A0:
-    MoveAction_00F 5
+    MoveAction_015 5
     EndMovement
 
     .balign 4, 0
 _01A8:
-    MoveAction_00E 8
+    MoveAction_014 8
     EndMovement
 
 _01B0:
@@ -179,27 +180,15 @@ _01E1:
     End
 
 _01EC:
-    ScrCmd_036 11, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 11
     End
 
 _0203:
-    ScrCmd_036 12, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 12
     End
 
 _021A:
-    ScrCmd_037 3, 0
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03A 13, 0x800C
-    CallCommonScript 0x7D0
+    ShowScrollingSign 13
     End
 
     .byte 0

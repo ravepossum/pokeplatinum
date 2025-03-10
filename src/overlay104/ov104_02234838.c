@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include "struct_decls/struct_0202440C_decl.h"
-#include "struct_decls/struct_party_decl.h"
 
 #include "overlay104/ov104_0222DCE0.h"
 #include "overlay104/ov104_0222E930.h"
@@ -82,9 +81,7 @@ BOOL ov104_0223488C(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_022348A8(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223B5C0 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223B5C0 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_02235190(v0);
 
     return 0;
@@ -109,7 +106,7 @@ BOOL ov104_022348BC(UnkStruct_ov104_0222E930 *param0)
     };
 
     v3 = sub_0209B978(param0->unk_00->unk_00);
-    v4 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov104_02235208));
+    v4 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov104_02235208));
 
     MI_CpuClear8(v4, sizeof(UnkStruct_ov104_02235208));
 

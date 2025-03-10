@@ -100,14 +100,14 @@ pl_font_narc = custom_target('pl_font.narc',
         pl_font_ignore,
     ],
     command: [
-        knarc_exe,
-        '-d', current_build_dir,
-        '-p', '@OUTPUT0@',
+        narc_exe, 'create',
+        '--naix',
         '--order', pl_font_order,
         '--ignore', pl_font_ignore,
-        '--naix',
+        '--output', '@OUTPUT0@',
+        '@OUTDIR@',
     ],
 )
 
-nitrofs_files += pl_font_narc[0]
+nitrofs_files += pl_font_narc
 naix_headers += pl_font_narc[1]

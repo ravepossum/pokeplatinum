@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_205_south.h"
 
     .data
 
@@ -12,7 +13,7 @@
     ScriptEntry _0280
     ScriptEntry _0297
     ScriptEntry _02AE
-    .short 0xFD13
+    ScriptEntryEnd
 
 _002A:
     End
@@ -36,12 +37,12 @@ _002C:
 
     .balign 4, 0
 _0060:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0068:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
 _0070:
@@ -55,7 +56,7 @@ _0070:
     Message 3
     CloseMessage
     ApplyMovement 13, _00CC
-    ApplyMovement 0xFF, _00EC
+    ApplyMovement LOCALID_PLAYER, _00EC
     WaitMovement
     ApplyMovement 12, _00E4
     WaitMovement
@@ -69,32 +70,32 @@ _00B6:
 
     .balign 4, 0
 _00BC:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _00C4:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _00CC:
-    MoveAction_013
-    MoveAction_025
-    MoveAction_03F 2
-    MoveAction_00E
-    MoveAction_021
+    MoveAction_019
+    MoveAction_037
+    MoveAction_063 2
+    MoveAction_014
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _00E4:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _00EC:
-    MoveAction_00D
-    MoveAction_024
+    MoveAction_013
+    MoveAction_036
     EndMovement
 
 _00F8:
@@ -155,14 +156,14 @@ _015D:
 _01A8:
     ApplyMovement 18, _0238
     WaitMovement
-    ApplyMovement 0xFF, _0228
+    ApplyMovement LOCALID_PLAYER, _0228
     WaitMovement
     GoTo _0216
 
 _01C2:
     ApplyMovement 18, _024C
     WaitMovement
-    ApplyMovement 0xFF, _0228
+    ApplyMovement LOCALID_PLAYER, _0228
     WaitMovement
     GoTo _0216
 
@@ -172,14 +173,14 @@ _01DC:
 _01E2:
     ApplyMovement 18, _025C
     WaitMovement
-    ApplyMovement 0xFF, _0230
+    ApplyMovement LOCALID_PLAYER, _0230
     WaitMovement
     GoTo _0216
 
 _01FC:
     ApplyMovement 18, _026C
     WaitMovement
-    ApplyMovement 0xFF, _0230
+    ApplyMovement LOCALID_PLAYER, _0230
     WaitMovement
     GoTo _0216
 
@@ -193,66 +194,54 @@ _0216:
 
     .balign 4, 0
 _0228:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0230:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0238:
-    MoveAction_020
-    MoveAction_04B
-    MoveAction_03F
-    MoveAction_00C
+    MoveAction_032
+    MoveAction_075
+    MoveAction_063
+    MoveAction_012
     EndMovement
 
     .balign 4, 0
 _024C:
-    MoveAction_020
-    MoveAction_04B
-    MoveAction_03F
+    MoveAction_032
+    MoveAction_075
+    MoveAction_063
     EndMovement
 
     .balign 4, 0
 _025C:
-    MoveAction_021
-    MoveAction_04B
-    MoveAction_03F
+    MoveAction_033
+    MoveAction_075
+    MoveAction_063
     EndMovement
 
     .balign 4, 0
 _026C:
-    MoveAction_021
-    MoveAction_04B
-    MoveAction_03F
-    MoveAction_00D
+    MoveAction_033
+    MoveAction_075
+    MoveAction_063
+    MoveAction_013
     EndMovement
 
 _0280:
-    ScrCmd_036 7, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 7
     End
 
 _0297:
-    ScrCmd_036 8, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 8
     End
 
 _02AE:
-    ScrCmd_037 3, 0
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03A 9, 0x800C
-    CallCommonScript 0x7D0
+    ShowScrollingSign 9
     End
 
     .byte 0

@@ -3,16 +3,17 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/map_prop.h"
+
 #include "struct_defs/struct_02055130.h"
 #include "struct_defs/struct_0206C8D4.h"
 
 #include "field/field_system.h"
 #include "field/field_system_sub2_t.h"
-#include "overlay005/ov5_021D37AC.h"
-#include "overlay005/ov5_021E15F4.h"
-#include "overlay005/ov5_021EF75C.h"
-#include "overlay005/struct_ov5_021D5894.h"
-#include "overlay005/struct_ov5_021E1890_decl.h"
+#include "overlay005/area_data.h"
+#include "overlay005/map_prop.h"
+#include "overlay005/map_prop_animation.h"
+#include "overlay005/model_attributes.h"
 
 #include "camera.h"
 #include "field_map_change.h"
@@ -43,12 +44,12 @@ typedef struct {
     int unk_1C;
     int unk_20;
     VecFx32 unk_24;
-    UnkStruct_ov5_021E1890 *unk_30;
-    UnkStruct_ov5_021D5894 unk_34;
+    MapProp *unk_30;
+    ModelAttributes unk_34;
     fx32 unk_7C;
 } UnkStruct_0206CAD0;
 
-static void sub_0206C8D4(FieldSystem *fieldSystem, const u8 param1, UnkStruct_ov5_021D5894 *param2);
+static void sub_0206C8D4(FieldSystem *fieldSystem, const u8 param1, ModelAttributes *param2);
 static BOOL sub_0206C8F8(FieldTask *param0);
 static BOOL sub_0206C964(FieldTask *param0);
 static BOOL sub_0206CAD0(UnkStruct_0206CAD0 *param0);
@@ -72,7 +73,7 @@ void sub_0206C784(FieldSystem *fieldSystem, const u8 param1, const u8 param2, co
     v0->unk_18 = param3;
     v0->unk_1C = param4;
     v0->unk_20 = param5;
-    v0->unk_34 = *(fieldSystem->unk_44);
+    v0->unk_34 = *(fieldSystem->areaModelAttrs);
 
     v1 = 0;
 
@@ -129,11 +130,9 @@ void sub_0206C784(FieldSystem *fieldSystem, const u8 param1, const u8 param2, co
     FieldTask_InitCall(fieldSystem->task, sub_0206C964, v0);
 }
 
-static void sub_0206C8D4(FieldSystem *fieldSystem, const u8 param1, UnkStruct_ov5_021D5894 *param2)
+static void sub_0206C8D4(FieldSystem *fieldSystem, const u8 param1, ModelAttributes *param2)
 {
-    UnkStruct_0206C8D4 *v0;
-
-    v0 = Heap_AllocFromHeapAtEnd(11, sizeof(UnkStruct_0206C8D4));
+    UnkStruct_0206C8D4 *v0 = Heap_AllocFromHeapAtEnd(11, sizeof(UnkStruct_0206C8D4));
 
     v0->unk_04 = param2;
     v0->unk_00 = param1;
@@ -190,18 +189,18 @@ static BOOL sub_0206C964(FieldTask *taskMan)
 
         if (!v1->unk_02) {
             if (sub_0206CB8C(&v1->unk_10, &v1->unk_14, &v1->unk_02)) {
-                ov5_021D4250(fieldSystem->unk_54, 1, 0);
-                ov5_021D4250(fieldSystem->unk_54, 2, 0);
+                MapPropOneShotAnimationManager_PlayAnimation(fieldSystem->mapPropOneShotAnimMan, 1, 0);
+                MapPropOneShotAnimationManager_PlayAnimation(fieldSystem->mapPropOneShotAnimMan, 2, 0);
                 Sound_PlayEffect(1758);
             }
         } else {
-            if ((ov5_021D42F0(fieldSystem->unk_54, 1)) && (ov5_021D42F0(fieldSystem->unk_54, 2)) && v2) {
+            if ((MapPropOneShotAnimationManager_IsAnimationLoopFinished(fieldSystem->mapPropOneShotAnimMan, 1)) && (MapPropOneShotAnimationManager_IsAnimationLoopFinished(fieldSystem->mapPropOneShotAnimMan, 2)) && v2) {
                 v1->unk_00 = 2;
             }
         }
     } break;
     case 2:
-        StartScreenTransition(0, 0, 0, 0x0, 6, 1, 11);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_FIELDMAP);
         sub_0200564C(0, 6);
         v1->unk_00 = 3;
         break;
@@ -211,8 +210,8 @@ static BOOL sub_0206C964(FieldTask *taskMan)
         }
 
         if (v1->unk_10 != 0xffffffff) {
-            ov5_021D42B0(fieldSystem->unk_50, fieldSystem->unk_54, 1);
-            ov5_021D42B0(fieldSystem->unk_50, fieldSystem->unk_54, 2);
+            MapPropOneShotAnimationManager_UnloadAnimation(fieldSystem->mapPropAnimMan, fieldSystem->mapPropOneShotAnimMan, 1);
+            MapPropOneShotAnimationManager_UnloadAnimation(fieldSystem->mapPropAnimMan, fieldSystem->mapPropOneShotAnimMan, 2);
         }
 
         FieldTransition_FinishMap(taskMan);
@@ -243,7 +242,7 @@ static BOOL sub_0206CAD0(UnkStruct_0206CAD0 *param0)
 {
     VecFx32 v0;
 
-    v0 = ov5_021E1894(param0->unk_30);
+    v0 = MapProp_GetPosition(param0->unk_30);
 
     switch (param0->unk_01) {
     case 0:
@@ -276,7 +275,7 @@ static BOOL sub_0206CAD0(UnkStruct_0206CAD0 *param0)
         }
     }
 
-    ov5_021E18A4(param0->unk_30, &v0);
+    MapProp_SetPosition(param0->unk_30, &v0);
     param0->unk_14 += param0->unk_7C;
 
     if (param0->unk_0C <= param0->unk_14) {
@@ -300,7 +299,10 @@ static void sub_0206CBA0(FieldSystem *fieldSystem)
 {
     u8 v0;
     BOOL v1;
-    int v2[2] = { 31, 32 };
+    int v2[2] = {
+        MAP_PROP_MODEL_CANALAVE_BRIDGE_LEFT,
+        MAP_PROP_MODEL_CANALAVE_BRIDGE_RIGHT
+    };
     int v3[2] = { 1, 2 };
 
     for (v0 = 0; v0 < 2; v0++) {
@@ -309,17 +311,17 @@ static void sub_0206CBA0(FieldSystem *fieldSystem)
         if (v1) {
             NNSG3dResMdl *v4;
             NNSG3dResFileHeader **v5;
-            UnkStruct_ov5_021E1890 *v6;
+            MapProp *v6;
             NNSG3dRenderObj *v7;
 
-            v5 = ov5_021EF9E8(v2[v0], fieldSystem->unk_30);
+            v5 = AreaDataManager_GetMapPropModelFile(v2[v0], fieldSystem->areaDataManager);
             v4 = NNS_G3dGetMdlByIdx(NNS_G3dGetMdlSet(*v5), 0);
             v1 = sub_020552B4(fieldSystem, v2[v0], &v6, NULL);
 
             GF_ASSERT(v1);
-            v7 = ov5_021E18BC(v6);
+            v7 = MapProp_GetRenderObj(v6);
 
-            ov5_021D41C8(fieldSystem->unk_50, fieldSystem->unk_54, v3[v0], v2[v0], v7, v4, ov5_021EFAA0(fieldSystem->unk_30), 1, 1, 0);
+            MapPropOneShotAnimationManager_LoadPropAnimations(fieldSystem->mapPropAnimMan, fieldSystem->mapPropOneShotAnimMan, v3[v0], v2[v0], v7, v4, AreaDataManager_GetMapPropTexture(fieldSystem->areaDataManager), 1, 1, 0);
         } else {
             GF_ASSERT(FALSE);
         }

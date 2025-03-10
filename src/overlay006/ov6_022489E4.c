@@ -63,9 +63,7 @@ BOOL ov6_02248A64(UnkStruct_02095C48 *param0)
 
 static int ov6_02248A94(UnkStruct_ov6_02248A94 *param0[4], int param1, u8 *param2)
 {
-    int v0, v1;
-
-    v1 = 0;
+    int v0, v1 = 0;
 
     for (v0 = 0; v0 < param1; v0++) {
         if (param0[v1]->unk_00 < param0[v0]->unk_00) {
@@ -100,7 +98,7 @@ BOOL ov6_02248AF0(UnkStruct_02095C48 *param0, int param1, const Pokemon *param2)
     int v2;
 
     v1 = Pokemon_StructSize();
-    v0 = Heap_AllocFromHeap(20, v1 + 1);
+    v0 = Heap_AllocFromHeap(HEAP_ID_20, v1 + 1);
     MI_CpuCopy8(param2, v0, v1);
     v0[v1] = param1;
 
@@ -179,7 +177,7 @@ BOOL ov6_02248BE8(UnkStruct_02095C48 *param0, int param1, const UnkStruct_ov6_02
     int v2;
 
     v1 = sizeof(UnkStruct_ov6_02248BE8);
-    v0 = Heap_AllocFromHeap(20, v1 + 1);
+    v0 = Heap_AllocFromHeap(HEAP_ID_20, v1 + 1);
     MI_CpuCopy8(param2, v0, v1);
     v0[v1] = param1;
 
@@ -217,11 +215,9 @@ BOOL ov6_02248C68(UnkStruct_02095C48 *param0, int param1, const UnkStruct_020954
     int v1;
     int v2;
     int v3;
-    const UnkStruct_020954F0 *v4;
-
-    v4 = param2;
+    const UnkStruct_020954F0 *v4 = param2;
     v1 = sizeof(UnkStruct_020954F0) * (1 + 2) + 1;
-    v0 = Heap_AllocFromHeap(20, v1);
+    v0 = Heap_AllocFromHeap(HEAP_ID_20, v1);
 
     for (v3 = 0; v3 < (1 + 2); v3++) {
         MI_CpuCopy8(v4, &v0[sizeof(UnkStruct_020954F0) * v3], sizeof(UnkStruct_020954F0));
@@ -264,14 +260,14 @@ BOOL ov6_02248CE8(UnkStruct_02095C48 *param0, int param1, const Strbuf *param2)
     int v0, v1;
     u8 *v2;
     BOOL v3;
-    u16 v4[8];
+    u16 v4[8]; // Possibly TRAINER_NAME_LEN + 1
 
     v0 = 8 * sizeof(u16);
     v1 = 4;
 
-    Strbuf_ToChars(param2, v4, 8);
+    Strbuf_ToChars(param2, v4, 8); // Possibly TRAINER_NAME_LEN + 1
 
-    v2 = Heap_AllocFromHeap(20, v0 + v1);
+    v2 = Heap_AllocFromHeap(HEAP_ID_20, v0 + v1);
     MI_CpuCopy8(v4, &v2[v1], v0);
     v2[0] = param1;
     v2[1] = v0;
@@ -355,7 +351,7 @@ BOOL ov6_02248DD8(UnkStruct_02095C48 *param0, int param1, const UnkStruct_ov6_02
     int v2;
 
     v1 = sizeof(UnkStruct_ov6_02248DD8);
-    v0 = Heap_AllocFromHeap(20, v1 + 1);
+    v0 = Heap_AllocFromHeap(HEAP_ID_20, v1 + 1);
     MI_CpuCopy8(param2, v0, v1);
     v0[v1] = param1;
 

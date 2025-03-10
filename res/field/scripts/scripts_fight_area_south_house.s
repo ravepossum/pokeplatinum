@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/fight_area_south_house.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _0025
     ScriptEntry _0038
     ScriptEntry _0057
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     PlayFanfare SEQ_SE_CONFIRM
@@ -33,7 +34,7 @@ _0038:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 0xFF, 0
+    PlayCry SPECIES_TORCHIC
     Message 2
     ScrCmd_04D
     WaitABXPadPress

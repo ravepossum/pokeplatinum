@@ -14,8 +14,6 @@
 #include "overlay094/struct_ov94_0223FD4C.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
-#include "core_sys.h"
 #include "font.h"
 #include "game_options.h"
 #include "graphics.h"
@@ -24,8 +22,10 @@
 #include "message_util.h"
 #include "pokemon.h"
 #include "render_window.h"
+#include "sprite.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "unk_02005474.h"
 #include "unk_0200F174.h"
@@ -81,7 +81,7 @@ int ov94_0223DC04(UnkStruct_ov94_0223FD4C *param0, int param1)
     ov94_0223E358(param0->unk_B90, &param0->unk_FCC[7]);
     ov94_0223E240(param0);
 
-    StartScreenTransition(3, 1, 1, 0x0, 6, 1, 62);
+    StartScreenTransition(3, 1, 1, 0x0, 6, 1, HEAP_ID_62);
 
     param0->unk_2C = 0;
     return 2;
@@ -89,9 +89,7 @@ int ov94_0223DC04(UnkStruct_ov94_0223FD4C *param0, int param1)
 
 int ov94_0223DCE4(UnkStruct_ov94_0223FD4C *param0, int param1)
 {
-    int v0;
-
-    v0 = (*Unk_ov94_0224682C[param0->unk_2C])(param0);
+    int v0 = (*Unk_ov94_0224682C[param0->unk_2C])(param0);
     return v0;
 }
 
@@ -190,8 +188,8 @@ static void ov94_0223DD1C(BgConfig *param0)
         Bg_InitFromTemplate(param0, 5, &v3, 0);
     }
 
-    Bg_ClearTilesRange(0, 32, 0, 62);
-    Bg_ClearTilesRange(4, 32, 0, 62);
+    Bg_ClearTilesRange(0, 32, 0, HEAP_ID_62);
+    Bg_ClearTilesRange(4, 32, 0, HEAP_ID_62);
 }
 
 static void ov94_0223DDE0(BgConfig *param0)
@@ -206,32 +204,32 @@ static void ov94_0223DE04(UnkStruct_ov94_0223FD4C *param0)
 {
     BgConfig *v0 = param0->unk_04;
 
-    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, 62);
-    LoadMessageBoxGraphics(v0, 0, 1, 10, Options_Frame(param0->unk_00->unk_24), 62);
-    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, 62);
-    Graphics_LoadTilesToBgLayer(104, 17, v0, 1, 0, 16 * 5 * 0x20, 1, 62);
-    Graphics_LoadPalette(104, 7, 0, 0, 16 * 3 * 2, 62);
+    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, HEAP_ID_62);
+    LoadMessageBoxGraphics(v0, 0, 1, 10, Options_Frame(param0->unk_00->unk_24), HEAP_ID_62);
+    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, HEAP_ID_62);
+    Graphics_LoadTilesToBgLayer(104, 17, v0, 1, 0, 16 * 5 * 0x20, 1, HEAP_ID_62);
+    Graphics_LoadPalette(104, 7, 0, 0, 16 * 3 * 2, HEAP_ID_62);
 }
 
 static void ov94_0223DE7C(UnkStruct_ov94_0223FD4C *param0)
 {
-    CellActorInitParamsEx v0;
+    AffineSpriteListTemplate v0;
 
     ov94_0223C300(&v0, param0, &param0->unk_DB4, NNS_G2D_VRAM_TYPE_2DMAIN);
 
     v0.position.x = FX32_ONE * 208;
     v0.position.y = FX32_ONE * 58;
 
-    param0->unk_F30 = CellActorCollection_AddEx(&v0);
+    param0->unk_F30 = SpriteList_AddAffine(&v0);
 
-    CellActor_SetAnimateFlag(param0->unk_F30, 1);
-    CellActor_SetAnim(param0->unk_F30, 37);
+    Sprite_SetAnimateFlag(param0->unk_F30, 1);
+    Sprite_SetAnim(param0->unk_F30, 37);
     sub_02039734();
 }
 
 static void ov94_0223DEC8(UnkStruct_ov94_0223FD4C *param0)
 {
-    CellActor_Delete(param0->unk_F30);
+    Sprite_Delete(param0->unk_F30);
 }
 
 static const int Unk_ov94_02245CC4[][4] = {
@@ -289,7 +287,7 @@ static void ov94_0223DFDC(UnkStruct_ov94_0223FD4C *param0)
     MessageLoader *v1;
     UnkStruct_ov94_0223BA88 *v2 = &param0->unk_250[param0->unk_11C];
 
-    param0->unk_BAC = Strbuf_Init((90 * 2), 62);
+    param0->unk_BAC = Strbuf_Init((90 * 2), HEAP_ID_62);
 
     StringTemplate_ClearArgs(param0->unk_B8C);
 
@@ -322,22 +320,22 @@ static int ov94_0223E09C(UnkStruct_ov94_0223FD4C *param0)
 
 static int ov94_0223E0A4(UnkStruct_ov94_0223FD4C *param0)
 {
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (gSystem.pressedKeys & PAD_BUTTON_A) {
         ov94_0223E300(param0, 16, TEXT_SPEED_FAST, 0, 0xf0f);
         ov94_0223C3F4(param0, 3, 4);
         Sound_PlayEffect(1500);
-    } else if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    } else if (gSystem.pressedKeys & PAD_BUTTON_B) {
         param0->unk_2C = 2;
         ov94_0223C4C0(param0, 4, 0);
         Sound_PlayEffect(1500);
-    } else if (gCoreSys.pressedKeys & PAD_KEY_RIGHT) {
+    } else if (gSystem.pressedKeys & PAD_KEY_RIGHT) {
         if (param0->unk_10E == 0) {
             param0->unk_10E = 1;
             param0->unk_2C = 6;
 
             Sound_PlayEffect(1500);
         }
-    } else if (gCoreSys.pressedKeys & PAD_KEY_LEFT) {
+    } else if (gSystem.pressedKeys & PAD_KEY_LEFT) {
         if (param0->unk_10E != 0) {
             param0->unk_10E = 0;
             param0->unk_2C = 6;
@@ -349,7 +347,7 @@ static int ov94_0223E0A4(UnkStruct_ov94_0223FD4C *param0)
 
         if (1) {
             if ((v0 != param0->unk_11C) && (v0 >= 0)) {
-                CellActor_SetAnim(param0->unk_F34[v0 + 1], 16 + v0 * 4);
+                Sprite_SetAnim(param0->unk_F34[v0 + 1], 16 + v0 * 4);
                 param0->unk_2C = 2;
                 ov94_0223C4C0(param0, 3, 0);
                 param0->unk_11C = v0;
@@ -363,7 +361,7 @@ static int ov94_0223E0A4(UnkStruct_ov94_0223FD4C *param0)
 
 static int ov94_0223E188(UnkStruct_ov94_0223FD4C *param0)
 {
-    StartScreenTransition(3, 0, 0, 0x0, 6, 1, 62);
+    StartScreenTransition(3, 0, 0, 0x0, 6, 1, HEAP_ID_62);
 
     param0->unk_2C = 0;
     return 4;
@@ -401,10 +399,10 @@ static int ov94_0223E1D0(UnkStruct_ov94_0223FD4C *param0)
 static void ov94_0223E240(UnkStruct_ov94_0223FD4C *param0)
 {
     if (param0->unk_10E == 0) {
-        Graphics_LoadTilemapToBgLayer(104, 27, param0->unk_04, 1, 0, 32 * 24 * 2, 1, 62);
+        Graphics_LoadTilemapToBgLayer(104, 27, param0->unk_04, 1, 0, 32 * 24 * 2, 1, HEAP_ID_62);
         ov94_0223E3B0(&param0->unk_FCC[9], param0->unk_B90, param0->unk_B94, &param0->unk_250[param0->unk_11C].unk_F0);
     } else {
-        Graphics_LoadTilemapToBgLayer(104, 28, param0->unk_04, 1, 0, 32 * 24 * 2, 1, 62);
+        Graphics_LoadTilemapToBgLayer(104, 28, param0->unk_04, 1, 0, 32 * 24 * 2, 1, HEAP_ID_62);
         ov94_0223E424(&param0->unk_FCC[9], param0->unk_BB4[0], param0->unk_BB4[1]);
     }
 }
@@ -455,9 +453,9 @@ static void ov94_0223E3B0(Window *param0, MessageLoader *param1, MessageLoader *
 {
     Window_FillTilemap(param0, 0x0);
 
-    ov94_02242158(param0, param2, param3->unk_00, 0, 3, TEXT_COLOR(15, 2, 0));
-    ov94_02242204(param0, param1, param3->unk_02, 0, 3, 70, TEXT_COLOR(15, 2, 0));
-    ov94_0224226C(param0 + 1, param1, ov94_02242970(param3->unk_03, param3->unk_04, 0), 0, 19, TEXT_COLOR(15, 2, 0), 0, 8);
+    ov94_02242158(param0, param2, param3->species, 0, 3, TEXT_COLOR(15, 2, 0));
+    ov94_02242204(param0, param1, param3->gender, 0, 3, 70, TEXT_COLOR(15, 2, 0));
+    ov94_0224226C(param0 + 1, param1, ov94_02242970(param3->level, param3->level2, 0), 0, 19, TEXT_COLOR(15, 2, 0), 0, 8);
 }
 
 static void ov94_0223E424(Window *param0, Strbuf *param1, Strbuf *param2)

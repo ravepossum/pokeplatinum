@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/galactic_hq_laboratory.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _0021
     ScriptEntry _0034
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     PlayFanfare SEQ_SE_CONFIRM

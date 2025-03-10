@@ -114,7 +114,7 @@ UnkStruct_0205B43C *FieldSystem_InitCommUnionRoom(FieldSystem *fieldSystem)
         return NULL;
     }
 
-    if (Heap_CreateAtEnd(3, 31, 0xa80)) {
+    if (Heap_CreateAtEnd(HEAP_ID_APPLICATION, HEAP_ID_31, 0xa80)) {
         (void)0;
     }
 
@@ -153,7 +153,7 @@ static UnkStruct_0205B43C *sub_0205B3A0(FieldSystem *fieldSystem)
     v1 = FieldSystem_GetSaveData(fieldSystem);
     sub_020369EC(v1);
 
-    v2 = (UnkStruct_0205B43C *)Heap_AllocFromHeap(31, sizeof(UnkStruct_0205B43C));
+    v2 = (UnkStruct_0205B43C *)Heap_AllocFromHeap(HEAP_ID_31, sizeof(UnkStruct_0205B43C));
     MI_CpuClear8(v2, sizeof(UnkStruct_0205B43C));
 
     v2->unk_10 = NULL;
@@ -407,7 +407,7 @@ static void sub_0205B754(UnkStruct_0205B43C *param0)
 
     SysTask_Done(param0->unk_0C);
     Heap_FreeToHeap(param0);
-    Heap_Destroy(31);
+    Heap_Destroy(HEAP_ID_31);
 }
 
 FieldSystem *sub_0205B770(UnkStruct_0205B43C *param0)
@@ -688,24 +688,22 @@ int sub_0205B9EC(UnkStruct_0205B43C *param0, int param1)
 void sub_0205BA08(int param0, int param1, void *param2, void *param3)
 {
     FieldSystem *fieldSystem = (FieldSystem *)param3;
-    TrainerCard *v1 = (TrainerCard *)param2;
-    TrainerInfo *v2 = CommInfo_TrainerInfo(CommSys_CurNetId() ^ 1);
-    void *v3;
+    TrainerCard *trainerCard = (TrainerCard *)param2;
+    TrainerInfo *trainerInfo = CommInfo_TrainerInfo(CommSys_CurNetId() ^ 1);
+    void *journalEntryOnlineEvent;
 
-    {
-        int v4, v5 = 0;
-        u8 *v6 = (u8 *)param2;
+    int i, v5 = 0;
+    u8 *v6 = (u8 *)param2;
 
-        for (v4 = 0; v4 < sizeof(TrainerCard); v4++) {
-            v5 ^= v6[v4];
-        }
+    for (i = 0; i < sizeof(TrainerCard); i++) {
+        v5 ^= v6[i];
     }
 
-    v1->unk_66A = 1;
+    trainerCard->unk_66A = 1;
 
     if (param0 != CommSys_CurNetId()) {
-        v3 = sub_0202C0EC((u16 *)TrainerInfo_Name(v2), TrainerInfo_Gender(v2), 31);
-        Journal_SaveData(fieldSystem->journal, v3, 4);
+        journalEntryOnlineEvent = JournalEntry_CreateEventGreetedInUnionRoom((u16 *)TrainerInfo_Name(trainerInfo), TrainerInfo_Gender(trainerInfo), 31);
+        JournalEntry_SaveData(fieldSystem->journalEntry, journalEntryOnlineEvent, JOURNAL_ONLINE_EVENT);
     }
 }
 
@@ -1096,9 +1094,7 @@ int sub_0205BCF4(UnkStruct_0205B43C *param0, int param1, int param2, StringTempl
 u8 sub_0205BE38(void)
 {
     u8 v0;
-    TrainerInfo *v1;
-
-    v1 = CommInfo_TrainerInfo(CommSys_CurNetId() ^ 1);
+    TrainerInfo *v1 = CommInfo_TrainerInfo(CommSys_CurNetId() ^ 1);
     GF_ASSERT(v1 != NULL);
     v0 = TrainerInfo_GameCode(v1);
 
@@ -1272,7 +1268,7 @@ void sub_0205C040(StringTemplate *param0, int param1, int param2, TrainerInfo *p
 {
     TrainerInfo *v0;
     Strbuf *v1;
-    MessageLoader *v2 = MessageLoader_Init(1, 26, 635, 4);
+    MessageLoader *v2 = MessageLoader_Init(1, 26, 635, HEAP_ID_FIELD);
     int v3, v4;
 
     param2--;
@@ -1373,9 +1369,9 @@ static void sub_0205C160(UnkStruct_0205B43C *param0)
 
 void *sub_0205C17C(UnkStruct_0205B43C *param0)
 {
-    param0->unk_184 = sub_02071F04(0);
-    param0->unk_188[0] = sub_02071F04(0);
-    param0->unk_188[1] = sub_02071F04(0);
+    param0->unk_184 = sub_02071F04(HEAP_ID_SYSTEM);
+    param0->unk_188[0] = sub_02071F04(HEAP_ID_SYSTEM);
+    param0->unk_188[1] = sub_02071F04(HEAP_ID_SYSTEM);
 
     sub_02071D40(0, 0, 0, sub_0205CA14(TrainerInfo_Gender(param0->unk_08), TrainerInfo_Appearance(param0->unk_08), 0), param0->fieldSystem, param0->unk_184);
 

@@ -4,16 +4,15 @@
 #include <string.h>
 
 #include "constants/communication/comm_type.h"
-#include "consts/sdat.h"
+#include "generated/sdat.h"
 
 #include "field/field_system.h"
-#include "gmm/message_bank_unk_0353.h"
 
 #include "bg_window.h"
 #include "communication_information.h"
 #include "communication_system.h"
-#include "core_sys.h"
 #include "field_comm_manager.h"
+#include "field_message.h"
 #include "field_system.h"
 #include "heap.h"
 #include "list_menu.h"
@@ -27,13 +26,15 @@
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "text.h"
 #include "trainer_info.h"
 #include "unk_02005474.h"
 #include "unk_02033200.h"
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
-#include "unk_0205D8CC.h"
+
+#include "res/text/bank/unk_0353.h"
 
 typedef struct CommClubManager CommClubManager;
 typedef void (*CommClubManTaskFunc)(SysTask *, void *);
@@ -213,13 +214,13 @@ static void CommClubMan_Init(FieldSystem *fieldSystem)
 
     GF_ASSERT(sCommClubMan == NULL);
 
-    sCommClubMan = Heap_AllocFromHeap(4, sizeof(CommClubManager));
+    sCommClubMan = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(CommClubManager));
     MI_CpuFill8(sCommClubMan, 0, sizeof(CommClubManager));
 
     sCommClubMan->retCode = 0;
     sCommClubMan->fieldSystem = fieldSystem;
     sCommClubMan->unk_97 = 0;
-    sCommClubMan->msgLoader = MessageLoader_Init(1, 26, 353, 4);
+    sCommClubMan->msgLoader = MessageLoader_Init(1, 26, 353, HEAP_ID_FIELD);
     sCommClubMan->trainerInfoPersonal = SaveData_GetTrainerInfo(FieldSystem_GetSaveData(sCommClubMan->fieldSystem));
     sCommClubMan->unk_7C = TrainerInfo_New(4);
 
@@ -227,9 +228,9 @@ static void CommClubMan_Init(FieldSystem *fieldSystem)
     Window_Init(&sCommClubMan->unk_30);
     Window_Init(&sCommClubMan->msgWindow);
 
-    sCommClubMan->unk_50 = StringTemplate_Default(4);
-    sCommClubMan->unk_54 = StringTemplate_Default(4);
-    sCommClubMan->strTempMsg = StringTemplate_Default(4);
+    sCommClubMan->unk_50 = StringTemplate_Default(HEAP_ID_FIELD);
+    sCommClubMan->unk_54 = StringTemplate_Default(HEAP_ID_FIELD);
+    sCommClubMan->strTempMsg = StringTemplate_Default(HEAP_ID_FIELD);
     sCommClubMan->unk_98 = 0;
 
     for (v0 = 0; v0 < (7 + 1); v0++) {
@@ -237,7 +238,7 @@ static void CommClubMan_Init(FieldSystem *fieldSystem)
     }
 
     for (v0 = 0; v0 < 8; v0++) {
-        sCommClubMan->strBuff[v0] = Strbuf_Init((70 * 2), 4);
+        sCommClubMan->strBuff[v0] = Strbuf_Init((70 * 2), HEAP_ID_FIELD);
     }
 }
 
@@ -577,7 +578,7 @@ static void ov7_0224A34C(SysTask *task, void *param1)
         return;
     }
 
-    if ((PAD_BUTTON_B)&gCoreSys.pressedKeys) {
+    if ((PAD_BUTTON_B)&gSystem.pressedKeys) {
         CommClubMan_PrintMessage(pl_msg_00000353_00003, FALSE); // Do you want to leave the group?
         CommClubMan_SetTask(CommClubTask_WaitConfirmLeaveGroup);
     }
@@ -1049,7 +1050,7 @@ static void CommClubTask_DifferentRegulation(SysTask *task, void *param1)
     CommClubManager *commClubMan = (CommClubManager *)param1;
 
     if (FieldMessage_FinishedPrinting(sCommClubMan->printMsgIndex)) {
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             CommClubMan_DestroyList(task, commClubMan);
             CommClubMan_Disconnect();
             sCommClubMan->retCode = 4;
@@ -1065,7 +1066,7 @@ static void ov7_0224ABA4(SysTask *task, void *param1)
     ov7_0224A64C(commClubMan);
 
     if (FieldMessage_FinishedPrinting(sCommClubMan->printMsgIndex)) {
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov7_0224A5D0();
             CommClubMan_SetTask(ov7_0224ABE0);
         }
@@ -1238,7 +1239,7 @@ static void ov7_0224AD68(SysTask *task, void *param1)
 static void ov7_0224ADD8(SysTask *task, void *param1)
 {
     if (FieldMessage_FinishedPrinting(sCommClubMan->printMsgIndex)) {
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             sCommClubMan->retCode = COMM_CLUB_RET_CANCEL;
             SysTask_Done(task);
         }
@@ -1517,7 +1518,7 @@ static void CommClubTask_ExitGuestRoomEnd(SysTask *task, void *param1)
     CommClubManager *commClubMan = (CommClubManager *)param1;
 
     if (FieldMessage_FinishedPrinting(sCommClubMan->printMsgIndex)) {
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             SysTask_Done(task);
             CommClubMan_Disconnect();
             sCommClubMan->retCode = COMM_CLUB_RET_CANCEL;
@@ -1563,7 +1564,7 @@ static void ov7_0224B370(SysTask *task, void *param1)
     CommClubManager *commClubMan = (CommClubManager *)param1;
 
     if (FieldMessage_FinishedPrinting(sCommClubMan->printMsgIndex)) {
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             CommClubMan_PrintChooseJoinMsg(commClubMan);
             SysTask_Done(task);
         }

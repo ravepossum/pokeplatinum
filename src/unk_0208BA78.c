@@ -4,6 +4,8 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "generated/journal_online_events.h"
+
 #include "struct_defs/struct_0208BA84.h"
 #include "struct_defs/struct_0208C06C.h"
 
@@ -57,7 +59,7 @@ static int sub_0208BBB4(OverlayManager *param0, int *param1);
 static int sub_0208BBC0(OverlayManager *param0, int *param1);
 static int sub_0208BC08(OverlayManager *param0, int *param1);
 static BOOL sub_0208BC3C(UnkStruct_0208BC3C *param0, int param1);
-static BOOL sub_0208BC8C(UnkStruct_0208BC3C *param0, int param1);
+static BOOL sub_0208BC8C(UnkStruct_0208BC3C *param0, int heapID);
 static BOOL sub_0208BE80(int param0);
 
 UnkStruct_0208C06C *sub_0208BA78(OverlayManager *param0)
@@ -76,24 +78,24 @@ void sub_0208BA84(UnkStruct_0208BA84 *param0, BOOL param1, int param2)
 
 static void sub_0208BA8C(SaveData *param0, int param1, u32 param2)
 {
-    Journal *v0 = SaveData_GetJournal(param0);
-    void *v1 = sub_0202C244(param1, param2);
+    JournalEntry *journalEntry = SaveData_GetJournal(param0);
+    void *journalEntryOnlineEvent = JournalEntry_CreateEventMisc(param1, param2);
 
-    Journal_SaveData(v0, v1, 4);
+    JournalEntry_SaveData(journalEntry, journalEntryOnlineEvent, JOURNAL_ONLINE_EVENT);
 }
 
 static void sub_0208BAAC(OverlayManager *param0, int param1)
 {
     UnkStruct_0208BC3C *v0;
 
-    Heap_Create(3, 119, 0x10000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_119, 0x10000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_0208BC3C), 119);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_0208BC3C), HEAP_ID_119);
     MI_CpuFill8(v0, 0, sizeof(UnkStruct_0208BC3C));
 
     v0->fieldSystem = OverlayManager_Args(param0);
     v0->saveData = v0->fieldSystem->saveData;
-    v0->unk_14 = Heap_AllocFromHeap(119, sizeof(UnkStruct_0208C06C));
+    v0->unk_14 = Heap_AllocFromHeap(HEAP_ID_119, sizeof(UnkStruct_0208C06C));
 
     MI_CpuFill8(v0->unk_14, 0, sizeof(UnkStruct_0208C06C));
 
@@ -102,31 +104,29 @@ static void sub_0208BAAC(OverlayManager *param0, int param1)
     v0->unk_14->unk_00 = param1;
     v0->unk_14->unk_81C[v0->unk_14->unk_534.unk_1A4] = sub_0208C034(v0->unk_14, v0->unk_14->unk_00);
 
-    {
-        int v1;
+    int eventType;
 
-        switch (param1) {
-        case 2:
-            v1 = 18;
-            break;
-        case 3:
-            v1 = 19;
-            break;
-        case 4:
-            v1 = 19;
-            break;
-        case 5:
-            v1 = 20;
-            break;
-        case 6:
-            v1 = 21;
-            break;
-        default:
-            return;
-        }
-
-        sub_0208BA8C(v0->saveData, 119, v1);
+    switch (param1) {
+    case 2:
+        eventType = ONLINE_EVENT_WATCHED_BATTLE_VIDEOS;
+        break;
+    case 3:
+        eventType = ONLINE_EVENT_CHECKED_RANKINGS;
+        break;
+    case 4:
+        eventType = ONLINE_EVENT_CHECKED_RANKINGS;
+        break;
+    case 5:
+        eventType = ONLINE_EVENT_CHECKED_DRESS_UP_DATA;
+        break;
+    case 6:
+        eventType = ONLINE_EVENT_CHECKED_BOX_DATA;
+        break;
+    default:
+        return;
     }
+
+    sub_0208BA8C(v0->saveData, 119, eventType);
 }
 
 static int sub_0208BB6C(OverlayManager *param0, int *param1)
@@ -190,7 +190,7 @@ static int sub_0208BBC0(OverlayManager *param0, int *param1)
         }
         break;
     case 1:
-        v0 = sub_0208BC8C(v1, 119);
+        v0 = sub_0208BC8C(v1, HEAP_ID_119);
 
         if (v0) {
             *param1 = 0;
@@ -213,7 +213,7 @@ static int sub_0208BC08(OverlayManager *param0, int *param1)
     Heap_FreeToHeap(v0->unk_14);
     OverlayManager_FreeData(param0);
     sub_0200544C(1, 127);
-    Heap_Destroy(119);
+    Heap_Destroy(HEAP_ID_119);
 
     return 1;
 }
@@ -242,7 +242,7 @@ static BOOL sub_0208BC3C(UnkStruct_0208BC3C *param0, int param1)
     return 0;
 }
 
-static BOOL sub_0208BC8C(UnkStruct_0208BC3C *param0, int param1)
+static BOOL sub_0208BC8C(UnkStruct_0208BC3C *param0, int heapID)
 {
     switch (param0->unk_00) {
     case 0:
@@ -256,20 +256,20 @@ static BOOL sub_0208BC8C(UnkStruct_0208BC3C *param0, int param1)
     case 1: {
         int v0;
 
-        param0->unk_10 = FieldBattleDTO_New(param1, 0x0);
+        param0->unk_10 = FieldBattleDTO_New(heapID, 0x0);
 
         if (sub_0202F250() == 0) {
-            sub_0202F298(param0->saveData, param1, &v0, param0->unk_10, param0->unk_14->unk_86C);
+            sub_0202F298(param0->saveData, heapID, &v0, param0->unk_10, param0->unk_14->unk_86C);
         } else {
             sub_0202FAFC(param0->unk_10, param0->saveData);
             v0 = 1;
         }
 
-        param0->unk_10->bagCursor = BagCursor_New(param1);
+        param0->unk_10->bagCursor = BagCursor_New(heapID);
         param0->unk_10->records = SaveData_GetGameRecordsPtr(param0->saveData);
 
         if (Overlay_LoadByID(FS_OVERLAY_ID(overlay62), 2) == 1) {
-            ov62_02248408(sub_0202F264(), param0->unk_10, param1);
+            ov62_02248408(sub_0202F264(), param0->unk_10, heapID);
             Overlay_UnloadByID(FS_OVERLAY_ID(overlay62));
         }
 
@@ -288,13 +288,13 @@ static BOOL sub_0208BC8C(UnkStruct_0208BC3C *param0, int param1)
         sub_0200544C(1, 127);
         sub_02005464(1);
 
-        if (sub_0208BE80(param0->unk_10->trainerData[1].class) == 1) {
+        if (sub_0208BE80(param0->unk_10->trainer[1].header.trainerType) == 1) {
             sub_02004550(5, 1202, 1);
         } else {
             sub_02004550(5, 1119, 1);
         }
     }
-        param0->unk_08 = OverlayManager_New(&gBattleOverlayTemplate, param0->unk_10, param1);
+        param0->unk_08 = OverlayManager_New(&gBattleOverlayTemplate, param0->unk_10, heapID);
         param0->unk_00++;
         break;
     default:
@@ -400,17 +400,13 @@ static const OverlayManagerTemplate *Unk_02100CF0[] = {
 
 const OverlayManagerTemplate *sub_0208BE5C(int param0)
 {
-    const OverlayManagerTemplate *v0;
-
-    v0 = Unk_02100CF0[param0];
+    const OverlayManagerTemplate *v0 = Unk_02100CF0[param0];
     return v0;
 }
 
 BOOL sub_0208BE68(UnkStruct_0208C06C *param0)
 {
-    VarsFlags *v0;
-
-    v0 = SaveData_GetVarsFlags(param0->unk_830);
+    VarsFlags *v0 = SaveData_GetVarsFlags(param0->unk_830);
     return SystemFlag_HandleFirstArrivalToZone(v0, HANDLE_FLAG_CHECK, FIRST_ARRIVAL_BATTLE_PARK);
 }
 

@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/veilstone_store_3f.h"
 
     .data
 
@@ -9,14 +10,14 @@
     ScriptEntry _0127
     ScriptEntry _013D
     ScriptEntry _0153
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001E:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_27E 0x800C
-    GoToIfEq 0x800C, 1, _005F
+    CheckIsDepartmentStoreRegular 0x800C
+    GoToIfEq 0x800C, TRUE, _005F
     Message 0
     ScrCmd_040 1, 1, 0, 1, 0x800C
     ScrCmd_042 229, 1
@@ -33,7 +34,7 @@ _005F:
     ScrCmd_042 228, 1
     ScrCmd_043
     GoToIfNe 0x800C, 0, _00B7
-    ScrCmd_1B8 0x800C, 4
+    GetRandom2 0x800C, 4
     GoToIfEq 0x800C, 0, _00C2
     GoToIfEq 0x800C, 1, _00CD
     GoToIfEq 0x800C, 2, _00D8
@@ -110,7 +111,7 @@ _0127:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_148 12
+    PokeMartSpecialties MART_SPECIALTIES_ID_VEILSTONE_3F_UP
     ReleaseAll
     End
 
@@ -120,7 +121,7 @@ _013D:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_148 13
+    PokeMartSpecialties MART_SPECIALTIES_ID_VEILSTONE_3F_DOWN
     ReleaseAll
     End
 

@@ -1,16 +1,17 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/grand_lake_route_213_east_house.h"
 
     .data
 
     ScriptEntry _0006
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0006:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
     Message 0
-    ScrCmd_1B7 0x800C, 4
+    GetRandom 0x800C, 4
     GoToIfEq 0x800C, 0, _0044
     GoToIfEq 0x800C, 1, _004F
     GoToIfEq 0x800C, 2, _005A

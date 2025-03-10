@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/mt_coronet_1f_north_room_1.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _001D
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -34,15 +35,15 @@ _001D:
 
     .balign 4, 0
 _0058:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0060:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0068:
-    MoveAction_022
+    MoveAction_034
     EndMovement

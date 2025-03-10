@@ -4,11 +4,10 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/items.h"
-#include "consts/species.h"
+#include "generated/items.h"
+#include "generated/species.h"
 
-#include "struct_decls/struct_020797DC_decl.h"
-#include "struct_decls/struct_party_decl.h"
+#include "struct_decls/pc_boxes_decl.h"
 
 #include "overlay094/ov94_0223BCB0.h"
 #include "overlay094/ov94_022414B8.h"
@@ -20,8 +19,6 @@
 #include "overlay094/struct_ov94_0223FD4C_sub2.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
-#include "core_sys.h"
 #include "font.h"
 #include "game_options.h"
 #include "graphics.h"
@@ -32,22 +29,24 @@
 #include "message.h"
 #include "narc.h"
 #include "party.h"
+#include "pc_boxes.h"
 #include "pokemon.h"
 #include "pokemon_icon.h"
 #include "render_window.h"
+#include "sprite.h"
 #include "strbuf.h"
 #include "string_list.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_020393C8.h"
-#include "unk_020797C8.h"
 
 typedef struct {
     int unk_00;
     int unk_04;
-    CellActor *unk_08;
+    Sprite *unk_08;
     u8 unk_0C[512];
 } UnkStruct_ov94_02240FA0;
 
@@ -68,7 +67,7 @@ static int ov94_02240AE8(UnkStruct_ov94_0223FD4C *param0);
 static int ov94_02240D08(UnkStruct_ov94_0223FD4C *param0);
 static int ov94_02240D28(UnkStruct_ov94_0223FD4C *param0);
 static void ov94_02240D58(UnkStruct_ov94_0223FD4C *param0, int param1, int param2, int param3, u16 param4, int param5);
-static void ov94_02240DF8(int param0, int param1, int param2, int param3, CellActor *param4, NARC *param5, UnkStruct_ov94_02240FA0 *param6);
+static void ov94_02240DF8(int param0, int param1, int param2, int param3, Sprite *param4, NARC *param5, UnkStruct_ov94_02240FA0 *param6);
 static void ov94_02240FA0(UnkStruct_ov94_0223FD4C *param0, int param1);
 static int ov94_022405CC(int param0, int param1, int param2);
 static void ov94_022404F0(UnkStruct_ov94_0223FD4C *param0);
@@ -82,18 +81,18 @@ static int ov94_02240B20(UnkStruct_ov94_0223FD4C *param0);
 static int ov94_02240C58(UnkStruct_ov94_0223FD4C *param0);
 static int ov94_02240C84(UnkStruct_ov94_0223FD4C *param0);
 static int ov94_02240CA8(UnkStruct_ov94_0223FD4C *param0);
-static int ov94_02241384(BoxPokemon *param0, UnkStruct_ov94_0223BA88_sub3 *param1);
+static int ov94_02241384(BoxPokemon *boxMon, UnkStruct_ov94_0223BA88_sub3 *param1);
 static void ov94_022413BC(UnkStruct_ov94_0223BA88 *param0, UnkStruct_ov94_0223FD4C *param1);
-static void ov94_02240EAC(BoxPokemon *param0, CellActor *param1, CellActor *param2, u16 *param3, int param4, NARC *param5, UnkStruct_ov94_0223BA88_sub2 *param6, UnkStruct_ov94_02240FA0 *param7);
+static void ov94_02240EAC(BoxPokemon *boxMon, Sprite *param1, Sprite *param2, u16 *param3, int param4, NARC *param5, UnkStruct_ov94_0223BA88_sub2 *param6, UnkStruct_ov94_02240FA0 *param7);
 void *ov94_02240DD0(NARC *param0, u32 param1, NNSG2dCharacterData **param2, u32 param3);
 static int ov94_02241328(UnkStruct_ov94_0223BA88_sub2 *param0, UnkStruct_ov94_0223BA88_sub3 *param1);
-static void ov94_02241464(UnkStruct_ov94_0223BA88_sub2 *param0, CellActor **param1, UnkStruct_ov94_0223BA88_sub3 *param2, UnkStruct_ov94_02240FA0 *param3);
+static void ov94_02241464(UnkStruct_ov94_0223BA88_sub2 *param0, Sprite **param1, UnkStruct_ov94_0223BA88_sub3 *param2, UnkStruct_ov94_02240FA0 *param3);
 static int ov94_0224121C(Party *param0, PCBoxes *param1, int param2, int param3);
 static int ov94_022412F4(Party *param0, PCBoxes *param1, int param2, int param3);
 static int ov94_02240BB0(UnkStruct_ov94_0223FD4C *param0);
-static int ov94_0224123C(BoxPokemon *param0);
-static int ov94_02241278(BoxPokemon *param0);
-static int ov94_022412C8(BoxPokemon *param0);
+static int BoxPokemon_HasUnusedRibbons(BoxPokemon *boxMon);
+static BOOL BoxPokemon_FormNotInDP(BoxPokemon *boxMon);
+static BOOL BoxPokemon_HeldItemNotInDP(BoxPokemon *boxMon);
 
 static int (*Unk_ov94_022468DC[])(UnkStruct_ov94_0223FD4C *) = {
     ov94_022402A8,
@@ -124,9 +123,9 @@ int ov94_0223FB48(UnkStruct_ov94_0223FD4C *param0, int param1)
     ov94_0223FE24(param0);
 
     if (param0->unk_20 == 8) {
-        StartScreenTransition(0, 1, 1, 0x0, 6, 1, 62);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_62);
     } else {
-        StartScreenTransition(3, 1, 1, 0x0, 6, 1, 62);
+        StartScreenTransition(3, 1, 1, 0x0, 6, 1, HEAP_ID_62);
     }
 
     ov94_02240FA0(param0, param0->unk_110);
@@ -277,8 +276,8 @@ static void ov94_0223FC08(BgConfig *param0)
         Bg_InitFromTemplate(param0, 5, &v5, 0);
     }
 
-    Bg_ClearTilesRange(0, 32, 0, 62);
-    Bg_ClearTilesRange(4, 32, 0, 62);
+    Bg_ClearTilesRange(0, 32, 0, HEAP_ID_62);
+    Bg_ClearTilesRange(4, 32, 0, HEAP_ID_62);
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
 }
@@ -295,16 +294,16 @@ static void ov94_0223FD20(BgConfig *param0)
 static void ov94_0223FD4C(UnkStruct_ov94_0223FD4C *param0)
 {
     BgConfig *v0 = param0->unk_04;
-    NARC *v1 = NARC_ctor(NARC_INDEX_GRAPHIC__WORLDTRADE, 62);
+    NARC *v1 = NARC_ctor(NARC_INDEX_GRAPHIC__WORLDTRADE, HEAP_ID_62);
 
-    Graphics_LoadPaletteFromOpenNARC(v1, 2, 0, 0, 16 * 3 * 2, 62);
-    Graphics_LoadPaletteFromOpenNARC(v1, 5, 4, 0, 16 * 8 * 2, 62);
-    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, 62);
-    LoadMessageBoxGraphics(v0, 0, 1, 10, Options_Frame(param0->unk_00->unk_24), 62);
-    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, 62);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 12, v0, 1, 0, 16 * 5 * 0x20, 1, 62);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 24, v0, 1, 0, 32 * 24 * 2, 1, 62);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 29, v0, 2, 0, 32 * 24 * 2, 1, 62);
+    Graphics_LoadPaletteFromOpenNARC(v1, 2, 0, 0, 16 * 3 * 2, HEAP_ID_62);
+    Graphics_LoadPaletteFromOpenNARC(v1, 5, 4, 0, 16 * 8 * 2, HEAP_ID_62);
+    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, HEAP_ID_62);
+    LoadMessageBoxGraphics(v0, 0, 1, 10, Options_Frame(param0->unk_00->unk_24), HEAP_ID_62);
+    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, HEAP_ID_62);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 12, v0, 1, 0, 16 * 5 * 0x20, 1, HEAP_ID_62);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 24, v0, 1, 0, 32 * 24 * 2, 1, HEAP_ID_62);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 29, v0, 2, 0, 32 * 24 * 2, 1, HEAP_ID_62);
     NARC_dtor(v1);
 }
 
@@ -351,22 +350,22 @@ static const u16 Unk_ov94_02245E1C[][2] = {
 static void ov94_0223FE24(UnkStruct_ov94_0223FD4C *param0)
 {
     int v0;
-    CellActorInitParamsEx v1;
+    AffineSpriteListTemplate v1;
 
     ov94_0223C300(&v1, param0, &param0->unk_DB4, NNS_G2D_VRAM_TYPE_2DMAIN);
 
     v1.position.x = FX32_ONE * Unk_ov94_02245ED4[param0->unk_112][0];
     v1.position.y = FX32_ONE * Unk_ov94_02245ED4[param0->unk_112][1];
 
-    param0->unk_E20 = CellActorCollection_AddEx(&v1);
+    param0->unk_E20 = SpriteList_AddAffine(&v1);
 
-    CellActor_SetAnimateFlag(param0->unk_E20, 1);
-    CellActor_SetAnim(param0->unk_E20, 4);
+    Sprite_SetAnimateFlag(param0->unk_E20, 1);
+    Sprite_SetAnim(param0->unk_E20, 4);
 
     if ((param0->unk_112 == 31) || ((param0->unk_112 >= 0) && (param0->unk_112 <= 5))) {
-        CellActor_SetExplicitPriority(param0->unk_E20, 0);
+        Sprite_SetExplicitPriority(param0->unk_E20, 0);
     } else {
-        CellActor_SetExplicitPriority(param0->unk_E20, 1);
+        Sprite_SetExplicitPriority(param0->unk_E20, 1);
     }
 
     for (v0 = 0; v0 < 30; v0++) {
@@ -374,10 +373,10 @@ static void ov94_0223FE24(UnkStruct_ov94_0223FD4C *param0)
         v1.position.y = FX32_ONE * Unk_ov94_02245ED4[v0][1];
         v1.priority = 20;
 
-        param0->unk_E28[v0] = CellActorCollection_AddEx(&v1);
+        param0->unk_E28[v0] = SpriteList_AddAffine(&v1);
 
-        CellActor_SetAnim(param0->unk_E28[v0], 6 + v0);
-        CellActor_SetExplicitPriority(param0->unk_E28[v0], 1);
+        Sprite_SetAnim(param0->unk_E28[v0], 6 + v0);
+        Sprite_SetExplicitPriority(param0->unk_E28[v0], 1);
     }
 
     for (v0 = 0; v0 < 30; v0++) {
@@ -385,10 +384,10 @@ static void ov94_0223FE24(UnkStruct_ov94_0223FD4C *param0)
         v1.position.y = FX32_ONE * (Unk_ov94_02245ED4[v0][1] + 6);
         v1.priority = 10;
 
-        param0->unk_EA0[v0] = CellActorCollection_AddEx(&v1);
+        param0->unk_EA0[v0] = SpriteList_AddAffine(&v1);
 
-        CellActor_SetAnim(param0->unk_EA0[v0], 40);
-        CellActor_SetExplicitPriority(param0->unk_EA0[v0], 1);
+        Sprite_SetAnim(param0->unk_EA0[v0], 40);
+        Sprite_SetExplicitPriority(param0->unk_EA0[v0], 1);
     }
 
     for (v0 = 0; v0 < 6; v0++) {
@@ -396,21 +395,21 @@ static void ov94_0223FE24(UnkStruct_ov94_0223FD4C *param0)
         v1.position.y = FX32_ONE * (Unk_ov94_02245ED4[v0][1] + 6);
         v1.priority = 10;
 
-        param0->unk_F18[v0] = CellActorCollection_AddEx(&v1);
+        param0->unk_F18[v0] = SpriteList_AddAffine(&v1);
 
-        CellActor_SetAnim(param0->unk_F18[v0], 42);
-        CellActor_SetExplicitPriority(param0->unk_F18[v0], 1);
+        Sprite_SetAnim(param0->unk_F18[v0], 42);
+        Sprite_SetExplicitPriority(param0->unk_F18[v0], 1);
     }
 
     for (v0 = 0; v0 < 2; v0++) {
         v1.position.x = FX32_ONE * Unk_ov94_02245E1C[v0][0];
         v1.position.y = FX32_ONE * Unk_ov94_02245E1C[v0][1];
 
-        param0->unk_F54[v0] = CellActorCollection_AddEx(&v1);
+        param0->unk_F54[v0] = SpriteList_AddAffine(&v1);
 
-        CellActor_SetAnimateFlag(param0->unk_F54[v0], 1);
-        CellActor_SetAnim(param0->unk_F54[v0], 38 + v0);
-        CellActor_SetExplicitPriority(param0->unk_F54[v0], 1);
+        Sprite_SetAnimateFlag(param0->unk_F54[v0], 1);
+        Sprite_SetAnim(param0->unk_F54[v0], 38 + v0);
+        Sprite_SetExplicitPriority(param0->unk_F54[v0], 1);
     }
 }
 
@@ -419,18 +418,18 @@ static void ov94_0223FFC8(UnkStruct_ov94_0223FD4C *param0)
     int v0;
 
     for (v0 = 0; v0 < 2; v0++) {
-        CellActor_Delete(param0->unk_F54[v0]);
+        Sprite_Delete(param0->unk_F54[v0]);
     }
 
-    CellActor_Delete(param0->unk_E20);
+    Sprite_Delete(param0->unk_E20);
 
     for (v0 = 0; v0 < 30; v0++) {
-        CellActor_Delete(param0->unk_E28[v0]);
-        CellActor_Delete(param0->unk_EA0[v0]);
+        Sprite_Delete(param0->unk_E28[v0]);
+        Sprite_Delete(param0->unk_EA0[v0]);
     }
 
     for (v0 = 0; v0 < 6; v0++) {
-        CellActor_Delete(param0->unk_F18[v0]);
+        Sprite_Delete(param0->unk_F18[v0]);
     }
 }
 
@@ -468,8 +467,8 @@ static void ov94_02240190(UnkStruct_ov94_0223FD4C *param0)
 
 static void ov94_022401E0(UnkStruct_ov94_0223FD4C *param0)
 {
-    param0->unk_BA4 = Strbuf_Init((9 * 2), 62);
-    param0->unk_BAC = Strbuf_Init((90 * 2), 62);
+    param0->unk_BA4 = Strbuf_Init((9 * 2), HEAP_ID_62);
+    param0->unk_BAC = Strbuf_Init((90 * 2), HEAP_ID_62);
 
     if (param0->unk_24 == 5) {
         param0->unk_BB0 = MessageLoader_GetNewStrbuf(param0->unk_B90, 21);
@@ -483,7 +482,7 @@ static void ov94_022401E0(UnkStruct_ov94_0223FD4C *param0)
         param0->unk_112 = 0;
     }
 
-    param0->unk_1108 = Heap_AllocFromHeap(62, sizeof(UnkStruct_ov94_0223FD4C_sub2));
+    param0->unk_1108 = Heap_AllocFromHeap(HEAP_ID_62, sizeof(UnkStruct_ov94_0223FD4C_sub2));
 }
 
 static void ov94_02240268(UnkStruct_ov94_0223FD4C *param0)
@@ -544,11 +543,11 @@ static int ov94_022402BC(UnkStruct_ov94_0223FD4C *param0)
     ov94_022404F0(param0);
 
     if (param0->unk_24 == 5) {
-        if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        if (gSystem.pressedKeys & PAD_BUTTON_B) {
             ov94_0223C4C0(param0, 1, 0);
             param0->unk_2C = 2;
             Sound_PlayEffect(1500);
-        } else if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        } else if (gSystem.pressedKeys & PAD_BUTTON_A) {
             if (param0->unk_112 == 30) {
                 ov94_0223C4C0(param0, 1, 0);
                 param0->unk_2C = 2;
@@ -577,11 +576,11 @@ static int ov94_022402BC(UnkStruct_ov94_0223FD4C *param0)
             }
         }
     } else if (param0->unk_24 == 6) {
-        if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        if (gSystem.pressedKeys & PAD_BUTTON_B) {
             ov94_0223C4C0(param0, 3, 0);
             param0->unk_2C = 2;
             Sound_PlayEffect(1500);
-        } else if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        } else if (gSystem.pressedKeys & PAD_BUTTON_A) {
             if (param0->unk_112 == 30) {
                 ov94_0223C4C0(param0, 3, 0);
                 param0->unk_2C = 2;
@@ -623,13 +622,13 @@ static void ov94_022404F0(UnkStruct_ov94_0223FD4C *param0)
 {
     int v0 = 0, v1 = 0, v2 = 0;
 
-    if (gCoreSys.pressedKeys & PAD_KEY_UP) {
+    if (gSystem.pressedKeys & PAD_KEY_UP) {
         v1 = 1;
-    } else if (gCoreSys.pressedKeys & PAD_KEY_DOWN) {
+    } else if (gSystem.pressedKeys & PAD_KEY_DOWN) {
         v1 = 2;
-    } else if (gCoreSys.pressedKeys & PAD_KEY_LEFT) {
+    } else if (gSystem.pressedKeys & PAD_KEY_LEFT) {
         v1 = 3;
-    } else if (gCoreSys.pressedKeys & PAD_KEY_RIGHT) {
+    } else if (gSystem.pressedKeys & PAD_KEY_RIGHT) {
         v1 = 4;
     }
 
@@ -654,9 +653,9 @@ static void ov94_022404F0(UnkStruct_ov94_0223FD4C *param0)
     }
 
     if ((param0->unk_112 == 31) || ((param0->unk_112 >= 0) && (param0->unk_112 <= 5))) {
-        CellActor_SetExplicitPriority(param0->unk_E20, 0);
+        Sprite_SetExplicitPriority(param0->unk_E20, 0);
     } else {
-        CellActor_SetExplicitPriority(param0->unk_E20, 1);
+        Sprite_SetExplicitPriority(param0->unk_E20, 1);
     }
 }
 
@@ -722,13 +721,13 @@ static int ov94_02240688(UnkStruct_ov94_0223FD4C *param0)
 
         v0 = ov94_022411DC(param0->unk_00->unk_08, param0->unk_00->unk_0C, param0->unk_110, param0->unk_112);
 
-        if (ov94_0224123C(v0)) {
+        if (BoxPokemon_HasUnusedRibbons(v0)) {
             ov94_02240D58(param0, 37, TEXT_SPEED_FAST, 0, 0xf0f, 1);
             ov94_0223C3F4(param0, 4, 1);
-        } else if (ov94_02241278(v0)) {
+        } else if (BoxPokemon_FormNotInDP(v0)) {
             ov94_02240D58(param0, 170, TEXT_SPEED_FAST, 0, 0xf0f, 1);
             ov94_0223C3F4(param0, 4, 1);
-        } else if (ov94_022412C8(v0)) {
+        } else if (BoxPokemon_HeldItemNotInDP(v0)) {
             ov94_02240D58(param0, 171, TEXT_SPEED_FAST, 0, 0xf0f, 1);
             ov94_0223C3F4(param0, 4, 1);
         } else {
@@ -797,7 +796,7 @@ static int ov94_02240830(UnkStruct_ov94_0223FD4C *param0)
 
 static int ov94_022408E8(UnkStruct_ov94_0223FD4C *param0)
 {
-    BoxPokemon *v0;
+    BoxPokemon *boxMon;
 
     switch (Menu_ProcessInput(param0->unk_10D4)) {
     case 1:
@@ -812,15 +811,15 @@ static int ov94_022408E8(UnkStruct_ov94_0223FD4C *param0)
         StringList_Free(param0->unk_10CC);
         Window_EraseStandardFrame(&param0->unk_F9C[0], 0);
 
-        v0 = ov94_022411DC(param0->unk_00->unk_08, param0->unk_00->unk_0C, param0->unk_110, param0->unk_112);
+        boxMon = ov94_022411DC(param0->unk_00->unk_08, param0->unk_00->unk_0C, param0->unk_110, param0->unk_112);
 
-        if (ov94_0224123C(v0)) {
+        if (BoxPokemon_HasUnusedRibbons(boxMon)) {
             ov94_02240D58(param0, 37, TEXT_SPEED_FAST, 0, 0xf0f, 1);
             ov94_0223C3F4(param0, 4, 1);
-        } else if (ov94_02241278(v0)) {
+        } else if (BoxPokemon_FormNotInDP(boxMon)) {
             ov94_02240D58(param0, 170, TEXT_SPEED_FAST, 0, 0xf0f, 1);
             ov94_0223C3F4(param0, 4, 1);
-        } else if (ov94_022412C8(v0)) {
+        } else if (BoxPokemon_HeldItemNotInDP(boxMon)) {
             ov94_02240D58(param0, 171, TEXT_SPEED_FAST, 0, 0xf0f, 1);
             ov94_0223C3F4(param0, 4, 1);
         } else {
@@ -858,10 +857,10 @@ static int ov94_022408E8(UnkStruct_ov94_0223FD4C *param0)
 static int ov94_02240A6C(UnkStruct_ov94_0223FD4C *param0)
 {
     if ((param0->unk_18 == 0) || (param0->unk_18 == 8)) {
-        StartScreenTransition(0, 0, 0, 0x0, 6, 1, 62);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_62);
         param0->unk_1110 = 1;
     } else {
-        StartScreenTransition(3, 0, 0, 0x0, 6, 1, 62);
+        StartScreenTransition(3, 0, 0, 0x0, 6, 1, HEAP_ID_62);
     }
 
     param0->unk_2C = 0;
@@ -927,9 +926,7 @@ static int ov94_02240B70(UnkStruct_ov94_0223FD4C *param0)
 
 static int ov94_02240BB0(UnkStruct_ov94_0223FD4C *param0)
 {
-    Pokemon *v0;
-
-    v0 = (Pokemon *)param0->unk_250[param0->unk_11C].unk_00.unk_00;
+    Pokemon *v0 = (Pokemon *)param0->unk_250[param0->unk_11C].unk_00.unk_00;
 
     if (ov94_02241498(v0) && (param0->unk_110 != 18)) {
         if (Party_GetCurrentCount(param0->unk_00->unk_08) == 6) {
@@ -1007,9 +1004,7 @@ static int ov94_02240D28(UnkStruct_ov94_0223FD4C *param0)
 static void ov94_02240D58(UnkStruct_ov94_0223FD4C *param0, int param1, int param2, int param3, u16 param4, int param5)
 {
     Window *v0;
-    Strbuf *v1;
-
-    v1 = MessageLoader_GetNewStrbuf(param0->unk_B90, param1);
+    Strbuf *v1 = MessageLoader_GetNewStrbuf(param0->unk_B90, param1);
     StringTemplate_Format(param0->unk_B8C, param0->unk_BAC, v1);
 
     if (param5 == 0) {
@@ -1040,7 +1035,7 @@ void *ov94_02240DD0(NARC *param0, u32 param1, NNSG2dCharacterData **param2, u32 
     return v0;
 }
 
-static void ov94_02240DF8(int param0, int param1, int param2, int param3, CellActor *param4, NARC *param5, UnkStruct_ov94_02240FA0 *param6)
+static void ov94_02240DF8(int param0, int param1, int param2, int param3, Sprite *param4, NARC *param5, UnkStruct_ov94_02240FA0 *param6)
 {
     u8 *v0;
     u8 *v1;
@@ -1057,9 +1052,9 @@ static void ov94_02240DF8(int param0, int param1, int param2, int param3, CellAc
     Heap_FreeToHeap(v1);
 }
 
-static void ov94_02240E50(BoxPokemon *param0, UnkStruct_ov94_0223BA88_sub2 *param1)
+static void ov94_02240E50(BoxPokemon *boxMon, UnkStruct_ov94_0223BA88_sub2 *param1)
 {
-    param1->unk_03 = BoxPokemon_GetLevel(param0);
+    param1->level = BoxPokemon_GetLevel(boxMon);
 }
 
 static void ov94_02240E5C(void *param0)
@@ -1073,53 +1068,53 @@ static void ov94_02240E5C(void *param0)
             DC_FlushRange(v2->unk_0C, ((4 * 4) * 0x20));
             GX_LoadOBJ(v2->unk_0C, v2->unk_00, ((4 * 4) * 0x20));
 
-            CellActor_SetExplicitPalette(v2->unk_08, v2->unk_04);
+            Sprite_SetExplicitPalette(v2->unk_08, v2->unk_04);
         }
     }
 
     Heap_FreeToHeap(v0->unk_1114);
 }
 
-static void ov94_02240EAC(BoxPokemon *param0, CellActor *param1, CellActor *param2, u16 *param3, int param4, NARC *param5, UnkStruct_ov94_0223BA88_sub2 *param6, UnkStruct_ov94_02240FA0 *param7)
+static void ov94_02240EAC(BoxPokemon *boxMon, Sprite *param1, Sprite *param2, u16 *species, int param4, NARC *param5, UnkStruct_ov94_0223BA88_sub2 *param6, UnkStruct_ov94_02240FA0 *param7)
 {
-    int v0, v1, v2, v3;
+    int v0, item, isEgg, form;
 
-    BoxPokemon_EnterDecryptionContext(param0);
+    BoxPokemon_EnterDecryptionContext(boxMon);
 
-    v0 = BoxPokemon_GetValue(param0, MON_DATA_SPECIES_EXISTS, NULL);
-    *param3 = BoxPokemon_GetValue(param0, MON_DATA_SPECIES, NULL);
+    v0 = BoxPokemon_GetValue(boxMon, MON_DATA_SPECIES_EXISTS, NULL);
+    *species = BoxPokemon_GetValue(boxMon, MON_DATA_SPECIES, NULL);
 
-    v3 = BoxPokemon_GetValue(param0, MON_DATA_FORM, NULL);
-    v2 = BoxPokemon_GetValue(param0, MON_DATA_IS_EGG, NULL);
-    v1 = BoxPokemon_GetValue(param0, MON_DATA_HELD_ITEM, NULL);
+    form = BoxPokemon_GetValue(boxMon, MON_DATA_FORM, NULL);
+    isEgg = BoxPokemon_GetValue(boxMon, MON_DATA_IS_EGG, NULL);
+    item = BoxPokemon_GetValue(boxMon, MON_DATA_HELD_ITEM, NULL);
 
-    param6->unk_00 = *param3;
-    param6->unk_02 = BoxPokemon_GetValue(param0, MON_DATA_GENDER, NULL) + 1;
+    param6->species = *species;
+    param6->gender = BoxPokemon_GetValue(boxMon, MON_DATA_GENDER, NULL) + 1;
 
-    if (v2) {
-        param6->unk_03 = 0;
+    if (isEgg) {
+        param6->level = 0;
     }
 
-    BoxPokemon_ExitDecryptionContext(param0, 1);
+    BoxPokemon_ExitDecryptionContext(boxMon, 1);
 
     if (v0) {
-        ov94_02240DF8(*param3, v3, v2, param4, param1, param5, param7);
-        CellActor_SetDrawFlag(param1, 1);
+        ov94_02240DF8(*species, form, isEgg, param4, param1, param5, param7);
+        Sprite_SetDrawFlag(param1, 1);
 
-        if (v1 != 0) {
-            CellActor_SetDrawFlag(param2, 1);
+        if (item != 0) {
+            Sprite_SetDrawFlag(param2, 1);
 
-            if (Item_IsMail(v1)) {
-                CellActor_SetAnim(param2, 41);
+            if (Item_IsMail(item)) {
+                Sprite_SetAnim(param2, 41);
             } else {
-                CellActor_SetAnim(param2, 40);
+                Sprite_SetAnim(param2, 40);
             }
         } else {
-            CellActor_SetDrawFlag(param2, 0);
+            Sprite_SetDrawFlag(param2, 0);
         }
     } else {
-        CellActor_SetDrawFlag(param1, 0);
-        CellActor_SetDrawFlag(param2, 0);
+        Sprite_SetDrawFlag(param1, 0);
+        Sprite_SetDrawFlag(param2, 0);
 
         param7->unk_08 = NULL;
     }
@@ -1135,23 +1130,23 @@ static void ov94_02240FA0(UnkStruct_ov94_0223FD4C *param0, int param1)
     UnkStruct_ov94_02240FA0 *v7;
 
     param0->unk_1114 = v7 = Heap_AllocFromHeapAtEnd(3, sizeof(UnkStruct_ov94_02240FA0) * 30);
-    v6 = NARC_ctor(NARC_INDEX_POKETOOL__ICONGRA__PL_POKE_ICON, 62);
+    v6 = NARC_ctor(NARC_INDEX_POKETOOL__ICONGRA__PL_POKE_ICON, HEAP_ID_62);
 
     if ((param1 >= 0) && (param1 < 18)) {
         for (v1 = 0; v1 < 30; v1++) {
-            ov94_02240E50(sub_02079C9C(v5, param1, v1), &param0->unk_1108->unk_00[v1]);
+            ov94_02240E50(PCBoxes_GetBoxMonAt(v5, param1, v1), &param0->unk_1108->unk_00[v1]);
         }
 
         for (v1 = 0; v1 < 30; v1++) {
-            param0->unk_1108->unk_00[v1].unk_00 = 0;
-            ov94_02240EAC(sub_02079C9C(v5, param1, v1), param0->unk_E28[v1], param0->unk_EA0[v1], &v0[v1], v1, v6, &param0->unk_1108->unk_00[v1], &v7[v1]);
+            param0->unk_1108->unk_00[v1].species = SPECIES_NONE;
+            ov94_02240EAC(PCBoxes_GetBoxMonAt(v5, param1, v1), param0->unk_E28[v1], param0->unk_EA0[v1], &v0[v1], v1, v6, &param0->unk_1108->unk_00[v1], &v7[v1]);
 
             if (v1 < 6) {
-                CellActor_SetDrawFlag(param0->unk_F18[v1], 0);
+                Sprite_SetDrawFlag(param0->unk_F18[v1], 0);
             }
         }
 
-        sub_02079AF4(v5, param1, param0->unk_BA4);
+        PCBoxes_BufferBoxName(v5, param1, param0->unk_BA4);
     } else {
         int v8 = Party_GetCurrentCount(param0->unk_00->unk_08);
 
@@ -1163,20 +1158,20 @@ static void ov94_02240FA0(UnkStruct_ov94_0223FD4C *param0, int param1)
             ov94_02240EAC(v4, param0->unk_E28[v1], param0->unk_EA0[v1], &v0[v1], v1, v6, &param0->unk_1108->unk_00[v1], &v7[v1]);
 
             if (Pokemon_GetValue(v3, MON_DATA_MAIL_ID, NULL)) {
-                CellActor_SetDrawFlag(param0->unk_F18[v1], 1);
+                Sprite_SetDrawFlag(param0->unk_F18[v1], 1);
             } else {
-                CellActor_SetDrawFlag(param0->unk_F18[v1], 0);
+                Sprite_SetDrawFlag(param0->unk_F18[v1], 0);
             }
         }
 
         for (; v1 < 30; v1++) {
-            param0->unk_1108->unk_00[v1].unk_00 = 0;
-            CellActor_SetDrawFlag(param0->unk_E28[v1], 0);
-            CellActor_SetDrawFlag(param0->unk_EA0[v1], 0);
+            param0->unk_1108->unk_00[v1].species = SPECIES_NONE;
+            Sprite_SetDrawFlag(param0->unk_E28[v1], 0);
+            Sprite_SetDrawFlag(param0->unk_EA0[v1], 0);
             v7[v1].unk_08 = NULL;
 
             if (v1 < 6) {
-                CellActor_SetDrawFlag(param0->unk_F18[v1], 0);
+                Sprite_SetDrawFlag(param0->unk_F18[v1], 0);
             }
         }
 
@@ -1214,7 +1209,7 @@ BoxPokemon *ov94_022411DC(Party *param0, PCBoxes *param1, int param2, int param3
         return Pokemon_GetBoxPokemon(Party_GetPokemonBySlotIndex(param0, param3));
     }
 
-    return sub_02079C9C(param1, param2, param3);
+    return PCBoxes_GetBoxMonAt(param1, param2, param3);
 }
 
 static int ov94_0224121C(Party *param0, PCBoxes *param1, int param2, int param3)
@@ -1228,83 +1223,72 @@ static int ov94_0224121C(Party *param0, PCBoxes *param1, int param2, int param3)
     return 1;
 }
 
-static const u16 Unk_ov94_02245E34[] = {
-    0x67,
-    0x68,
-    0x69,
-    0x2E,
-    0x2F,
-    0x30,
-    0x31,
-    0x32,
-    0x33,
-    0x34
+static const u16 sUnusedRibbons[] = {
+    MON_DATA_HOENN_MARINE_RIBBON,
+    MON_DATA_HOENN_LAND_RIBBON,
+    MON_DATA_HOENN_SKY_RIBBON,
+    MON_DATA_SINNOH_RED_RIBBON,
+    MON_DATA_SINNOH_GREEN_RIBBON,
+    MON_DATA_SINNOH_BLUE_RIBBON,
+    MON_DATA_SINNOH_FESTIVAL_RIBBON,
+    MON_DATA_SINNOH_CARNIVAL_RIBBON,
+    MON_DATA_SINNOH_CLASSIC_RIBBON,
+    MON_DATA_SINNOH_PREMIER_RIBBON,
 };
 
-static int ov94_0224123C(BoxPokemon *param0)
+static int BoxPokemon_HasUnusedRibbons(BoxPokemon *boxMon)
 {
-    int v0, v1 = 0, v2;
+    int i;
+    int count = 0;
+    int reencrypt = BoxPokemon_EnterDecryptionContext(boxMon);
 
-    v2 = BoxPokemon_EnterDecryptionContext(param0);
-
-    for (v0 = 0; v0 < 10; v0++) {
-        v1 += BoxPokemon_GetValue(param0, Unk_ov94_02245E34[v0], NULL);
+    // Should be NELEMS(sUnusedRibbons), but compiler doesn't want to budge.
+    for (i = 0; i < 10; i++) {
+        count += BoxPokemon_GetValue(boxMon, sUnusedRibbons[i], NULL);
     }
 
-    BoxPokemon_ExitDecryptionContext(param0, v2);
+    BoxPokemon_ExitDecryptionContext(boxMon, reencrypt);
 
-    if (v1) {
-        return 1;
+    if (count) {
+        return TRUE;
     }
 
-    return 0;
+    return FALSE;
 }
 
-static int ov94_02241278(BoxPokemon *param0)
+static BOOL BoxPokemon_FormNotInDP(BoxPokemon *boxMon)
 {
-    int v0;
-    int v1, v2;
+    int reencrypt = BoxPokemon_EnterDecryptionContext(boxMon);
+    int species = BoxPokemon_GetValue(boxMon, MON_DATA_SPECIES, NULL);
+    int form = BoxPokemon_GetValue(boxMon, MON_DATA_FORM, NULL);
 
-    v0 = BoxPokemon_EnterDecryptionContext(param0);
+    BoxPokemon_ExitDecryptionContext(boxMon, reencrypt);
 
-    {
-        v1 = BoxPokemon_GetValue(param0, MON_DATA_SPECIES, NULL);
-        v2 = BoxPokemon_GetValue(param0, MON_DATA_FORM, NULL);
-    }
-
-    BoxPokemon_ExitDecryptionContext(param0, v0);
-
-    if (v2 > 0) {
-        switch (v1) {
+    if (form > 0) {
+        switch (species) {
         case SPECIES_GIRATINA:
         case SPECIES_SHAYMIN:
         case SPECIES_ROTOM:
-            return 1;
+            return TRUE;
         }
     }
 
-    return 0;
+    return FALSE;
 }
 
-static int ov94_022412C8(BoxPokemon *param0)
+static BOOL BoxPokemon_HeldItemNotInDP(BoxPokemon *boxMon)
 {
-    int v0;
-    int v1;
+    int reencrypt = BoxPokemon_EnterDecryptionContext(boxMon);
+    int item = BoxPokemon_GetValue(boxMon, MON_DATA_HELD_ITEM, NULL);
 
-    v0 = BoxPokemon_EnterDecryptionContext(param0);
+    BoxPokemon_ExitDecryptionContext(boxMon, reencrypt);
 
-    {
-        v1 = BoxPokemon_GetValue(param0, MON_DATA_HELD_ITEM, NULL);
-    }
-
-    BoxPokemon_ExitDecryptionContext(param0, v0);
-
-    switch (v1) {
+    switch (item) {
     case ITEM_GRISEOUS_ORB:
-        return 1;
+        return TRUE;
     }
 
-    return 0;
+    return FALSE;
 }
 
 static int ov94_022412F4(Party *param0, PCBoxes *param1, int param2, int param3)
@@ -1328,28 +1312,28 @@ static int ov94_022412F4(Party *param0, PCBoxes *param1, int param2, int param3)
 
 static int ov94_02241328(UnkStruct_ov94_0223BA88_sub2 *param0, UnkStruct_ov94_0223BA88_sub3 *param1)
 {
-    if (param0->unk_00 != param1->unk_00) {
+    if (param0->species != param1->species) {
         return 0;
     }
 
-    if (param1->unk_02 != 3) {
-        if (param1->unk_02 != param0->unk_02) {
+    if (param1->gender != 3) {
+        if (param1->gender != param0->gender) {
             return 0;
         }
     }
 
-    if (param0->unk_03 == 0) {
+    if (param0->level == 0) {
         return 0;
     }
 
-    if (param1->unk_03 != 0) {
-        if (param1->unk_03 > param0->unk_03) {
+    if (param1->level != 0) {
+        if (param1->level > param0->level) {
             return 0;
         }
     }
 
-    if (param1->unk_04 != 0) {
-        if (param1->unk_04 < param0->unk_03) {
+    if (param1->level2 != 0) {
+        if (param1->level2 < param0->level) {
             return 0;
         }
     }
@@ -1357,13 +1341,13 @@ static int ov94_02241328(UnkStruct_ov94_0223BA88_sub2 *param0, UnkStruct_ov94_02
     return 1;
 }
 
-static int ov94_02241384(BoxPokemon *param0, UnkStruct_ov94_0223BA88_sub3 *param1)
+static int ov94_02241384(BoxPokemon *boxMon, UnkStruct_ov94_0223BA88_sub3 *param1)
 {
     UnkStruct_ov94_0223BA88_sub2 v0;
 
-    v0.unk_00 = BoxPokemon_GetValue(param0, MON_DATA_SPECIES, NULL);
-    v0.unk_02 = BoxPokemon_GetValue(param0, MON_DATA_GENDER, NULL) + 1;
-    v0.unk_03 = BoxPokemon_GetLevel(param0);
+    v0.species = BoxPokemon_GetValue(boxMon, MON_DATA_SPECIES, NULL);
+    v0.gender = BoxPokemon_GetValue(boxMon, MON_DATA_GENDER, NULL) + 1;
+    v0.level = BoxPokemon_GetLevel(boxMon);
 
     return ov94_02241328(&v0, param1);
 }
@@ -1372,32 +1356,32 @@ static void ov94_022413BC(UnkStruct_ov94_0223BA88 *param0, UnkStruct_ov94_0223FD
 {
     UnkStruct_ov94_0223BA88_sub2 v0;
     UnkStruct_ov94_0223BA88_sub3 v1;
-    BoxPokemon *v2;
+    BoxPokemon *boxMon;
 
-    v0.unk_00 = BoxPokemon_GetValue(param1->unk_114, MON_DATA_SPECIES, NULL);
-    v0.unk_02 = BoxPokemon_GetValue(param1->unk_114, MON_DATA_GENDER, NULL) + 1;
-    v0.unk_03 = BoxPokemon_GetLevel(param1->unk_114);
+    v0.species = BoxPokemon_GetValue(param1->unk_114, MON_DATA_SPECIES, NULL);
+    v0.gender = BoxPokemon_GetValue(param1->unk_114, MON_DATA_GENDER, NULL) + 1;
+    v0.level = BoxPokemon_GetLevel(param1->unk_114);
 
     param0->unk_EC = v0;
 
     ov94_022425A8(param0, param1);
 
-    v2 = Pokemon_GetBoxPokemon((Pokemon *)param1->unk_250[param1->unk_11C].unk_00.unk_00);
+    boxMon = Pokemon_GetBoxPokemon((Pokemon *)param1->unk_250[param1->unk_11C].unk_00.unk_00);
 
-    v1.unk_00 = BoxPokemon_GetValue(v2, MON_DATA_SPECIES, NULL);
-    v1.unk_02 = BoxPokemon_GetValue(v2, MON_DATA_GENDER, NULL) + 1;
-    v1.unk_03 = 0;
-    v1.unk_04 = 0;
+    v1.species = BoxPokemon_GetValue(boxMon, MON_DATA_SPECIES, NULL);
+    v1.gender = BoxPokemon_GetValue(boxMon, MON_DATA_GENDER, NULL) + 1;
+    v1.level = 0;
+    v1.level2 = 0;
 
     param0->unk_F0 = v1;
 }
 
-static void ov94_02241464(UnkStruct_ov94_0223BA88_sub2 *param0, CellActor **param1, UnkStruct_ov94_0223BA88_sub3 *param2, UnkStruct_ov94_02240FA0 *param3)
+static void ov94_02241464(UnkStruct_ov94_0223BA88_sub2 *param0, Sprite **param1, UnkStruct_ov94_0223BA88_sub3 *param2, UnkStruct_ov94_02240FA0 *param3)
 {
     int v0, v1;
 
     for (v1 = 0; v1 < 30; v1++) {
-        if (param0[v1].unk_00 != 0) {
+        if (param0[v1].species != SPECIES_NONE) {
             if (ov94_02241328(&param0[v1], param2) == 0) {
                 param3[v1].unk_04 += 3;
             }

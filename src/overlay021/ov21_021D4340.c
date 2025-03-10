@@ -3,10 +3,12 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "overlay021/ov21_021D0D80.h"
+#include "constants/heap.h"
+
 #include "overlay021/ov21_021D3FE0.h"
 #include "overlay021/ov21_021D423C.h"
-#include "overlay021/struct_ov21_021D0F60_decl.h"
+#include "overlay021/pokedex_app.h"
+#include "overlay021/pokedex_main.h"
 #include "overlay021/struct_ov21_021D3FE0_decl.h"
 #include "overlay021/struct_ov21_021D4008.h"
 #include "overlay021/struct_ov21_021D423C_decl.h"
@@ -258,14 +260,14 @@ void ov21_021D4660(UnkStruct_ov21_021D4660 *param0)
     param0->unk_08.unk_08 = NULL;
 }
 
-void ov21_021D467C(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D467C(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4434 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4434;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4434));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4434));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4434));
@@ -286,14 +288,14 @@ void ov21_021D467C(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D4704(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D4704(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D43A8 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D43A8;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D43A8));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D43A8));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D43A8));
@@ -307,14 +309,14 @@ void ov21_021D4704(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D475C(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D475C(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4434 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4434;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4434));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4434));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4434));
@@ -335,14 +337,14 @@ void ov21_021D475C(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D47F0(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D47F0(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4434 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4434;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4434));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4434));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4434));
@@ -363,14 +365,14 @@ void ov21_021D47F0(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D4878(UnkStruct_ov21_021D4660 *param0, UnkStruct_ov21_021D0F60 *param1, int param2, int param3)
+void ov21_021D4878(UnkStruct_ov21_021D4660 *param0, PokedexApp *param1, enum HeapId heapID, int param3)
 {
     UnkStruct_ov21_021D4340 *v0;
 
     param0->unk_00 = param3;
     param0->unk_04 = ov21_021D4340;
 
-    v0 = Heap_AllocFromHeap(param2, sizeof(UnkStruct_ov21_021D4340));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4340));
     GF_ASSERT(v0);
 
     v0->unk_00 = ov21_021D1410(param1, 0);
@@ -380,14 +382,14 @@ void ov21_021D4878(UnkStruct_ov21_021D4660 *param0, UnkStruct_ov21_021D0F60 *par
     param0->unk_08.unk_08 = v0;
 }
 
-void ov21_021D48B8(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D48B8(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4558 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4558;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4558));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4558));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4558));
@@ -402,14 +404,14 @@ void ov21_021D48B8(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D491C(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D491C(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4558 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4558;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4558));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4558));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4558));
@@ -424,14 +426,14 @@ void ov21_021D491C(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D4980(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D4980(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4558 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4558;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4558));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4558));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4558));
@@ -446,14 +448,14 @@ void ov21_021D4980(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D49E4(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D49E4(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4340 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4340;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4340));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4340));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4340));
@@ -465,14 +467,14 @@ void ov21_021D49E4(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D4A3C(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D4A3C(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4340 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4340;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4340));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4340));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4340));
@@ -484,14 +486,14 @@ void ov21_021D4A3C(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D4A94(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D4A94(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4558 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4558;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4558));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4558));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4558));
@@ -506,14 +508,14 @@ void ov21_021D4A94(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D4AF8(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D4AF8(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4340 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4340;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4340));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4340));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4340));
@@ -525,14 +527,14 @@ void ov21_021D4AF8(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D4B50(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D4B50(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4558 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4558;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4558));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4558));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4558));
@@ -547,14 +549,14 @@ void ov21_021D4B50(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_0
     param1->unk_08.unk_08 = v0;
 }
 
-void ov21_021D4BB4(int param0, UnkStruct_ov21_021D4660 *param1, UnkStruct_ov21_021D0F60 *param2, int param3)
+void ov21_021D4BB4(enum HeapId heapID, UnkStruct_ov21_021D4660 *param1, PokedexApp *param2, int param3)
 {
     UnkStruct_ov21_021D4340 *v0;
 
     param1->unk_00 = param3;
     param1->unk_04 = ov21_021D4340;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov21_021D4340));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov21_021D4340));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4340));

@@ -15,7 +15,6 @@
 
 #include "bag.h"
 #include "berry_patches.h"
-#include "core_sys.h"
 #include "easy3d.h"
 #include "field_task.h"
 #include "heap.h"
@@ -23,6 +22,7 @@
 #include "player_avatar.h"
 #include "savedata_misc.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "unk_0201CED8.h"
 #include "unk_02054D00.h"
 #include "unk_020655F4.h"
@@ -83,15 +83,13 @@ static int sub_02055C80(int param0)
     return param0 - 95 + 1;
 }
 
-UnkStruct_02055CBC *sub_02055C8C(FieldSystem *fieldSystem, int param1)
+UnkStruct_02055CBC *sub_02055C8C(FieldSystem *fieldSystem, int heapID)
 {
-    UnkStruct_02055CBC *v0;
-
-    v0 = Heap_AllocFromHeap(param1, sizeof(UnkStruct_02055CBC));
+    UnkStruct_02055CBC *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_02055CBC));
     MI_CpuClear8(v0, sizeof(UnkStruct_02055CBC));
 
-    v0->unk_00 = param1;
-    v0->unk_04 = BerryGrowthData_Init(param1);
+    v0->unk_00 = heapID;
+    v0->unk_04 = BerryGrowthData_Init(heapID);
 
     sub_02055D14(fieldSystem, v0);
     return v0;
@@ -158,9 +156,9 @@ void sub_02055D94(FieldSystem *fieldSystem)
     BerryPatch *v2 = MiscSaveBlock_GetBerryPatches(fieldSystem->saveData);
 
     while (sub_020625B0(fieldSystem->mapObjMan, &v1, &v0, (1 << 0)) == 1) {
-        if (sub_020677F4(sub_02062920(v1)) == 1) {
-            if (sub_02055D54(fieldSystem, MapObject_PosVector(v1))) {
-                int v3 = sub_020629D8(v1, 0);
+        if (sub_020677F4(MapObject_GetGraphicsID(v1)) == 1) {
+            if (sub_02055D54(fieldSystem, MapObject_GetPos(v1))) {
+                int v3 = MapObject_GetDataAt(v1, 0);
                 BerryPatches_SetIsPatchGrowing(v2, v3, 1);
             }
         }
@@ -172,7 +170,7 @@ BOOL sub_02055E00(FieldSystem *fieldSystem, MapObject *param1)
     int v0, v1, v2;
     BerryPatch *v3 = MiscSaveBlock_GetBerryPatches(fieldSystem->saveData);
 
-    v0 = sub_020629D8(param1, 0);
+    v0 = MapObject_GetDataAt(param1, 0);
     v2 = BerryPatches_GetPatchBerryID(v3, v0);
     v1 = BerryPatches_GetPatchYield(v3, v0);
 
@@ -188,7 +186,7 @@ void sub_02055E80(FieldSystem *fieldSystem, MapObject *param1, u16 param2)
     int v0;
     BerryPatch *v1 = MiscSaveBlock_GetBerryPatches(fieldSystem->saveData);
 
-    v0 = sub_020629D8(param1, 0);
+    v0 = MapObject_GetDataAt(param1, 0);
     BerryPatches_SetPatchMulchType(v1, v0, sub_02055C80(param2));
 }
 
@@ -197,7 +195,7 @@ void sub_02055EAC(FieldSystem *fieldSystem, MapObject *param1, u16 param2)
     int v0;
     BerryPatch *v1 = MiscSaveBlock_GetBerryPatches(fieldSystem->saveData);
 
-    v0 = sub_020629D8(param1, 0);
+    v0 = MapObject_GetDataAt(param1, 0);
     BerryPatches_PlantInPatch(v1, v0, fieldSystem->unk_04->unk_18->unk_04, sub_02055C60(param2));
 }
 
@@ -206,7 +204,7 @@ void sub_02055EE0(FieldSystem *fieldSystem, MapObject *param1)
     int v0;
     BerryPatch *v1 = MiscSaveBlock_GetBerryPatches(fieldSystem->saveData);
 
-    v0 = sub_020629D8(param1, 0);
+    v0 = MapObject_GetDataAt(param1, 0);
     BerryPatches_ResetPatchMoisture(v1, v0);
 }
 
@@ -215,7 +213,7 @@ int sub_02055F00(const FieldSystem *fieldSystem, const MapObject *param1)
     int v0;
     BerryPatch *v1 = MiscSaveBlock_GetBerryPatches(fieldSystem->saveData);
 
-    v0 = sub_020629D8(param1, 0);
+    v0 = MapObject_GetDataAt(param1, 0);
     return BerryPatches_GetPatchGrowthStage(v1, v0);
 }
 
@@ -224,7 +222,7 @@ int sub_02055F20(const FieldSystem *fieldSystem, const MapObject *param1)
     int v0;
     BerryPatch *v1 = MiscSaveBlock_GetBerryPatches(fieldSystem->saveData);
 
-    v0 = sub_020629D8(param1, 0);
+    v0 = MapObject_GetDataAt(param1, 0);
     return BerryPatches_GetPatchBerryID(v1, v0);
 }
 
@@ -233,7 +231,7 @@ u16 sub_02055F40(const FieldSystem *fieldSystem, const MapObject *param1)
     int v0;
     BerryPatch *v1 = MiscSaveBlock_GetBerryPatches(fieldSystem->saveData);
 
-    v0 = sub_020629D8(param1, 0);
+    v0 = MapObject_GetDataAt(param1, 0);
     return sub_02055C50(BerryPatches_GetPatchBerryID(v1, v0));
 }
 
@@ -242,7 +240,7 @@ u16 sub_02055F64(const FieldSystem *fieldSystem, const MapObject *param1)
     int v0;
     BerryPatch *v1 = MiscSaveBlock_GetBerryPatches(fieldSystem->saveData);
 
-    v0 = sub_020629D8(param1, 0);
+    v0 = MapObject_GetDataAt(param1, 0);
     return sub_02055C70(BerryPatches_GetPatchMulchType(v1, v0));
 }
 
@@ -251,7 +249,7 @@ int sub_02055F88(const FieldSystem *fieldSystem, const MapObject *param1)
     int v0;
     BerryPatch *v1 = MiscSaveBlock_GetBerryPatches(fieldSystem->saveData);
 
-    v0 = sub_020629D8(param1, 0);
+    v0 = MapObject_GetDataAt(param1, 0);
     return BerryPatches_GetPatchMoisture(v1, v0);
 }
 
@@ -260,7 +258,7 @@ int sub_02055FA8(const FieldSystem *fieldSystem, const MapObject *param1)
     int v0;
     BerryPatch *v1 = MiscSaveBlock_GetBerryPatches(fieldSystem->saveData);
 
-    v0 = sub_020629D8(param1, 0);
+    v0 = MapObject_GetDataAt(param1, 0);
     return BerryPatches_GetPatchYield(v1, v0);
 }
 
@@ -268,7 +266,7 @@ u32 sub_02055FC8(const FieldSystem *fieldSystem, const MapObject *param1)
 {
     u32 v0 = 0;
 
-    if ((param1 == NULL) || (sub_02062920(param1) != 0x64)) {
+    if ((param1 == NULL) || (MapObject_GetGraphicsID(param1) != 0x64)) {
         return 0x0;
     }
 
@@ -300,10 +298,8 @@ static const MapObjectAnimCmd Unk_020EC524[] = {
 
 static BOOL sub_02056010(FieldSystem *fieldSystem, UnkStruct_020562AC *param1, int param2)
 {
-    int v0, v1;
-
-    v0 = Player_GetXPos(fieldSystem->playerAvatar);
-    v1 = Player_GetZPos(fieldSystem->playerAvatar);
+    int v0 = Player_GetXPos(fieldSystem->playerAvatar);
+    int v1 = Player_GetZPos(fieldSystem->playerAvatar);
 
     if (param2 == 2) {
         v0--;
@@ -326,10 +322,8 @@ static BOOL sub_02056010(FieldSystem *fieldSystem, UnkStruct_020562AC *param1, i
 
 static MapObject *sub_02056074(FieldSystem *fieldSystem, int param1)
 {
-    int v0, v1;
-
-    v0 = Player_GetXPos(fieldSystem->playerAvatar);
-    v1 = Player_GetZPos(fieldSystem->playerAvatar);
+    int v0 = Player_GetXPos(fieldSystem->playerAvatar);
+    int v1 = Player_GetZPos(fieldSystem->playerAvatar);
     v1 -= 1;
 
     if (param1 == 2) {
@@ -343,10 +337,8 @@ static MapObject *sub_02056074(FieldSystem *fieldSystem, int param1)
 
 static MapObject *sub_020560A8(FieldSystem *fieldSystem, UnkStruct_020562AC *param1)
 {
-    int v0, v1;
-
-    v0 = Player_GetXPos(fieldSystem->playerAvatar);
-    v1 = Player_GetZPos(fieldSystem->playerAvatar);
+    int v0 = Player_GetXPos(fieldSystem->playerAvatar);
+    int v1 = Player_GetZPos(fieldSystem->playerAvatar);
 
     if (param1->unk_04 == 0) {
         v1 -= 1;
@@ -361,14 +353,12 @@ static MapObject *sub_020560A8(FieldSystem *fieldSystem, UnkStruct_020562AC *par
 
 static BOOL sub_020560E4(MapObject *mapObj)
 {
-    return sub_02062920(mapObj) == 0x64;
+    return MapObject_GetGraphicsID(mapObj) == 0x64;
 }
 
 static void sub_020560F8(FieldSystem *fieldSystem, UnkStruct_020562AC *param1)
 {
-    MapObject *v0;
-
-    v0 = sub_020560A8(fieldSystem, param1);
+    MapObject *v0 = sub_020560A8(fieldSystem, param1);
 
     if (v0 != NULL) {
         sub_02055EE0(fieldSystem, v0);
@@ -390,7 +380,7 @@ static BOOL sub_02056124(FieldTask *taskMan)
     case 0:
         PlayerAvatar_SetRequestStateBit(v0->playerAvatar, (1 << 4));
         PlayerAvatar_RequestChangeState(v0->playerAvatar);
-        sub_02062DDC(Player_MapObject(v0->playerAvatar));
+        MapObject_SetPauseMovementOff(Player_MapObject(v0->playerAvatar));
         v1->unk_00 = 1;
         break;
     case 1:
@@ -398,7 +388,7 @@ static BOOL sub_02056124(FieldTask *taskMan)
         v1->unk_08 = 0;
         v1->unk_00 = 2;
     case 2:
-        if (gCoreSys.heldKeys & PAD_KEY_LEFT) {
+        if (gSystem.heldKeys & PAD_KEY_LEFT) {
             MapObject *v2 = sub_02056074(v0, 2);
 
             if ((v2 == NULL) || !sub_020560E4(v2)) {
@@ -409,7 +399,7 @@ static BOOL sub_02056124(FieldTask *taskMan)
                 v1->unk_00 = 3;
                 break;
             }
-        } else if (gCoreSys.heldKeys & PAD_KEY_RIGHT) {
+        } else if (gSystem.heldKeys & PAD_KEY_RIGHT) {
             MapObject *v2 = sub_02056074(v0, 3);
 
             if ((v2 == NULL) || !sub_020560E4(v2)) {
@@ -420,11 +410,11 @@ static BOOL sub_02056124(FieldTask *taskMan)
                 v1->unk_00 = 3;
                 break;
             }
-        } else if ((gCoreSys.heldKeys & PAD_KEY_UP) && (v1->unk_04 == 1)) {
+        } else if ((gSystem.heldKeys & PAD_KEY_UP) && (v1->unk_04 == 1)) {
             Player_SetDir(v0->playerAvatar, 0);
             v1->unk_00 = 4;
             break;
-        } else if ((gCoreSys.heldKeys & PAD_KEY_DOWN) && (v1->unk_04 == 0)) {
+        } else if ((gSystem.heldKeys & PAD_KEY_DOWN) && (v1->unk_04 == 0)) {
             v1->unk_00 = 4;
             break;
         }
@@ -453,7 +443,7 @@ static BOOL sub_02056124(FieldTask *taskMan)
         break;
     case 4:
         Player_SetDir(v0->playerAvatar, v1->unk_04);
-        sub_02062DD0(Player_MapObject(v0->playerAvatar));
+        MapObject_SetPauseMovementOn(Player_MapObject(v0->playerAvatar));
         Heap_FreeToHeap(v1);
         return 1;
     }
@@ -463,9 +453,7 @@ static BOOL sub_02056124(FieldTask *taskMan)
 
 void sub_020562AC(FieldSystem *fieldSystem)
 {
-    UnkStruct_020562AC *v0;
-
-    v0 = Heap_AllocFromHeap(HEAP_ID_FIELD_TASK, sizeof(UnkStruct_020562AC));
+    UnkStruct_020562AC *v0 = Heap_AllocFromHeap(HEAP_ID_FIELD_TASK, sizeof(UnkStruct_020562AC));
 
     v0->unk_00 = 0;
     v0->unk_0C = NULL;

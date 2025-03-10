@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/solaceon_town_east_house.h"
 
     .data
 
     ScriptEntry _000C
     ScriptEntry _0109
-    .short 0xFD13
+    ScriptEntryEnd
     End
 
 _000C:
@@ -100,19 +101,19 @@ _0144:
 
 _014F:
     Message 6
-    ScrCmd_1B7 0x8007, 6
+    GetRandom 0x8007, 6
     AddVar 0x8007, 1
     ScrCmd_094 0x8007, 1
-    ScrCmd_1B7 0x8007, 6
+    GetRandom 0x8007, 6
     AddVar 0x8007, 7
     ScrCmd_094 0x8007, 1
-    ScrCmd_1B7 0x8007, 6
+    GetRandom 0x8007, 6
     AddVar 0x8007, 7
     ScrCmd_094 0x8007, 1
-    ScrCmd_1B7 0x8007, 4
+    GetRandom 0x8007, 4
     AddVar 0x8007, 25
     ScrCmd_094 0x8007, 1
-    ScrCmd_1B7 0x8007, 7
+    GetRandom 0x8007, 7
     AddVar 0x8007, 43
     ScrCmd_094 0x8007, 1
     Return

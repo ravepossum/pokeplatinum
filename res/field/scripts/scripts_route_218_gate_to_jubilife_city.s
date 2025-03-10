@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_218_gate_to_jubilife_city.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _001D
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -24,17 +25,17 @@ _001D:
     BufferItemName 0, 0x8004
     GoToIfSet 132, _005E
     Message 1
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00A7
-    GoToIfEq 0x800C, 1, _009C
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00A7
+    GoToIfEq 0x800C, MENU_NO, _009C
     End
 
 _005E:
     BufferItemName 0, 0x8004
     Message 3
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0086
-    GoToIfEq 0x800C, 1, _0091
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0086
+    GoToIfEq 0x800C, MENU_NO, _0091
     End
 
 _0086:

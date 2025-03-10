@@ -3,17 +3,16 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/trainer_score_events.h"
 
 #include "struct_decls/struct_0202855C_decl.h"
 #include "struct_decls/struct_02029894_decl.h"
 #include "struct_decls/struct_020298B0_decl.h"
 
 #include "field/field_system.h"
-#include "overlay005/ov5_021E15F4.h"
+#include "overlay005/map_prop.h"
 #include "overlay005/ov5_021F55CC.h"
 #include "overlay005/ov5_021F5894.h"
-#include "overlay005/struct_ov5_021E1890_decl.h"
 #include "overlay023/ov23_022416A8.h"
 #include "overlay023/ov23_02241F74.h"
 #include "overlay023/ov23_0224340C.h"
@@ -30,7 +29,6 @@
 #include "comm_player_manager.h"
 #include "communication_information.h"
 #include "communication_system.h"
-#include "core_sys.h"
 #include "field_map_change.h"
 #include "field_system.h"
 #include "field_task.h"
@@ -50,6 +48,7 @@
 #include "string_list.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "system_flags.h"
 #include "trainer_info.h"
 #include "unk_02005474.h"
@@ -702,7 +701,7 @@ static void ov23_0224B844(int param0, int param1, BOOL param2)
     ov23_0224ADB0(param1, v2, v3, v4);
 
     v2 += MapObject_GetDxFromDir(v4);
-    v3 += MapObject_GetDyFromDir(v4);
+    v3 += MapObject_GetDzFromDir(v4);
 
     v0.unk_00 = v2;
     v0.unk_02 = v3;
@@ -1013,9 +1012,7 @@ static Menu *ov23_0224BD90(BgConfig *param0, const WindowTemplate *param1, u16 p
 {
     MenuTemplate v0;
     MessageLoader *v1 = ov23_02253E3C(ov23_0224219C());
-    StringList *v2;
-
-    v2 = StringList_New(2, param4);
+    StringList *v2 = StringList_New(2, param4);
 
     StringList_AddFromMessageBank(v2, v1, 38, 0);
     StringList_AddFromMessageBank(v2, v1, 39, 1);
@@ -1370,9 +1367,7 @@ void ov23_0224C434(void)
 
 static void ov23_0224C448(void)
 {
-    int v0, v1;
-
-    v1 = 0;
+    int v0, v1 = 0;
 
     for (v0 = 0; v0 < (7 + 1); v0++) {
         UnkStruct_ov23_0224B098 *v2 = &Unk_ov23_022577AC->unk_12AC[v0];
@@ -1482,7 +1477,7 @@ static void ov23_0224C5B4(SysTask *param0, void *param1)
             v2 = Unk_ov23_022577AC->unk_1308[v0];
 
             if (Unk_ov23_022577AC->unk_12D5[v0] != 0xff) {
-                ov5_021E1674(Unk_ov23_022577AC->unk_12D5[v0], Unk_ov23_022577AC->fieldSystem->unk_A4);
+                MapPropManager_InitOne(Unk_ov23_022577AC->unk_12D5[v0], Unk_ov23_022577AC->fieldSystem->mapPropManager);
             }
 
             {
@@ -1492,7 +1487,7 @@ static void ov23_0224C5B4(SysTask *param0, void *param1)
                 v6.y = 0;
                 v6.z = (v2) * (FX32_ONE * 16) + (FX32_ONE * 8);
 
-                Unk_ov23_022577AC->unk_12D5[v0] = ov5_021E19CC(Unk_ov23_022577AC->fieldSystem->unk_A4, Unk_ov23_022577AC->fieldSystem->unk_30, 429 + v3, &v6, NULL, Unk_ov23_022577AC->fieldSystem->unk_50);
+                Unk_ov23_022577AC->unk_12D5[v0] = MapPropManager_LoadOne(Unk_ov23_022577AC->fieldSystem->mapPropManager, Unk_ov23_022577AC->fieldSystem->areaDataManager, 429 + v3, &v6, NULL, Unk_ov23_022577AC->fieldSystem->mapPropAnimMan);
             }
         }
     }
@@ -1501,7 +1496,7 @@ static void ov23_0224C5B4(SysTask *param0, void *param1)
 static void ov23_0224C6AC(int param0)
 {
     if (Unk_ov23_022577AC->unk_12D5[param0] != 0xff) {
-        ov5_021E1674(Unk_ov23_022577AC->unk_12D5[param0], Unk_ov23_022577AC->fieldSystem->unk_A4);
+        MapPropManager_InitOne(Unk_ov23_022577AC->unk_12D5[param0], Unk_ov23_022577AC->fieldSystem->mapPropManager);
 
         Unk_ov23_022577AC->unk_12D5[param0] = 0xff;
         Unk_ov23_022577AC->unk_132A[param0] = -1;
@@ -1586,7 +1581,7 @@ static BOOL ov23_0224C790(FieldTask *param0)
         break;
     case 1:
         sub_0200F2C0();
-        StartScreenTransition(2, 16, 18, 0x0, 6, 1, 4);
+        StartScreenTransition(2, 16, 18, 0x0, 6, 1, HEAP_ID_FIELD);
         ov23_0224942C(fieldSystem->unk_6C);
         Sound_PlayEffect(1539);
         v1->unk_0C++;
@@ -1620,7 +1615,7 @@ static BOOL ov23_0224C790(FieldTask *param0)
     case 6:
         fieldSystem->unk_6C = ov23_02249404(fieldSystem);
         sub_0200F2C0();
-        StartScreenTransition(1, 17, 19, 0x0, 6, 1, 4);
+        StartScreenTransition(1, 17, 19, 0x0, 6, 1, HEAP_ID_FIELD);
         (v1->unk_0C)++;
         break;
     case 7:
@@ -1637,8 +1632,8 @@ static BOOL ov23_0224C790(FieldTask *param0)
         CommSys_EnableSendMovementData();
         sub_020594FC();
 
-        Graphics_LoadPalette(50, 52, 0, 10 * 0x20, 4 * 0x20, 4);
-        LoadStandardWindowGraphics(fieldSystem->bgConfig, 3, 1024 - (18 + 12) - 9, 11, 2, 4);
+        Graphics_LoadPalette(50, 52, 0, 10 * 0x20, 4 * 0x20, HEAP_ID_FIELD);
+        LoadStandardWindowGraphics(fieldSystem->bgConfig, 3, 1024 - (18 + 12) - 9, 11, 2, HEAP_ID_FIELD);
 
         if (v1->unk_2D) {
             sub_020594EC();
@@ -1677,7 +1672,7 @@ static BOOL ov23_0224C790(FieldTask *param0)
         break;
     case 12:
         if (ov23_02254238(ov23_0224219C()) == 0) {
-            if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+            if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
                 v1->unk_0C = 13;
                 ov23_02254044(ov23_0224219C());
                 CommPlayer_SetDir(0);
@@ -1712,7 +1707,7 @@ static BOOL ov23_0224C790(FieldTask *param0)
         return 1;
     case 8:
         if (ov23_02254238(ov23_0224219C()) == 0) {
-            if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+            if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
                 v1->unk_0C = 13;
                 ov23_02254044(ov23_0224219C());
                 return 0;
@@ -1803,7 +1798,7 @@ static void ov23_0224CB1C(SysTask *param0, void *param1)
         break;
     case 4:
         if (ov23_02254238(ov23_0224219C()) == 0) {
-            if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+            if (gSystem.pressedKeys & PAD_BUTTON_A) {
                 v4 = 1;
             }
         }
@@ -2015,10 +2010,10 @@ void ov23_0224CF18(int param0, int param1, void *param2, void *param3)
             sub_02029824(v1);
         }
 
-        if ((v0->unk_01 == 3) || (v0->unk_01 == 4)) {
-            void *v6 = sub_0202BE20(11);
+        if (v0->unk_01 == 3 || v0->unk_01 == 4) {
+            void *journalEntryLocationEvent = JournalEntry_CreateEventBuiltSecretBase(HEAP_ID_FIELDMAP);
 
-            Journal_SaveData(Unk_ov23_022577AC->fieldSystem->journal, v6, 1);
+            JournalEntry_SaveData(Unk_ov23_022577AC->fieldSystem->journalEntry, journalEntryLocationEvent, JOURNAL_LOCATION);
             GameRecords_IncrementTrainerScore(SaveData_GetGameRecordsPtr(Unk_ov23_022577AC->fieldSystem->saveData), TRAINER_SCORE_EVENT_UNK_35);
         }
     }
@@ -2337,12 +2332,12 @@ void ov23_0224D530(int param0)
 static void ov23_0224D54C(UnkStruct_ov23_0224D54C *param0)
 {
     VecFx32 v0;
-    UnkStruct_ov5_021E1890 *v1 = ov5_021E18C4(Unk_ov23_022577AC->fieldSystem->unk_A4, 0);
+    MapProp *v1 = MapPropManager_GetLoadedProp(Unk_ov23_022577AC->fieldSystem->mapPropManager, 0);
 
-    v0 = ov5_021E1894(v1);
+    v0 = MapProp_GetPosition(v1);
 
-    ov5_021E1674(0, Unk_ov23_022577AC->fieldSystem->unk_A4);
-    ov5_021E19CC(Unk_ov23_022577AC->fieldSystem->unk_A4, Unk_ov23_022577AC->fieldSystem->unk_30, 317 + param0->unk_05, &v0, NULL, Unk_ov23_022577AC->fieldSystem->unk_50);
+    MapPropManager_InitOne(0, Unk_ov23_022577AC->fieldSystem->mapPropManager);
+    MapPropManager_LoadOne(Unk_ov23_022577AC->fieldSystem->mapPropManager, Unk_ov23_022577AC->fieldSystem->areaDataManager, 317 + param0->unk_05, &v0, NULL, Unk_ov23_022577AC->fieldSystem->mapPropAnimMan);
 }
 
 static void ov23_0224D5A8(SysTask *param0, void *param1)
@@ -2364,7 +2359,7 @@ static void ov23_0224D5BC(SysTask *param0, void *param1)
         break;
     case 1:
         if (ov23_02254238(ov23_022421AC()) == 0) {
-            if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+            if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
                 int v1 = v0->unk_05;
 
                 ov23_02253F40(ov23_022421AC(), 14 + v1, 0, NULL);
@@ -2374,7 +2369,7 @@ static void ov23_0224D5BC(SysTask *param0, void *param1)
         break;
     case 2:
         if (ov23_02254238(ov23_022421AC()) == 0) {
-            if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+            if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
                 ov23_0224D54C(v0);
                 v0->unk_00 = 4;
                 ov23_02254044(ov23_022421AC());
@@ -2383,7 +2378,7 @@ static void ov23_0224D5BC(SysTask *param0, void *param1)
         }
         break;
     case 3:
-        StartScreenTransition(2, 0, 0, 0x0, 6, 1, 4);
+        StartScreenTransition(2, 0, 0, 0x0, 6, 1, HEAP_ID_FIELD);
         break;
     case 4:
         Heap_FreeToHeap(param1);
@@ -2411,7 +2406,7 @@ void ov23_0224D6AC(int param0, int param1, void *param2, void *param3)
     SysTask *v2;
 
     if (v1[0] == CommSys_CurNetId()) {
-        UnkStruct_ov23_0224D54C *v3 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov23_0224D54C));
+        UnkStruct_ov23_0224D54C *v3 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov23_0224D54C));
 
         MI_CpuClear8(v3, sizeof(v3));
 
@@ -2645,7 +2640,7 @@ BOOL ov23_0224D9AC(int param0, BOOL param1)
     GF_ASSERT((v2 != 0) && (v3 != 0));
 
     v2 += MapObject_GetDxFromDir(v4);
-    v3 += MapObject_GetDyFromDir(v4);
+    v3 += MapObject_GetDzFromDir(v4);
 
     Unk_ov23_022577AC->unk_13D6 = 0;
 

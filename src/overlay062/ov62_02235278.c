@@ -16,11 +16,11 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "palette.h"
+#include "sprite_system.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "touch_screen.h"
 #include "unk_02005474.h"
-#include "unk_0200C6E4.h"
 #include "unk_0200F174.h"
 #include "unk_02012744.h"
 #include "unk_0208B284.h"
@@ -122,7 +122,7 @@ static BOOL ov62_02235324(UnkStruct_0208C06C *param0)
         if (param0->unk_0C != 0) {
             param0->unk_0C -= 4;
         } else {
-            StartScreenTransition(0, 0, 0, 0, 6, 1, 102);
+            StartScreenTransition(0, 0, 0, 0, 6, 1, HEAP_ID_102);
             param0->unk_08++;
         }
         break;
@@ -140,9 +140,7 @@ static BOOL ov62_02235324(UnkStruct_0208C06C *param0)
 
 static BOOL ov62_02235444(UnkStruct_0208C06C *param0)
 {
-    BOOL v0;
-
-    v0 = ov62_02235008(param0);
+    BOOL v0 = ov62_02235008(param0);
 
     if (v0) {
         if (param0->unk_14.unk_30 == 1) {
@@ -230,14 +228,14 @@ static BOOL ov62_02235580(UnkStruct_0208C06C *param0)
     case 0: {
         int v1;
         UnkStruct_ov62_022354A4 *v2;
-        UnkStruct_ov62_02235580 *v3 = Heap_AllocFromHeap(102, sizeof(UnkStruct_ov62_02235580));
+        UnkStruct_ov62_02235580 *v3 = Heap_AllocFromHeap(HEAP_ID_102, sizeof(UnkStruct_ov62_02235580));
 
         MI_CpuFill8(v3, 0, sizeof(UnkStruct_ov62_02235580));
         param0->unk_860 = v3;
         v3->unk_08 = 0;
 
         for (v1 = 0; v1 < param0->unk_534.unk_1AC; v1++) {
-            v2 = Heap_AllocFromHeap(102, sizeof(UnkStruct_ov62_022354A4));
+            v2 = Heap_AllocFromHeap(HEAP_ID_102, sizeof(UnkStruct_ov62_022354A4));
             memset(v2, 0, sizeof(UnkStruct_ov62_022354A4));
             ov62_02230E74(param0->unk_534.unk_C8[v1].unk_00, &v2->unk_00, &v2->unk_02);
 
@@ -289,7 +287,7 @@ static BOOL ov62_02235580(UnkStruct_0208C06C *param0)
                     v0->unk_08 = 1;
 
                     do {
-                        v5 = Heap_AllocFromHeap(102, sizeof(UnkStruct_ov62_022354A4));
+                        v5 = Heap_AllocFromHeap(HEAP_ID_102, sizeof(UnkStruct_ov62_022354A4));
                         memset(v5, 0, sizeof(UnkStruct_ov62_022354A4));
                         ov62_02230E74(param0->unk_534.unk_00[v4].unk_00, &v5->unk_00, &v5->unk_02);
 
@@ -303,10 +301,10 @@ static BOOL ov62_02235580(UnkStruct_0208C06C *param0)
                             v5->unk_04 = v5->unk_00;
                             v5->unk_06 = (25 + (36 * (5 - 1)));
 
-                            sub_0200D364(param0->unk_534.unk_00[v4].unk_00, param0->unk_818[param0->unk_534.unk_1B0].unk_0C);
+                            ManagedSprite_SetAnim(param0->unk_534.unk_00[v4].unk_00, param0->unk_818[param0->unk_534.unk_1B0].unk_0C);
                             ov62_02230FC8(param0, &param0->unk_534.unk_00[param0->unk_534.unk_1A4], param0->unk_818[param0->unk_534.unk_1B0].unk_08, &param0->unk_818[param0->unk_534.unk_1B0]);
                             sub_020129D0(param0->unk_534.unk_00[param0->unk_534.unk_1A4].unk_14, 1);
-                            SpriteActor_EnableObject(param0->unk_534.unk_00[v4].unk_00, 1);
+                            ManagedSprite_SetDrawFlag(param0->unk_534.unk_00[v4].unk_00, 1);
                         } else {
                             v5->unk_04 = v5->unk_00 - 4;
                             v5->unk_06 = (16 * (param0->unk_534.unk_1A4 - v4)) + (25 + (36 * (5 - (param0->unk_534.unk_1A4 - v4) - 1)));
@@ -324,9 +322,9 @@ static BOOL ov62_02235580(UnkStruct_0208C06C *param0)
 
             for (v4 = 0; v4 < param0->unk_534.unk_1A4; v4++) {
                 if (v4 == param0->unk_534.unk_1A4) {
-                    sub_0200D430(param0->unk_534.unk_00[v4].unk_00, (2 - 1));
+                    ManagedSprite_SetExplicitPaletteOffset(param0->unk_534.unk_00[v4].unk_00, (2 - 1));
                 } else {
-                    sub_0200D430(param0->unk_534.unk_00[v4].unk_00, (3 - 1));
+                    ManagedSprite_SetExplicitPaletteOffset(param0->unk_534.unk_00[v4].unk_00, (3 - 1));
                 }
             }
         }
@@ -364,13 +362,13 @@ static BOOL ov62_02235854(UnkStruct_0208C06C *param0)
         int v1;
         UnkStruct_ov62_022354A4 *v2;
 
-        v0 = Heap_AllocFromHeap(102, sizeof(UnkStruct_ov62_02235580));
+        v0 = Heap_AllocFromHeap(HEAP_ID_102, sizeof(UnkStruct_ov62_02235580));
         MI_CpuFill8(v0, 0, sizeof(UnkStruct_ov62_02235580));
         param0->unk_860 = v0;
         v1 = 0;
 
         do {
-            v2 = Heap_AllocFromHeap(102, sizeof(UnkStruct_ov62_022354A4));
+            v2 = Heap_AllocFromHeap(HEAP_ID_102, sizeof(UnkStruct_ov62_022354A4));
 
             memset(v2, 0, sizeof(UnkStruct_ov62_022354A4));
             ov62_02230E74(param0->unk_534.unk_00[v1].unk_00, &v2->unk_00, &v2->unk_02);
@@ -406,7 +404,7 @@ static BOOL ov62_02235854(UnkStruct_0208C06C *param0)
 
             if (v0->unk_0C == 1) {
                 for (v3 = 0; v3 < param0->unk_534.unk_1AC; v3++) {
-                    v4 = Heap_AllocFromHeap(102, sizeof(UnkStruct_ov62_022354A4));
+                    v4 = Heap_AllocFromHeap(HEAP_ID_102, sizeof(UnkStruct_ov62_022354A4));
                     memset(v4, 0, sizeof(UnkStruct_ov62_022354A4));
                     ov62_02230E74(param0->unk_534.unk_C8[v3].unk_00, &v4->unk_00, &v4->unk_02);
 
@@ -432,9 +430,9 @@ static BOOL ov62_02235854(UnkStruct_0208C06C *param0)
 
                 for (v3 = 0; v3 < param0->unk_534.unk_1A4; v3++) {
                     if (v3 == param0->unk_534.unk_1A4 - 1) {
-                        sub_0200D430(param0->unk_534.unk_00[v3].unk_00, (2 - 1));
+                        ManagedSprite_SetExplicitPaletteOffset(param0->unk_534.unk_00[v3].unk_00, (2 - 1));
                     } else {
-                        sub_0200D430(param0->unk_534.unk_00[v3].unk_00, (3 - 1));
+                        ManagedSprite_SetExplicitPaletteOffset(param0->unk_534.unk_00[v3].unk_00, (3 - 1));
                     }
                 }
             }

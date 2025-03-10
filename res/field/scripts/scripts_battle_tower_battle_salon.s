@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/battle_tower_battle_salon.h"
 
     .data
 
@@ -12,7 +13,7 @@
     ScriptEntry _015D
     ScriptEntry _018D
     ScriptEntry _0204
-    .short 0xFD13
+    ScriptEntryEnd
 
 _002A:
     GoToIfUnset 227, _0121
@@ -106,8 +107,8 @@ _01AC:
     FacePlayer
     BufferPlayerName 0
     Message 1
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _01D4
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _01D4
     Message 0
     CloseMessage
     ReleaseAll
@@ -141,10 +142,10 @@ _0204:
 
 _0245:
     ScrCmd_1DE 0x4009, 0, 0x8004, 0x8005
-    ScrCmd_0DA 0, 0x8004, 0, 0
+    BufferSpeciesNameFromVar 0, 0x8004, 0, 0
     BufferMoveName 1, 0x8005
     ScrCmd_1DE 0x4009, 1, 0x8004, 0x8005
-    ScrCmd_0DA 2, 0x8004, 0, 0
+    BufferSpeciesNameFromVar 2, 0x8004, 0, 0
     BufferMoveName 3, 0x8005
     Return
 
@@ -161,8 +162,8 @@ _0275:
     ScrCmd_341 2, 0x8004, 0, 0
     BufferMoveName 3, 0x8005
     Message 6
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _02DD
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _02DD
 _02D2:
     Message 7
     WaitABXPadPress
@@ -189,8 +190,8 @@ _02FE:
     Call _0245
     BufferPlayerName 4
     Message 15
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0341
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0341
 _0336:
     Message 16
     WaitABXPadPress
@@ -217,8 +218,8 @@ _0365:
     SetVar 0x4009, 2
     Call _0245
     Message 3
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _03A5
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _03A5
 _039A:
     Message 4
     WaitABXPadPress
@@ -244,8 +245,8 @@ _03C6:
     SetVar 0x4009, 3
     Call _0245
     Message 12
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0406
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0406
 _03FB:
     Message 13
     WaitABXPadPress
@@ -271,8 +272,8 @@ _0427:
     SetVar 0x4009, 4
     Call _0245
     Message 9
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0467
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0467
 _045C:
     Message 10
     WaitABXPadPress
@@ -307,19 +308,19 @@ _04A6:
     ApplyMovement 0, _06C8
     WaitMovement
     ScrCmd_1B1 0xFF
-    ApplyMovement 0xFF, _06B8
+    ApplyMovement LOCALID_PLAYER, _06B8
     WaitMovement
     Call _049B
     ApplyMovement 0, _06D8
     WaitMovement
-    ApplyMovement 0xFF, _06C0
+    ApplyMovement LOCALID_PLAYER, _06C0
     WaitMovement
     Return
 
 _04E0:
     Call _0488
     ApplyMovement 0, _070C
-    ApplyMovement 0xFF, _0700
+    ApplyMovement LOCALID_PLAYER, _0700
     WaitMovement
     Call _049B
     Return
@@ -445,7 +446,7 @@ _06A3:
 
     .balign 4, 0
 _06B8:
-    MoveAction_00D 2
+    MoveAction_013 2
     EndMovement
 
     .balign 4, 0
@@ -455,40 +456,40 @@ _06C0:
 
     .balign 4, 0
 _06C8:
-    MoveAction_00D 2
-    MoveAction_00E
+    MoveAction_013 2
+    MoveAction_014
     MoveAction_003
     EndMovement
 
     .balign 4, 0
 _06D8:
-    MoveAction_00F
+    MoveAction_015
     MoveAction_001
     EndMovement
 
     .balign 4, 0
 _06E4:
     MoveAction_001
-    MoveAction_012
+    MoveAction_018
     MoveAction_003
     EndMovement
 
     .balign 4, 0
 _06F4:
-    MoveAction_013
+    MoveAction_019
     MoveAction_001
     EndMovement
 
     .balign 4, 0
 _0700:
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _070C:
-    MoveAction_00C
-    MoveAction_045
+    MoveAction_012
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
@@ -498,79 +499,79 @@ _0718:
 
     .balign 4, 0
 _0720:
-    MoveAction_010 2
-    MoveAction_045
+    MoveAction_016 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _072C:
-    MoveAction_011
-    MoveAction_012 3
-    MoveAction_010 7
-    MoveAction_012 2
+    MoveAction_017
+    MoveAction_018 3
+    MoveAction_016 7
+    MoveAction_018 2
     EndMovement
 
     .balign 4, 0
 _0740:
-    MoveAction_012
-    MoveAction_010
-    MoveAction_012 2
-    MoveAction_010 5
-    MoveAction_012 2
+    MoveAction_018
+    MoveAction_016
+    MoveAction_018 2
+    MoveAction_016 5
+    MoveAction_018 2
     EndMovement
 
     .balign 4, 0
 _0758:
-    MoveAction_013
-    MoveAction_010 2
-    MoveAction_013 3
+    MoveAction_019
+    MoveAction_016 2
+    MoveAction_019 3
     EndMovement
 
     .balign 4, 0
 _0768:
-    MoveAction_010 2
-    MoveAction_013 4
+    MoveAction_016 2
+    MoveAction_019 4
     EndMovement
 
     .balign 4, 0
 _0774:
-    MoveAction_012
-    MoveAction_010 4
-    MoveAction_012 2
+    MoveAction_018
+    MoveAction_016 4
+    MoveAction_018 2
     EndMovement
 
     .balign 4, 0
 _0784:
-    MoveAction_010 4
-    MoveAction_012 3
+    MoveAction_016 4
+    MoveAction_018 3
     EndMovement
 
     .balign 4, 0
 _0790:
-    MoveAction_011
-    MoveAction_013 4
-    MoveAction_010 7
-    MoveAction_013 2
+    MoveAction_017
+    MoveAction_019 4
+    MoveAction_016 7
+    MoveAction_019 2
     EndMovement
 
     .balign 4, 0
 _07A4:
-    MoveAction_010
-    MoveAction_013 4
-    MoveAction_010 5
-    MoveAction_013 2
+    MoveAction_016
+    MoveAction_019 4
+    MoveAction_016 5
+    MoveAction_019 2
     EndMovement
 
     .balign 4, 0
 _07B8:
-    MoveAction_012
-    MoveAction_010 5
-    MoveAction_013 2
+    MoveAction_018
+    MoveAction_016 5
+    MoveAction_019 2
     EndMovement
 
     .balign 4, 0
 _07C8:
-    MoveAction_013 3
-    MoveAction_010 5
-    MoveAction_012 2
+    MoveAction_019 3
+    MoveAction_016 5
+    MoveAction_018 2
     EndMovement

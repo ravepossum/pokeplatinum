@@ -41,9 +41,7 @@ static const UnkStruct_ov101_021D86B0 Unk_ov5_02200B68;
 
 void *ov5_021F5894(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_021F58C0 *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_021F58C0)), 0, 0);
+    UnkStruct_021F58C0 *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_021F58C0)), 0, 0);
     v0->unk_00 = param0;
 
     ov5_021F58C0(v0);
@@ -79,9 +77,9 @@ void ov5_021F58FC(MapObject *param0, int param1, int param2, int param3)
     v3.unk_00 = ov5_021DF578(param0);
     v3.unk_04 = ov5_021DF55C(v3.unk_00, 10);
 
-    MapObject_PosVectorOut(param0, &v4);
+    MapObject_GetPosPtr(param0, &v4);
 
-    v2 = MapObject_Dir(param0);
+    v2 = MapObject_GetFacingDir(param0);
 
     switch (v2) {
     case 0:

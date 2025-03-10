@@ -3,9 +3,9 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/sprite_decl.h"
 #include "struct_decls/struct_02007768_decl.h"
 #include "struct_defs/archived_sprite.h"
+#include "struct_defs/pokemon_sprite.h"
 #include "struct_defs/struct_020951B0.h"
 #include "struct_defs/struct_020954F0.h"
 #include "struct_defs/struct_02095C48.h"
@@ -619,10 +619,8 @@ void sub_02095380(const UnkStruct_ov6_02248BE8 *param0, Pokemon *param1, int par
 {
     int v0;
     u16 v1;
-    u32 v2;
-
-    v2 = sub_02074128(param0->unk_14, param0->unk_20_12, 0);
-    Pokemon_InitWith(param1, param0->unk_14, 10, 32, TRUE, v2, OTID_NOT_SHINY, 0xf0f0f0f);
+    u32 v2 = sub_02074128(param0->unk_14, param0->unk_20_12, 0);
+    Pokemon_InitWith(param1, param0->unk_14, 10, INIT_IVS_RANDOM, TRUE, v2, OTID_NOT_SHINY, 0xf0f0f0f);
 
     for (v0 = 0; v0 < 4; v0++) {
         v1 = param0->unk_0C[v0];
@@ -664,10 +662,10 @@ void sub_02095380(const UnkStruct_ov6_02248BE8 *param0, Pokemon *param1, int par
     }
 }
 
-Sprite *sub_02095484(UnkStruct_02007768 *param0, int param1, Pokemon *param2, int param3, UnkStruct_ov16_0223E0C8 *param4, int param5, int param6, int param7, int param8)
+PokemonSprite *sub_02095484(UnkStruct_02007768 *param0, int param1, Pokemon *param2, int param3, UnkStruct_ov16_0223E0C8 *param4, int heapID, int param6, int param7, int param8)
 {
     ArchivedSprite v0;
-    Sprite *v1;
+    PokemonSprite *v1;
     int v2, v3, v4;
 
     Pokemon_BuildArchivedSprite(&v0, param2, param3);
@@ -676,7 +674,7 @@ Sprite *sub_02095484(UnkStruct_02007768 *param0, int param1, Pokemon *param2, in
 
     if (param4 != NULL) {
         GF_ASSERT(param4->unk_00 != NULL);
-        sub_02013610(v0.archive, v0.character, param5, param4->unk_00);
+        sub_02013610(v0.archive, v0.character, heapID, param4->unk_00);
         param4->unk_08 = v0.palette;
         param4->unk_04 = v0.archive;
     }

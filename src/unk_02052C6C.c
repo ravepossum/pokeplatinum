@@ -3,9 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/game_records.h"
 
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/struct_0202DF8C.h"
 #include "struct_defs/struct_0203E234.h"
 #include "struct_defs/struct_0203E274.h"
@@ -15,6 +14,7 @@
 #include "savedata/save_table.h"
 
 #include "bg_window.h"
+#include "field_message.h"
 #include "field_overworld_state.h"
 #include "field_task.h"
 #include "game_options.h"
@@ -25,6 +25,7 @@
 #include "message.h"
 #include "message_util.h"
 #include "party.h"
+#include "pokedex.h"
 #include "render_window.h"
 #include "rtc.h"
 #include "save_player.h"
@@ -35,12 +36,10 @@
 #include "trainer_info.h"
 #include "unk_02005474.h"
 #include "unk_0200F174.h"
-#include "unk_0202631C.h"
 #include "unk_0202DF8C.h"
 #include "unk_0203D1B8.h"
 #include "unk_02054884.h"
 #include "unk_020559DC.h"
-#include "unk_0205D8CC.h"
 #include "unk_02096420.h"
 #include "vars_flags.h"
 
@@ -99,9 +98,9 @@ static BOOL sub_02052CBC(FieldTask *param0)
         break;
     case 1:
         if (!FieldSystem_IsRunningApplication(fieldSystem)) {
-            Heap_Create(3, 4, 0x20000);
+            Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_FIELD, 0x20000);
             sub_02052F28(fieldSystem, v3);
-            StartScreenTransition(3, 1, 1, 0x0, 8, 1, 32);
+            StartScreenTransition(3, 1, 1, 0x0, 8, 1, HEAP_ID_FIELD_TASK);
             (*v4)++;
         }
         break;
@@ -146,7 +145,7 @@ static BOOL sub_02052CBC(FieldTask *param0)
         }
         break;
     case 7:
-        StartScreenTransition(3, 0, 0, 0x0, 8, 1, 32);
+        StartScreenTransition(3, 0, 0, 0x0, 8, 1, HEAP_ID_FIELD_TASK);
         (*v4)++;
         break;
     case 8:
@@ -159,7 +158,7 @@ static BOOL sub_02052CBC(FieldTask *param0)
     case 9:
         if (!FieldSystem_IsRunningApplication(fieldSystem)) {
             Heap_FreeToHeap(v3);
-            Heap_Destroy(4);
+            Heap_Destroy(HEAP_ID_FIELD);
             OS_ResetSystem(0);
             return 1;
         }
@@ -192,7 +191,7 @@ void sub_02052E58(FieldTask *param0)
     v5->unk_04.playTime = SaveData_GetPlayTime(fieldSystem->saveData);
     v5->unk_10.unk_00 = TrainerInfo_Gender(SaveData_GetTrainerInfo(fieldSystem->saveData));
     v5->unk_10.unk_04 = SystemFlag_CheckGameCompleted(v3);
-    v5->unk_10.unk_08 = SaveData_Pokedex(fieldSystem->saveData);
+    v5->unk_10.unk_08 = SaveData_GetPokedex(fieldSystem->saveData);
 
     if (SystemFlag_CheckGameCompleted(v3) == 0) {
         sub_02055C2C(fieldSystem);
@@ -260,7 +259,7 @@ static void sub_02052F28(FieldSystem *fieldSystem, UnkStruct_0205300C *param1)
     SetAllGraphicsModes(&v1);
     Bg_MaskPalette(3, 0x0);
     Bg_InitFromTemplate(fieldSystem->bgConfig, 3, &v2, 0);
-    Bg_ClearTilesRange(3, 0x20, 0, 32);
+    Bg_ClearTilesRange(3, 0x20, 0, HEAP_ID_FIELD_TASK);
     Bg_FillTilemapRect(fieldSystem->bgConfig, 3, 0x0, 0, 0, 32, 32, 17);
     Bg_CopyTilemapBufferToVRAM(fieldSystem->bgConfig, 3);
 }
@@ -287,17 +286,17 @@ static void sub_0205300C(UnkStruct_0205300C *param0)
 {
     Strbuf_Free(param0->unk_2C);
     DestroyWaitDial(param0->unk_30);
-    sub_0205D988(&param0->unk_1C);
+    FieldMessage_ClearWindow(&param0->unk_1C);
 }
 
 static void sub_02053028(FieldSystem *fieldSystem, UnkStruct_0205300C *param1, int param2)
 {
-    MessageLoader *v0 = MessageLoader_Init(1, 26, 213, 4);
+    MessageLoader *v0 = MessageLoader_Init(1, 26, 213, HEAP_ID_FIELD);
 
     if (param2 == 2) {
         StringTemplate *v1;
 
-        v1 = StringTemplate_Default(4);
+        v1 = StringTemplate_Default(HEAP_ID_FIELD);
         StringTemplate_SetPlayerName(v1, 0, SaveData_GetTrainerInfo(fieldSystem->saveData));
         param1->unk_2C = MessageUtil_ExpandedStrbuf(v1, v0, 16, 4);
         StringTemplate_Free(v1);

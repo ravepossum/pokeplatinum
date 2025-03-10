@@ -9,10 +9,10 @@
 #include "overlay087/struct_ov87_021D106C_decl.h"
 #include "overlay087/struct_ov87_021D12C0.h"
 
-#include "core_sys.h"
 #include "heap.h"
 #include "overlay_manager.h"
 #include "strbuf.h"
+#include "system.h"
 #include "unk_0202DF8C.h"
 
 typedef struct UnkStruct_ov87_021D0D80_t {
@@ -35,10 +35,10 @@ int ov87_021D0D80(OverlayManager *param0, int *param1)
 {
     UnkStruct_ov87_021D0D80 *v0;
 
-    Heap_Create(3, 60, 16384);
-    Heap_Create(3, 61, 114688);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_60, 16384);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_61, 114688);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov87_021D0D80), 60);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov87_021D0D80), HEAP_ID_60);
 
     if (v0) {
         v0->unk_CC = OverlayManager_Args(param0);
@@ -61,8 +61,8 @@ int ov87_021D0DFC(OverlayManager *param0, int *param1)
     ov87_021D1140(v0->unk_C8);
     ov87_021D1000(&(v0->unk_00));
     OverlayManager_FreeData(param0);
-    Heap_Destroy(61);
-    Heap_Destroy(60);
+    Heap_Destroy(HEAP_ID_61);
+    Heap_Destroy(HEAP_ID_60);
 
     return 1;
 }
@@ -81,33 +81,33 @@ int ov87_021D0E2C(OverlayManager *param0, int *param1)
 
     switch (*param1) {
     case 0:
-        if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        if (gSystem.pressedKeys & PAD_BUTTON_B) {
             ov87_021D0F38(v0, 1);
             (*param1)++;
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             v0->unk_00.unk_1C ^= 1;
             ov87_021D0F38(v0, 4);
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_KEY_LEFT) {
+        if (gSystem.pressedKeys & PAD_KEY_LEFT) {
             if (ov87_021D0F4C(v0)) {
                 ov87_021D0F38(v0, 3);
             }
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_KEY_RIGHT) {
+        if (gSystem.pressedKeys & PAD_KEY_RIGHT) {
             if (ov87_021D0F88(v0)) {
                 ov87_021D0F38(v0, 3);
             }
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_KEY_UP) {
+        if (gSystem.pressedKeys & PAD_KEY_UP) {
             if (--(v0->unk_00.unk_18) < 0) {
                 if (ov87_021D0F4C(v0)) {
                     v0->unk_00.unk_18 = v0->unk_00.unk_14 - 1;
@@ -119,7 +119,7 @@ int ov87_021D0E2C(OverlayManager *param0, int *param1)
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_KEY_DOWN) {
+        if (gSystem.pressedKeys & PAD_KEY_DOWN) {
             if (++(v0->unk_00.unk_18) >= v0->unk_00.unk_14) {
                 if (ov87_021D0F88(v0)) {
                     ov87_021D0F38(v0, 3);
@@ -169,8 +169,8 @@ static void ov87_021D0FC4(UnkStruct_ov87_021D12C0 *param0, HallOfFame *param1)
     int v0;
 
     for (v0 = 0; v0 < 6; v0++) {
-        param0->unk_20[v0].unk_00 = Strbuf_Init(12, 60);
-        param0->unk_20[v0].unk_04 = Strbuf_Init(8, 60);
+        param0->unk_20[v0].unk_00 = Strbuf_Init(12, HEAP_ID_60);
+        param0->unk_20[v0].unk_04 = Strbuf_Init(8, HEAP_ID_60);
     }
 
     param0->unk_1C = UnkEnum_ov87_021D12C0_0;

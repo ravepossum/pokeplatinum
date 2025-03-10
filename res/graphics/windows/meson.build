@@ -78,13 +78,13 @@ pl_winframe_narc = custom_target('pl_winframe.narc',
         pl_winframe_order,
     ],
     command: [
-        knarc_exe,
-        '-d', '@PRIVATE_DIR@',
-        '-p', '@OUTPUT0@',
-        '--order', pl_winframe_order,
+        narc_exe, 'create',
         '--naix',
+        '--order', pl_winframe_order,
+        '--output', '@OUTPUT0@',
+        '@PRIVATE_DIR@',
     ]
 )
 
-nitrofs_files += pl_winframe_narc[0]
+nitrofs_files += pl_winframe_narc
 naix_headers += pl_winframe_narc[1]

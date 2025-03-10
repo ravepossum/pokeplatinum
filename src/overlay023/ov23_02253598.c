@@ -17,7 +17,6 @@
 #include "bg_window.h"
 #include "comm_player_manager.h"
 #include "communication_system.h"
-#include "core_sys.h"
 #include "game_records.h"
 #include "heap.h"
 #include "list_menu.h"
@@ -29,6 +28,7 @@
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "text.h"
 #include "trainer_info.h"
 #include "unk_02005474.h"
@@ -67,7 +67,7 @@ void ov23_02253598(UnkStruct_ov23_02253598 *param0, SecretBaseRecord *param1, Sa
     Unk_ov23_022577BC = param0;
     Unk_ov23_022577BC->unk_08 = param2;
     Unk_ov23_022577BC->unk_0C = param1;
-    Unk_ov23_022577BC->unk_10 = sub_0202855C(15);
+    Unk_ov23_022577BC->unk_10 = sub_0202855C(HEAP_ID_COMMUNICATION);
 
     CommSys_Seed(&Unk_ov23_022577BC->unk_14);
 }
@@ -203,7 +203,7 @@ static void ov23_0225381C(SysTask *param0, void *param1)
 {
     UnkStruct_ov23_022537D4 *v0 = param1;
 
-    if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+    if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
         ov23_022537D4(param0, param1);
     }
 }
@@ -214,7 +214,7 @@ void ov23_02253834(BgConfig *param0, TrainerInfo *param1, UnkFuncPtr_ov23_022538
     MessageLoader *v1;
     ListMenuTemplate v2;
     int v3 = 10;
-    UnkStruct_ov23_022537D4 *v4 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov23_022537D4));
+    UnkStruct_ov23_022537D4 *v4 = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov23_022537D4));
 
     MI_CpuClear8(v4, sizeof(UnkStruct_ov23_022537D4));
 
@@ -224,7 +224,7 @@ void ov23_02253834(BgConfig *param0, TrainerInfo *param1, UnkFuncPtr_ov23_022538
     Window_Add(param0, &v4->unk_08, 3, 4, 2, 24, 19, 13, 1);
     Window_DrawStandardFrame(&v4->unk_08, 1, 1024 - (18 + 12) - 9, 11);
 
-    v1 = MessageLoader_Init(0, 26, 640, 4);
+    v1 = MessageLoader_Init(0, 26, 640, HEAP_ID_FIELD);
     Window_FillTilemap(&v4->unk_08, 15);
 
     if (param4) {
@@ -248,7 +248,7 @@ void ov23_022538FC(int param0)
 {
     int v0 = sub_02028558();
     int v1 = GameRecords_GetTrainerScore(SaveData_GetGameRecordsPtr(Unk_ov23_022577BC->unk_08));
-    u8 *v2 = Heap_AllocFromHeap(4, v0 + 1);
+    u8 *v2 = Heap_AllocFromHeap(HEAP_ID_FIELD, v0 + 1);
 
     MI_CpuClear8(v2, v0 + 1);
     v2[0] = param0;
@@ -318,7 +318,7 @@ void ov23_02253A00(SecretBaseRecord *param0, int param1)
     sub_020594FC();
     ov23_02253DFC(ov23_022421BC(), 640, 1);
 
-    v1 = sub_0202855C(4);
+    v1 = sub_0202855C(HEAP_ID_FIELD);
     MI_CpuCopy8(param0, v1, sub_02028558());
 
     v0 = v2(v1);
@@ -343,9 +343,9 @@ static void ov23_02253A78(Window *param0, MessageLoader *param1, TrainerInfo *pa
     const int v11 = 146;
     const int v12 = 100;
 
-    v0 = StringTemplate_Default(4);
-    v1 = Strbuf_Init(40, 4);
-    v2 = Strbuf_Init(40, 4);
+    v0 = StringTemplate_Default(HEAP_ID_FIELD);
+    v1 = Strbuf_Init(40, HEAP_ID_FIELD);
+    v2 = Strbuf_Init(40, HEAP_ID_FIELD);
 
     StringTemplate_SetPlayerName(v0, 1, param2);
     MessageLoader_GetStrbuf(param1, 12, v1);
@@ -397,7 +397,7 @@ void *ov23_02253C64(BgConfig *param0, TrainerInfo *param1, UndergroundData *para
     MessageLoader *v1;
     ListMenuTemplate v2;
     int v3 = 10;
-    UnkStruct_ov23_022537D4 *v4 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov23_022537D4));
+    UnkStruct_ov23_022537D4 *v4 = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov23_022537D4));
 
     MI_CpuClear8(v4, sizeof(UnkStruct_ov23_022537D4));
 
@@ -407,7 +407,7 @@ void *ov23_02253C64(BgConfig *param0, TrainerInfo *param1, UndergroundData *para
     Window_Add(param0, &v4->unk_08, 3, 4, 2, 24, 19, 13, 1);
     Window_DrawStandardFrame(&v4->unk_08, 1, 1024 - (18 + 12) - 9, 11);
 
-    v1 = MessageLoader_Init(0, 26, 639, 4);
+    v1 = MessageLoader_Init(0, 26, 639, HEAP_ID_FIELD);
     Window_FillTilemap(&v4->unk_08, 15);
 
     v0 = Unk_ov23_022577BC->unk_0C;

@@ -5,14 +5,14 @@
 
 #include "constants/field/window.h"
 #include "constants/narc.h"
-#include "consts/map.h"
+#include "generated/map_headers.h"
+#include "generated/text_banks.h"
 
 #include "struct_decls/pokedexdata_decl.h"
 
 #include "overlay005/ov5_021EA714.h"
 #include "overlay005/save_info_window.h"
 #include "overlay025/poketch_system.h"
-#include "text/pl_msg.naix"
 
 #include "bg_window.h"
 #include "field_overworld_state.h"
@@ -21,13 +21,13 @@
 #include "map_header.h"
 #include "message_util.h"
 #include "player_avatar.h"
+#include "pokedex.h"
 #include "render_window.h"
 #include "save_player.h"
 #include "savedata.h"
 #include "strbuf.h"
 #include "text.h"
 #include "trainer_info.h"
-#include "unk_0202631C.h"
 #include "unk_020366A0.h"
 
 static void FieldSystem_SaveObjectsAndLocation(FieldSystem *fieldSystem);
@@ -51,7 +51,7 @@ static void SaveInfo_SetValues(SaveInfo *saveInfo, const FieldSystem *fieldSyste
 {
     SaveData *saveData = fieldSystem->saveData;
     Location *curLocation = FieldOverworldState_GetPlayerLocation(SaveData_GetFieldOverworldState(saveData));
-    PokedexData *pokedex = SaveData_Pokedex(saveData);
+    Pokedex *pokedex = SaveData_GetPokedex(saveData);
 
     saveInfo->mapLabelTextID = MapHeader_GetMapLabelTextID(curLocation->mapId);
 
@@ -170,7 +170,7 @@ SaveInfoWindow *SaveInfoWindow_New(FieldSystem *fieldSystem, enum HeapId heapID,
     saveInfoWin->bgLayer = bgLayer;
     saveInfoWin->bgConfig = fieldSystem->bgConfig;
     saveInfoWin->strTemplate = StringTemplate_Default(heapID);
-    saveInfoWin->msgLoader = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, message_bank_save_info_window, heapID);
+    saveInfoWin->msgLoader = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_SAVE_INFO_WINDOW, heapID);
 
     SaveInfo_SetValues(&saveInfoWin->saveInfo, saveInfoWin->fieldSystem);
     SaveInfoWindow_SetStrings(saveInfoWin->strTemplate, &saveInfoWin->saveInfo);

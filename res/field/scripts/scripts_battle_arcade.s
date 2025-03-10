@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/battle_arcade.h"
 
     .data
 
@@ -19,7 +20,7 @@
     ScriptEntry _0046
     ScriptEntry _0834
     ScriptEntry _0845
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0046:
     ScrCmd_238 19, 0x4000
@@ -133,7 +134,7 @@ _020B:
     WaitFadeScreen
     ScrCmd_2D9 4, 0x40BE, 0x800C
     ScrCmd_2DB 0x4002, 0x4005, 0x4006
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x4002, 0xFF, _0145
@@ -180,8 +181,8 @@ _02F1:
 
 _0335:
     Message 44
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _02F1
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _02F1
     CloseMessage
     ScrCmd_0F2 32, 0, 0, 0x800C
     GoToIfEq 0x800C, 1, _0377
@@ -200,8 +201,8 @@ _037F:
 
 _0389:
     Message 44
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _02F1
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _02F1
     CloseMessage
     ScrCmd_0F3 32, 0, 0, 0x800C
     GoToIfEq 0x800C, 1, _03CB
@@ -287,11 +288,11 @@ _04DC:
     CallIfEq 0x40BE, 1, _05B9
     CallIfEq 0x40BE, 2, _05CD
     IncrementGameRecord RECORD_UNK_058
-    ScrCmd_1CD 40, 0, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_BATTLE_ARCADE, 0, 0, 0, 0
     ScrCmd_1F8
     ScrCmd_2C4 15
     CallIfEq 0x40BE, 2, _0545
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ScrCmd_313 1
@@ -305,7 +306,7 @@ _0549:
     Message 32
     WaitABPress
     CloseMessage
-    ApplyMovement 0xFF, _05F0
+    ApplyMovement LOCALID_PLAYER, _05F0
     ApplyMovement 0x800D, _0610
     WaitMovement
     Return
@@ -314,7 +315,7 @@ _0564:
     Message 32
     WaitABPress
     CloseMessage
-    ApplyMovement 0xFF, _05F0
+    ApplyMovement LOCALID_PLAYER, _05F0
     ApplyMovement 0x800D, _0610
     WaitMovement
     Return
@@ -325,25 +326,25 @@ _057F:
     ScrCmd_136
     ScrCmd_135 155
     CloseMessage
-    ApplyMovement 0xFF, _0604
+    ApplyMovement LOCALID_PLAYER, _0604
     ApplyMovement 0x800D, _0624
     WaitMovement
     Return
 
 _05A5:
-    ApplyMovement 0xFF, _0630
+    ApplyMovement LOCALID_PLAYER, _0630
     ApplyMovement 0x800D, _0658
     WaitMovement
     Return
 
 _05B9:
-    ApplyMovement 0xFF, _0630
+    ApplyMovement LOCALID_PLAYER, _0630
     ApplyMovement 0x800D, _0658
     WaitMovement
     Return
 
 _05CD:
-    ApplyMovement 0xFF, _0648
+    ApplyMovement LOCALID_PLAYER, _0648
     ApplyMovement 0x800D, _066C
     WaitMovement
     Return
@@ -355,60 +356,60 @@ _05E1:
 
     .balign 4, 0
 _05F0:
-    MoveAction_00C 2
-    MoveAction_00F
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_012 2
+    MoveAction_015
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _0604:
-    MoveAction_00C 4
-    MoveAction_045
+    MoveAction_012 4
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _0610:
-    MoveAction_00C
-    MoveAction_00F
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_012
+    MoveAction_015
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _0624:
-    MoveAction_00C 3
-    MoveAction_045
+    MoveAction_012 3
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _0630:
-    MoveAction_015 2
-    MoveAction_016
-    MoveAction_015 2
+    MoveAction_021 2
+    MoveAction_022
+    MoveAction_021 2
     MoveAction_000
-    MoveAction_046
+    MoveAction_070
     EndMovement
 
     .balign 4, 0
 _0648:
-    MoveAction_015 4
+    MoveAction_021 4
     MoveAction_000
-    MoveAction_046
+    MoveAction_070
     EndMovement
 
     .balign 4, 0
 _0658:
-    MoveAction_015
-    MoveAction_016
-    MoveAction_015 2
-    MoveAction_046
+    MoveAction_021
+    MoveAction_022
+    MoveAction_021 2
+    MoveAction_070
     EndMovement
 
     .balign 4, 0
 _066C:
-    MoveAction_015 3
-    MoveAction_046
+    MoveAction_021 3
+    MoveAction_070
     EndMovement
 
 _0678:

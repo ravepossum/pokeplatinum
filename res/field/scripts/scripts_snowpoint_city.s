@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/snowpoint_city.h"
 
     .data
 
@@ -14,7 +15,7 @@
     ScriptEntry _01FE
     ScriptEntry _0215
     ScriptEntry _022A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0032:
     GoToIfGe 0x407F, 1, _0041
@@ -37,7 +38,7 @@ _0047:
 
 _0072:
     ApplyMovement 6, _00A4
-    ApplyMovement 0xFF, _00AC
+    ApplyMovement LOCALID_PLAYER, _00AC
     WaitMovement
     ReleaseAll
     End
@@ -48,17 +49,17 @@ _0088:
 
     .balign 4, 0
 _009C:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _00A4:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _00AC:
-    MoveAction_00D
+    MoveAction_013
     EndMovement
 
 _00B4:
@@ -100,12 +101,12 @@ _0111:
 _011B:
     WaitTime 30, 0x800C
     ClearFlag 0x1F3
-    ScrCmd_064 7
+    AddObject 7
     ApplyMovement 7, _016C
     WaitMovement
     Message 3
     CloseMessage
-    ApplyMovement 0xFF, _0164
+    ApplyMovement LOCALID_PLAYER, _0164
     ApplyMovement 6, _015C
     WaitMovement
     SetVar 0x407F, 1
@@ -121,12 +122,12 @@ _015C:
 
     .balign 4, 0
 _0164:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _016C:
-    MoveAction_00C 7
+    MoveAction_012 7
     EndMovement
 
 _0174:
@@ -198,19 +199,11 @@ _01EB:
     End
 
 _01FE:
-    ScrCmd_036 18, 0, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowMapSign 18
     End
 
 _0215:
-    ScrCmd_037 3, 0
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03A 19, 0x800C
-    CallCommonScript 0x7D0
+    ShowScrollingSign 19
     End
 
 _022A:
@@ -219,9 +212,9 @@ _022A:
     FacePlayer
     GoToIfUnset 0x964, _0260
     Message 10
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0276
-    GoToIfEq 0x800C, 1, _026B
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0276
+    GoToIfEq 0x800C, MENU_NO, _026B
     End
 
 _0260:
@@ -250,13 +243,13 @@ _0276:
 
 _02A0:
     ClearFlag 0x256
-    ScrCmd_064 10
+    AddObject 10
     ScrCmd_062 10
     CloseMessage
     ApplyMovement 10, _0320
     WaitMovement
     Message 15
-    ApplyMovement 0xFF, _030C
+    ApplyMovement LOCALID_PLAYER, _030C
     WaitMovement
     CloseMessage
     ApplyMovement 10, _0334
@@ -270,48 +263,48 @@ _02A0:
     CloseMessage
     ApplyMovement 10, _0348
     WaitMovement
-    ScrCmd_065 10
-    ApplyMovement 0xFF, _0318
+    RemoveObject 10
+    ApplyMovement LOCALID_PLAYER, _0318
     WaitMovement
     SetFlag 0x157
     Return
 
     .balign 4, 0
 _030C:
-    MoveAction_04B
-    MoveAction_020
+    MoveAction_075
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0318:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0320:
-    MoveAction_00E 4
-    MoveAction_00D 2
-    MoveAction_00E 6
-    MoveAction_00D 2
+    MoveAction_014 4
+    MoveAction_013 2
+    MoveAction_014 6
+    MoveAction_013 2
     EndMovement
 
     .balign 4, 0
 _0334:
-    MoveAction_00F
+    MoveAction_015
     EndMovement
 
     .balign 4, 0
 _033C:
-    MoveAction_00E
-    MoveAction_021
+    MoveAction_014
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0348:
-    MoveAction_00C 2
-    MoveAction_00F 3
-    MoveAction_00C 2
-    MoveAction_00F 7
+    MoveAction_012 2
+    MoveAction_015 3
+    MoveAction_012 2
+    MoveAction_015 7
     EndMovement
 
 _035C:
@@ -323,26 +316,26 @@ _035C:
     Return
 
 _0376:
-    ApplyMovement 0xFF, _03A4
+    ApplyMovement LOCALID_PLAYER, _03A4
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ApplyMovement 0xFF, _039C
+    ApplyMovement LOCALID_PLAYER, _039C
     WaitMovement
     Return
 
     .balign 4, 0
 _0390:
     MoveAction_001
-    MoveAction_040
+    MoveAction_064
     EndMovement
 
     .balign 4, 0
 _039C:
-    MoveAction_045
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _03A4:
-    MoveAction_00D
-    MoveAction_040
+    MoveAction_013
+    MoveAction_064
     EndMovement

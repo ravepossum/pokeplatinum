@@ -1,28 +1,10 @@
 #ifndef POKEPLATINUM_CONSTANTS_ITEMS_H
 #define POKEPLATINUM_CONSTANTS_ITEMS_H
 
-#ifndef __ASM_PM_
-#include "consts/items.h"
-
-enum {
-    BATTLE_ITEM_CATEGORY_RECOVER_HP = 0,
-    BATTLE_ITEM_CATEGORY_RECOVER_STATUS,
-    BATTLE_ITEM_CATEGORY_POKE_BALLS,
-    BATTLE_ITEM_CATEGORY_BATTLE_ITEMS,
-
-    BATTLE_ITEM_CATEGORY_MAX,
-};
-
-enum {
-    ITEM_TYPE_FULL_RESTORE = 0,
-    ITEM_TYPE_RECOVER_HP,
-    ITEM_TYPE_RECOVER_STATUS,
-    ITEM_TYPE_STAT_BOOSTER,
-    ITEM_TYPE_GUARD_SPEC,
-
-    ITEM_TYPE_MAX
-};
-#endif // __ASM_PM_
+#include "generated/item_ai_categories.h"
+#include "generated/item_battle_categories.h"
+#include "generated/item_hold_effects.h"
+#include "generated/items.h"
 
 #define POCKET_ITEMS        0
 #define POCKET_MEDICINE     1
@@ -114,5 +96,8 @@ enum {
 #define PLUCK_EFFECT_TEMP_ACC_UP       23
 
 #define ITEM_RETURN_ID 0xFFFF
+#define SHOP_ITEM_END  (ITEM_RETURN_ID)
+
+#define BERRY_ID(itemId) (ITEM_##itemId##_BERRY - FIRST_BERRY_IDX)
 
 #endif // POKEPLATINUM_CONSTANTS_ITEMS_H

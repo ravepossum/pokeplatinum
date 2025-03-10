@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/turnback_cave_pillar_room.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _0026
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     Call _0018

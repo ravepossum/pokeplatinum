@@ -7,10 +7,8 @@
 #include "struct_decls/struct_02027F8C_decl.h"
 #include "struct_decls/struct_0202B370_decl.h"
 #include "struct_decls/struct_02095E80_decl.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/archived_sprite.h"
 #include "struct_defs/chatot_cry.h"
-#include "struct_defs/struct_0200C738.h"
 #include "struct_defs/struct_02027F8C.h"
 #include "struct_defs/struct_02095E80_sub1.h"
 
@@ -20,13 +18,15 @@
 #include "overlay088/struct_ov88_0223C8AC.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
 #include "list_menu.h"
 #include "menu.h"
 #include "message.h"
 #include "overlay_manager.h"
+#include "party.h"
 #include "savedata.h"
+#include "sprite.h"
 #include "sprite_resource.h"
+#include "sprite_util.h"
 #include "strbuf.h"
 #include "string_list.h"
 #include "string_template.h"
@@ -69,18 +69,18 @@ struct UnkStruct_02095E80_t {
     Strbuf *unk_188;
     Strbuf *unk_18C;
     Strbuf *unk_190;
-    CellActorCollection *unk_194;
-    UnkStruct_0200C738 unk_198;
+    SpriteList *unk_194;
+    G2dRenderer unk_198;
     SpriteResourceCollection *unk_324[4];
     SpriteResource *unk_334[2][4];
-    CellActorResourceData unk_354;
-    CellActorResourceData unk_378;
-    CellActor *unk_39C[14];
-    CellActor *unk_3D4[12];
-    CellActor *unk_404[12];
-    CellActor *unk_434[12];
-    CellActor *unk_464[6];
-    CellActor *unk_47C;
+    SpriteResourcesHeader unk_354;
+    SpriteResourcesHeader unk_378;
+    Sprite *unk_39C[14];
+    Sprite *unk_3D4[12];
+    Sprite *unk_404[12];
+    Sprite *unk_434[12];
+    Sprite *unk_464[6];
+    Sprite *unk_47C;
     SysTask *unk_480[7];
     Window unk_49C[34];
     Menu *unk_6BC;

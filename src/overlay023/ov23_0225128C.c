@@ -23,11 +23,11 @@
 #include "overlay023/struct_ov23_02250CD4.h"
 
 #include "bg_window.h"
+#include "brightness_controller.h"
 #include "camera.h"
 #include "comm_player_manager.h"
 #include "communication_information.h"
 #include "communication_system.h"
-#include "core_sys.h"
 #include "field_system.h"
 #include "field_task.h"
 #include "heap.h"
@@ -43,9 +43,9 @@
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "system_flags.h"
 #include "unk_02005474.h"
-#include "unk_0200A9DC.h"
 #include "unk_0200F174.h"
 #include "unk_0202854C.h"
 #include "unk_02033200.h"
@@ -228,9 +228,7 @@ int ov23_02251414(void)
 static BOOL ov23_02251418(int param0, UnkStruct_ov23_02250CD4 *param1)
 {
     UndergroundData *v0 = sub_020298B0(FieldSystem_GetSaveData(param1->fieldSystem));
-    int v1;
-
-    v1 = sub_02028B88(v0, param0);
+    int v1 = sub_02028B88(v0, param0);
 
     if (sub_0202895C(v0, v1)) {
         sub_02028B94(v0, param0);
@@ -361,7 +359,7 @@ static void ov23_022515D8(UnkStruct_ov23_02250CD4 *param0, int param1, int param
         MessageLoader *v3;
         int v4 = 0;
 
-        v3 = MessageLoader_Init(0, 26, 639, 4);
+        v3 = MessageLoader_Init(0, 26, 639, HEAP_ID_FIELD);
 
         for (v4 = 0; v4 < v1; v4++) {
             if (v4 == (v1 - 1)) {
@@ -385,7 +383,7 @@ static void ov23_022515D8(UnkStruct_ov23_02250CD4 *param0, int param1, int param
         v0.cursorCallback = param3;
     }
 
-    v0.tmp = param0;
+    v0.parent = param0;
     ov23_02251238(param0, v1, v0.count);
     param0->unk_48 = ListMenu_New(&v0, param0->unk_294, param0->unk_290, 4);
 }
@@ -407,7 +405,7 @@ static void ov23_022516E8(UnkStruct_ov23_02250CD4 *param0, int param1, int param
         MessageLoader *v3;
         int v4 = 0;
 
-        v3 = MessageLoader_Init(0, 26, 639, 4);
+        v3 = MessageLoader_Init(0, 26, 639, HEAP_ID_FIELD);
 
         for (v4 = 0; v4 < v1; v4++) {
             if (v4 == param2) {
@@ -431,7 +429,7 @@ static void ov23_022516E8(UnkStruct_ov23_02250CD4 *param0, int param1, int param
         v0.cursorCallback = param3;
     }
 
-    v0.tmp = param0;
+    v0.parent = param0;
     ov23_02251238(param0, v1, v0.count);
     param0->unk_48 = ListMenu_New(&v0, param0->unk_294, param0->unk_290, 4);
 }
@@ -578,7 +576,7 @@ static BOOL ov23_02251960(SysTask *param0, void *param1)
 static BOOL ov23_02251A58(UnkStruct_ov23_02250CD4 *param0)
 {
     if (ov23_02254238(ov23_022421BC()) == 0) {
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov23_02254044(ov23_022421BC());
             return 1;
         }
@@ -615,7 +613,7 @@ static BOOL ov23_02251ACC(FieldTask *param0)
     switch (v1->unk_00) {
     case 0:
         Sound_PlayEffect(1549);
-        StartScreenTransition(2, 0, 0, 0x0, 6, 1, 4);
+        StartScreenTransition(2, 0, 0, 0x0, 6, 1, HEAP_ID_FIELD);
         v1->unk_00 = 1;
         break;
     case 1:
@@ -636,7 +634,7 @@ static BOOL ov23_02251ACC(FieldTask *param0)
     case 4:
         PlayerAvatar_SetHidden(fieldSystem->playerAvatar, 1);
         ov23_02251A84(0, fieldSystem);
-        StartScreenTransition(1, 1, 1, 0x0, 6, 1, 4);
+        StartScreenTransition(1, 1, 1, 0x0, 6, 1, HEAP_ID_FIELD);
         v1->unk_00 = 5;
         break;
     case 5:
@@ -705,7 +703,7 @@ static void ov23_02251C04(SysTask *param0, void *param1)
         v0->unk_2AA = 7;
         break;
     case 7:
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov23_02253D10(v0->unk_270);
             v0->unk_270 = NULL;
             v0->unk_2AA = 0;
@@ -726,7 +724,7 @@ static void ov23_02251C04(SysTask *param0, void *param1)
         ov23_0224FB7C(v0);
         ov23_02242FF8();
         ov23_022412F0();
-        sub_0200AAE0(1, -6, 0, GX_BLEND_PLANEMASK_BG0, 1);
+        BrightnessController_StartTransition(1, -6, 0, GX_BLEND_PLANEMASK_BG0, BRIGHTNESS_MAIN_SCREEN);
         ov23_02253F40(ov23_022421BC(), 48, 0, NULL);
         v0->unk_2AA = 16;
         break;
@@ -738,7 +736,7 @@ static void ov23_02251C04(SysTask *param0, void *param1)
         ov23_0224FB7C(v0);
         ov23_02242FD0();
         ov23_02241E6C();
-        sub_0200AAE0(1, -6, 0, GX_BLEND_PLANEMASK_BG0, 1);
+        BrightnessController_StartTransition(1, -6, 0, GX_BLEND_PLANEMASK_BG0, BRIGHTNESS_MAIN_SCREEN);
         ov23_02253F40(ov23_022421BC(), 49, 0, NULL);
         v0->unk_2AA = 16;
         break;
@@ -750,7 +748,7 @@ static void ov23_02251C04(SysTask *param0, void *param1)
         ov23_0224FB7C(v0);
         ov23_02242FE4();
         ov23_02245728();
-        sub_0200AAE0(1, -6, 0, GX_BLEND_PLANEMASK_BG0, 1);
+        BrightnessController_StartTransition(1, -6, 0, GX_BLEND_PLANEMASK_BG0, BRIGHTNESS_MAIN_SCREEN);
         ov23_02253F40(ov23_022421BC(), 50, 0, NULL);
         v0->unk_2AA = 16;
         break;
@@ -760,9 +758,9 @@ static void ov23_02251C04(SysTask *param0, void *param1)
         break;
     case 16:
         if (ov23_02254238(ov23_022421BC()) == 0) {
-            if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+            if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
                 if (!sub_02033DFC()) {
-                    sub_0200AAE0(1, 0, -6, GX_BLEND_PLANEMASK_BG0, 1);
+                    BrightnessController_StartTransition(1, 0, -6, GX_BLEND_PLANEMASK_BG0, BRIGHTNESS_MAIN_SCREEN);
                 }
 
                 ov23_02254044(ov23_022421BC());
@@ -838,17 +836,17 @@ static void ov23_02251F94(FieldSystem *fieldSystem)
 
     ov23_022430D0(1);
 
-    v1 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov23_02250CD4));
+    v1 = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov23_02250CD4));
     MI_CpuFill8(v1, 0, sizeof(UnkStruct_ov23_02250CD4));
     v1->fieldSystem = fieldSystem;
 
     ov23_02253DFC(ov23_022421BC(), 639, 1);
 
     v1->unk_2AA = 0;
-    v1->unk_68 = Strbuf_Init((50 * 2), 4);
-    v1->unk_6C = Strbuf_Init((50 * 2), 4);
-    v1->unk_70 = StringTemplate_Default(4);
-    v1->unk_08 = sub_0206A780(4);
+    v1->unk_68 = Strbuf_Init((50 * 2), HEAP_ID_FIELD);
+    v1->unk_6C = Strbuf_Init((50 * 2), HEAP_ID_FIELD);
+    v1->unk_70 = StringTemplate_Default(HEAP_ID_FIELD);
+    v1->unk_08 = sub_0206A780(HEAP_ID_FIELD);
 
     sub_0206A8A0(v1->unk_08, 200, 20, 122);
     sub_0206A8C4(v1->unk_08, 0, 0);
@@ -908,7 +906,7 @@ static void ov23_022520C8(SysTask *param0, void *param1)
 
 static void ov23_022520E8(FieldSystem *fieldSystem, UnkStruct_ov23_022513B0 *param1)
 {
-    UnkStruct_ov23_02252038 *v0 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov23_02250CD4));
+    UnkStruct_ov23_02252038 *v0 = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov23_02250CD4));
 
     MI_CpuFill8(v0, 0, sizeof(UnkStruct_ov23_02252038));
 
@@ -952,9 +950,7 @@ void ov23_02252178(int param0, int param1, void *param2, void *param3)
 
 static void ov23_022521C8(UnkStruct_ov23_02250CD4 *param0)
 {
-    u16 v0;
-
-    v0 = param0->unk_2AE;
+    u16 v0 = param0->unk_2AE;
     ListMenu_CalcTrueCursorPos(param0->unk_48, &param0->unk_2AE);
 
     if (v0 != param0->unk_2AE) {

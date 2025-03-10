@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/fullmoon_island_forest.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _000C
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     End
@@ -13,21 +14,21 @@ _000C:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_208 0x1E8, 1
+    DrawPokemonPreview SPECIES_CRESSELIA, GENDER_FEMALE
     WaitABPress
     ScrCmd_209
-    ScrCmd_04C 0x1E8, 0
-    ScrCmd_1BD 0x800C
+    PlayCry SPECIES_CRESSELIA
+    GetPlayerDir 0x800C
     CallIfEq 0x800C, 0, _007E
     ScrCmd_063 0
     ScrCmd_26A 0, 6, 8
     ScrCmd_062 0
     SetFlag 0x24F
-    ScrCmd_065 0
-    ScrCmd_21C 1
+    RemoveObject 0
+    ActivateRoamingPokemon ROAMING_SLOT_CRESSELIA
     GoToIfEq 0x4058, 3, _0074
     ClearFlag 0x452
-    ScrCmd_064 1
+    AddObject 1
     SetFlag 0x11F
     Message 0
     WaitABXPadPress
@@ -41,14 +42,14 @@ _0074:
     End
 
 _007E:
-    ScrCmd_186 1, 16, 14
+    SetObjectEventPos 1, 16, 14
     ApplyMovement 0, _0094
     WaitMovement
     Return
 
     .balign 4, 0
 _0094:
-    MoveAction_047
-    MoveAction_00C
-    MoveAction_048
+    MoveAction_071
+    MoveAction_012
+    MoveAction_072
     EndMovement

@@ -24,7 +24,7 @@ void ov5_021ECC20(MapObjectManager *param0, int param1, int param2, const int *p
     int v0, v1;
     UnkStruct_ov5_021ED0A4 *v2;
 
-    GF_ASSERT(sub_0206284C(param0, (1 << 0)) == 0);
+    GF_ASSERT(MapObjectMan_CheckStatus(param0, (1 << 0)) == 0);
 
     ov5_021ECCA4(param0);
 
@@ -33,31 +33,29 @@ void ov5_021ECC20(MapObjectManager *param0, int param1, int param2, const int *p
     v2 = sub_0206285C(param0);
 
     ov5_021ECE40(v2, param0, v0, v1, param1, param2, param3, param4);
-    sub_02062838(param0, (1 << 0));
+    MapObjectMan_SetStatusFlagOn(param0, (1 << 0));
 }
 
 void ov5_021ECC78(MapObjectManager *param0)
 {
-    int v0;
-
-    v0 = MapObjectMan_IsDrawInitialized(param0);
+    int v0 = MapObjectMan_IsDrawInitialized(param0);
     GF_ASSERT(v0 == 1);
 
     ov5_021ECE94(sub_0206285C(param0));
 
-    sub_02062840(param0, (1 << 0));
+    MapObjectMan_SetStatusFlagOff(param0, (1 << 0));
     ov5_021ECCBC(param0);
 }
 
 static void ov5_021ECCA4(MapObjectManager *param0)
 {
-    NARC *v0 = NARC_ctor(NARC_INDEX_DATA__MMODEL__MMODEL, 4);
-    sub_0206289C(param0, v0);
+    NARC *v0 = NARC_ctor(NARC_INDEX_DATA__MMODEL__MMODEL, HEAP_ID_FIELD);
+    MapObjectMan_SetNARC(param0, v0);
 }
 
 static void ov5_021ECCBC(MapObjectManager *param0)
 {
-    NARC *v0 = sub_020628A0(param0);
+    NARC *v0 = MapObjectMan_GetNARC(param0);
     NARC_dtor(v0);
 }
 
@@ -65,11 +63,11 @@ void MapObject_Draw(MapObject *param0)
 {
     const MapObjectManager *v0 = MapObject_MapObjectManager(param0);
 
-    if (sub_0206284C(v0, (1 << 2))) {
+    if (MapObjectMan_CheckStatus(v0, (1 << 2))) {
         return;
     }
 
-    if (MapObject_CheckStatus(param0, (1 << 14)) == 0) {
+    if (!MapObject_CheckStatus(param0, MAP_OBJ_STATUS_14)) {
         return;
     }
 
@@ -80,7 +78,7 @@ void MapObject_Draw(MapObject *param0)
 
 const UnkStruct_ov5_021ECD10 *ov5_021ECD04(const MapObject *param0)
 {
-    int v0 = sub_02062920(param0);
+    int v0 = MapObject_GetGraphicsID(param0);
     const UnkStruct_ov5_021ECD10 *v1 = ov5_021ECD10(v0);
 
     return v1;
@@ -110,7 +108,7 @@ int ov5_021ECD38(const MapObject *param0)
         }
     }
 
-    if (MapObject_CheckStatus(param0, (1 << 8))) {
+    if (MapObject_CheckStatus(param0, MAP_OBJ_STATUS_PAUSE_ANIMATION)) {
         return 1;
     }
 
@@ -120,11 +118,11 @@ int ov5_021ECD38(const MapObject *param0)
 void *ov5_021ECD68(const MapObjectManager *param0, u32 param1, int param2)
 {
     void *v0;
-    NARC *v1 = sub_020628A0(param0);
+    NARC *v1 = MapObjectMan_GetNARC(param0);
     u32 v2 = NARC_GetMemberSize(v1, param1);
 
     if (param2 == 1) {
-        v0 = Heap_AllocFromHeap(4, v2);
+        v0 = Heap_AllocFromHeap(HEAP_ID_FIELD, v2);
     } else {
         v0 = Heap_AllocFromHeapAtEnd(4, v2);
     }
@@ -138,7 +136,7 @@ void ov5_021ECDA0(const MapObject *param0, VecFx32 *param1)
 {
     VecFx32 v0, v1, v2, v3;
 
-    MapObject_PosVectorOut(param0, &v0);
+    MapObject_GetPosPtr(param0, &v0);
     sub_02063078(param0, &v1);
     sub_0206309C(param0, &v2);
     sub_020630BC(param0, &v3);
@@ -150,7 +148,7 @@ void ov5_021ECDA0(const MapObject *param0, VecFx32 *param1)
 
 void ov5_021ECDFC(MapObject *param0, int param1)
 {
-    MapObject_SetDir(param0, param1);
+    MapObject_TryFace(param0, param1);
 
     if (sub_02062D4C(param0) == 1) {
         sub_02062B68(param0);
@@ -160,7 +158,7 @@ void ov5_021ECDFC(MapObject *param0, int param1)
 void ov5_021ECE18(MapObject *param0)
 {
     MapObject_SetHidden(param0, 1);
-    MapObject_SetStatusFlagOn(param0, (1 << 20));
+    MapObject_SetStatusFlagOn(param0, MAP_OBJ_STATUS_HIDE_SHADOW);
 }
 
 void ov5_021ECE30(MapObject *param0)

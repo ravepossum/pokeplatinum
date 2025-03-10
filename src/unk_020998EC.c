@@ -11,9 +11,9 @@
 
 #include "heap.h"
 #include "inlines.h"
+#include "pokedex.h"
 #include "strbuf.h"
 #include "unk_02014D38.h"
-#include "unk_0202631C.h"
 #include "unk_0209747C.h"
 
 static const u16 Unk_020F8420[] = {
@@ -3160,14 +3160,14 @@ static u32 sub_02099B28(UnkStruct_020998EC *param0, const u16 *param1, u32 param
 static void sub_02099BAC(UnkStruct_020998EC *param0);
 static u32 sub_02099BF4(UnkStruct_020998EC *param0, const u16 *param1, u16 *param2, u32 param3);
 
-UnkStruct_020998EC *sub_020998EC(u32 param0, const UnkStruct_0209747C *param1)
+UnkStruct_020998EC *sub_020998EC(u32 heapID, const UnkStruct_0209747C *param1)
 {
     UnkStruct_020998EC *v0;
     int v1;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_020998EC));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_020998EC));
     v0->unk_00 = param1;
-    v0->unk_04 = sub_02014D38(param0);
+    v0->unk_04 = sub_02014D38(heapID);
 
     for (v1 = 0; v1 < ((1495 >> 3) + 1); v1++) {
         v0->unk_189E[v1] = 0;
@@ -3229,14 +3229,12 @@ static inline BOOL inline_02099BF4(const UnkStruct_020998EC *param0, u32 param1)
 
 static u32 sub_02099980(UnkStruct_020998EC *param0, const u16 *param1, u32 param2, u16 *param3)
 {
-    const PokedexData *v0;
-    u32 v1, v2;
-
-    v2 = 0;
-    v0 = sub_0209755C(param0->unk_00);
+    const Pokedex *pokedex;
+    u32 v1, v2 = 0;
+    pokedex = sub_0209755C(param0->unk_00);
 
     for (v1 = 0; v1 < param2; v1++) {
-        if (Pokedex_HasSeenSpecies(v0, param1[v1])) {
+        if (Pokedex_HasSeenSpecies(pokedex, param1[v1])) {
             inline_02099980(param0, param1[v1]);
             *param3++ = param1[v1];
             v2++;
@@ -3266,9 +3264,7 @@ static u32 sub_02099A30(UnkStruct_020998EC *param0, const u16 *param1, u32 param
 {
     const UnkStruct_02014EC4 *v0 = sub_02097560(param0->unk_00);
     u32 v1, v2;
-    u16 v3;
-
-    v3 = sub_02014DFC(444, 0);
+    u16 v3 = sub_02014DFC(444, 0);
 
     for (v1 = 0, v2 = 0; v1 < param2; v1++) {
         if (sub_02014ED8(v0, param1[v1] - v3)) {

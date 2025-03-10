@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/unk_0217.h"
 
     .data
 
@@ -15,7 +16,7 @@
     ScriptEntry _0E74
     ScriptEntry _0E74
     ScriptEntry _1399
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0036:
     LockAll
@@ -27,28 +28,28 @@ _0036:
     End
 
 _0052:
-    ApplyMovement 0xFF, _0120
+    ApplyMovement LOCALID_PLAYER, _0120
     WaitMovement
     ScrCmd_168 0, 0, 0x800C, 5, 77
     Call _010D
-    ApplyMovement 0xFF, _0128
+    ApplyMovement LOCALID_PLAYER, _0128
     WaitMovement
     Call _0115
     Return
 
 _007F:
-    ApplyMovement 0xFF, _013C
+    ApplyMovement LOCALID_PLAYER, _013C
     WaitMovement
     Return
 
 _008B:
-    ApplyMovement 0xFF, _0130
+    ApplyMovement LOCALID_PLAYER, _0130
     WaitMovement
     CallIfEq 0x8007, 3, _00C8
     CallIfEq 0x8007, 5, _00DF
     CallIfEq 0x8007, 7, _00F6
     SetVar 0x8004, 0
-    ScrCmd_03E 0x800C
+    ShowYesNoMenu 0x800C
     Return
 
 _00C8:
@@ -91,24 +92,24 @@ _0115:
 
     .balign 4, 0
 _0120:
-    MoveAction_00D
+    MoveAction_013
     EndMovement
 
     .balign 4, 0
 _0128:
-    MoveAction_00D 2
+    MoveAction_013 2
     EndMovement
 
     .balign 4, 0
 _0130:
-    MoveAction_00E
-    MoveAction_024
+    MoveAction_014
+    MoveAction_036
     EndMovement
 
     .balign 4, 0
 _013C:
-    MoveAction_00E 2
-    MoveAction_024
+    MoveAction_014 2
+    MoveAction_036
     EndMovement
 
 _0148:
@@ -148,7 +149,7 @@ _01B1:
     Return
 
 _01BE:
-    ScrCmd_186 9, 24, 6
+    SetObjectEventPos 9, 24, 6
     ScrCmd_188 9, 15
     ScrCmd_189 9, 1
     Return
@@ -415,7 +416,7 @@ _0596:
     GoTo _0596
 
 _05C1:
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x4002, 0xFF, _05E4
@@ -424,8 +425,8 @@ _05C1:
 
 _05E4:
     Message 215
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0291
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0291
     GoTo _0562
     End
 
@@ -458,8 +459,8 @@ _0625:
 
 _0669:
     Message 212
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0625
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0625
     CloseMessage
     ScrCmd_0F2 8, 0x8005, 0x8004, 0x800C
     GoToIfEq 0x800C, 1, _06AB
@@ -477,8 +478,8 @@ _06B3:
 
 _06BB:
     Message 212
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0625
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0625
     CloseMessage
     ScrCmd_0F3 8, 0x8005, 0x8004, 0x800C
     GoToIfEq 0x800C, 1, _06FD
@@ -537,7 +538,7 @@ _07BC:
     ScrCmd_168 0, 0, 19, 5, 77
     Call _010D
     WaitMovement
-    ApplyMovement 0xFF, _0DA0
+    ApplyMovement LOCALID_PLAYER, _0DA0
     ApplyMovement 0, _0E08
     WaitMovement
     Call _0115
@@ -551,7 +552,7 @@ _07F1:
     ScrCmd_168 0, 0, 7, 5, 77
     Call _010D
     WaitMovement
-    ApplyMovement 0xFF, _0DB0
+    ApplyMovement LOCALID_PLAYER, _0DB0
     ApplyMovement 1, _0E18
     WaitMovement
     Call _0115
@@ -563,7 +564,7 @@ _0830:
     ScrCmd_168 0, 0, 28, 5, 77
     Call _010D
     WaitMovement
-    ApplyMovement 0xFF, _0DC0
+    ApplyMovement LOCALID_PLAYER, _0DC0
     ApplyMovement 2, _0E28
     WaitMovement
     Call _0115
@@ -577,7 +578,7 @@ _086A:
     GoToIfEq 0x4003, 2, _08CD
     ScrCmd_0C6
     GetPlayerGender 0x800C
-    GoToIfEq 0x800C, 0, _0892
+    GoToIfEq 0x800C, GENDER_MALE, _0892
     GoTo _08A0
     End
 
@@ -594,7 +595,7 @@ _08A0:
     End
 
 _08AE:
-    ApplyMovement 0xFF, _0E00
+    ApplyMovement LOCALID_PLAYER, _0E00
     WaitMovement
     ScrCmd_02F 68
     ScrCmd_0F8 26
@@ -621,7 +622,7 @@ _08CD:
     SetVar 0x800C, 28
     Call _0052
     Call _008B
-    GoToIfEq 0x800C, 0, _070D
+    GoToIfEq 0x800C, MENU_YES, _070D
     Message 116
     WaitABXPadPress
     CloseMessage
@@ -863,7 +864,7 @@ _0D3A:
     ScrCmd_108 0x800C
     ScrCmd_10A 0x800C, 0x4024
     ClearFlag 0x205
-    ScrCmd_064 5
+    AddObject 5
     ScrCmd_108 0x4000
     GoToIfEq 0x4000, 0, _0D86
     GoToIfEq 0x4000, 1, _0D8C
@@ -872,39 +873,39 @@ _0D3A:
     Return
 
 _0D86:
-    ScrCmd_065 1
+    RemoveObject 1
     Return
 
 _0D8C:
-    ScrCmd_065 2
+    RemoveObject 2
     Return
 
 _0D92:
-    ScrCmd_065 3
+    RemoveObject 3
     Return
 
 _0D98:
-    ScrCmd_065 4
+    RemoveObject 4
     Return
 
     .balign 4, 0
 _0DA0:
-    MoveAction_00F 2
-    MoveAction_00C 3
-    MoveAction_022
+    MoveAction_015 2
+    MoveAction_012 3
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0DB0:
-    MoveAction_00F 2
-    MoveAction_00C 3
-    MoveAction_022
+    MoveAction_015 2
+    MoveAction_012 3
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0DC0:
-    MoveAction_00F
-    MoveAction_00C 3
+    MoveAction_015
+    MoveAction_012 3
     EndMovement
 
     .byte 62
@@ -962,58 +963,58 @@ _0DC0:
 
     .balign 4, 0
 _0E00:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0E08:
-    MoveAction_03F 2
-    MoveAction_00C
-    MoveAction_00F
+    MoveAction_063 2
+    MoveAction_012
+    MoveAction_015
     EndMovement
 
     .balign 4, 0
 _0E18:
-    MoveAction_03F 2
-    MoveAction_00C
-    MoveAction_00F
+    MoveAction_063 2
+    MoveAction_012
+    MoveAction_015
     EndMovement
 
     .balign 4, 0
 _0E28:
-    MoveAction_03F 2
-    MoveAction_00C
-    MoveAction_023
+    MoveAction_063 2
+    MoveAction_012
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0E38:
-    MoveAction_03F 2
-    MoveAction_022
-    MoveAction_03F
-    MoveAction_023
-    MoveAction_03F
-    MoveAction_025
+    MoveAction_063 2
+    MoveAction_034
+    MoveAction_063
+    MoveAction_035
+    MoveAction_063
+    MoveAction_037
     EndMovement
 
     .balign 4, 0
 _0E54:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0E5C:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0E64:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0E6C:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
 _0E74:
@@ -1319,7 +1320,7 @@ _111B:
     GoTo _111B
 
 _1146:
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x4002, 0xFF, _10F4

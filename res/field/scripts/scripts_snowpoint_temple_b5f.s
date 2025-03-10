@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/snowpoint_temple_b5f.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _0025
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     GoToIfSet 142, _0017
@@ -12,7 +13,7 @@ _000A:
 
 _0017:
     SetFlag 0x243
-    ScrCmd_065 0
+    RemoveObject 0
     ClearFlag 142
     End
 
@@ -44,15 +45,15 @@ _0073:
 _0081:
     Message 2
     CloseMessage
-    ScrCmd_04C 0x1E6, 0
+    PlayCry SPECIES_REGIGIGAS
     ScrCmd_04D
     SetFlag 142
     StartLegendaryBattle SPECIES_REGIGIGAS, 1
     ClearFlag 142
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _00D1
+    GoToIfEq 0x800C, FALSE, _00D1
     CheckDidNotCapture 0x800C
-    GoToIfEq 0x800C, 1, _00C6
+    GoToIfEq 0x800C, TRUE, _00C6
     SetFlag 0x11B
     ReleaseAll
     End
@@ -65,7 +66,7 @@ _00C6:
     End
 
 _00D1:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 

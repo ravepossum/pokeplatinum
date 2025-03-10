@@ -19,12 +19,12 @@ void ChatotCry_Init(ChatotCry *param0)
     param0->exists = FALSE;
 }
 
-ChatotCry *AllocateAndInitializeChatotCryData(int param0)
+ChatotCry *ChatotCry_New(int heapID)
 {
-    ChatotCry *v0 = Heap_AllocFromHeap(param0, sizeof(ChatotCry));
+    ChatotCry *cry = Heap_AllocFromHeap(heapID, sizeof(ChatotCry));
 
-    ChatotCry_Init(v0);
-    return v0;
+    ChatotCry_Init(cry);
+    return cry;
 }
 
 ChatotCry *GetChatotCryDataFromSave(SaveData *param0)
@@ -32,9 +32,9 @@ ChatotCry *GetChatotCryDataFromSave(SaveData *param0)
     return (ChatotCry *)SaveData_SaveTable(param0, 22);
 }
 
-BOOL IsChatotCryDataValid(const ChatotCry *param0)
+BOOL IsChatotCryDataValid(const ChatotCry *cry)
 {
-    return param0->exists;
+    return cry->exists;
 }
 
 void ResetChatotCryDataStatus(ChatotCry *param0)

@@ -11,13 +11,13 @@
 #include "field/field_system.h"
 
 #include "bag.h"
+#include "dexmode_checker.h"
 #include "heap.h"
 #include "party.h"
 #include "save_player.h"
 #include "savedata.h"
 #include "unk_02028124.h"
 #include "unk_0202D778.h"
-#include "unk_0207A274.h"
 #include "unk_0209B6F8.h"
 #include "unk_0209BA80.h"
 
@@ -37,7 +37,7 @@ UnkStruct_0209BBA4 *ov104_02239C58(SaveData *param0)
 {
     static UnkStruct_0209BBA4 *v0;
 
-    v0 = Heap_AllocFromHeap(11, sizeof(UnkStruct_0209BBA4));
+    v0 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_0209BBA4));
     MI_CpuClear8(v0, sizeof(UnkStruct_0209BBA4));
 
     v0->unk_00 = param0;
@@ -109,7 +109,7 @@ static void ov104_02239D1C(UnkStruct_0209B75C *param0, UnkStruct_0209BBA4 *param
 {
     u8 v0;
 
-    param1->unk_A8 = Heap_AllocFromHeap(11, sizeof(PartyManagementData));
+    param1->unk_A8 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(PartyManagementData));
     MI_CpuClearFast(param1->unk_A8, sizeof(PartyManagementData));
 
     param1->unk_A8->unk_00 = Party_GetFromSavedata(param1->unk_00);
@@ -200,13 +200,13 @@ static void ov104_02239FB0(UnkStruct_0209B75C *param0, UnkStruct_0209BBA4 *param
 
     param1->unk_AC->options = SaveData_Options(param1->unk_00);
     param1->unk_AC->monData = Party_GetFromSavedata(param1->unk_00);
-    param1->unk_AC->dexMode = sub_0207A274(param1->unk_00);
+    param1->unk_AC->dexMode = SaveData_GetDexMode(param1->unk_00);
     param1->unk_AC->showContest = PokemonSummaryScreen_ShowContestData(param1->unk_00);
-    param1->unk_AC->dataType = 1;
-    param1->unk_AC->pos = param1->unk_9F;
-    param1->unk_AC->max = (u8)Party_GetCurrentCount(param1->unk_AC->monData);
+    param1->unk_AC->dataType = SUMMARY_DATA_PARTY_MON;
+    param1->unk_AC->monIndex = param1->unk_9F;
+    param1->unk_AC->monMax = (u8)Party_GetCurrentCount(param1->unk_AC->monData);
     param1->unk_AC->move = 0;
-    param1->unk_AC->mode = 0;
+    param1->unk_AC->mode = SUMMARY_MODE_NORMAL;
     param1->unk_AC->specialRibbons = sub_0202D79C(param1->unk_00);
 
     PokemonSummaryScreen_FlagVisiblePages(param1->unk_AC, v0);
@@ -218,7 +218,7 @@ static void ov104_02239FB0(UnkStruct_0209B75C *param0, UnkStruct_0209BBA4 *param
 
 static void ov104_0223A090(UnkStruct_0209B75C *param0, UnkStruct_0209BBA4 *param1, FieldSystem *fieldSystem, int param3)
 {
-    param1->unk_9F = param1->unk_AC->pos;
+    param1->unk_9F = param1->unk_AC->monIndex;
     Heap_FreeToHeap(param1->unk_AC);
     param1->unk_AC = NULL;
     *param1->unk_B0 = 0;

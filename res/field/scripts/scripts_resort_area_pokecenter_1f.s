@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/resort_area_pokecenter_1f.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _001A
     ScriptEntry _002D
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     SetVar 0x8007, 0

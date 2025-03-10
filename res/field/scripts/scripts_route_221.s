@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_221.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _0041
     ScriptEntry _0054
     ScriptEntry _0012
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     ScrCmd_22D 2, 0x4000
@@ -37,11 +38,7 @@ _0041:
     End
 
 _0054:
-    ScrCmd_036 2, 2, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowLandmarkSign 2
     End
 
     .byte 0

@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/game_records.h"
 
 #include "struct_decls/struct_0203068C_decl.h"
 #include "struct_defs/struct_0202FF58.h"
@@ -25,10 +25,10 @@
 #include "party.h"
 #include "pokemon.h"
 #include "savedata.h"
+#include "system_vars.h"
 #include "unk_0202FF4C.h"
 #include "unk_0203061C.h"
 #include "unk_0205DFC4.h"
-#include "unk_0206AFE0.h"
 #include "vars_flags.h"
 
 UnkStruct_ov104_0223ADA0 *ov104_022339B4(SaveData *param0, u16 param1, u8 param2, u8 param3);
@@ -63,14 +63,14 @@ UnkStruct_ov104_0223ADA0 *ov104_022339B4(SaveData *param0, u16 param1, u8 param2
     u32 v6;
     static UnkStruct_ov104_0223ADA0 *v7;
 
-    v7 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov104_0223ADA0));
+    v7 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov104_0223ADA0));
     MI_CpuClear8(v7, sizeof(UnkStruct_ov104_0223ADA0));
 
     v7->unk_4F4 = sub_0202FF58(param0);
     v7->unk_4F8 = param0;
     v7->unk_00 = 11;
-    v7->unk_4D4 = Party_New(11);
-    v7->unk_4D8 = Party_New(11);
+    v7->unk_4D4 = Party_New(HEAP_ID_FIELDMAP);
+    v7->unk_4D8 = Party_New(HEAP_ID_FIELDMAP);
 
     v0 = v7->unk_4F4;
     v1 = sub_020300F4(param0);
@@ -89,7 +89,7 @@ UnkStruct_ov104_0223ADA0 *ov104_022339B4(SaveData *param0, u16 param1, u8 param2
                 v6 = 104;
             }
 
-            v3 = sub_0206B6FC(SaveData_GetVarsFlags(v7->unk_4F8));
+            v3 = SystemVars_GetWiFiFrontierCleared(SaveData_GetVarsFlags(v7->unk_4F8));
         } else {
             v3 = (u8)sub_020300E0(v1, 10, (v7->unk_05 * 4) + v7->unk_04, NULL);
         }
@@ -190,7 +190,7 @@ static void ov104_02233BAC(UnkStruct_ov104_0223ADA0 *param0)
     }
 
     for (v0 = 0; v0 < 6; v0++) {
-        v4 = Pokemon_New(11);
+        v4 = Pokemon_New(HEAP_ID_FIELDMAP);
         ov104_0222DF40(&param0->unk_280[v0], v4, ov104_0223ADA0(param0));
         ov104_0222E1C0(param0->unk_4F8, param0->unk_4D4, v4);
         Heap_FreeToHeap(v4);
@@ -274,7 +274,7 @@ static void ov104_02233F1C(UnkStruct_ov104_0223ADA0 *param0)
 
     ov104_0222E330(v4, v6, v5, v7, NULL, 4, 11, 179);
 
-    v1 = Pokemon_New(11);
+    v1 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v0 = 0; v0 < 4; v0++) {
         ov104_0222DF40(&v4[v0], v1, ov104_0223ADA0(param0));
@@ -293,7 +293,7 @@ static void ov104_02233F1C(UnkStruct_ov104_0223ADA0 *param0)
 
     ov104_0222E330(v4, v6, v5, v7, NULL, 4, 11, 179);
 
-    v1 = Pokemon_New(11);
+    v1 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v0 = 0; v0 < 4; v0++) {
         ov104_0222DF40(&v4[v0], v1, ov104_0223ADA0(param0));
@@ -459,9 +459,7 @@ u16 ov104_02234440(UnkStruct_ov104_0223ADA0 *param0, u8 param1)
 {
     UnkStruct_ov104_0223A348_sub1 v0;
     UnkStruct_0204B184 *v1;
-    u8 v2;
-
-    v2 = param0->unk_06 + (param1 * 7);
+    u8 v2 = param0->unk_06 + (param1 * 7);
     v1 = ov104_0222DD04(&v0, param0->unk_18[v2], 11, 178);
 
     Heap_FreeToHeap(v1);
@@ -501,7 +499,7 @@ void ov104_0223449C(UnkStruct_ov104_0223ADA0 *param0)
 
     Party_Init(param0->unk_4D4);
 
-    v3 = Pokemon_New(11);
+    v3 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v0 = 0; v0 < v1; v0++) {
         ov104_0222DF40(&param0->unk_280[param0->unk_4DC[v0]], v3, ov104_0223ADA0(param0));
@@ -592,7 +590,7 @@ void ov104_0223470C(UnkStruct_ov104_0223ADA0 *param0)
 
     Party_Init(param0->unk_4D8);
 
-    v3 = Pokemon_New(11);
+    v3 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v0 = 0; v0 < v2; v0++) {
         ov104_0222DF40(&param0->unk_3F0[v0], v3, ov104_0223ADA0(param0));

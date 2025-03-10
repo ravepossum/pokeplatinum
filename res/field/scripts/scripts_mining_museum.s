@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/mining_museum.h"
 
     .data
 
@@ -18,7 +19,7 @@
     ScriptEntry _0582
     ScriptEntry _0595
     ScriptEntry _05A8
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0042:
     PlayFanfare SEQ_SE_CONFIRM
@@ -41,8 +42,8 @@ _0055:
     ScrCmd_1F1 0x8000
     GoToIfEq 0x8000, 0, _04AB
     Message 2
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _03E7
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _03E7
     GoToIfEq 0x8000, 1, _03BC
     SetVar 0x8001, 0
     CheckItem ITEM_OLD_AMBER, 1, 0x800C
@@ -221,22 +222,22 @@ _03E7:
     End
 
 _03F2:
-    ScrCmd_0DA 0, 0x40B4, 0, 0
+    BufferSpeciesNameFromVar 0, 0x40B4, 0, 0
     Message 7
     GetPartyCount 0x800C
     GoToIfEq 0x800C, 6, _04A0
-    ScrCmd_0DA 1, 0x40B4, 0, 0
+    BufferSpeciesNameFromVar 1, 0x40B4, 0, 0
     BufferPlayerName 0
     PlaySound SEQ_FANFA4
     Message 8
     WaitSound
-    ScrCmd_096 0x40B4, 20, 0, 0x800C
+    GivePokemon 0x40B4, 20, ITEM_NONE, 0x800C
     IncrementGameRecord RECORD_UNK_115
     SetVar 0x40B4, 0
     Message 9
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0459
-    GoToIfEq 0x800C, 1, _049A
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0459
+    GoToIfEq 0x800C, MENU_NO, _049A
     End
 
 _0459:

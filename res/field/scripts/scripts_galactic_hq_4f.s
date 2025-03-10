@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/galactic_hq_4f.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _012C
     ScriptEntry _01C4
     ScriptEntry _01D5
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     LockAll
@@ -34,9 +35,9 @@ _0064:
     GoTo _0074
 
 _0074:
-    StartTrainerBattle trainer_galactic_boss_cyrus_galactic_hq
+    StartTrainerBattle TRAINER_GALACTIC_BOSS_CYRUS_GALACTIC_HQ
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _00E1
+    GoToIfEq 0x800C, FALSE, _00E1
     Message 2
     SetVar 0x8004, 1
     SetVar 0x8005, 1
@@ -50,7 +51,7 @@ _0074:
     CloseMessage
     ApplyMovement 0, _0124
     WaitMovement
-    ScrCmd_065 0
+    RemoveObject 0
     SetVar 0x40D6, 1
     ReleaseAll
     End
@@ -60,43 +61,43 @@ _00DB:
     Return
 
 _00E1:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
     .balign 4, 0
 _00E8:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _00F0:
-    MoveAction_00D
+    MoveAction_013
     EndMovement
 
     .balign 4, 0
 _00F8:
-    MoveAction_00D
+    MoveAction_013
     EndMovement
 
     .balign 4, 0
 _0100:
-    MoveAction_00D
-    MoveAction_00F
-    MoveAction_021
+    MoveAction_013
+    MoveAction_015
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0110:
-    MoveAction_00C
-    MoveAction_00F 4
-    MoveAction_00C 3
-    MoveAction_021
+    MoveAction_012
+    MoveAction_015 4
+    MoveAction_012 3
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0124:
-    MoveAction_00F 7
+    MoveAction_015 7
     EndMovement
 
 _012C:
@@ -113,9 +114,9 @@ _012C:
 
 _0154:
     Message 6
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0177
-    GoToIfEq 0x800C, 1, _01AB
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0177
+    GoToIfEq 0x800C, MENU_NO, _01AB
     End
 
 _0177:
@@ -128,8 +129,8 @@ _0177:
     ApplyMovement 2, _01BC
     WaitMovement
     SetFlag 0x226
-    ScrCmd_065 1
-    ScrCmd_065 2
+    RemoveObject 1
+    RemoveObject 2
     CloseMessage
     ReleaseAll
     End
@@ -141,12 +142,12 @@ _01AB:
 
     .balign 4, 0
 _01B4:
-    MoveAction_012
+    MoveAction_018
     EndMovement
 
     .balign 4, 0
 _01BC:
-    MoveAction_013
+    MoveAction_019
     EndMovement
 
 _01C4:

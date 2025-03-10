@@ -2,8 +2,6 @@
 #include <nitro/sinit.h>
 #include <string.h>
 
-#include "struct_decls/struct_party_decl.h"
-
 #include "overlay005/ov5_021E622C.h"
 #include "overlay025/poketch_button.h"
 #include "overlay025/poketch_system.h"
@@ -145,7 +143,7 @@ static void ov44_02256338(SysTask *param0, void *param1)
     UnkStruct_ov44_0225621C *v1 = (UnkStruct_ov44_0225621C *)param1;
 
     if (v1->unk_00 < NELEMS(v0)) {
-        ov25_02254518(v1->poketchSys, v1->buttonManager);
+        PoketechSystem_UpdateButtonManager(v1->poketchSys, v1->buttonManager);
 
         if (v0[v1->unk_00](v1)) {
             ov44_02256314(v1);

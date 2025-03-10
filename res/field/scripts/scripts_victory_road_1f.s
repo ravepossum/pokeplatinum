@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/victory_road_1f.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _0031
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     SetFlag 0x9CA

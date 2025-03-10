@@ -10,6 +10,7 @@
 #include "struct_defs/struct_020217F4.h"
 #include "struct_defs/struct_02024184.h"
 
+#include "overlay005/area_light.h"
 #include "overlay005/const_ov5_021FAF40.h"
 #include "overlay005/const_ov5_021FAF48.h"
 #include "overlay005/const_ov5_021FAF50.h"
@@ -18,7 +19,6 @@
 #include "overlay005/const_ov5_021FC9B4.h"
 #include "overlay005/const_ov5_021FD77C.h"
 #include "overlay005/funcptr_ov5_021EE454.h"
-#include "overlay005/ov5_021D521C.h"
 #include "overlay005/ov5_021DF440.h"
 #include "overlay005/ov5_021EB1A0.h"
 #include "overlay005/ov5_021ECC20.h"
@@ -222,7 +222,7 @@ int ov5_021ECEB4(MapObject *param0, UnkStruct_020216E0 **param1, int param2)
 
 int ov5_021ECF04(MapObject *param0, UnkStruct_020216E0 **param1)
 {
-    int v0 = sub_02062920(param0);
+    int v0 = MapObject_GetGraphicsID(param0);
     int v1 = ov5_021ECEB4(param0, param1, v0);
 
     return v1;
@@ -234,9 +234,7 @@ UnkStruct_020216E0 *ov5_021ECF1C(MapObject *param0, int param1)
     UnkStruct_02020C44 *v1;
     UnkStruct_020216E0 *v2;
     UnkStruct_ov5_021DF84C *v3;
-    UnkStruct_ov5_021ED0A4 *v4;
-
-    v4 = ov5_021EDEA8(param0);
+    UnkStruct_ov5_021ED0A4 *v4 = ov5_021EDEA8(param0);
     v1 = ov5_021EDC8C(v4);
 
     ov5_021EDA0C(v4, param1);
@@ -271,7 +269,7 @@ void ov5_021ECFA4(const MapObject *param0, UnkStruct_020216E0 **param1)
     ov5_021ED094(param0);
 
     if ((*param1) != NULL) {
-        int v0 = sub_02062920(param0);
+        int v0 = MapObject_GetGraphicsID(param0);
 
         if (sub_020677F4(v0) == 1) {
             v0 = sub_02067800(param0);
@@ -340,13 +338,13 @@ static void ov5_021ED0A4(UnkStruct_ov5_021ED0A4 *param0, int param1)
     UnkStruct_ov5_021ED110 *v3;
 
     v0 = sizeof(UnkStruct_ov5_021DF84C) * param1;
-    v2 = Heap_AllocFromHeap(4, v0);
+    v2 = Heap_AllocFromHeap(HEAP_ID_FIELD, v0);
 
     param0->unk_E4 = v2;
     GF_ASSERT(v2 != NULL);
 
     v0 = (sizeof(UnkStruct_ov5_021ED110)) * param1;
-    v3 = Heap_AllocFromHeap(4, v0);
+    v3 = Heap_AllocFromHeap(HEAP_ID_FIELD, v0);
 
     param0->unk_F4 = v3;
     GF_ASSERT(v3 != NULL);
@@ -366,16 +364,14 @@ static void ov5_021ED0F0(UnkStruct_ov5_021ED0A4 *param0)
 {
     ov5_021ED1A4(param0);
 
-    Heap_FreeToHeapExplicit(4, param0->unk_E4);
-    Heap_FreeToHeapExplicit(4, param0->unk_F4);
+    Heap_FreeToHeapExplicit(HEAP_ID_FIELD, param0->unk_E4);
+    Heap_FreeToHeapExplicit(HEAP_ID_FIELD, param0->unk_F4);
 }
 
 static UnkStruct_ov5_021DF84C *ov5_021ED110(UnkStruct_ov5_021ED0A4 *param0, u32 param1)
 {
     int v0;
-    UnkStruct_ov5_021ED110 *v1;
-
-    v1 = param0->unk_F4;
+    UnkStruct_ov5_021ED110 *v1 = param0->unk_F4;
     v0 = param0->unk_04;
 
     do {
@@ -430,9 +426,7 @@ int ov5_021ED150(const MapObjectManager *param0, u32 param1, UnkStruct_ov5_021DF
 static void ov5_021ED184(UnkStruct_ov5_021ED0A4 *param0, u32 param1)
 {
     int v0;
-    UnkStruct_ov5_021ED110 *v1;
-
-    v1 = param0->unk_F4;
+    UnkStruct_ov5_021ED110 *v1 = param0->unk_F4;
     v0 = param0->unk_04;
 
     do {
@@ -450,9 +444,7 @@ static void ov5_021ED184(UnkStruct_ov5_021ED0A4 *param0, u32 param1)
 static void ov5_021ED1A4(UnkStruct_ov5_021ED0A4 *param0)
 {
     int v0;
-    UnkStruct_ov5_021ED110 *v1;
-
-    v1 = param0->unk_F4;
+    UnkStruct_ov5_021ED110 *v1 = param0->unk_F4;
     v0 = param0->unk_04;
 
     do {
@@ -471,12 +463,12 @@ static int ov5_021ED1C8(const MapObjectManager *param0, const MapObject *param1,
     const MapObject *v2;
 
     v0 = MapObjectMan_GetMaxObjects(param0);
-    v2 = sub_02062868(param0);
+    v2 = MapObjectMan_GetMapObjectConst(param0);
 
     do {
         if (v2 != param1) {
             if (sub_02062CF8(v2) == 1) {
-                v1 = sub_02062920(v2);
+                v1 = MapObject_GetGraphicsID(v2);
 
                 if (sub_020677F4(v1) == 1) {
                     v1 = sub_02067800(v2);
@@ -498,14 +490,14 @@ static int ov5_021ED1C8(const MapObjectManager *param0, const MapObject *param1,
 static void ov5_021ED224(UnkStruct_ov5_021ED0A4 *param0, int param1, int param2, int param3, int param4, int param5, int param6)
 {
     {
-        param0->unk_F8 = ov5_021F067C(4, 64, 0x1000 * param1, param1);
+        param0->unk_F8 = ov5_021F067C(HEAP_ID_FIELD, HEAP_ID_64, 0x1000 * param1, param1);
         ov5_021ED558(param0);
         ov5_021EDCC4(param0, param2);
         ov5_021EDCCC(param0, param1 - param2);
     }
 
     {
-        param0->unk_FC = ov5_021F067C(4, 65, 0x80 * param3, param3);
+        param0->unk_FC = ov5_021F067C(HEAP_ID_FIELD, HEAP_ID_65, 0x80 * param3, param3);
         ov5_021ED694(param0);
         ov5_021EDCD4(param0, param4);
         ov5_021EDCDC(param0, param3 - param4);
@@ -555,7 +547,7 @@ static int ov5_021ED2E8(UnkStruct_ov5_021ED0A4 *param0, UnkStruct_ov5_021F06D8 *
     GF_ASSERT(v0 != NULL);
 
     {
-        NARC *v1 = sub_020628A0(param0->unk_104);
+        NARC *v1 = MapObjectMan_GetNARC(param0->unk_104);
         ov5_021F0784(param1, param2, v1, v0->unk_04, 0);
     }
 
@@ -610,9 +602,7 @@ static void ov5_021ED3B8(UnkStruct_ov5_021ED0A4 *param0, const int *param1)
 
 static void ov5_021ED3DC(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
-    ResourceCollection *v0;
-
-    v0 = ov5_021EDC98(param0);
+    ResourceCollection *v0 = ov5_021EDC98(param0);
 
     ov5_021ED2E8(param0, param0->unk_F8, param1, 0xffff, Unk_ov5_021FB484);
     ov5_021ED56C(param0, param1);
@@ -620,9 +610,7 @@ static void ov5_021ED3DC(UnkStruct_ov5_021ED0A4 *param0, int param1)
 
 static void ov5_021ED40C(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
-    ResourceCollection *v0;
-
-    v0 = ov5_021EDC98(param0);
+    ResourceCollection *v0 = ov5_021EDC98(param0);
 
     ov5_021ED2E8(param0, param0->unk_F8, param1, 0xffff, Unk_ov5_021FB484);
     ov5_021ED5B4(param0, param1);
@@ -638,9 +626,7 @@ static void ov5_021ED43C(UnkStruct_ov5_021ED0A4 *param0, const int *param1)
 
 static void ov5_021ED460(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
-    ResourceCollection *v0;
-
-    v0 = ov5_021EDCA0(param0);
+    ResourceCollection *v0 = ov5_021EDCA0(param0);
 
     ov5_021ED2E8(param0, param0->unk_FC, param1, 0xffff, Unk_ov5_021FB5BC);
     ov5_021ED6A8(param0, param1);
@@ -648,9 +634,7 @@ static void ov5_021ED460(UnkStruct_ov5_021ED0A4 *param0, int param1)
 
 static void ov5_021ED490(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
-    ResourceCollection *v0;
-
-    v0 = ov5_021EDCA0(param0);
+    ResourceCollection *v0 = ov5_021EDCA0(param0);
 
     ov5_021ED2E8(param0, param0->unk_FC, param1, 0xffff, Unk_ov5_021FB5BC);
     ov5_021ED6F0(param0, param1);
@@ -726,9 +710,7 @@ static int ov5_021ED53C(int *param0, int param1, int param2, int param3)
 
 static void ov5_021ED558(UnkStruct_ov5_021ED0A4 *param0)
 {
-    int *v0;
-
-    v0 = ov5_021EDCBC(param0);
+    int *v0 = ov5_021EDCBC(param0);
     ov5_021ED504(v0, 0xffff, 8);
 }
 
@@ -758,9 +740,7 @@ static int ov5_021ED598(UnkStruct_ov5_021ED0A4 *param0, int param1)
 static void ov5_021ED5B4(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
     int v0, v1;
-    int *v2;
-
-    v2 = ov5_021EDCBC(param0);
+    int *v2 = ov5_021EDCBC(param0);
     v2 = &v2[ov5_021EDCC8(param0)];
     v1 = ov5_021EDCD0(param0);
     v0 = ov5_021ED50C(v2, param1, 0xffff, v1);
@@ -771,9 +751,7 @@ static void ov5_021ED5B4(UnkStruct_ov5_021ED0A4 *param0, int param1)
 static int ov5_021ED5E8(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
     int v0;
-    int *v1;
-
-    v1 = ov5_021EDCBC(param0);
+    int *v1 = ov5_021EDCBC(param0);
     v1 = &v1[ov5_021EDCC8(param0)];
     v0 = ov5_021EDCD0(param0);
 
@@ -783,9 +761,7 @@ static int ov5_021ED5E8(UnkStruct_ov5_021ED0A4 *param0, int param1)
 static void ov5_021ED610(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
     int v0;
-    int *v1;
-
-    v1 = ov5_021EDCBC(param0);
+    int *v1 = ov5_021EDCBC(param0);
     v1 = &v1[ov5_021EDCC8(param0)];
     v0 = ov5_021EDCD0(param0);
 
@@ -796,9 +772,7 @@ static void ov5_021ED63C(MapObjectManager *param0, UnkStruct_ov5_021ED0A4 *param
 {
     int v0;
     int *v1;
-    ResourceCollection *v2;
-
-    v2 = ov5_021EDC98(param1);
+    ResourceCollection *v2 = ov5_021EDC98(param1);
     v1 = ov5_021EDCBC(param1);
     v1 = &v1[ov5_021EDCC8(param1)];
     v0 = ov5_021EDCD0(param1);
@@ -818,9 +792,7 @@ static void ov5_021ED63C(MapObjectManager *param0, UnkStruct_ov5_021ED0A4 *param
 
 static void ov5_021ED694(UnkStruct_ov5_021ED0A4 *param0)
 {
-    int *v0;
-
-    v0 = ov5_021EDCC0(param0);
+    int *v0 = ov5_021EDCC0(param0);
     ov5_021ED504(v0, 0xffff, 8);
 }
 
@@ -850,9 +822,7 @@ static int ov5_021ED6D4(UnkStruct_ov5_021ED0A4 *param0, int param1)
 static void ov5_021ED6F0(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
     int v0, v1;
-    int *v2;
-
-    v2 = ov5_021EDCC0(param0);
+    int *v2 = ov5_021EDCC0(param0);
     v2 = &v2[ov5_021EDCD8(param0)];
     v1 = ov5_021EDCE0(param0);
     v0 = ov5_021ED50C(v2, param1, 0xffff, v1);
@@ -863,9 +833,7 @@ static void ov5_021ED6F0(UnkStruct_ov5_021ED0A4 *param0, int param1)
 static int ov5_021ED724(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
     int v0;
-    int *v1;
-
-    v1 = ov5_021EDCC0(param0);
+    int *v1 = ov5_021EDCC0(param0);
     v1 = &v1[ov5_021EDCD8(param0)];
     v0 = ov5_021EDCE0(param0);
 
@@ -875,9 +843,7 @@ static int ov5_021ED724(UnkStruct_ov5_021ED0A4 *param0, int param1)
 static void ov5_021ED74C(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
     int v0;
-    int *v1;
-
-    v1 = ov5_021EDCC0(param0);
+    int *v1 = ov5_021EDCC0(param0);
     v1 = &v1[ov5_021EDCD8(param0)];
     v0 = ov5_021EDCE0(param0);
 
@@ -888,9 +854,7 @@ static void ov5_021ED778(MapObjectManager *param0, UnkStruct_ov5_021ED0A4 *param
 {
     int v0;
     int *v1;
-    ResourceCollection *v2;
-
-    v2 = ov5_021EDCA0(param1);
+    ResourceCollection *v2 = ov5_021EDCA0(param1);
     v1 = ov5_021EDCC0(param1);
     v1 = &v1[ov5_021EDCD8(param1)];
     v0 = ov5_021EDCE0(param1);
@@ -910,9 +874,7 @@ static void ov5_021ED778(MapObjectManager *param0, UnkStruct_ov5_021ED0A4 *param
 
 static void ov5_021ED7D0(UnkStruct_ov5_021ED0A4 *param0)
 {
-    int *v0;
-
-    v0 = ov5_021EDCB8(param0);
+    int *v0 = ov5_021EDCB8(param0);
     ov5_021ED504(v0, 0xffff, 32);
 }
 
@@ -953,9 +915,7 @@ static int ov5_021ED82C(UnkStruct_ov5_021ED0A4 *param0, int param1)
 static void ov5_021ED858(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
     int v0, v1;
-    int *v2;
-
-    v2 = ov5_021EDCB8(param0);
+    int *v2 = ov5_021EDCB8(param0);
     v2 = &v2[ov5_021EDCE8(param0)];
     v1 = ov5_021EDCF0(param0);
     v0 = ov5_021ED50C(v2, param1, 0xffff, v1);
@@ -966,9 +926,7 @@ static void ov5_021ED858(UnkStruct_ov5_021ED0A4 *param0, int param1)
 static void ov5_021ED88C(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
     int v0;
-    int *v1;
-
-    v1 = ov5_021EDCB8(param0);
+    int *v1 = ov5_021EDCB8(param0);
     v1 = &v1[ov5_021EDCE8(param0)];
     v0 = ov5_021EDCF0(param0);
 
@@ -979,9 +937,7 @@ static void ov5_021ED8B8(MapObjectManager *param0, UnkStruct_ov5_021ED0A4 *param
 {
     int v0, v1;
     int *v2;
-    TextureResourceManager *v3;
-
-    v3 = ov5_021EDCB0(param1);
+    TextureResourceManager *v3 = ov5_021EDCB0(param1);
     v2 = ov5_021EDCB8(param1);
     v2 = &v2[ov5_021EDCE8(param1)];
     v0 = ov5_021EDCF0(param1);
@@ -1007,9 +963,7 @@ static void ov5_021ED8B8(MapObjectManager *param0, UnkStruct_ov5_021ED0A4 *param
 static int ov5_021ED924(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
     int v0;
-    int *v1;
-
-    v1 = ov5_021EDCB8(param0);
+    int *v1 = ov5_021EDCB8(param0);
     v1 = &v1[ov5_021EDCE8(param0)];
     v0 = ov5_021EDCF0(param0);
 
@@ -1080,9 +1034,7 @@ static void ov5_021ED9F4(UnkStruct_ov5_021ED0A4 *param0, int param1)
 
 static void ov5_021EDA0C(UnkStruct_ov5_021ED0A4 *param0, int param1)
 {
-    int v0;
-
-    v0 = ov5_021EDD2C(param1);
+    int v0 = ov5_021EDD2C(param1);
     ov5_021ED9DC(param0, v0);
 
     v0 = ov5_021EDD38(param1);
@@ -1102,12 +1054,12 @@ static int ov5_021EDA54(const MapObjectManager *param0, int param1, const MapObj
     int v0 = 0, v1;
     MapObject *v2 = NULL;
 
-    while (sub_020625B0(param0, &v2, &v0, (1 << 0)) == 1) {
+    while (sub_020625B0(param0, &v2, &v0, MAP_OBJ_STATUS_0) == 1) {
         if ((param2 != NULL) && (param2 == v2)) {
             continue;
         }
 
-        v1 = sub_02062920(v2);
+        v1 = MapObject_GetGraphicsID(v2);
 
         if (sub_020677F4(v1) == 1) {
             v1 = sub_02067800(v2);
@@ -1126,12 +1078,12 @@ static int ov5_021EDAB4(const MapObjectManager *param0, int param1, const MapObj
     int v0, v1 = 0;
     MapObject *v2 = NULL;
 
-    while (sub_020625B0(param0, &v2, &v1, (1 << 0)) == 1) {
+    while (sub_020625B0(param0, &v2, &v1, MAP_OBJ_STATUS_0) == 1) {
         if ((param2 != NULL) && (param2 == v2)) {
             continue;
         }
 
-        v0 = sub_02062920(v2);
+        v0 = MapObject_GetGraphicsID(v2);
 
         if (v0 == 0xffff) {
             continue;
@@ -1164,7 +1116,7 @@ static int ov5_021EDB3C(const MapObjectManager *param0, int param1, const MapObj
     int v0, v1 = 0;
     MapObject *v2 = NULL;
 
-    while (sub_020625B0(param0, &v2, &v1, (1 << 0)) == 1) {
+    while (sub_020625B0(param0, &v2, &v1, MAP_OBJ_STATUS_0) == 1) {
         if ((param2 != NULL) && (v2 == param2)) {
             continue;
         }
@@ -1181,7 +1133,7 @@ static int ov5_021EDB3C(const MapObjectManager *param0, int param1, const MapObj
             }
         }
 
-        v0 = sub_02062920(v2);
+        v0 = MapObject_GetGraphicsID(v2);
 
         if (sub_020677F4(v0) == 1) {
             v0 = sub_02067800(v2);
@@ -1365,25 +1317,19 @@ static const UnkStruct_ov5_021EDD04 *ov5_021EDD04(int param0)
 
 static int ov5_021EDD2C(int param0)
 {
-    const UnkStruct_ov5_021EDD04 *v0;
-
-    v0 = ov5_021EDD04(param0);
+    const UnkStruct_ov5_021EDD04 *v0 = ov5_021EDD04(param0);
     return v0->unk_04;
 }
 
 static int ov5_021EDD38(int param0)
 {
-    const UnkStruct_ov5_021EDD04 *v0;
-
-    v0 = ov5_021EDD04(param0);
+    const UnkStruct_ov5_021EDD04 *v0 = ov5_021EDD04(param0);
     return v0->unk_06;
 }
 
 static const UnkStruct_020217F4 *ov5_021EDD44(int param0)
 {
-    const UnkStruct_ov5_021EDD04 *v0;
-
-    v0 = ov5_021EDD04(param0);
+    const UnkStruct_ov5_021EDD04 *v0 = ov5_021EDD04(param0);
     return v0->unk_08;
 }
 
@@ -1404,15 +1350,15 @@ static u32 ov5_021EDD50(int param0)
 void ov5_021EDD78(MapObject *param0, int param1)
 {
     if (param1 == 1) {
-        MapObject_SetStatusFlagOn(param0, (1 << 22));
+        MapObject_SetStatusFlagOn(param0, MAP_OBJ_STATUS_22);
     } else {
-        MapObject_SetStatusFlagOff(param0, (1 << 22));
+        MapObject_SetStatusFlagOff(param0, MAP_OBJ_STATUS_22);
     }
 }
 
 int ov5_021EDD94(MapObject *param0)
 {
-    if (MapObject_CheckStatus(param0, (1 << 22))) {
+    if (MapObject_CheckStatus(param0, MAP_OBJ_STATUS_22)) {
         return 1;
     }
 
@@ -1425,7 +1371,7 @@ static void ov5_021EDDAC(UnkStruct_ov5_021ED0A4 *param0, int param1)
     UnkStruct_02020C44 *v1;
 
     v0.unk_00 = param1;
-    v0.unk_04 = 4;
+    v0.heapID = HEAP_ID_FIELD;
 
     v1 = sub_02020C44(&v0);
     ov5_021EDC84(param0, v1);
@@ -1456,7 +1402,7 @@ static UnkStruct_020216E0 *ov5_021EDDDC(UnkStruct_02020C44 *param0, const UnkStr
         sub_02021344(v2, 0);
         sub_020213A4(v2, 0);
         NNS_G3dMdlSetMdlFogEnableFlagAll(sub_020213F4(v2), param3);
-        ov5_021D53A4(sub_020213F4(v2));
+        AreaLight_UseGlobalModelAttributes(sub_020213F4(v2));
     }
 
     return v2;
@@ -1498,9 +1444,7 @@ static void ov5_021EDE3C(UnkStruct_ov5_021ED0A4 *param0, u32 param1, UnkStruct_o
 
 static UnkStruct_ov5_021ED0A4 *ov5_021EDEA8(const MapObject *param0)
 {
-    const MapObjectManager *v0;
-
-    v0 = MapObject_MapObjectManager(param0);
+    const MapObjectManager *v0 = MapObject_MapObjectManager(param0);
     return (UnkStruct_ov5_021ED0A4 *)sub_0206285C(v0);
 }
 
@@ -1524,12 +1468,12 @@ void ov5_021EDED8(MapObject *param0, UnkStruct_020216E0 *param1)
 {
     int v0 = 1;
 
-    if (MapObject_GetStateFlag(param0, (1 << 9)) == 1) {
+    if (MapObject_CheckStatusFlag(param0, MAP_OBJ_STATUS_HIDE) == 1) {
         v0 = 0;
     }
 
-    if (MapObject_GetStateFlag(param0, (1 << 12)) == 1) {
-        if (MapObject_GetStateFlag(param0, (1 << 13)) == 0) {
+    if (MapObject_CheckStatusFlag(param0, MAP_OBJ_STATUS_12) == 1) {
+        if (!MapObject_CheckStatusFlag(param0, MAP_OBJ_STATUS_13)) {
             v0 = 0;
         }
     }
@@ -1860,7 +1804,7 @@ static void ov5_021EE2D0(UnkStruct_ov5_021ED0A4 *param0, UnkStruct_ov5_021EE294 
 
         ov5_021EDD78(param1->unk_04, 0);
 
-        if (MapObject_GetStateFlag(param1->unk_04, (1 << 21)) == 1) {
+        if (MapObject_CheckStatusFlag(param1->unk_04, MAP_OBJ_STATUS_21) == 1) {
             sub_02062BA4(param1->unk_04);
         } else {
             sub_02062B68(param1->unk_04);
@@ -1880,7 +1824,7 @@ static void ov5_021EE320(UnkStruct_ov5_021ED0A4 *param0, int param1, int param2)
     v3 = (sizeof(UnkStruct_ov5_021EDFBC)) * param1;
     v2 = (sizeof(UnkStruct_ov5_021EE134)) * param1;
     v1 = (sizeof(UnkStruct_ov5_021EDF3C)) + v2 + v3 + v4;
-    v5 = Heap_AllocFromHeap(4, v1);
+    v5 = Heap_AllocFromHeap(HEAP_ID_FIELD, v1);
 
     GF_ASSERT(v5 != NULL);
     memset(v5, 0, v1);
@@ -1924,7 +1868,7 @@ static void ov5_021EE3C4(UnkStruct_ov5_021ED0A4 *param0)
 UnkStruct_020216E0 *ov5_021EE3FC(MapObject *param0, int param1, UnkFuncPtr_ov5_021EE454 param2, void *param3)
 {
     if ((ov5_021EDD94(param0) == 1) || (ov5_021EB1A0(param0) == NULL)) {
-        int v0 = sub_02062920(param0);
+        int v0 = MapObject_GetGraphicsID(param0);
         const MapObjectManager *v1 = MapObject_MapObjectManager(param0);
 
         sub_02061B48(param0);
@@ -1953,7 +1897,7 @@ static UnkStruct_020216E0 *ov5_021EE454(MapObject *param0, int param1, UnkFuncPt
     v11->unk_00 = param1;
     v11->unk_50 = param0;
 
-    v2 = sub_02062920(param0);
+    v2 = MapObject_GetGraphicsID(param0);
 
     {
         v1 = 0;
@@ -2034,7 +1978,7 @@ static UnkStruct_020216E0 *ov5_021EE454(MapObject *param0, int param1, UnkFuncPt
             VecFx32 v12;
             int v13;
             int v14 = sub_02062758(param0, 2);
-            u8 v15 = sub_02064238(param0, 1);
+            u8 v15 = MapObject_GetTileBehaviorFromDir(param0, 1);
 
             if (TileBehavior_IsReflective(v15) == 1) {
                 v13 = 2;
@@ -2044,7 +1988,7 @@ static UnkStruct_020216E0 *ov5_021EE454(MapObject *param0, int param1, UnkFuncPt
                 v13 = 1;
             }
 
-            MapObject_PosVectorOut(param0, &v12);
+            MapObject_GetPosPtr(param0, &v12);
             v11->unk_54 = ov5_021F1BA4(ov5_021DF578(param0), &v11->unk_28, v11->unk_24, &v12, v13, v14);
         }
     }
@@ -2097,7 +2041,7 @@ static void ov5_021EE698(SysTask *param0, void *param1)
             return;
         }
 
-        if (sub_02062920(v1) != v0->unk_00) {
+        if (MapObject_GetGraphicsID(v1) != v0->unk_00) {
             v0->unk_04++;
         }
         break;

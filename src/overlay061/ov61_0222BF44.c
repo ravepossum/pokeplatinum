@@ -4,6 +4,8 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/screen.h"
+
 #include "struct_decls/struct_0202B370_decl.h"
 #include "struct_defs/struct_02017498.h"
 #include "struct_defs/struct_02099F80.h"
@@ -12,7 +14,6 @@
 #include "overlay061/struct_ov61_0222C3B0.h"
 
 #include "bg_window.h"
-#include "core_sys.h"
 #include "font.h"
 #include "game_options.h"
 #include "graphics.h"
@@ -24,23 +25,23 @@
 #include "message.h"
 #include "narc.h"
 #include "overlay_manager.h"
+#include "render_oam.h"
 #include "render_text.h"
 #include "render_window.h"
 #include "save_player.h"
 #include "strbuf.h"
 #include "string_list.h"
 #include "string_template.h"
+#include "system.h"
 #include "system_data.h"
 #include "text.h"
-#include "unk_0200A784.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
-#include "unk_0201DBEC.h"
 #include "unk_0201E3D8.h"
 #include "unk_0202ACE0.h"
 #include "unk_020366A0.h"
 #include "unk_02038FFC.h"
 #include "unk_020393C8.h"
+#include "vram_transfer.h"
 
 typedef struct {
     UnkStruct_02017498 *unk_00;
@@ -140,7 +141,7 @@ int ov61_0222BF44(OverlayManager *param0, int *param1)
 {
     UnkStruct_ov61_0222C664 *v0;
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
     GXLayers_DisableEngineALayers();
     GXLayers_DisableEngineBLayers();
@@ -152,44 +153,44 @@ int ov61_0222BF44(OverlayManager *param0, int *param1)
     G2_BlendNone();
     G2S_BlendNone();
 
-    Heap_Create(3, 117, 0x50000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_117, 0x50000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov61_0222C664), 117);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov61_0222C664), HEAP_ID_117);
     MI_CpuClear8(v0, sizeof(UnkStruct_ov61_0222C664));
     v0->unk_00 = OverlayManager_Args(param0);
-    v0->unk_04 = BgConfig_New(117);
+    v0->unk_04 = BgConfig_New(HEAP_ID_117);
 
-    VRAMTransferManager_New(64, 117);
+    VramTransfer_New(64, 117);
     SetAutorepeat(4, 8);
     ov61_0222C224(v0->unk_04);
     sub_0201E3D8();
     sub_0201E450(4);
 
     v0->unk_20 = StringTemplate_New(11, 64, 117);
-    v0->unk_24 = MessageLoader_Init(0, 26, 671, 117);
-    v0->unk_28 = MessageLoader_Init(0, 26, 674, 117);
-    v0->unk_2C = MessageLoader_Init(0, 26, 695, 117);
-    v0->unk_34 = Strbuf_Init((90 * 2), 117);
-    v0->unk_3C = Strbuf_Init((16 * 8 * 2), 117);
+    v0->unk_24 = MessageLoader_Init(0, 26, 671, HEAP_ID_117);
+    v0->unk_28 = MessageLoader_Init(0, 26, 674, HEAP_ID_117);
+    v0->unk_2C = MessageLoader_Init(0, 26, 695, HEAP_ID_117);
+    v0->unk_34 = Strbuf_Init((90 * 2), HEAP_ID_117);
+    v0->unk_3C = Strbuf_Init((16 * 8 * 2), HEAP_ID_117);
     v0->unk_38 = MessageLoader_GetNewStrbuf(v0->unk_24, 31);
 
     ov61_0222C3B0(v0);
     ov61_0222C664(v0);
 
-    StartScreenTransition(0, 1, 1, 0x0, 6, 1, 117);
+    StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_117);
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG0, 1);
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG1, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG0, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG1, 1);
 
-    gCoreSys.unk_65 = 0;
+    gSystem.whichScreenIs3D = DS_SCREEN_MAIN;
 
     GXLayers_SwapDisplay();
     RenderControlFlags_SetCanABSpeedUpPrint(1);
     RenderControlFlags_SetAutoScrollFlags(0);
     RenderControlFlags_SetSpeedUpOnTouch(0);
-    SetMainCallback(ov61_0222C1FC, v0);
+    SetVBlankCallback(ov61_0222C1FC, v0);
 
     if (v0->unk_00->unk_10) {
         sub_02039734();
@@ -258,16 +259,16 @@ int ov61_0222C160(OverlayManager *param0, int *param1)
     ov61_0222C70C(v0);
     Heap_FreeToHeap(v0->unk_04);
     ov61_0222C38C(v0->unk_04);
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
-    VRAMTransferManager_Destroy();
+    VramTransfer_Free();
     sub_0201E530();
     RenderControlFlags_SetCanABSpeedUpPrint(0);
     RenderControlFlags_SetAutoScrollFlags(0);
     RenderControlFlags_SetSpeedUpOnTouch(0);
     sub_02039794();
     OverlayManager_FreeData(param0);
-    Heap_Destroy(117);
+    Heap_Destroy(HEAP_ID_117);
 
     return 1;
 }
@@ -276,8 +277,8 @@ static void ov61_0222C1FC(void *param0)
 {
     UnkStruct_ov61_0222C664 *v0 = param0;
 
-    sub_0201DCAC();
-    sub_0200A858();
+    VramTransfer_Process();
+    RenderOam_Transfer();
     Bg_RunScheduledUpdates(v0->unk_04);
 
     inline_ov61_0222C1FC(&v0->unk_A4);
@@ -411,8 +412,8 @@ static void ov61_0222C224(BgConfig *param0)
         Bg_SetOffset(param0, 5, 3, 0);
     }
 
-    Bg_ClearTilesRange(0, 32, 0, 117);
-    Bg_ClearTilesRange(4, 32, 0, 117);
+    Bg_ClearTilesRange(0, 32, 0, HEAP_ID_117);
+    Bg_ClearTilesRange(4, 32, 0, HEAP_ID_117);
 }
 
 static void ov61_0222C38C(BgConfig *param0)
@@ -426,20 +427,18 @@ static void ov61_0222C38C(BgConfig *param0)
 static void ov61_0222C3B0(UnkStruct_ov61_0222C664 *param0)
 {
     BgConfig *v0 = param0->unk_04;
-    NARC *v1;
+    NARC *v1 = NARC_ctor(NARC_INDEX_DATA__WIFIP2PMATCH, HEAP_ID_117);
 
-    v1 = NARC_ctor(NARC_INDEX_DATA__WIFIP2PMATCH, 117);
-
-    Graphics_LoadPaletteFromOpenNARC(v1, 3, 0, 0, 0, 117);
-    Graphics_LoadPaletteFromOpenNARC(v1, 3, 4, 0, 0, 117);
-    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, 117);
-    Font_LoadScreenIndicatorsPalette(4, 13 * 0x20, 117);
-    LoadMessageBoxGraphics(v0, 0, 1, 10, Options_Frame(SaveData_Options(param0->unk_00->unk_00->unk_04)), 117);
-    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, 117);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 2, v0, 1, 0, 0, 0, 117);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 5, v0, 1, 0, 32 * 24 * 2, 0, 117);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 10, v0, 5, 0, 0, 0, 117);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 11, v0, 5, 0, 32 * 24 * 2, 0, 117);
+    Graphics_LoadPaletteFromOpenNARC(v1, 3, 0, 0, 0, HEAP_ID_117);
+    Graphics_LoadPaletteFromOpenNARC(v1, 3, 4, 0, 0, HEAP_ID_117);
+    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, HEAP_ID_117);
+    Font_LoadScreenIndicatorsPalette(4, 13 * 0x20, HEAP_ID_117);
+    LoadMessageBoxGraphics(v0, 0, 1, 10, Options_Frame(SaveData_Options(param0->unk_00->unk_00->unk_04)), HEAP_ID_117);
+    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, HEAP_ID_117);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 2, v0, 1, 0, 0, 0, HEAP_ID_117);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 5, v0, 1, 0, 32 * 24 * 2, 0, HEAP_ID_117);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 10, v0, 5, 0, 0, 0, HEAP_ID_117);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 11, v0, 5, 0, 32 * 24 * 2, 0, HEAP_ID_117);
     Bg_MaskPalette(0, 0);
     Bg_MaskPalette(4, 0);
 
@@ -494,7 +493,7 @@ void ov61_0222C760(Window *param0, Strbuf *param1, int param2, int param3, int p
 
 static void ov61_0222C794(UnkStruct_ov61_0222C664 *param0, int param1)
 {
-    Strbuf *v0 = Strbuf_Init((16 * 8 * 2), 117);
+    Strbuf *v0 = Strbuf_Init((16 * 8 * 2), HEAP_ID_117);
 
     MessageLoader_GetStrbuf(param0->unk_2C, param1, v0);
     StringTemplate_Format(param0->unk_20, param0->unk_3C, v0);
@@ -560,9 +559,7 @@ static Menu *ov61_0222C884(BgConfig *param0, int param1, int param2)
 
 static void ov61_0222C8B8(UnkStruct_ov61_0222C664 *param0, MessageLoader *param1, int param2, int param3, u16 param4)
 {
-    Strbuf *v0;
-
-    v0 = MessageLoader_GetNewStrbuf(param1, param2);
+    Strbuf *v0 = MessageLoader_GetNewStrbuf(param1, param2);
 
     StringTemplate_Format(param0->unk_20, param0->unk_34, v0);
     Strbuf_Free(v0);
@@ -801,9 +798,7 @@ static int ov61_0222CBF0(UnkStruct_ov61_0222C664 *param0)
     DWCUserData *v0;
     s32 v1;
     SystemData *v2;
-    UnkStruct_0202B370 *v3;
-
-    v3 = sub_0202B370(param0->unk_00->unk_00->unk_04);
+    UnkStruct_0202B370 *v3 = sub_0202B370(param0->unk_00->unk_00->unk_04);
     v2 = SaveData_GetSystemData(param0->unk_00->unk_00->unk_04);
     v0 = sub_0202AD28(v3);
     v1 = sub_02025D74(v2);
@@ -822,9 +817,7 @@ static int ov61_0222CBF0(UnkStruct_ov61_0222C664 *param0)
 
 static int ov61_0222CC40(UnkStruct_ov61_0222C664 *param0)
 {
-    int v0;
-
-    v0 = ov4_021D1F3C(-param0->unk_18, param0->unk_1C);
+    int v0 = ov4_021D1F3C(-param0->unk_18, param0->unk_1C);
     ov61_0222C7F8(param0, v0, -param0->unk_18);
     param0->unk_08 = 7;
 
@@ -833,7 +826,7 @@ static int ov61_0222CC40(UnkStruct_ov61_0222C664 *param0)
 
 static int ov61_0222CC64(UnkStruct_ov61_0222C664 *param0)
 {
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A || gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    if (gSystem.pressedKeys & PAD_BUTTON_A || gSystem.pressedKeys & PAD_BUTTON_B) {
         Window_EraseStandardFrame(&param0->unk_64, 0);
         param0->unk_90 = 0;
 
@@ -855,7 +848,7 @@ static int ov61_0222CCAC(UnkStruct_ov61_0222C664 *param0)
 
     sub_02039794();
     ov61_0222C86C(param0);
-    StartScreenTransition(0, 0, 0, 0x0, 6, 1, 117);
+    StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_117);
     param0->unk_08 = 0;
 
     return 1;

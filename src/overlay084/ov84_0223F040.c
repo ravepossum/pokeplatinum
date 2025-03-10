@@ -74,7 +74,7 @@ void ov84_0223F1F8(UnkStruct_ov84_0223B5A0 *param0)
     MessageLoader *v0;
     u16 v1;
 
-    v0 = MessageLoader_Init(1, 26, 395, 6);
+    v0 = MessageLoader_Init(1, 26, 395, HEAP_ID_6);
 
     for (v1 = 0; v1 < 8; v1++) {
         param0->unk_404[v1] = MessageLoader_GetNewStrbuf(v0, v1);
@@ -95,9 +95,7 @@ void ov84_0223F238(UnkStruct_ov84_0223B5A0 *param0)
 void ov84_0223F25C(UnkStruct_ov84_0223B5A0 *param0)
 {
     u16 v0;
-    u16 v1;
-
-    v1 = (12 * 3) / 3;
+    u16 v1 = (12 * 3) / 3;
 
     for (v0 = 0; v0 < v1; v0++) {
         Bg_FillTilemapRect(param0->unk_00, 2, ((1 + 17 * 18) + 32 * 6) + v1 + v0, 0 + v0, 13, 1, 1, 3);
@@ -107,9 +105,7 @@ void ov84_0223F25C(UnkStruct_ov84_0223B5A0 *param0)
 
 static void ov84_0223F2C0(UnkStruct_ov84_0223B5A0 *param0, Strbuf *param1, u16 param2)
 {
-    u32 v0;
-
-    v0 = Font_CalcStrbufWidth(FONT_SYSTEM, param1, 0);
+    u32 v0 = Font_CalcStrbufWidth(FONT_SYSTEM, param1, 0);
     Text_AddPrinterWithParamsAndColor(&param0->unk_04[2], FONT_SYSTEM, param1, param2 - v0 / 2, 2, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(1, 2, 0), NULL);
 }
 
@@ -140,9 +136,7 @@ void ov84_0223F2FC(UnkStruct_ov84_0223B5A0 *param0)
 
 static void *ov84_0223F390(UnkStruct_ov84_0223B5A0 *param0, NNSG2dCharacterData **param1)
 {
-    void *v0;
-
-    v0 = NARC_AllocAndReadWholeMember(param0->unk_D4, 21, 6);
+    void *v0 = NARC_AllocAndReadWholeMember(param0->unk_D4, 21, 6);
     NNS_G2dGetUnpackedBGCharacterData(v0, param1);
     return v0;
 }
@@ -162,7 +156,7 @@ void ov84_0223F3AC(UnkStruct_ov84_0223B5A0 *param0, u8 param1, u8 param2)
 
     Window_BlitBitmapRect(&param0->unk_04[5], v0->pRawData, v2, 0, 32 * 8, 16, param0->unk_427 + param0->unk_428 * param1, 3, 10, 10);
     Window_ScheduleCopyToVRAM(&param0->unk_04[5]);
-    Heap_FreeToHeapExplicit(6, v1);
+    Heap_FreeToHeapExplicit(HEAP_ID_6, v1);
 }
 
 void ov84_0223F438(UnkStruct_ov84_0223B5A0 *param0)
@@ -186,7 +180,7 @@ void ov84_0223F438(UnkStruct_ov84_0223B5A0 *param0)
     }
 
     Window_ScheduleCopyToVRAM(&param0->unk_04[5]);
-    Heap_FreeToHeapExplicit(6, v1);
+    Heap_FreeToHeapExplicit(HEAP_ID_6, v1);
 }
 
 static void ov84_0223F4E8(UnkStruct_ov84_0223B5A0 *param0, u32 param1, u32 param2)
@@ -204,7 +198,7 @@ void ov84_0223F528(UnkStruct_ov84_0223B5A0 *param0, u16 param1)
     Strbuf *v0;
 
     if (param1 != 0xffff) {
-        v0 = Strbuf_Init(130, 6);
+        v0 = Strbuf_Init(130, HEAP_ID_6);
         Item_LoadDescription(v0, param1, 6);
     } else {
         v0 = MessageLoader_GetNewStrbuf(param0->unk_114, 94);
@@ -300,7 +294,7 @@ void ov84_0223F81C(UnkStruct_ov84_0223B5A0 *param0, u16 param1, u16 param2, u32 
         Text_AddPrinterWithParamsAndColor(&param0->unk_04[0], FONT_SYSTEM, param0->unk_3FC, ((17 * 8 - 2) - 6 - 1 - 6 * 3), param2, TEXT_SPEED_NO_TRANSFER, param3, NULL);
     }
 
-    v0 = Strbuf_Init(10, 6);
+    v0 = Strbuf_Init(10, HEAP_ID_6);
 
     StringTemplate_SetNumber(param0->unk_118, 0, param1, 3, 0, 1);
     StringTemplate_Format(param0->unk_118, v0, param0->unk_400);
@@ -334,9 +328,7 @@ void ov84_0223F94C(UnkStruct_ov84_0223B5A0 *param0, BagItem *param1, u32 param2)
 
 static void *ov84_0223F994(UnkStruct_ov84_0223B5A0 *param0, NNSG2dCharacterData **param1)
 {
-    void *v0;
-
-    v0 = NARC_AllocAndReadWholeMember(param0->unk_D4, 38, 6);
+    void *v0 = NARC_AllocAndReadWholeMember(param0->unk_D4, 38, 6);
     NNS_G2dGetUnpackedBGCharacterData(v0, param1);
     return v0;
 }
@@ -349,7 +341,7 @@ static void ov84_0223F9B0(UnkStruct_ov84_0223B5A0 *param0, u32 param1)
 
     v1 = ov84_0223F994(param0, &v0);
     Window_BlitBitmapRect(&param0->unk_04[0], v0->pRawData, 40, 0, 64, 16, 0, param1, 24, 16);
-    Heap_FreeToHeapExplicit(6, v1);
+    Heap_FreeToHeapExplicit(HEAP_ID_6, v1);
 }
 
 void ov84_0223F9F0(UnkStruct_ov84_0223B5A0 *param0, u32 param1)
@@ -369,7 +361,7 @@ void ov84_0223FA44(UnkStruct_ov84_0223B5A0 *param0, u32 param1)
 
     v1 = ov84_0223F994(param0, &v0);
     Window_BlitBitmapRect(&param0->unk_04[0], v0->pRawData, 0, 0, 64, 16, 96, param1, 40, 16);
-    Heap_FreeToHeapExplicit(6, v1);
+    Heap_FreeToHeapExplicit(HEAP_ID_6, v1);
 }
 
 void ov84_0223FA88(UnkStruct_ov84_0223B5A0 *param0)
@@ -446,7 +438,7 @@ void ov84_0223FB70(UnkStruct_ov84_0223B5A0 *param0, u8 *param1, u8 param2)
         Window_FillTilemap(&param0->unk_04[v5], 15);
 
         v2 = MessageLoader_GetNewStrbuf(param0->unk_114, 42);
-        v3 = Strbuf_Init((14 * 2 * 2), 6);
+        v3 = Strbuf_Init((14 * 2 * 2), HEAP_ID_6);
         v1 = &param0->unk_C4->unk_04[param0->unk_C4->unk_64];
 
         ov84_0223F4E8(param0, v1->unk_06 + v1->unk_04 - 1, 0);
@@ -495,7 +487,7 @@ void ov84_0223FE18(UnkStruct_ov84_0223B5A0 *param0)
     Window_FillTilemap(&param0->unk_04[1], 0);
 
     v0 = MessageLoader_GetNewStrbuf(param0->unk_114, 45);
-    v1 = Strbuf_Init(130, 6);
+    v1 = Strbuf_Init(130, HEAP_ID_6);
 
     ov84_0223F4E8(param0, param0->unk_47B - 1, 0);
 
@@ -519,7 +511,7 @@ void ov84_0223FE94(UnkStruct_ov84_0223B5A0 *param0)
     Window_FillTilemap(&param0->unk_04[3], 15);
 
     v1 = MessageLoader_GetNewStrbuf(param0->unk_114, 52);
-    v2 = Strbuf_Init(14 * 2 * 2, 6);
+    v2 = Strbuf_Init(14 * 2 * 2, HEAP_ID_6);
     v0 = &param0->unk_C4->unk_04[param0->unk_C4->unk_64];
 
     ov84_0223F4E8(param0, v0->unk_06 + v0->unk_04 - 1, 0);
@@ -695,7 +687,7 @@ void ov84_02240328(UnkStruct_ov84_0223B5A0 *param0)
     Strbuf_Free(v1);
 
     v1 = MessageLoader_GetNewStrbuf(param0->unk_114, 109);
-    StringTemplate_SetNumber(param0->unk_118, 0, sub_0202AC98(Poffin_GetSavedataBlock(param0->unk_C4->unk_00)), 3, 1, 1);
+    StringTemplate_SetNumber(param0->unk_118, 0, Poffin_GetNumberOfFilledSlots(Poffin_GetSavedataBlock(param0->unk_C4->unk_00)), 3, 1, 1);
     StringTemplate_Format(param0->unk_118, param0->unk_3F8, v1);
     Strbuf_Free(v1);
 

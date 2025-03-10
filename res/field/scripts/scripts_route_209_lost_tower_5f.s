@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_209_lost_tower_5f.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _0072
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM

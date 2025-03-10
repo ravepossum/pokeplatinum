@@ -13,11 +13,11 @@
 #include "overlay101/struct_ov101_021D5D90_decl.h"
 #include "overlay101/struct_ov101_021D86B0.h"
 
+#include "fx_util.h"
 #include "map_object.h"
 #include "map_object_move.h"
 #include "map_tile_behavior.h"
 #include "player_avatar.h"
-#include "unk_0201E190.h"
 #include "unk_020711EC.h"
 #include "unk_02073838.h"
 
@@ -55,9 +55,7 @@ static const VecFx32 Unk_ov5_02200C24[4][2];
 
 void *ov5_021F61BC(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_021F61E8 *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_021F61E8)), 0, 0);
+    UnkStruct_021F61E8 *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_021F61E8)), 0, 0);
     v0->unk_00 = param0;
 
     ov5_021F61E8(v0);
@@ -115,7 +113,7 @@ static int ov5_021F6264(UnkStruct_ov101_021D5D90 *param0, void *param1)
     v1 = Player_MapObject(v2->playerAvatar);
 
     v0->unk_04 = -1;
-    v0->unk_14 = MapObject_Id(v1);
+    v0->unk_14 = MapObject_GetLocalID(v1);
     v0->unk_18 = sub_02062918(v1);
 
     return 1;
@@ -140,7 +138,7 @@ static void ov5_021F62A0(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
     v0 = v1->unk_04;
 
-    v1->unk_08 = sub_02062BE8(v3);
+    v1->unk_08 = MapObject_GetCurrTileBehavior(v3);
     v1->unk_04 = ov5_021F6414(v1->unk_08);
     v1->unk_00 = 0;
 
@@ -158,11 +156,11 @@ static void ov5_021F62A0(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
     {
         VecFx32 v4, v5;
-        int v6 = MapObject_GetXPos(v3) + MapObject_GetDxFromDir(v1->unk_04);
-        int v7 = MapObject_GetZPos(v3) + MapObject_GetDyFromDir(v1->unk_04);
+        int v6 = MapObject_GetX(v3) + MapObject_GetDxFromDir(v1->unk_04);
+        int v7 = MapObject_GetZ(v3) + MapObject_GetDzFromDir(v1->unk_04);
 
         sub_02064450(v6, v7, &v5);
-        MapObject_PosVectorOut(v3, &v4);
+        MapObject_GetPosPtr(v3, &v4);
         v5.y = v4.y;
         sub_020715D4(param0, &v5);
     }
@@ -207,7 +205,7 @@ static void ov5_021F636C(UnkStruct_ov101_021D5D90 *param0, void *param1)
             break;
         }
 
-        sub_0201E2E0(&v2, 0, v1, 0);
+        MTX_Rot33Angles(&v2, 0, v1, 0);
         sub_020715E4(param0, &v3);
 
         v3.x += v6->x;

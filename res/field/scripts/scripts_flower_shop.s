@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/flower_shop.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _006E
     ScriptEntry _00A9
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     PlayFanfare SEQ_SE_CONFIRM
@@ -13,7 +14,7 @@ _000E:
     FacePlayer
     GoToIfSet 0xAAA, _0059
     Message 0
-    ScrCmd_1B7 0x8004, 5
+    GetRandom 0x8004, 5
     AddVar 0x8004, 149
     SetVar 0x8005, 1
     ScrCmd_07D 0x8004, 0x8005, 0x800C
@@ -62,7 +63,7 @@ _00A9:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_257
+    ShowAccessoryShop
     ReleaseAll
     End
 

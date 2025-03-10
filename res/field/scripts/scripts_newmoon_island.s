@@ -1,14 +1,16 @@
 #include "macros/scrcmd.inc"
+#include "generated/hidden_locations.h"
+#include "res/text/bank/newmoon_island.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _0037
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     SetFlag 0x9E4
-    ScrCmd_270 1, 1
+    EnableHiddenLocation HIDDEN_LOCATION_NEWMOON_ISLAND
     ClearFlag 0x279
     CallIfUnset 0x158, _0024
     End
@@ -23,10 +25,10 @@ _0037:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_1BD 0x8004
+    GetPlayerDir 0x8004
     Message 0
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _005D
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _005D
     GoTo _009D
 
 _005D:
@@ -56,56 +58,56 @@ _00A8:
     Return
 
 _00C2:
-    ApplyMovement 0xFF, _0124
+    ApplyMovement LOCALID_PLAYER, _0124
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ApplyMovement 0xFF, _011C
+    ApplyMovement LOCALID_PLAYER, _011C
     WaitMovement
     Return
 
 _00DC:
-    ApplyMovement 0xFF, _0134
+    ApplyMovement LOCALID_PLAYER, _0134
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ApplyMovement 0xFF, _011C
+    ApplyMovement LOCALID_PLAYER, _011C
     WaitMovement
     Return
 
 _00F6:
-    ApplyMovement 0xFF, _0140
+    ApplyMovement LOCALID_PLAYER, _0140
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ApplyMovement 0xFF, _011C
+    ApplyMovement LOCALID_PLAYER, _011C
     WaitMovement
     Return
 
     .balign 4, 0
 _0110:
-    MoveAction_00E
-    MoveAction_040
+    MoveAction_014
+    MoveAction_064
     EndMovement
 
     .balign 4, 0
 _011C:
-    MoveAction_045
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _0124:
-    MoveAction_00D
-    MoveAction_00E 2
-    MoveAction_040
+    MoveAction_013
+    MoveAction_014 2
+    MoveAction_064
     EndMovement
 
     .balign 4, 0
 _0134:
-    MoveAction_00E 2
-    MoveAction_040
+    MoveAction_014 2
+    MoveAction_064
     EndMovement
 
     .balign 4, 0
 _0140:
-    MoveAction_00C
-    MoveAction_00E 2
-    MoveAction_040
+    MoveAction_012
+    MoveAction_014 2
+    MoveAction_064
     EndMovement

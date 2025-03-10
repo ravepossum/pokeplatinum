@@ -4,9 +4,9 @@
 #include <string.h>
 
 #include "bg_window.h"
-#include "core_sys.h"
 #include "heap.h"
 #include "narc.h"
+#include "system.h"
 #include "unk_0200F174.h"
 
 __attribute__((aligned(4))) static const u16 Unk_020F4030[] = {
@@ -32,9 +32,7 @@ int sub_0208C098(int param0)
 
 u32 sub_0208C0A4(u32 param0, u32 param1)
 {
-    u32 v0;
-
-    v0 = (param0 * param0) + (param1 * param1);
+    u32 v0 = (param0 * param0) + (param1 * param1);
     v0 = SVC_Sqrt(v0 << 4);
 
     return v0 >> 2;
@@ -79,22 +77,20 @@ u8 HealthBar_Color(u16 curHP, u16 maxHP, u32 barSize)
     return App_BarColor(App_PixelCount(curHP, maxHP, barSize), barSize);
 }
 
-void sub_0208C120(u8 param0, u32 param1)
+void sub_0208C120(u8 param0, u32 heapID)
 {
     if (param0 == 0) {
-        StartScreenTransition(0, 1, 1, 0x0, 6, 1, param1);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, heapID);
     } else {
-        StartScreenTransition(0, 0, 0, 0x0, 6, 1, param1);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, heapID);
     }
 }
 
 u8 sub_0208C15C(s16 *param0, u16 param1)
 {
-    s16 v0;
+    s16 v0 = *param0;
 
-    v0 = *param0;
-
-    if (gCoreSys.pressedKeysRepeatable & PAD_KEY_UP) {
+    if (gSystem.pressedKeysRepeatable & PAD_KEY_UP) {
         *param0 += 1;
 
         if (*param0 > param1) {
@@ -108,7 +104,7 @@ u8 sub_0208C15C(s16 *param0, u16 param1)
         return 1;
     }
 
-    if (gCoreSys.pressedKeysRepeatable & PAD_KEY_DOWN) {
+    if (gSystem.pressedKeysRepeatable & PAD_KEY_DOWN) {
         *param0 -= 1;
 
         if (*param0 <= 0) {
@@ -122,7 +118,7 @@ u8 sub_0208C15C(s16 *param0, u16 param1)
         return 2;
     }
 
-    if (gCoreSys.pressedKeysRepeatable & PAD_KEY_LEFT) {
+    if (gSystem.pressedKeysRepeatable & PAD_KEY_LEFT) {
         *param0 -= 10;
 
         if (*param0 <= 0) {
@@ -136,7 +132,7 @@ u8 sub_0208C15C(s16 *param0, u16 param1)
         return 2;
     }
 
-    if (gCoreSys.pressedKeysRepeatable & PAD_KEY_RIGHT) {
+    if (gSystem.pressedKeysRepeatable & PAD_KEY_RIGHT) {
         *param0 += 10;
 
         if (*param0 > param1) {
@@ -202,13 +198,13 @@ void sub_0208C210(BgConfig *param0, int param1, NARC *param2, int param3, int pa
     Heap_FreeToHeap(v1);
 }
 
-void *sub_0208C2F4(NARC *param0, int param1, int param2, NNSG2dScreenData **param3, int param4)
+void *sub_0208C2F4(NARC *param0, int param1, int param2, NNSG2dScreenData **param3, int heapID)
 {
     int v0;
     void *v1;
 
     v0 = NARC_GetMemberSize(param0, param2);
-    v1 = Heap_AllocFromHeap(param4, v0);
+    v1 = Heap_AllocFromHeap(heapID, v0);
 
     NARC_ReadWholeMember(param0, param2, v1);
     NNS_G2dGetUnpackedScreenData(v1, param3);

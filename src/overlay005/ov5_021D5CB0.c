@@ -5,8 +5,8 @@
 
 #include "heap.h"
 #include "narc.h"
-#include "unk_0201DBEC.h"
 #include "unk_0201DD00.h"
+#include "vram_transfer.h"
 
 typedef struct {
     char unk_00[16];
@@ -41,7 +41,7 @@ UnkStruct_ov5_021D5CB0 *ov5_021D5CB0(void)
     int v0;
     UnkStruct_ov5_021D5CB0 *v1 = NULL;
 
-    v1 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov5_021D5CB0));
+    v1 = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov5_021D5CB0));
 
     GF_ASSERT(v1);
 
@@ -60,9 +60,7 @@ UnkStruct_ov5_021D5CB0 *ov5_021D5CB0(void)
 int ov5_021D5CE4(UnkStruct_ov5_021D5CB0 *param0, NNSG3dResTex *param1)
 {
     int v0, v1 = 0;
-    NARC *v2;
-
-    v2 = NARC_ctor(NARC_INDEX_DATA__FLDTANIME, 4);
+    NARC *v2 = NARC_ctor(NARC_INDEX_DATA__FLDTANIME, HEAP_ID_FIELD);
 
     param0->unk_00 = NARC_AllocAndReadWholeMember(v2, 0, 4);
     param0->unk_04 = (UnkStruct_ov5_021D5CE4 *)param0->unk_00;
@@ -139,7 +137,7 @@ void ov5_021D5DEC(UnkStruct_ov5_021D5CB0 *param0)
                 v1->unk_14 = 0;
             }
 
-            sub_0201DC68(NNS_GFD_DST_3D_TEX_VRAM, (u32)v1->unk_00, sub_0201DEAC(v1->unk_08, v1->unk_10->unk_10[v1->unk_14][0]), v1->unk_04);
+            VramTransfer_Request(NNS_GFD_DST_3D_TEX_VRAM, (u32)v1->unk_00, sub_0201DEAC(v1->unk_08, v1->unk_10->unk_10[v1->unk_14][0]), v1->unk_04);
         } else {
             v1->unk_16++;
         }

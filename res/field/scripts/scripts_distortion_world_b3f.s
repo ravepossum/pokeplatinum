@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/distortion_world_b3f.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _000E
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     ScrCmd_2F2
@@ -16,8 +17,8 @@ _000E:
     ApplyMovement 128, _0060
     WaitMovement
     Message 0
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _003B
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _003B
     Message 1
     GoTo _003E
 
@@ -36,10 +37,10 @@ _003E:
 
     .balign 4, 0
 _0060:
-    MoveAction_00C 7
+    MoveAction_012 7
     EndMovement
 
     .balign 4, 0
 _0068:
-    MoveAction_00D 7
+    MoveAction_013 7
     EndMovement

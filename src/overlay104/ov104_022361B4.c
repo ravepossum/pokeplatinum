@@ -3,12 +3,11 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/game_records.h"
 
 #include "struct_decls/struct_020302DC_decl.h"
 #include "struct_decls/struct_0203041C_decl.h"
 #include "struct_decls/struct_0203068C_decl.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/struct_0204B184.h"
 
 #include "overlay104/ov104_0222DCE0.h"
@@ -36,12 +35,12 @@
 #include "savedata.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system_vars.h"
 #include "text.h"
 #include "trainer_info.h"
 #include "unk_020302D0.h"
 #include "unk_0203061C.h"
 #include "unk_0205DFC4.h"
-#include "unk_0206AFE0.h"
 #include "vars_flags.h"
 
 UnkStruct_ov104_0223BA10 *ov104_022361B4(SaveData *param0, u16 param1, u8 param2, u16 param3, u16 param4, u16 param5, u16 *param6);
@@ -75,14 +74,14 @@ UnkStruct_ov104_0223BA10 *ov104_022361B4(SaveData *param0, u16 param1, u8 param2
     static UnkStruct_ov104_0223BA10 *v9;
     UnkStruct_0203041C *v10;
 
-    v9 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov104_0223BA10));
+    v9 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov104_0223BA10));
     MI_CpuClear8(v9, sizeof(UnkStruct_ov104_0223BA10));
 
     v9->unk_08 = sub_020302DC(param0);
     v9->unk_04 = param0;
     v9->unk_00 = 11;
-    v9->unk_28 = Party_New(11);
-    v9->unk_2C = Party_New(11);
+    v9->unk_28 = Party_New(HEAP_ID_FIELDMAP);
+    v9->unk_2C = Party_New(HEAP_ID_FIELDMAP);
     v9->unk_A20 = param6;
 
     v4 = v9->unk_08;
@@ -95,7 +94,7 @@ UnkStruct_ov104_0223BA10 *ov104_022361B4(SaveData *param0, u16 param1, u8 param2
         sub_020302D0(v4);
 
         if (v9->unk_10 == 3) {
-            v5 = sub_0206B6FC(SaveData_GetVarsFlags(v9->unk_04));
+            v5 = SystemVars_GetWiFiFrontierCleared(SaveData_GetVarsFlags(v9->unk_04));
         } else {
             v5 = (u8)sub_02030470(v10, 9, v9->unk_10, 0, NULL);
         }
@@ -233,7 +232,7 @@ static void ov104_022365F8(UnkStruct_ov104_0223BA10 *param0)
 
     ov104_0222E330(v4, v6, v5, NULL, v7, 4, 11, 179);
 
-    v2 = Pokemon_New(11);
+    v2 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v1 = 0; v1 < 4; v1++) {
         ov104_0222DF40(&v4[v1], v2, ov104_0223BA10(param0));
@@ -456,9 +455,7 @@ u16 ov104_02236B58(UnkStruct_ov104_0223BA10 *param0, u8 param1)
 {
     UnkStruct_ov104_0223A348_sub1 v0;
     UnkStruct_0204B184 *v1;
-    u8 v2;
-
-    v2 = param0->unk_11 + (param1 * 7);
+    u8 v2 = param0->unk_11 + (param1 * 7);
     v1 = ov104_0222DD04(&v0, param0->unk_30[v2], 11, 178);
 
     Heap_FreeToHeap(v1);
@@ -656,9 +653,7 @@ int ov104_02236D10(UnkStruct_ov104_0223BA10 *param0)
 
 void ov104_02236ED8(SaveData *param0, u8 param1, int param2)
 {
-    u16 v0;
-
-    v0 = sub_02030698(sub_0203068C(param0), sub_0205E630(param1), sub_0205E6A8(sub_0205E630(param1)));
+    u16 v0 = sub_02030698(sub_0203068C(param0), sub_0205E630(param1), sub_0205E6A8(sub_0205E630(param1)));
 
     if (v0 + param2 > 9999) {
         sub_020306E4(sub_0203068C(param0), sub_0205E630(param1), sub_0205E6A8(sub_0205E630(param1)), 9999);
@@ -709,12 +704,12 @@ void ov104_02236FC0(UnkStruct_ov104_022320B4 *param0, UnkStruct_ov104_0223BA10 *
     GF_ASSERT(param0->unk_AC == NULL);
 
     if (ov104_0223BA14(param1->unk_10) == 0) {
-        param0->unk_A8 = Window_New(11, 1);
+        param0->unk_A8 = Window_New(HEAP_ID_FIELDMAP, 1);
         Window_Add(v0->unk_00, param0->unk_A8, 1, 1, 1, 10, 4, 14, (((((1024 - (18 + 12)) - 9) - (27 * 4)) - (11 * 22)) - (10 * 4)));
         ov104_022370C0(v0->unk_00, param0->unk_A8);
     } else {
-        param0->unk_A8 = Window_New(11, 1);
-        param0->unk_AC = Window_New(11, 1);
+        param0->unk_A8 = Window_New(HEAP_ID_FIELDMAP, 1);
+        param0->unk_AC = Window_New(HEAP_ID_FIELDMAP, 1);
 
         Window_Add(v0->unk_00, param0->unk_A8, 1, 1, 1, 10, 4, 14, (((((1024 - (18 + 12)) - 9) - (27 * 4)) - (11 * 22)) - (10 * 4)));
         Window_Add(v0->unk_00, param0->unk_AC, 1, 21, 1, 10, 4, 14, ((((((1024 - (18 + 12)) - 9) - (27 * 4)) - (11 * 22)) - (10 * 4)) - (10 * 4)));
@@ -799,10 +794,10 @@ void ov104_02237180(UnkStruct_ov104_022320B4 *param0, UnkStruct_ov104_0223BA10 *
 static void ov104_02237284(UnkStruct_ov104_022320B4 *param0, Window *param1, TrainerInfo *param2, u16 param3)
 {
     MessageLoader *v0;
-    Strbuf *v1 = Strbuf_Init((10 * 2), param0->unk_34);
-    Strbuf *v2 = Strbuf_Init((10 * 2), param0->unk_34);
+    Strbuf *v1 = Strbuf_Init((10 * 2), param0->heapID);
+    Strbuf *v2 = Strbuf_Init((10 * 2), param0->heapID);
 
-    v0 = MessageLoader_Init(0, 26, 199, 11);
+    v0 = MessageLoader_Init(0, 26, 199, HEAP_ID_FIELDMAP);
 
     StringTemplate_SetNumber(param0->unk_44, 0, param3, 4, 1, 1);
     MessageLoader_GetStrbuf(v0, 2, v1);

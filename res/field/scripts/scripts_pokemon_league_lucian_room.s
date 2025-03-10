@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/pokemon_league_lucian_room.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _00B7
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -17,10 +18,10 @@ _000A:
     CallIfUnset 214, _007A
     CallIfSet 214, _0082
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _00A6
+    GoToIfEq 0x800C, FALSE, _00A6
     SetFlag 179
     PlayFanfare SEQ_SE_DP_KI_GASYAN
-    ScrCmd_065 1
+    RemoveObject 1
     CallIfUnset 214, _008A
     CallIfSet 214, _0098
     Message 1
@@ -30,23 +31,23 @@ _000A:
     End
 
 _007A:
-    StartTrainerBattle trainer_elite_four_lucian
+    StartTrainerBattle TRAINER_ELITE_FOUR_LUCIAN
     Return
 
 _0082:
-    StartTrainerBattle trainer_elite_four_lucian_rematch
+    StartTrainerBattle TRAINER_ELITE_FOUR_LUCIAN_REMATCH
     Return
 
 _008A:
-    ScrCmd_1CD 11, trainer_elite_four_lucian, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_BEAT_ELITE_FOUR_MEMBER, TRAINER_ELITE_FOUR_LUCIAN, 0, 0, 0
     Return
 
 _0098:
-    ScrCmd_1CD 11, trainer_elite_four_lucian_rematch, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_BEAT_ELITE_FOUR_MEMBER, TRAINER_ELITE_FOUR_LUCIAN_REMATCH, 0, 0, 0
     Return
 
 _00A6:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
@@ -59,16 +60,16 @@ _00AC:
 
 _00B7:
     LockAll
-    ApplyMovement 0xFF, _00DC
+    ApplyMovement LOCALID_PLAYER, _00DC
     WaitMovement
     PlayFanfare SEQ_SE_DP_KI_GASYAN
     ClearFlag 0x285
-    ScrCmd_064 2
+    AddObject 2
     SetVar 0x4001, 1
     ReleaseAll
     End
 
     .balign 4, 0
 _00DC:
-    MoveAction_00C 2
+    MoveAction_012 2
     EndMovement

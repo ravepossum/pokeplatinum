@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "struct_decls/struct_0202440C_decl.h"
-#include "struct_decls/struct_party_decl.h"
 
 #include "field/field_system.h"
 #include "savedata/save_table.h"
@@ -16,13 +15,13 @@
 #include "record_mixed_rng.h"
 #include "rtc.h"
 #include "script_manager.h"
+#include "special_encounter.h"
 #include "system_data.h"
+#include "system_vars.h"
 #include "unk_0202854C.h"
 #include "unk_0202C858.h"
-#include "unk_0202D7A8.h"
 #include "unk_0202E2CC.h"
 #include "unk_02055C50.h"
-#include "unk_0206AFE0.h"
 #include "unk_0206B9D8.h"
 #include "unk_0206C2D0.h"
 #include "unk_0206CCB0.h"
@@ -51,9 +50,7 @@ void sub_020559DC(FieldSystem *fieldSystem)
 
 static void sub_02055A14(FieldSystem *fieldSystem, GameTime *param1, const RTCDate *param2)
 {
-    s32 v0;
-
-    v0 = RTC_ConvertDateToDay(param2);
+    s32 v0 = RTC_ConvertDateToDay(param2);
 
     if (v0 < param1->day) {
         param1->day = v0;
@@ -93,7 +90,7 @@ static void sub_02055AC0(FieldSystem *fieldSystem, s32 param1)
     sub_0203F1FC(fieldSystem);
     sub_0206C2D0(fieldSystem->saveData, param1);
     RecordMixedRNG_AdvanceEntries(SaveData_GetRecordMixedRNG(fieldSystem->saveData), param1);
-    sub_0202D80C(sub_0202D834(fieldSystem->saveData), RecordMixedRNG_GetRand(SaveData_GetRecordMixedRNG(fieldSystem->saveData)));
+    SpecialEncounter_SetMixedRecordDailies(SaveData_GetSpecialEncounters(fieldSystem->saveData), RecordMixedRNG_GetRand(SaveData_GetRecordMixedRNG(fieldSystem->saveData)));
 
     {
         Party *v0;
@@ -103,27 +100,27 @@ static void sub_02055AC0(FieldSystem *fieldSystem, s32 param1)
     }
 
     {
-        VarsFlags *v1 = SaveData_GetVarsFlags(fieldSystem->saveData);
-        u16 v2 = sub_0206B260(v1);
+        VarsFlags *varsFlags = SaveData_GetVarsFlags(fieldSystem->saveData);
+        u16 deadlineInDays = SystemVars_GetNewsPressDeadline(varsFlags);
 
-        if (v2 > param1) {
-            v2 -= param1;
+        if (deadlineInDays > param1) {
+            deadlineInDays -= param1;
         } else {
-            v2 = 0;
+            deadlineInDays = 0;
         }
 
-        sub_0206B270(v1, v2);
+        SystemVars_SetNewsPressDeadline(varsFlags, deadlineInDays);
     }
 
     {
-        sub_0206B2E4(fieldSystem->saveData, param1);
+        SystemVars_SynchronizeJubilifeLotteryTrainerID(fieldSystem->saveData, param1);
     }
 
     {
-        sub_0206B334(fieldSystem->saveData);
+        SystemVars_InitDailyRandomLevel(fieldSystem->saveData);
     }
 
-    sub_0206B514(fieldSystem->saveData);
+    SystemVars_UpdateVillaVisitor(fieldSystem->saveData);
     FieldSystem_ClearDailyHiddenItemFlags(fieldSystem);
     sub_0206C008(fieldSystem->saveData);
     sub_0202C9A0(sub_0202C878(fieldSystem->saveData));
@@ -133,7 +130,7 @@ static void sub_02055AC0(FieldSystem *fieldSystem, s32 param1)
 static void sub_02055B64(FieldSystem *fieldSystem, s32 param1, const RTCTime *param2)
 {
     sub_02055CD4(fieldSystem, param1);
-    sub_0202D854(fieldSystem->saveData, param1);
+    SpecialEncounter_DecrementHoneyTreeTimers(fieldSystem->saveData, param1);
     sub_02028758(fieldSystem->saveData, param1, sub_02055C40(fieldSystem));
 
     {

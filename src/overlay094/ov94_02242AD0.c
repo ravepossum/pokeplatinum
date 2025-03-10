@@ -4,8 +4,9 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "constants/species.h"
-#include "consts/game_records.h"
+#include "generated/game_records.h"
+#include "generated/species.h"
+#include "generated/trainer_score_events.h"
 
 #include "struct_decls/struct_0202440C_decl.h"
 #include "struct_decls/struct_0202C878_decl.h"
@@ -32,11 +33,13 @@
 #include "inlines.h"
 #include "journal.h"
 #include "party.h"
+#include "pc_boxes.h"
 #include "pokemon.h"
 #include "render_window.h"
 #include "savedata.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system_vars.h"
 #include "text.h"
 #include "unk_0200F174.h"
 #include "unk_0202CC64.h"
@@ -46,9 +49,7 @@
 #include "unk_02038F8C.h"
 #include "unk_020393C8.h"
 #include "unk_02039814.h"
-#include "unk_0206AFE0.h"
 #include "unk_0206CCB0.h"
-#include "unk_020797C8.h"
 #include "vars_flags.h"
 
 static void ov94_02242B54(BgConfig *param0);
@@ -58,7 +59,7 @@ static void ov94_02242D38(UnkStruct_ov94_0223FD4C *param0);
 static void ov94_02242D74(UnkStruct_ov94_0223FD4C *param0);
 static void ov94_02242D84(UnkStruct_ov94_0223FD4C *param0);
 static void ov94_02242D98(UnkStruct_ov94_0223FD4C *param0);
-static void ov94_02243E48(Journal *param0, UnkStruct_ov94_0223BA88 *param1);
+static void ov94_02243E48(JournalEntry *param0, UnkStruct_ov94_0223BA88 *param1);
 static void ov94_0224362C(UnkStruct_ov94_0223FD4C *param0);
 static void ov94_02243E2C(UnkStruct_0202C878 *param0, UnkStruct_ov94_0223BA88 *param1);
 static void ov94_02243CE4(UnkStruct_ov94_0223FD4C *param0, Pokemon *param1, int param2);
@@ -160,7 +161,7 @@ int ov94_02242AD0(UnkStruct_ov94_0223FD4C *param0, int param1)
     ov94_02242CAC(param0);
     ov94_02242D38(param0);
 
-    StartScreenTransition(3, 1, 1, 0x0, 6, 1, 62);
+    StartScreenTransition(3, 1, 1, 0x0, 6, 1, HEAP_ID_62);
     ov94_02245934(param0);
 
     param0->unk_2C = 0;
@@ -305,9 +306,9 @@ static void ov94_02242B54(BgConfig *param0)
         Bg_InitFromTemplate(param0, 5, &v5, 0);
     }
 
-    Bg_ClearTilesRange(0, 32, 0, 62);
-    Bg_ClearTilesRange(1, 32, 0, 62);
-    Bg_ClearTilesRange(4, 32, 0, 62);
+    Bg_ClearTilesRange(0, 32, 0, HEAP_ID_62);
+    Bg_ClearTilesRange(1, 32, 0, HEAP_ID_62);
+    Bg_ClearTilesRange(4, 32, 0, HEAP_ID_62);
 
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
@@ -326,10 +327,10 @@ static void ov94_02242CAC(UnkStruct_ov94_0223FD4C *param0)
 {
     BgConfig *v0 = param0->unk_04;
 
-    Graphics_LoadPalette(104, 0, 0, 0, 16 * 3 * 2, 62);
-    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, 62);
-    LoadMessageBoxGraphics(v0, 0, 1, 10, Options_Frame(param0->unk_00->unk_24), 62);
-    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, 62);
+    Graphics_LoadPalette(104, 0, 0, 0, 16 * 3 * 2, HEAP_ID_62);
+    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, HEAP_ID_62);
+    LoadMessageBoxGraphics(v0, 0, 1, 10, Options_Frame(param0->unk_00->unk_24), HEAP_ID_62);
+    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, HEAP_ID_62);
 
     if (param0->unk_10F0 == 0) {
         Bg_ToggleLayer(4, 0);
@@ -355,7 +356,7 @@ static void ov94_02242D74(UnkStruct_ov94_0223FD4C *param0)
 
 static void ov94_02242D84(UnkStruct_ov94_0223FD4C *param0)
 {
-    param0->unk_BAC = Strbuf_Init((90 * 2), 62);
+    param0->unk_BAC = Strbuf_Init((90 * 2), HEAP_ID_62);
 }
 
 static void ov94_02242D98(UnkStruct_ov94_0223FD4C *param0)
@@ -791,7 +792,7 @@ static int ov94_02243398(UnkStruct_ov94_0223FD4C *param0)
             param0->unk_36 = 0;
 
             if (sub_0202DA60(param0->unk_00->unk_00)) {
-                Pokemon *v1 = Pokemon_New(62);
+                Pokemon *v1 = Pokemon_New(HEAP_ID_62);
 
                 sub_0202DA70(param0->unk_00->unk_00, v1);
                 StringTemplate_SetNickname(param0->unk_B8C, 0, Pokemon_GetBoxPokemon(v1));
@@ -811,7 +812,7 @@ static int ov94_02243398(UnkStruct_ov94_0223FD4C *param0)
             param0->unk_36 = 0;
 
             if (sub_0202DA60(param0->unk_00->unk_00)) {
-                Pokemon *v2 = Pokemon_New(62);
+                Pokemon *v2 = Pokemon_New(HEAP_ID_62);
 
                 sub_0202DA70(param0->unk_00->unk_00, v2);
                 StringTemplate_SetNickname(param0->unk_B8C, 0, Pokemon_GetBoxPokemon(v2));
@@ -1162,7 +1163,7 @@ static int ov94_02243990(UnkStruct_ov94_0223FD4C *param0)
     SaveData_SaveStateInit(param0->unk_00->unk_20, 2);
 
     param0->unk_2C = 31;
-    param0->unk_10E0 = inline_020564D0(60) + 2;
+    param0->unk_10E0 = LCRNG_RandMod(60) + 2;
 
     return 3;
 }
@@ -1225,9 +1226,9 @@ static int ov94_02243A90(UnkStruct_ov94_0223FD4C *param0)
     sub_02039794();
 
     if (param0->unk_1110 == 1) {
-        StartScreenTransition(0, 0, 0, 0x0, 6, 1, 62);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_62);
     } else {
-        StartScreenTransition(3, 0, 0, 0x0, 6, 1, 62);
+        StartScreenTransition(3, 0, 0, 0x0, 6, 1, HEAP_ID_62);
     }
 
     param0->unk_2C = 0;
@@ -1247,11 +1248,11 @@ static int ov94_02243AE8(UnkStruct_ov94_0223FD4C *param0)
 static void ov94_02243B08(UnkStruct_ov94_0223FD4C *param0, int param1)
 {
     if (param0->unk_110 != 18) {
-        Pokemon *v0 = Pokemon_New(62);
+        Pokemon *v0 = Pokemon_New(HEAP_ID_62);
 
-        Pokemon_FromBoxPokemon(sub_02079C9C(param0->unk_00->unk_0C, param0->unk_110, param0->unk_112), v0);
+        Pokemon_FromBoxPokemon(PCBoxes_GetBoxMonAt(param0->unk_00->unk_0C, param0->unk_110, param0->unk_112), v0);
         sub_0202DA7C(param0->unk_00->unk_00, v0, param0->unk_110);
-        sub_02079968(param0->unk_00->unk_0C, param0->unk_110, param0->unk_112);
+        PCBoxes_InitBoxMonAt(param0->unk_00->unk_0C, param0->unk_110, param0->unk_112);
         Heap_FreeToHeap(v0);
     } else {
         Pokemon *v1 = Party_GetPokemonBySlotIndex(param0->unk_00->unk_08, param0->unk_112);
@@ -1289,8 +1290,8 @@ static void ov94_02243BC4(UnkStruct_ov94_0223FD4C *param0, Pokemon *param1, int 
             if (Pokemon_GetValue(param1, MON_DATA_FATEFUL_ENCOUNTER, NULL) || ((Pokemon_GetValue(param1, MON_DATA_HATCH_LOCATION, NULL) == 86) && (Pokemon_GetValue(param1, MON_DATA_FATEFUL_ENCOUNTER, NULL) == 0))) {
                 VarsFlags *v2 = SaveData_GetVarsFlags(param0->unk_00->unk_20);
 
-                if (sub_0206B5F8(v2) == 0) {
-                    sub_0206B608(v2, 1);
+                if (SystemVars_GetArceusEventState(v2) == 0) {
+                    SystemVars_SetArceusEventState(v2, 1);
                 }
             }
         }
@@ -1312,8 +1313,8 @@ static void ov94_02243BC4(UnkStruct_ov94_0223FD4C *param0, Pokemon *param1, int 
     } else {
         int v4 = 0;
 
-        sub_020799F0(param0->unk_00->unk_0C, &param2, &v4);
-        sub_020798A0(param0->unk_00->unk_0C, param2, Pokemon_GetBoxPokemon(param1));
+        PCBoxes_TryGetNextAvailableSpace(param0->unk_00->unk_0C, &param2, &v4);
+        PCBoxes_TryStoreBoxMonInBox(param0->unk_00->unk_0C, param2, Pokemon_GetBoxPokemon(param1));
 
         param0->unk_124.unk_00 = param2;
         param0->unk_124.unk_04 = v4;
@@ -1336,8 +1337,8 @@ static void ov94_02243CE4(UnkStruct_ov94_0223FD4C *param0, Pokemon *param1, int 
         if (Pokemon_GetValue(param1, MON_DATA_FATEFUL_ENCOUNTER, NULL) || ((Pokemon_GetValue(param1, MON_DATA_HATCH_LOCATION, NULL) == 86) && (Pokemon_GetValue(param1, MON_DATA_FATEFUL_ENCOUNTER, NULL) == 0))) {
             VarsFlags *v0 = SaveData_GetVarsFlags(param0->unk_00->unk_20);
 
-            if (sub_0206B5F8(v0) == 0) {
-                sub_0206B608(v0, 1);
+            if (SystemVars_GetArceusEventState(v0) == 0) {
+                SystemVars_SetArceusEventState(v0, 1);
             }
         }
     }
@@ -1360,8 +1361,8 @@ static void ov94_02243CE4(UnkStruct_ov94_0223FD4C *param0, Pokemon *param1, int 
     } else {
         int v3 = 0;
 
-        sub_020799F0(param0->unk_00->unk_0C, &param2, &v3);
-        sub_020798A0(param0->unk_00->unk_0C, param2, Pokemon_GetBoxPokemon(param1));
+        PCBoxes_TryGetNextAvailableSpace(param0->unk_00->unk_0C, &param2, &v3);
+        PCBoxes_TryStoreBoxMonInBox(param0->unk_00->unk_0C, param2, Pokemon_GetBoxPokemon(param1));
 
         param0->unk_124.unk_00 = param2;
         param0->unk_124.unk_04 = v3;
@@ -1392,15 +1393,15 @@ static void ov94_02243E2C(UnkStruct_0202C878 *param0, UnkStruct_ov94_0223BA88 *p
     sub_02038FDC(param0, param1->unk_11E, param1->unk_11F, param1->unk_123);
 }
 
-static void ov94_02243E48(Journal *param0, UnkStruct_ov94_0223BA88 *param1)
+static void ov94_02243E48(JournalEntry *journalEntry, UnkStruct_ov94_0223BA88 *param1)
 {
-    void *v0;
-    u16 v1[10 + 1];
-    Pokemon *v2 = (Pokemon *)param1->unk_00.unk_00;
+    void *journalEntryOnlineEvent;
+    u16 nickname[MON_NAME_LEN + 1];
+    Pokemon *mon = (Pokemon *)param1->unk_00.unk_00;
 
-    Pokemon_GetValue(v2, MON_DATA_NICKNAME, v1);
-    v0 = sub_0202C1EC(param1->unk_10C, param1->unk_F6, v1, Pokemon_GetGender(v2), 62);
-    Journal_SaveData(param0, v0, 4);
+    Pokemon_GetValue(mon, MON_DATA_NICKNAME, nickname);
+    journalEntryOnlineEvent = JournalEntry_CreateEventGotPokemonGTS(param1->unk_10C, param1->unk_F6, nickname, Pokemon_GetGender(mon), 62);
+    JournalEntry_SaveData(journalEntry, journalEntryOnlineEvent, JOURNAL_ONLINE_EVENT);
 }
 
 static int ov94_02243E84(UnkStruct_ov94_0223FD4C *param0, UnkStruct_ov94_0223BA88 *param1)

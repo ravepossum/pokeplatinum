@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/eterna_city_north_house.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _0023
     ScriptEntry _0036
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     PlayFanfare SEQ_SE_CONFIRM
@@ -13,7 +14,7 @@ _000E:
     FacePlayer
     Message 0
     ScrCmd_035
-    ScrCmd_148 4
+    PokeMartSpecialties MART_SPECIALTIES_ID_ETERNA_HOUSE
     ReleaseAll
     End
 

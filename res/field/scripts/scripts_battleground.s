@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/battleground.h"
 
     .data
 
@@ -10,7 +11,7 @@
     ScriptEntry _03CA
     ScriptEntry _0457
     ScriptEntry _04E4
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0022:
     SetFlag 200
@@ -42,7 +43,7 @@ _0039:
     ClearFlag 6
     ClearFlag 7
     ClearFlag 8
-    ScrCmd_1B7 0x4061, 2
+    GetRandom 0x4061, 2
     End
 
 _00ED:
@@ -114,71 +115,71 @@ _0183:
     CallIfEq 0x8005, 8, _01E9
     CallIfEq 0x8005, 9, _01FD
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ScrCmd_065 1
+    RemoveObject 1
     SetFlag 231
     SetFlag 0x1D6
     ReleaseAll
     End
 
 _01D5:
-    ApplyMovement 0xFF, _0214
+    ApplyMovement LOCALID_PLAYER, _0214
     ApplyMovement 1, _0240
     WaitMovement
     Return
 
 _01E9:
-    ApplyMovement 0xFF, _0220
+    ApplyMovement LOCALID_PLAYER, _0220
     ApplyMovement 1, _0254
     WaitMovement
     Return
 
 _01FD:
-    ApplyMovement 0xFF, _0234
+    ApplyMovement LOCALID_PLAYER, _0234
     ApplyMovement 1, _0264
     WaitMovement
     Return
 
     .balign 4, 0
 _0214:
-    MoveAction_03F 2
-    MoveAction_022
+    MoveAction_063 2
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0220:
-    MoveAction_03F
-    MoveAction_021
-    MoveAction_03F
-    MoveAction_022
+    MoveAction_063
+    MoveAction_033
+    MoveAction_063
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0234:
-    MoveAction_03F 2
-    MoveAction_022
+    MoveAction_063 2
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0240:
-    MoveAction_00E
-    MoveAction_00D
-    MoveAction_00E 3
-    MoveAction_00D 2
+    MoveAction_014
+    MoveAction_013
+    MoveAction_014 3
+    MoveAction_013 2
     EndMovement
 
     .balign 4, 0
 _0254:
-    MoveAction_00D
-    MoveAction_00E 4
-    MoveAction_00D 2
+    MoveAction_013
+    MoveAction_014 4
+    MoveAction_013 2
     EndMovement
 
     .balign 4, 0
 _0264:
-    MoveAction_00E
-    MoveAction_00D
-    MoveAction_00E 3
-    MoveAction_00D 2
+    MoveAction_014
+    MoveAction_013
+    MoveAction_014 3
+    MoveAction_013 2
     EndMovement
 
 _0278:
@@ -186,7 +187,7 @@ _0278:
     SetVar 0x40C1, 1
     ApplyMovement 0, _02A0
     WaitMovement
-    ApplyMovement 0xFF, _02A8
+    ApplyMovement LOCALID_PLAYER, _02A8
     WaitMovement
     Message 0
     WaitABXPadPress
@@ -196,13 +197,13 @@ _0278:
 
     .balign 4, 0
 _02A0:
-    MoveAction_04B
+    MoveAction_075
     EndMovement
 
     .balign 4, 0
 _02A8:
-    MoveAction_00C 2
-    MoveAction_00F 4
+    MoveAction_012 2
+    MoveAction_015 4
     EndMovement
 
 _02B4:
@@ -216,8 +217,8 @@ _02B4:
     GoToIfEq 0x800C, 1, _034D
     CallIfUnset 1, _036E
     CallIfSet 1, _0376
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0386
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0386
     Call _032F
     GoToIfEq 0x8000, 0, _0398
     SetFlag 5
@@ -262,7 +263,7 @@ _0386:
     End
 
 _0398:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
@@ -291,10 +292,10 @@ _03CA:
     GoToIfEq 0x800C, 1, _034D
     CallIfUnset 2, _036E
     CallIfSet 2, _0376
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0445
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0445
     Call _032F
-    GoToIfEq 0x8000, 0, _0398
+    GoToIfEq 0x8000, FALSE, _0398
     SetFlag 6
     Call _1091
     GoTo _034D
@@ -317,8 +318,8 @@ _0457:
     GoToIfEq 0x800C, 1, _034D
     CallIfUnset 3, _036E
     CallIfSet 3, _0376
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _04D2
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _04D2
     Call _032F
     GoToIfEq 0x8000, 0, _0398
     SetFlag 7
@@ -343,8 +344,8 @@ _04E4:
     GoToIfEq 0x800C, 1, _034D
     CallIfUnset 4, _036E
     CallIfSet 4, _0376
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _055F
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _055F
     Call _032F
     GoToIfEq 0x8000, 0, _0398
     SetFlag 8
@@ -396,55 +397,55 @@ _0605:
     Return
 
 _06B0:
-    SetVar 0x4005, trainer_leader_roark_rematch 
+    SetVar 0x4005, TRAINER_LEADER_ROARK_REMATCH 
     Return
 
 _06B8:
-    SetVar 0x4005, trainer_leader_gardenia_rematch
+    SetVar 0x4005, TRAINER_LEADER_GARDENIA_REMATCH
     Return
 
 _06C0:
-    SetVar 0x4005, trainer_leader_wake_rematch
+    SetVar 0x4005, TRAINER_LEADER_WAKE_REMATCH
     Return
 
 _06C8:
-    SetVar 0x4005, trainer_leader_maylene_rematch
+    SetVar 0x4005, TRAINER_LEADER_MAYLENE_REMATCH
     Return
 
 _06D0:
-    SetVar 0x4005, trainer_leader_fantina_rematch
+    SetVar 0x4005, TRAINER_LEADER_FANTINA_REMATCH
     Return
 
 _06D8:
-    SetVar 0x4005, trainer_leader_candice_rematch
+    SetVar 0x4005, TRAINER_LEADER_CANDICE_REMATCH
     Return
 
 _06E0:
-    SetVar 0x4005, trainer_leader_byron_rematch
+    SetVar 0x4005, TRAINER_LEADER_BYRON_REMATCH
     Return
 
 _06E8:
-    SetVar 0x4005, trainer_leader_volkner_rematch
+    SetVar 0x4005, TRAINER_LEADER_VOLKNER_REMATCH
     Return
 
 _06F0:
-    SetVar 0x4005, trainer_cheryl_battleground
+    SetVar 0x4005, TRAINER_CHERYL_BATTLEGROUND
     Return
 
 _06F8:
-    SetVar 0x4005, trainer_riley_battleground
+    SetVar 0x4005, TRAINER_RILEY_BATTLEGROUND
     Return
 
 _0700:
-    SetVar 0x4005, trainer_marley_battleground
+    SetVar 0x4005, TRAINER_MARLEY_BATTLEGROUND
     Return
 
 _0708:
-    SetVar 0x4005, trainer_buck_battleground
+    SetVar 0x4005, TRAINER_BUCK_BATTLEGROUND
     Return
 
 _0710:
-    SetVar 0x4005, trainer_mira_battleground
+    SetVar 0x4005, TRAINER_MIRA_BATTLEGROUND
     Return
 
 _0718:

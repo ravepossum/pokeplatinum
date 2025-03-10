@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/unk_0430.h"
 
     .data
 
@@ -8,13 +9,13 @@
     ScriptEntry _043C
     ScriptEntry _048E
     ScriptEntry _0650
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001A:
     LockAll
     Message 0
     CloseMessage
-    ApplyMovement 0xFF, _00D8
+    ApplyMovement LOCALID_PLAYER, _00D8
     WaitMovement
     Message 1
     SetVar 0x8004, 0x1B5
@@ -59,12 +60,12 @@ _00C6:
 
     .balign 4, 0
 _00D8:
-    MoveAction_020
-    MoveAction_03F 2
-    MoveAction_00C 4
-    MoveAction_00E
+    MoveAction_032
+    MoveAction_063 2
+    MoveAction_012 4
+    MoveAction_014
     MoveAction_000
-    MoveAction_03F 2
+    MoveAction_063 2
     EndMovement
 
 _00F4:
@@ -72,8 +73,8 @@ _00F4:
     LockAll
     FacePlayer
     Message 5
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0123
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0123
     GoTo _0118
     End
 
@@ -152,8 +153,8 @@ _022C:
 
 _0245:
     Message 11
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0277
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0277
     GoTo _026C
     End
 
@@ -189,7 +190,7 @@ _02AF:
     Message 10
     CloseMessage
     GetPlayerMapPos 0x8004, 0x8005
-    ApplyMovement 0xFF, _03B8
+    ApplyMovement LOCALID_PLAYER, _03B8
     WaitMovement
     GoTo _02CC
     End
@@ -197,14 +198,14 @@ _02AF:
 _02CC:
     ScrCmd_168 0, 0, 9, 5, 77
     Call _0320
-    ApplyMovement 0xFF, _03C4
+    ApplyMovement LOCALID_PLAYER, _03C4
     WaitMovement
     Call _0328
-    ApplyMovement 0xFF, _03CC
+    ApplyMovement LOCALID_PLAYER, _03CC
     WaitMovement
     ScrCmd_168 0, 0, 9, 2, 77
     Call _0320
-    ApplyMovement 0xFF, _03D4
+    ApplyMovement LOCALID_PLAYER, _03D4
     WaitMovement
     Call _0328
     GoTo _0333
@@ -233,84 +234,84 @@ _0333:
 _035A:
     ScrCmd_0A3
 _035C:
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ScrCmd_168 0, 0, 8, 2, 77
     Call _0320
-    ApplyMovement 0xFF, _03EC
+    ApplyMovement LOCALID_PLAYER, _03EC
     WaitMovement
     Call _0328
-    ApplyMovement 0xFF, _03FC
+    ApplyMovement LOCALID_PLAYER, _03FC
     WaitMovement
     ScrCmd_168 0, 0, 8, 5, 77
     Call _0320
-    ApplyMovement 0xFF, _0404
+    ApplyMovement LOCALID_PLAYER, _0404
     WaitMovement
     Call _0328
     End
 
     .balign 4, 0
 _03B8:
-    MoveAction_00F
-    MoveAction_020
+    MoveAction_015
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _03C4:
-    MoveAction_00C 2
+    MoveAction_012 2
     EndMovement
 
     .balign 4, 0
 _03CC:
-    MoveAction_00C
+    MoveAction_012
     EndMovement
 
     .balign 4, 0
 _03D4:
-    MoveAction_00C
-    MoveAction_045
+    MoveAction_012
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _03E0:
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _03EC:
     MoveAction_001
-    MoveAction_046
-    MoveAction_00D
+    MoveAction_070
+    MoveAction_013
     EndMovement
 
     .balign 4, 0
 _03FC:
-    MoveAction_00D
+    MoveAction_013
     EndMovement
 
     .balign 4, 0
 _0404:
-    MoveAction_00D 2
+    MoveAction_013 2
     EndMovement
 
     .balign 4, 0
 _040C:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0414:
-    MoveAction_00C
-    MoveAction_00F
-    MoveAction_020
+    MoveAction_012
+    MoveAction_015
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0424:
-    MoveAction_00C
-    MoveAction_045
+    MoveAction_012
+    MoveAction_069
     EndMovement
 
 _0430:
@@ -343,7 +344,7 @@ _048E:
     FacePlayer
     ScrCmd_323 0x800C
     GoToIfEq 0x800C, 0, _04BC
-    ScrCmd_201 0x405C
+    GetCurrentMapID 0x405C
     SetVar 0x405D, 0x800D
     Message 17
     GoTo _04C7
@@ -390,19 +391,19 @@ _0526:
     GoToIfEq 0x800C, 0, _0508
     Message 19
     CloseMessage
-    ApplyMovement 0xFF, _03B8
+    ApplyMovement LOCALID_PLAYER, _03B8
     WaitMovement
     ScrCmd_168 0, 0, 5, 5, 77
     Call _0320
     ApplyMovement 0x800D, _040C
-    ApplyMovement 0xFF, _03C4
+    ApplyMovement LOCALID_PLAYER, _03C4
     WaitMovement
     Call _0328
     ApplyMovement 0x800D, _0414
     WaitMovement
     ScrCmd_168 0, 0, 5, 2, 77
     Call _0320
-    ApplyMovement 0xFF, _03E0
+    ApplyMovement LOCALID_PLAYER, _03E0
     ApplyMovement 0x800D, _0424
     WaitMovement
     Call _0328
@@ -541,14 +542,14 @@ _0650:
     LockAll
     ScrCmd_168 0, 0, 5, 2, 77
     Call _0320
-    ApplyMovement 0xFF, _03EC
+    ApplyMovement LOCALID_PLAYER, _03EC
     WaitMovement
     Call _0328
-    ApplyMovement 0xFF, _03FC
+    ApplyMovement LOCALID_PLAYER, _03FC
     WaitMovement
     ScrCmd_168 0, 0, 5, 5, 77
     Call _0320
-    ApplyMovement 0xFF, _0404
+    ApplyMovement LOCALID_PLAYER, _0404
     WaitMovement
     Call _0328
     SetVar 0x4080, 0

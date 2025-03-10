@@ -3,8 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
-#include "consts/species.h"
+#include "generated/game_records.h"
+#include "generated/species.h"
 
 #include "struct_defs/struct_0203E2FC.h"
 #include "struct_defs/struct_0209843C.h"
@@ -29,17 +29,17 @@
 #include "palette.h"
 #include "pokemon.h"
 #include "save_player.h"
+#include "system.h"
 #include "trainer_info.h"
 #include "unk_02005474.h"
 #include "unk_0200762C.h"
 #include "unk_0200F174.h"
 #include "unk_02015F84.h"
-#include "unk_02017728.h"
-#include "unk_0201DBEC.h"
 #include "unk_02024220.h"
 #include "unk_0202F180.h"
 #include "unk_0208694C.h"
 #include "unk_02092494.h"
+#include "vram_transfer.h"
 
 #include "constdata/const_020F2DAC.h"
 #include "constdata/const_020F67FC.h"
@@ -62,11 +62,11 @@ static int sub_02098218(OverlayManager *param0, int *param1)
     UnkStruct_0209843C *v0;
     UnkStruct_ov119_021D0FD0 *v1;
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
-    Heap_Create(3, 71, 0x40000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_71, 0x40000);
 
-    v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov119_021D0FD0), 71);
+    v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov119_021D0FD0), HEAP_ID_71);
     memset(v1, 0, sizeof(UnkStruct_ov119_021D0FD0));
 
     v0 = OverlayManager_Args(param0);
@@ -75,20 +75,20 @@ static int sub_02098218(OverlayManager *param0, int *param1)
     v1->unk_04.unk_0C = Options_TextFrameDelay(v1->unk_00->unk_0C.unk_04);
     v1->unk_04.unk_10 = Options_Frame(v1->unk_00->unk_0C.unk_04);
     v1->unk_04.unk_34 = ov119_021D0DD4();
-    v1->unk_04.unk_38 = sub_0200762C(71);
-    v1->unk_04.unk_3C = NARC_ctor(NARC_INDEX_POKETOOL__POKE_EDIT__PL_POKE_DATA, 71);
-    v1->unk_04.unk_00 = BgConfig_New(71);
+    v1->unk_04.unk_38 = sub_0200762C(HEAP_ID_71);
+    v1->unk_04.unk_3C = NARC_ctor(NARC_INDEX_POKETOOL__POKE_EDIT__PL_POKE_DATA, HEAP_ID_71);
+    v1->unk_04.unk_00 = BgConfig_New(HEAP_ID_71);
 
-    VRAMTransferManager_New(64, 71);
+    VramTransfer_New(64, 71);
 
-    v1->unk_04.unk_54 = sub_02015F84(71, 1, 0);
-    v1->unk_04.unk_04 = PaletteData_New(71);
+    v1->unk_04.unk_54 = sub_02015F84(HEAP_ID_71, 1, 0);
+    v1->unk_04.unk_04 = PaletteData_New(HEAP_ID_71);
 
     PaletteData_SetAutoTransparent(v1->unk_04.unk_04, 1);
-    PaletteData_AllocBuffer(v1->unk_04.unk_04, 0, 0x200, 71);
-    PaletteData_AllocBuffer(v1->unk_04.unk_04, 2, 0x200, 71);
-    PaletteData_AllocBuffer(v1->unk_04.unk_04, 1, 0x200, 71);
-    PaletteData_AllocBuffer(v1->unk_04.unk_04, 3, 0x200, 71);
+    PaletteData_AllocBuffer(v1->unk_04.unk_04, 0, 0x200, HEAP_ID_71);
+    PaletteData_AllocBuffer(v1->unk_04.unk_04, 2, 0x200, HEAP_ID_71);
+    PaletteData_AllocBuffer(v1->unk_04.unk_04, 1, 0x200, HEAP_ID_71);
+    PaletteData_AllocBuffer(v1->unk_04.unk_04, 3, 0x200, HEAP_ID_71);
 
     ov119_021D0D80();
     ov119_021D0DA8();
@@ -98,16 +98,14 @@ static int sub_02098218(OverlayManager *param0, int *param1)
     ov119_021D17B8(&v1->unk_04);
 
     sub_0200569C();
-    SetMainCallback(ov119_021D0FD0, v1);
+    SetVBlankCallback(ov119_021D0FD0, v1);
 
     return 1;
 }
 
 static int sub_02098304(OverlayManager *param0, int *param1)
 {
-    UnkStruct_ov119_021D0FD0 *v0;
-
-    v0 = OverlayManager_Data(param0);
+    UnkStruct_ov119_021D0FD0 *v0 = OverlayManager_Data(param0);
 
     switch (*param1) {
     case 0:
@@ -155,9 +153,7 @@ static int sub_02098304(OverlayManager *param0, int *param1)
 
 static int sub_02098388(OverlayManager *param0, int *param1)
 {
-    UnkStruct_ov119_021D0FD0 *v0;
-
-    v0 = OverlayManager_Data(param0);
+    UnkStruct_ov119_021D0FD0 *v0 = OverlayManager_Data(param0);
 
     sub_020242C4(v0->unk_04.unk_34);
 
@@ -178,7 +174,7 @@ static int sub_02098388(OverlayManager *param0, int *param1)
     Bg_FreeTilemapBuffer(v0->unk_04.unk_00, 4);
 
     Heap_FreeToHeap(v0->unk_04.unk_00);
-    VRAMTransferManager_Destroy();
+    VramTransfer_Free();
     sub_02007B6C(v0->unk_04.unk_38);
     sub_02015FB8(v0->unk_04.unk_54);
     NARC_dtor(v0->unk_04.unk_3C);
@@ -186,9 +182,9 @@ static int sub_02098388(OverlayManager *param0, int *param1)
     ov119_021D1844(&v0->unk_04);
 
     OverlayManager_FreeData(param0);
-    Heap_Destroy(71);
+    Heap_Destroy(HEAP_ID_71);
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
 
     return 1;
@@ -240,7 +236,7 @@ static BOOL sub_0209843C(FieldTask *param0)
 
         v9 = Pokemon_GetValue(v0->unk_0C.unk_00, MON_DATA_SPECIES, 0);
 
-        v0->unk_08 = sub_0208712C(11, 1, v9, 10, SaveData_Options(FieldSystem_GetSaveData(fieldSystem)));
+        v0->unk_08 = sub_0208712C(HEAP_ID_FIELDMAP, 1, v9, 10, SaveData_Options(FieldSystem_GetSaveData(fieldSystem)));
         v0->unk_08->unk_10 = Pokemon_GetValue(v0->unk_0C.unk_00, MON_DATA_GENDER, NULL);
         v0->unk_08->unk_08 = Pokemon_GetValue(v0->unk_0C.unk_00, MON_DATA_FORM, NULL);
         FieldTask_RunApplication(param0, &Unk_020F2DAC, v0->unk_08);

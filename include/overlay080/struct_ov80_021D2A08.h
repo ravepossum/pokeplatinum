@@ -3,10 +3,6 @@
 
 #include <nnsys.h>
 
-#include "struct_decls/cell_actor_data.h"
-#include "struct_decls/struct_0200C6E4_decl.h"
-#include "struct_decls/struct_0200C704_decl.h"
-#include "struct_decls/struct_02039EBC_decl.h"
 #include "struct_defs/struct_0203D8AC.h"
 
 #include "overlay080/struct_ov80_021D259C.h"
@@ -15,14 +11,16 @@
 #include "overlay080/struct_ov80_021D2E10.h"
 
 #include "bg_window.h"
+#include "map_matrix.h"
 #include "message.h"
+#include "sprite_system.h"
 #include "strbuf.h"
 
 typedef struct UnkStruct_ov80_021D2A08_t {
     u8 unk_00;
     u8 unk_01;
     u16 unk_02;
-    int unk_04;
+    int heapID;
     int unk_08;
     int unk_0C;
     int unk_10;
@@ -33,7 +31,7 @@ typedef struct UnkStruct_ov80_021D2A08_t {
     int unk_24;
     BgConfig *unk_28;
     UnkStruct_0203D8AC *unk_2C;
-    UnkStruct_02039EBC *unk_30;
+    MainMapMatrixData *unk_30;
     void *unk_34;
     int (*unk_38)(struct UnkStruct_ov80_021D2A08_t *);
     UnkStruct_ov80_021D2C1C *unk_3C;
@@ -61,9 +59,9 @@ typedef struct UnkStruct_ov80_021D2A08_t {
     NNSG2dScreenData *unk_CC;
     NNSG2dScreenData *unk_D0;
     NNSG2dScreenData *unk_D4;
-    SpriteRenderer *unk_D8;
-    SpriteGfxHandler *unk_DC;
-    CellActorData *unk_E0;
+    SpriteSystem *unk_D8;
+    SpriteManager *unk_DC;
+    ManagedSprite *unk_E0;
 } UnkStruct_ov80_021D2A08;
 
 #endif // POKEPLATINUM_STRUCT_OV80_021D2A08_H

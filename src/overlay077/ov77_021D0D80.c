@@ -1,6 +1,9 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/screen.h"
+#include "constants/species.h"
+
 #include "struct_defs/struct_0207C690.h"
 #include "struct_defs/struct_02099F80.h"
 
@@ -8,11 +11,12 @@
 #include "overlay115/camera_angle.h"
 
 #include "bg_window.h"
+#include "brightness_controller.h"
 #include "camera.h"
-#include "core_sys.h"
 #include "easy3d.h"
 #include "easy3d_object.h"
 #include "font.h"
+#include "fx_util.h"
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
@@ -22,13 +26,11 @@
 #include "narc.h"
 #include "overlay_manager.h"
 #include "strbuf.h"
+#include "system.h"
 #include "text.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
-#include "unk_0200A9DC.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
-#include "unk_0201E190.h"
 #include "unk_0202419C.h"
 #include "unk_02024220.h"
 
@@ -100,7 +102,7 @@ typedef struct {
 } UnkStruct_ov77_021D1568;
 
 typedef struct {
-    int unk_00;
+    int heapID;
     BgConfig *unk_04;
     GenericPointerData *unk_08;
     UnkStruct_ov77_021D17B4_sub1 unk_0C;
@@ -133,7 +135,7 @@ static void ov77_021D14E4(UnkStruct_ov77_021D1208 *param0);
 static void ov77_021D1568(UnkStruct_ov77_021D1568 *param0, UnkStruct_ov77_021D1208 *param1);
 static BOOL ov77_021D11A4(void);
 static BOOL ov77_021D1A60(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int param2);
-static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int param2);
+static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int heapID);
 static BOOL ov77_021D20E4(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int param2);
 static BOOL ov77_021D21C0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int param2);
 static void ov77_021D1300(UnkStruct_ov77_021D1208 *param0, int param1);
@@ -156,9 +158,7 @@ const OverlayManagerTemplate gTitleScreenOverlayTemplate = {
 static int ov77_021D0D80(OverlayManager *param0, int *param1)
 {
     UnkStruct_ov77_021D17B4 *v0;
-    int v1;
-
-    v1 = 30;
+    int heapID = HEAP_ID_DISTORTION_WORLD_WARP;
 
     sub_0200F344(0, 0x0);
     sub_0200F344(1, 0x0);
@@ -166,7 +166,7 @@ static int ov77_021D0D80(OverlayManager *param0, int *param1)
     G2S_BlendNone();
     G2_BlendNone();
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     SetHBlankCallback(NULL, NULL);
 
     GXLayers_DisableEngineALayers();
@@ -176,12 +176,12 @@ static int ov77_021D0D80(OverlayManager *param0, int *param1)
     GXS_SetVisiblePlane(0);
 
     SetAutorepeat(4, 8);
-    Heap_Create(3, v1, 0x40000);
+    Heap_Create(HEAP_ID_APPLICATION, heapID, 0x40000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov77_021D17B4), v1);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov77_021D17B4), heapID);
     memset(v0, 0, sizeof(UnkStruct_ov77_021D17B4));
 
-    v0->unk_00 = v1;
+    v0->heapID = heapID;
     v0->unk_4E8 = 0;
     v0->unk_4F8 = 0;
 
@@ -189,7 +189,7 @@ static int ov77_021D0D80(OverlayManager *param0, int *param1)
     ov77_021D17B4(v0);
     ov77_021D11CC(v0);
 
-    SetMainCallback(ov77_021D1178, (void *)v0);
+    SetVBlankCallback(ov77_021D1178, (void *)v0);
     GXLayers_TurnBothDispOn();
 
     return 1;
@@ -201,24 +201,24 @@ static int ov77_021D0E3C(OverlayManager *param0, int *param1)
 
     switch (*param1) {
     case 0:
-        if (ov77_021D1A60(&v0->unk_238, v0->unk_04, v0->unk_00) == 1) {
+        if (ov77_021D1A60(&v0->unk_238, v0->unk_04, v0->heapID) == 1) {
             v0->unk_238.unk_00 = 0;
 
-            if (gCoreSys.unk_6C == 0) {
+            if (gSystem.unk_6C == 0) {
                 v0->unk_4EC = 30 * 1;
                 v0->unk_238.unk_29C = 1;
                 v0->unk_238.unk_2A0 = 0;
                 *param1 = 2;
             } else {
                 v0->unk_4EC = 0;
-                gCoreSys.unk_6C = 0;
+                gSystem.unk_6C = 0;
                 v0->unk_238.unk_2A0 = 1;
                 *param1 = 1;
             }
         }
         break;
     case 1:
-        if (ov77_021D1DF0(&v0->unk_238, v0->unk_04, v0->unk_00) == 1) {
+        if (ov77_021D1DF0(&v0->unk_238, v0->unk_04, v0->heapID) == 1) {
             v0->unk_238.unk_00 = 0;
             *param1 = 2;
         }
@@ -233,34 +233,34 @@ static int ov77_021D0E3C(OverlayManager *param0, int *param1)
             v0->unk_4EC--;
 
             v0->unk_238.unk_254 = 0;
-            ov77_021D20E4(&v0->unk_238, v0->unk_04, v0->unk_00);
+            ov77_021D20E4(&v0->unk_238, v0->unk_04, v0->heapID);
             break;
         } else {
             v0->unk_238.unk_254 = 1;
-            ov77_021D20E4(&v0->unk_238, v0->unk_04, v0->unk_00);
+            ov77_021D20E4(&v0->unk_238, v0->unk_04, v0->heapID);
         }
 
         v0->unk_4F8++;
 
-        if (((gCoreSys.pressedKeys & PAD_BUTTON_A) == PAD_BUTTON_A) || ((gCoreSys.pressedKeys & PAD_BUTTON_START) == PAD_BUTTON_START)) {
+        if (((gSystem.pressedKeys & PAD_BUTTON_A) == PAD_BUTTON_A) || ((gSystem.pressedKeys & PAD_BUTTON_START) == PAD_BUTTON_START)) {
             v0->unk_4E8 = 1;
             sub_0200564C(0, 60);
-            sub_02005844(487, 1);
-            ov77_021D1D48(v0->unk_04, v0->unk_00);
+            sub_02005844(SPECIES_GIRATINA, 1);
+            ov77_021D1D48(v0->unk_04, v0->heapID);
             *param1 = 4;
             break;
         }
 
-        if ((gCoreSys.heldKeys & (PAD_BUTTON_B | PAD_KEY_UP | PAD_BUTTON_SELECT)) == (PAD_BUTTON_B | PAD_KEY_UP | PAD_BUTTON_SELECT)) {
+        if ((gSystem.heldKeys & (PAD_BUTTON_B | PAD_KEY_UP | PAD_BUTTON_SELECT)) == (PAD_BUTTON_B | PAD_KEY_UP | PAD_BUTTON_SELECT)) {
             v0->unk_4E8 = 2;
-            StartScreenTransition(0, 0, 0, 0x0, 6, 1, v0->unk_00);
+            StartScreenTransition(0, 0, 0, 0x0, 6, 1, v0->heapID);
             *param1 = 6;
             break;
         }
 
         if (v0->unk_4F8 > 30 * 30) {
             v0->unk_4E8 = 3;
-            gCoreSys.unk_6C = 1;
+            gSystem.unk_6C = 1;
             {
                 GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG0, 0);
             }
@@ -271,10 +271,10 @@ static int ov77_021D0E3C(OverlayManager *param0, int *param1)
         break;
     case 4:
         v0->unk_238.unk_254 = 0;
-        ov77_021D20E4(&v0->unk_238, v0->unk_04, v0->unk_00);
+        ov77_021D20E4(&v0->unk_238, v0->unk_04, v0->heapID);
 
         if ((++v0->unk_4FC) == 10) {
-            StartScreenTransition(0, 0, 0, 0x7fff, 6, 1, v0->unk_00);
+            StartScreenTransition(0, 0, 0, 0x7fff, 6, 1, v0->heapID);
         }
 
         if ((sub_0200598C() == 0) && (IsScreenTransitionDone() == 1) && (v0->unk_4FC >= 10)) {
@@ -288,23 +288,23 @@ static int ov77_021D0E3C(OverlayManager *param0, int *param1)
             GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG1, 0);
             GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG2, 0);
             GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG3, 0);
-            StartScreenTransition(0, 1, 1, 0x7fff, 6, 1, v0->unk_00);
+            StartScreenTransition(0, 1, 1, 0x7fff, 6, 1, v0->heapID);
             *param1 = 6;
         }
         break;
     case 5:
         v0->unk_238.unk_254 = 0;
-        ov77_021D20E4(&v0->unk_238, v0->unk_04, v0->unk_00);
+        ov77_021D20E4(&v0->unk_238, v0->unk_04, v0->heapID);
 
         if (Sound_CheckFade() == 0) {
             sub_020055D0(1173, 0);
-            StartScreenTransition(0, 0, 0, 0x7fff, 6, 1, v0->unk_00);
+            StartScreenTransition(0, 0, 0, 0x7fff, 6, 1, v0->heapID);
             *param1 = 6;
         }
         break;
     case 6:
         if (IsScreenTransitionDone() == 1) {
-            if (ov77_021D21C0(&v0->unk_238, v0->unk_04, v0->unk_00) == 1) {
+            if (ov77_021D21C0(&v0->unk_238, v0->unk_04, v0->heapID) == 1) {
                 return 1;
             }
         }
@@ -317,16 +317,16 @@ static int ov77_021D0E3C(OverlayManager *param0, int *param1)
 static int ov77_021D10FC(OverlayManager *param0, int *param1)
 {
     UnkStruct_ov77_021D17B4 *v0 = OverlayManager_Data(param0);
-    int v1 = v0->unk_00;
+    int heapID = v0->heapID;
     int v2 = v0->unk_4E8;
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
 
     ov77_021D11FC(v0);
     ov77_021D1908(v0);
 
     OverlayManager_FreeData(param0);
-    Heap_Destroy(v1);
+    Heap_Destroy(heapID);
 
     switch (v2) {
     default:
@@ -371,7 +371,7 @@ static void ov77_021D1184(void)
 
 static BOOL ov77_021D11A4(void)
 {
-    if (((gCoreSys.pressedKeys & PAD_BUTTON_A) == PAD_BUTTON_A) || ((gCoreSys.pressedKeys & PAD_BUTTON_START) == PAD_BUTTON_START) || ((gCoreSys.pressedKeys & PAD_BUTTON_SELECT) == PAD_BUTTON_SELECT)) {
+    if (((gSystem.pressedKeys & PAD_BUTTON_A) == PAD_BUTTON_A) || ((gSystem.pressedKeys & PAD_BUTTON_START) == PAD_BUTTON_START) || ((gSystem.pressedKeys & PAD_BUTTON_SELECT) == PAD_BUTTON_SELECT)) {
         return 1;
     }
 
@@ -380,7 +380,7 @@ static BOOL ov77_021D11A4(void)
 
 static void ov77_021D11CC(UnkStruct_ov77_021D17B4 *param0)
 {
-    param0->unk_08 = sub_02024220(param0->unk_00, 0, 1, 0, 4, NULL);
+    param0->unk_08 = sub_02024220(param0->heapID, 0, 1, 0, 4, NULL);
     G2_SetBG0Priority(1);
 }
 
@@ -433,9 +433,7 @@ static void ov77_021D1208(UnkStruct_ov77_021D1208 *param0, int param1, int param
 
 static void ov77_021D1300(UnkStruct_ov77_021D1208 *param0, int param1)
 {
-    NARC *v0;
-
-    v0 = NARC_ctor(NARC_INDEX_DEMO__TITLE__TITLEDEMO, param1);
+    NARC *v0 = NARC_ctor(NARC_INDEX_DEMO__TITLE__TITLEDEMO, param1);
 
     {
         Easy3DModel_LoadFrom(&param0->unk_150, v0, 19, param1);
@@ -547,7 +545,7 @@ static void ov77_021D1568(UnkStruct_ov77_021D1568 *param0, UnkStruct_ov77_021D12
     case 2:
         sub_020241B4();
         Camera_ComputeViewMatrix();
-        sub_0201E268(&v0, &param1->unk_98);
+        MTX_Rot33Vec(&v0, &param1->unk_98);
 
         if (param0->unk_29C == 0) {
             if (param0->unk_2A0 == 1) {
@@ -623,7 +621,7 @@ static void ov77_021D1704(UnkStruct_ov77_021D1208 *param0)
 
 static void ov77_021D17B4(UnkStruct_ov77_021D17B4 *param0)
 {
-    param0->unk_04 = BgConfig_New(param0->unk_00);
+    param0->unk_04 = BgConfig_New(param0->heapID);
 
     {
         GraphicsModes v0 = {
@@ -893,7 +891,7 @@ static BOOL ov77_021D1A60(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int
         G3X_AntiAlias(1);
     }
 
-    gCoreSys.unk_65 = 1;
+    gSystem.whichScreenIs3D = DS_SCREEN_SUB;
     GXLayers_SwapDisplay();
     param0->unk_04.unk_00 = 2;
 
@@ -996,7 +994,7 @@ static void ov77_021D1D48(BgConfig *param0, int param1)
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG0, 1);
 }
 
-static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int param2)
+static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int heapID)
 {
     BOOL v0 = 0;
 
@@ -1004,7 +1002,7 @@ static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int
         param0->unk_29C = 1;
         param0->unk_2A0 = 0;
         sub_0200F2C0();
-        sub_0200ABB0(3);
+        BrightnessController_ResetScreenController(BRIGHTNESS_BOTH_SCREENS);
         return 1;
     }
 
@@ -1013,7 +1011,7 @@ static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG0, 1);
         param0->unk_296 = 0;
         param0->unk_22A = 15 + 252;
-        StartScreenTransition(0, 1, 1, 0x0, 15, 3, param2);
+        StartScreenTransition(0, 1, 1, 0x0, 15, 3, heapID);
         param0->unk_00 = 1;
         break;
     case 1:
@@ -1027,10 +1025,10 @@ static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int
         }
         break;
     case 2:
-        if ((sub_0200AC1C(1) == 1) && (sub_0200AC1C(2) == 1)) {
+        if ((BrightnessController_IsTransitionComplete(BRIGHTNESS_MAIN_SCREEN) == TRUE) && (BrightnessController_IsTransitionComplete(BRIGHTNESS_SUB_SCREEN) == TRUE)) {
             if (param0->unk_22A) {
-                sub_0200AAE0(10, 16, 0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2), 1);
-                sub_0200AAE0(10, 16, 0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BD), 2);
+                BrightnessController_StartTransition(10, 16, 0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2), BRIGHTNESS_MAIN_SCREEN);
+                BrightnessController_StartTransition(10, 16, 0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BD), BRIGHTNESS_SUB_SCREEN);
                 param0->unk_296 = 2;
                 param0->unk_22A--;
                 param0->unk_00 = 3;
@@ -1041,9 +1039,9 @@ static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int
         }
         break;
     case 3:
-        if ((sub_0200AC1C(1) == 1) && (sub_0200AC1C(2) == 1)) {
-            sub_0200AAE0(10, 0, 16, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2), 1);
-            sub_0200AAE0(10, 0, 16, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BD), 2);
+        if ((BrightnessController_IsTransitionComplete(BRIGHTNESS_MAIN_SCREEN) == TRUE) && (BrightnessController_IsTransitionComplete(BRIGHTNESS_SUB_SCREEN) == TRUE)) {
+            BrightnessController_StartTransition(10, 0, 16, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2), BRIGHTNESS_MAIN_SCREEN);
+            BrightnessController_StartTransition(10, 0, 16, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BD), BRIGHTNESS_SUB_SCREEN);
             param0->unk_296 = 3;
             param0->unk_00 = 2;
         }
@@ -1059,7 +1057,7 @@ static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int
     case 5:
         if (IsScreenTransitionDone() == 1) {
             if (param0->unk_22A) {
-                StartScreenTransition(0, 0, 0, 0x7fff, 5, 2, param2);
+                StartScreenTransition(0, 0, 0, 0x7fff, 5, 2, heapID);
                 param0->unk_296 = 2;
                 param0->unk_22A--;
                 param0->unk_00 = 6;
@@ -1078,7 +1076,7 @@ static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int
                 GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG1, 1);
             }
             param0->unk_04.unk_AC = 2;
-            StartScreenTransition(3, 1, 1, 0x7fff, 16, 3, param2);
+            StartScreenTransition(3, 1, 1, 0x7fff, 16, 3, heapID);
             param0->unk_00 = 5;
         }
         break;
@@ -1090,7 +1088,7 @@ static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int
         }
         break;
     case 7:
-        StartScreenTransition(3, 1, 1, 0x0, 48, 1, param2);
+        StartScreenTransition(3, 1, 1, 0x0, 48, 1, heapID);
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG3, 1);
         param0->unk_00 = 9;
         param0->unk_2A4 = 0;
@@ -1107,9 +1105,9 @@ static BOOL ov77_021D1DF0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int
                 GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG2, 1);
             }
             {
-                ov77_021D1CC0(param1, param2);
+                ov77_021D1CC0(param1, heapID);
             }
-            StartScreenTransition(4, 1, 1, 0x7fff, 16, 3, param2);
+            StartScreenTransition(4, 1, 1, 0x7fff, 16, 3, heapID);
             GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG1, 1);
             GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG3, 1);
             param0->unk_22A = 90;
@@ -1205,7 +1203,7 @@ static BOOL ov77_021D21C0(UnkStruct_ov77_021D1568 *param0, BgConfig *param1, int
     G2_BlendNone();
     G3X_EdgeMarking(0);
 
-    gCoreSys.unk_65 = 0;
+    gSystem.whichScreenIs3D = DS_SCREEN_MAIN;
     GXLayers_SwapDisplay();
 
     return 1;

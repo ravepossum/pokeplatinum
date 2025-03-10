@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "struct_decls/struct_02007768_decl.h"
-#include "struct_defs/struct_0200C738.h"
 #include "struct_defs/struct_02099F80.h"
 
 #include "overlay019/funcptr_ov19_021D79B8.h"
@@ -36,28 +35,28 @@
 #include "overlay019/struct_ov19_021DEC04_decl.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
 #include "enums.h"
 #include "font.h"
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
 #include "narc.h"
+#include "render_oam.h"
+#include "sprite.h"
+#include "sprite_util.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "unk_02005474.h"
 #include "unk_0200762C.h"
-#include "unk_020093B4.h"
-#include "unk_0200A784.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
 
 struct UnkStruct_ov19_021D61B0_t {
     SysTask *unk_00;
     SysTask *unk_04;
     SysTask *unk_08[4];
-    CellActorCollection *unk_18;
-    UnkStruct_0200C738 unk_1C;
+    SpriteList *unk_18;
+    G2dRenderer unk_1C;
     NNSG2dImagePaletteProxy unk_1A8;
     UnkStruct_02007768 *unk_1BC;
     BgConfig *unk_1C0;
@@ -151,20 +150,20 @@ static void ov19_021D797C(void);
 
 BOOL ov19_021D61B0(UnkStruct_ov19_021D61B0 **param0, const UnkStruct_ov19_021D4DF0 *param1, const UnkStruct_ov19_021D5DF8 *param2)
 {
-    UnkStruct_ov19_021D61B0 *v0 = Heap_AllocFromHeap(10, sizeof(UnkStruct_ov19_021D61B0));
+    UnkStruct_ov19_021D61B0 *v0 = Heap_AllocFromHeap(HEAP_ID_10, sizeof(UnkStruct_ov19_021D61B0));
 
     if (v0 != NULL) {
         v0->unk_1C4 = param1;
-        v0->unk_1C0 = BgConfig_New(10);
+        v0->unk_1C0 = BgConfig_New(HEAP_ID_10);
 
         if (v0->unk_1C0 != NULL) {
             u32 v1;
             BOOL v2 = 1;
             NARC *v3;
 
-            v3 = NARC_ctor(NARC_INDEX_GRAPHIC__BOX, 10);
+            v3 = NARC_ctor(NARC_INDEX_GRAPHIC__BOX, HEAP_ID_10);
 
-            SetMainCallback(NULL, NULL);
+            SetVBlankCallback(NULL, NULL);
             DisableHBlank();
             GXLayers_DisableEngineALayers();
             GXLayers_DisableEngineBLayers();
@@ -175,16 +174,16 @@ BOOL ov19_021D61B0(UnkStruct_ov19_021D61B0 **param0, const UnkStruct_ov19_021D4D
             GXS_SetOBJVRamModeChar(GX_OBJVRAMMODE_CHAR_1D_32K);
             NNS_G2dInitOamManagerModule();
 
-            sub_0200A784(0, 128, 0, 32, 0, 128, 0, 32, 10);
-            v0->unk_18 = sub_020095C4(128, &v0->unk_1C, 10);
-            sub_0200964C(&(v0->unk_1C), 0, (384 << FX32_SHIFT));
+            RenderOam_Init(0, 128, 0, 32, 0, 128, 0, 32, 10);
+            v0->unk_18 = SpriteList_InitRendering(128, &v0->unk_1C, 10);
+            SetSubScreenViewRect(&(v0->unk_1C), 0, (384 << FX32_SHIFT));
 
             NNS_G2dInitImagePaletteProxy(&(v0->unk_1A8));
 
             Graphics_LoadPartialPaletteFromOpenNARC(v3, 26, NNS_G2D_VRAM_TYPE_2DMAIN, 0, 10, &(v0->unk_1A8));
             Font_UseImmediateGlyphAccess(FONT_SYSTEM, 10);
 
-            v0->unk_1BC = sub_0200762C(10);
+            v0->unk_1BC = sub_0200762C(HEAP_ID_10);
 
             for (v1 = 0; v1 < 4; v1++) {
                 v0->unk_08[v1] = NULL;
@@ -197,13 +196,13 @@ BOOL ov19_021D61B0(UnkStruct_ov19_021D61B0 **param0, const UnkStruct_ov19_021D4D
             v2 &= ov19_021D79F8(&(v0->unk_494), v0, v0->unk_1C4, v0->unk_1C0, v0->unk_18);
             v2 &= ov19_021D8B54(&(v0->unk_5E24), v0, v0->unk_1C4, v0->unk_18, v3);
             v2 &= ov19_021DA814(&(v0->unk_65BC), v0, v0->unk_1C4, v0->unk_18, v3);
-            v2 &= ov19_021DA92C(&(v0->unk_6604), v0, v0->unk_1C4, v0->unk_1C0, v0->unk_18, ov19_021D5DE8(param2), v3);
-            v2 &= ov19_021DB2FC(&(v0->unk_6658), v0, v0->unk_1C4, v0->unk_1C0, v0->unk_18, ov19_021D5DE8(param2), ov19_021D5DF0(param2), ov19_021D5DF8(param2), v3);
+            v2 &= ov19_021DA92C(&(v0->unk_6604), v0, v0->unk_1C4, v0->unk_1C0, v0->unk_18, ov19_GetBoxMessagesLoader(param2), v3);
+            v2 &= ov19_021DB2FC(&(v0->unk_6658), v0, v0->unk_1C4, v0->unk_1C0, v0->unk_18, ov19_GetBoxMessagesLoader(param2), ov19_021D5DF0(param2), ov19_021D5DF8(param2), v3);
             v2 &= ov19_021DB8E4(&(v0->unk_6690), v0, v0->unk_1C4, v0->unk_1C0, v0->unk_18, v3);
             v2 &= ov19_021DC5F0(&(v0->unk_B290), v0, v0->unk_1C4, v0->unk_1C0, v0->unk_18, v3);
             v2 &= ov19_021DCF88(&(v0->unk_B408), v0, v0->unk_1C4, v0->unk_1C0, v0->unk_18);
             v2 &= ov19_021DE3E8(&(v0->unk_B40C), v0, v0->unk_1C4, v0->unk_1C0, v0->unk_18);
-            v2 &= ov19_021DEC04(&(v0->unk_B410), v0, v0->unk_1C4, v0->unk_1C0, v0->unk_18, ov19_021D5DE8(param2), v3);
+            v2 &= ov19_021DEC04(&(v0->unk_B410), v0, v0->unk_1C4, v0->unk_1C0, v0->unk_18, ov19_GetBoxMessagesLoader(param2), v3);
 
             v0->unk_B414 = param2;
             v0->unk_00 = SysTask_Start(ov19_021D6474, v0, 2);
@@ -235,7 +234,7 @@ static void ov19_021D6474(SysTask *param0, void *param1)
 
 void ov19_021D64A0(UnkStruct_ov19_021D61B0 *param0)
 {
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     SysTask_Done(param0->unk_00);
     SysTask_Done(param0->unk_04);
 
@@ -251,7 +250,7 @@ void ov19_021D64A0(UnkStruct_ov19_021D61B0 *param0)
     ov19_021D7A74(&(param0->unk_494));
     ov19_021DA384(&(param0->unk_1C8));
 
-    CellActorCollection_Delete(param0->unk_18);
+    SpriteList_Delete(param0->unk_18);
     Bg_FreeTilemapBuffer(param0->unk_1C0, 3);
     Bg_FreeTilemapBuffer(param0->unk_1C0, 2);
     Bg_FreeTilemapBuffer(param0->unk_1C0, 1);
@@ -260,7 +259,7 @@ void ov19_021D64A0(UnkStruct_ov19_021D61B0 *param0)
     Font_UseLazyGlyphAccess(FONT_SYSTEM);
     Heap_FreeToHeap(param0->unk_1C0);
     Heap_FreeToHeap(param0);
-    sub_0200A878();
+    RenderOam_Free();
 }
 
 void ov19_021D6594(UnkStruct_ov19_021D61B0 *param0, u32 param1)
@@ -329,7 +328,7 @@ void ov19_021D6594(UnkStruct_ov19_021D61B0 *param0, u32 param1)
 
         for (v2 = 0; v2 < 4; v2++) {
             if (param0->unk_08[v2] == NULL) {
-                v1 = Heap_AllocFromHeap(10, sizeof(UnkStruct_ov19_021D6640) + v0[param1].unk_04);
+                v1 = Heap_AllocFromHeap(HEAP_ID_10, sizeof(UnkStruct_ov19_021D6640) + v0[param1].unk_04);
 
                 if (v1 != NULL) {
                     v1->unk_00 = param1;
@@ -397,8 +396,8 @@ static void ov19_021D6664(SysTask *param0, void *param1)
 
     ov19_021DAA80(&v0->unk_6604);
 
-    CellActorCollection_Update(v0->unk_18);
-    sub_0200A858();
+    SpriteList_Update(v0->unk_18);
+    RenderOam_Transfer();
 
     OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
@@ -407,15 +406,13 @@ static void ov19_021D6694(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
     switch (v2->unk_06) {
     case 0: {
-        NARC *v3 = NARC_ctor(NARC_INDEX_GRAPHIC__BOX, 10);
+        NARC *v3 = NARC_ctor(NARC_INDEX_GRAPHIC__BOX, HEAP_ID_10);
 
         ov19_021D74B4(v0, v1);
         ov19_021D75CC(v0, v1, v3);
@@ -443,9 +440,7 @@ static void ov19_021D671C(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -453,7 +448,7 @@ static void ov19_021D671C(SysTask *param0, void *param1)
     case 0:
         Sound_PlayEffect(1549);
         G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_ALL, 0x6, 0xa);
-        StartScreenTransition(0, 1, 1, 0x0, 8, 1, 10);
+        StartScreenTransition(0, 1, 1, 0x0, 8, 1, HEAP_ID_10);
         v2->unk_06++;
         break;
     case 1:
@@ -468,16 +463,14 @@ static void ov19_021D6780(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
     switch (v2->unk_06) {
     case 0:
         G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_ALL, 0x6, 0xa);
-        StartScreenTransition(0, 1, 1, 0x0, 6, 1, 10);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_10);
         v2->unk_06++;
         break;
     case 1:
@@ -492,15 +485,13 @@ static void ov19_021D67DC(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
     switch (v2->unk_06) {
     case 0:
-        StartScreenTransition(0, 0, 0, 0x0, 6, 1, 10);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_10);
         v2->unk_06++;
         break;
     case 1:
@@ -515,9 +506,7 @@ static void ov19_021D6824(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -560,9 +549,7 @@ static void ov19_021D68E4(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -586,9 +573,7 @@ static void ov19_021D6940(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -623,9 +608,7 @@ static void ov19_021D69BC(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -650,9 +633,7 @@ static void ov19_021D6A1C(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -664,9 +645,7 @@ static void ov19_021D6A38(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -687,9 +666,7 @@ static void ov19_021D6A74(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -710,9 +687,7 @@ static void ov19_021D6AB0(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -733,9 +708,7 @@ static void ov19_021D6AEC(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -754,9 +727,7 @@ static void ov19_021D6B1C(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -781,9 +752,7 @@ static void ov19_021D6B6C(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -804,9 +773,7 @@ static void ov19_021D6BA8(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -827,9 +794,7 @@ static void ov19_021D6BF0(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -850,9 +815,7 @@ static void ov19_021D6C38(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -873,9 +836,7 @@ static void ov19_021D6C74(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -896,9 +857,7 @@ static void ov19_021D6CB0(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -920,9 +879,7 @@ static void ov19_021D6CF8(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -944,9 +901,7 @@ static void ov19_021D6D40(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
@@ -974,7 +929,7 @@ static void ov19_021D6D88(SysTask *param0, void *param1)
     v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
-    v3 = ov19_021D5E74(v1);
+    v3 = ov19_GetPreviewedMonHeldItem(v1);
 
     if (ov19_021D5E38(v1) == 2) {
         ov19_021D9AB0(&v0->unk_5E24, v3);
@@ -1050,9 +1005,7 @@ static void ov19_021D6E70(SysTask *param0, void *param1)
 static void ov19_021D6EA4(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
-    UnkStruct_ov19_021D6640 *v1;
-
-    v1 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v1 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v1->unk_0C;
 
     ov19_021DB6F0(&(v0->unk_6658));
@@ -1062,9 +1015,7 @@ static void ov19_021D6EA4(SysTask *param0, void *param1)
 static void ov19_021D6EC0(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
-    UnkStruct_ov19_021D6640 *v1;
-
-    v1 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v1 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v1->unk_0C;
 
     ov19_021DB724(&(v0->unk_6658));
@@ -1566,16 +1517,14 @@ static void ov19_021D7460(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021D61B0 *v0;
     const UnkStruct_ov19_021D4DF0 *v1;
-    UnkStruct_ov19_021D6640 *v2;
-
-    v2 = (UnkStruct_ov19_021D6640 *)param1;
+    UnkStruct_ov19_021D6640 *v2 = (UnkStruct_ov19_021D6640 *)param1;
     v0 = v2->unk_0C;
     v1 = v0->unk_1C4;
 
     switch (v2->unk_06) {
     case 0:
         Sound_PlayEffect(1550);
-        StartScreenTransition(0, 0, 0, 0x0, 6, 1, 10);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_10);
         v2->unk_06++;
         break;
     case 1:
@@ -1795,14 +1744,14 @@ static void ov19_021D74B4(UnkStruct_ov19_021D61B0 *param0, const UnkStruct_ov19_
 
 static void ov19_021D75CC(UnkStruct_ov19_021D61B0 *param0, const UnkStruct_ov19_021D4DF0 *param1, NARC *param2)
 {
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param2, 4, param0->unk_1C0, 1, 0, 0, 1, 10);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param2, 4, param0->unk_1C0, 1, 0, 0, 1, HEAP_ID_10);
     Bg_FillTilemapRect(param0->unk_1C0, 1, 0x0, 0, 0, 32, 32, 17);
     Bg_CopyTilemapBufferToVRAM(param0->unk_1C0, 1);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param2, 1, param0->unk_1C0, 2, 0, 0, 1, 10);
-    Graphics_LoadPaletteFromOpenNARC(param2, 5, 0, 0, 0x20 * 7, 10);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param2, 1, param0->unk_1C0, 2, 0, 0, 1, HEAP_ID_10);
+    Graphics_LoadPaletteFromOpenNARC(param2, 5, 0, 0, 0x20 * 7, HEAP_ID_10);
 
     if (ov19_021D5E08(param1) != 4) {
-        Graphics_LoadTilemapToBgLayerFromOpenNARC(param2, 0, param0->unk_1C0, 2, 0, 0, 1, 10);
+        Graphics_LoadTilemapToBgLayerFromOpenNARC(param2, 0, param0->unk_1C0, 2, 0, 0, 1, HEAP_ID_10);
     }
 
     ov19_021D7A9C(&param0->unk_494);
@@ -1915,7 +1864,7 @@ int ov19_021D7820(UnkStruct_ov19_021D61B0 *param0)
     }
 }
 
-void ov19_021D783C(CellActorResourceData *param0, NNSG2dImageProxy *param1, NNSG2dImagePaletteProxy *param2, NNSG2dCellDataBank *param3, NNSG2dCellAnimBankData *param4, u32 param5)
+void ov19_021D783C(SpriteResourcesHeader *param0, NNSG2dImageProxy *param1, NNSG2dImagePaletteProxy *param2, NNSG2dCellDataBank *param3, NNSG2dCellAnimBankData *param4, u32 param5)
 {
     param0->imageProxy = param1;
     param0->paletteProxy = param2;
@@ -1928,12 +1877,12 @@ void ov19_021D783C(CellActorResourceData *param0, NNSG2dImageProxy *param1, NNSG
     param0->isVRamTransfer = 0;
 }
 
-CellActor *ov19_021D785C(CellActorCollection *param0, CellActorResourceData *param1, u32 param2, u32 param3, u32 param4, int param5)
+Sprite *ov19_021D785C(SpriteList *param0, SpriteResourcesHeader *param1, u32 param2, u32 param3, u32 param4, int param5)
 {
-    CellActorInitParams v0;
-    CellActor *v1;
+    SpriteListTemplate v0;
+    Sprite *v1;
 
-    v0.collection = param0;
+    v0.list = param0;
     v0.resourceData = param1;
     v0.position.x = param2 * FX32_ONE;
     v0.position.y = param3 * FX32_ONE;
@@ -1945,23 +1894,23 @@ CellActor *ov19_021D785C(CellActorCollection *param0, CellActorResourceData *par
     {
         OSIntrMode v2 = OS_DisableInterrupts();
 
-        v1 = CellActorCollection_Add(&v0);
+        v1 = SpriteList_Add(&v0);
         OS_RestoreInterrupts(v2);
     }
 
     if (v1) {
-        CellActor_SetAnimateFlag(v1, 1);
-        CellActor_SetAnimSpeed(v1, (FX32_ONE * (2 / 2)));
+        Sprite_SetAnimateFlag(v1, 1);
+        Sprite_SetAnimSpeed(v1, (FX32_ONE * (2 / 2)));
     }
 
     return v1;
 }
 
-void ov19_021D78AC(CellActor *param0, u32 param1)
+void ov19_021D78AC(Sprite *param0, u32 param1)
 {
     OSIntrMode v0 = OS_DisableInterrupts();
 
-    CellActor_SetPriority(param0, param1);
+    Sprite_SetPriority(param0, param1);
     OS_RestoreInterrupts(v0);
 }
 

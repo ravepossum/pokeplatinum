@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/veilstone_city_northeast_house.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _011C
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -23,8 +24,8 @@ _0037:
     End
 
 _0042:
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _005B
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _005B
     GoTo _00FE
     End
 
@@ -36,12 +37,12 @@ _005B:
     BufferPlayerName 0
     Message 3
     WaitSound
-    ScrCmd_096 137, 25, 0, 0x800C
+    GivePokemon SPECIES_PORYGON, 25, ITEM_NONE, 0x800C
     SetFlag 151
     Message 4
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00AC
-    GoToIfEq 0x800C, 1, _00ED
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00AC
+    GoToIfEq 0x800C, MENU_NO, _00ED
     End
 
 _00AC:

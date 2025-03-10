@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/snowpoint_temple_1f.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _0010
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     SetFlag 0x9D6

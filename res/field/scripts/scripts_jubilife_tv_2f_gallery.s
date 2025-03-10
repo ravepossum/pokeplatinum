@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/jubilife_tv_2f_gallery.h"
 
     .data
 
@@ -16,7 +17,7 @@
     ScriptEntry _062E
     ScriptEntry _0676
     ScriptEntry _0689
-    .short 0xFD13
+    ScriptEntryEnd
 
 _003A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -42,9 +43,9 @@ _0080:
 
 _0089:
     Message 3
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00AC
-    GoToIfEq 0x800C, 1, _00F5
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00AC
+    GoToIfEq 0x800C, MENU_NO, _00F5
     End
 
 _00AC:
@@ -52,15 +53,15 @@ _00AC:
     GoTo _00D5
 
 _00B5:
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0089
-    GoToIfEq 0x800C, 1, _02B3
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0089
+    GoToIfEq 0x800C, MENU_NO, _02B3
     End
 
 _00D5:
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00F5
-    GoToIfEq 0x800C, 1, _02B3
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00F5
+    GoToIfEq 0x800C, MENU_NO, _02B3
     End
 
 _00F5:
@@ -80,7 +81,7 @@ _0121:
     WaitFadeScreen
     ScrCmd_191
     ScrCmd_193 0x4002
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x4002, 0xFF, _02B3
@@ -91,7 +92,7 @@ _0121:
 _016C:
     Message 5
     CloseMessage
-    ScrCmd_1BD 0x8006
+    GetPlayerDir 0x8006
     GoToIfEq 0x8006, 0, _019E
     GoToIfEq 0x8006, 2, _01B8
     GoToIfEq 0x8006, 3, _01D2
@@ -100,21 +101,21 @@ _016C:
 _019E:
     ApplyMovement 0, _0374
     WaitMovement
-    ApplyMovement 0xFF, _0340
+    ApplyMovement LOCALID_PLAYER, _0340
     WaitMovement
     GoTo _01EC
 
 _01B8:
     ApplyMovement 0, _0380
     WaitMovement
-    ApplyMovement 0xFF, _0348
+    ApplyMovement LOCALID_PLAYER, _0348
     WaitMovement
     GoTo _01EC
 
 _01D2:
     ApplyMovement 0, _038C
     WaitMovement
-    ApplyMovement 0xFF, _0354
+    ApplyMovement LOCALID_PLAYER, _0354
     WaitMovement
     GoTo _01EC
 
@@ -123,8 +124,8 @@ _01EC:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A6 0x4002, 0x8005, 0x8007
-    ScrCmd_0A1
-    ApplyMovement 0xFF, _0360
+    ReturnToField
+    ApplyMovement LOCALID_PLAYER, _0360
     WaitMovement
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
@@ -134,21 +135,21 @@ _01EC:
     End
 
 _0245:
-    ApplyMovement 0xFF, _0368
+    ApplyMovement LOCALID_PLAYER, _0368
     WaitMovement
     ApplyMovement 0, _0398
     WaitMovement
     GoTo _0293
 
 _025F:
-    ApplyMovement 0xFF, _0368
+    ApplyMovement LOCALID_PLAYER, _0368
     WaitMovement
     ApplyMovement 0, _03A4
     WaitMovement
     GoTo _0293
 
 _0279:
-    ApplyMovement 0xFF, _0368
+    ApplyMovement LOCALID_PLAYER, _0368
     WaitMovement
     ApplyMovement 0, _03B0
     WaitMovement
@@ -177,7 +178,7 @@ _02C7:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_243 0, 0x800C, 0x8004
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x800C, 0, _0328
@@ -216,13 +217,13 @@ _0340:
 
     .balign 4, 0
 _0348:
-    MoveAction_00A
+    MoveAction_010
     MoveAction_008
     EndMovement
 
     .balign 4, 0
 _0354:
-    MoveAction_00B
+    MoveAction_011
     MoveAction_008
     EndMovement
 
@@ -239,37 +240,37 @@ _0368:
 
     .balign 4, 0
 _0374:
-    MoveAction_00E
+    MoveAction_014
     MoveAction_003
     EndMovement
 
     .balign 4, 0
 _0380:
-    MoveAction_00E
+    MoveAction_014
     MoveAction_003
     EndMovement
 
     .balign 4, 0
 _038C:
-    MoveAction_00F
+    MoveAction_015
     MoveAction_002
     EndMovement
 
     .balign 4, 0
 _0398:
-    MoveAction_00F
+    MoveAction_015
     MoveAction_001
     EndMovement
 
     .balign 4, 0
 _03A4:
-    MoveAction_00F
+    MoveAction_015
     MoveAction_001
     EndMovement
 
     .balign 4, 0
 _03B0:
-    MoveAction_00E
+    MoveAction_014
     MoveAction_001
     EndMovement
 
@@ -291,7 +292,7 @@ _03CC:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A7 0, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -305,7 +306,7 @@ _0409:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A7 1, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -319,7 +320,7 @@ _0446:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A7 2, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -333,7 +334,7 @@ _0483:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A7 3, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -347,7 +348,7 @@ _04C0:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A7 4, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -361,7 +362,7 @@ _04FD:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A7 5, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -375,7 +376,7 @@ _053A:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A7 6, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -389,7 +390,7 @@ _0577:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A7 7, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -403,7 +404,7 @@ _05B4:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A7 8, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -417,7 +418,7 @@ _05F1:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A7 9, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -431,7 +432,7 @@ _062E:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_0A7 10, 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll

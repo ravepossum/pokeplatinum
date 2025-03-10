@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/valor_lakefront.h"
 
     .data
 
@@ -11,34 +12,34 @@
     ScriptEntry _06B8
     ScriptEntry _06CF
     ScriptEntry _06E2
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0026:
     CallIfSet 0x106, _004B
-    GoToIfUnset 0x15E, _0079
-    GoToIfSet 0x15E, _008B
+    GoToIfUnset FLAG_GALACTIC_LEFT_LAKE_VALOR, _0079
+    GoToIfSet FLAG_GALACTIC_LEFT_LAKE_VALOR, _008B
     End
     End
 
 _004B:
-    ScrCmd_186 5, 0x2D3, 0x301
+    SetObjectEventPos 5, 0x2D3, 0x301
     ScrCmd_189 5, 0
     ScrCmd_188 5, 14
     Return
 
 _0061:
-    GoToIfUnset 0x15E, _0079
-    GoToIfSet 0x15E, _008B
+    GoToIfUnset FLAG_GALACTIC_LEFT_LAKE_VALOR, _0079
+    GoToIfSet FLAG_GALACTIC_LEFT_LAKE_VALOR, _008B
     End
 
 _0079:
-    ScrCmd_18A 5, 0x2C9, 0x2F8
-    ScrCmd_18A 6, 0x2C9, 0x2F9
+    SetWarpEventPos 5, 0x2C9, 0x2F8
+    SetWarpEventPos 6, 0x2C9, 0x2F9
     End
 
 _008B:
-    ScrCmd_18A 3, 0x2C9, 0x2F8
-    ScrCmd_18A 4, 0x2C9, 0x2F9
+    SetWarpEventPos 3, 0x2C9, 0x2F8
+    SetWarpEventPos 4, 0x2C9, 0x2F9
     End
 
 _009D:
@@ -51,14 +52,14 @@ _009D:
     WaitMovement
     Message 1
     CloseMessage
-    ScrCmd_1BD 0x8004
+    GetPlayerDir 0x8004
     GoToIfEq 0x8004, 1, _00E6
     GoToIfEq 0x8004, 0, _00FE
     GoTo _010E
 
 _00E6:
     ApplyMovement 5, _021C
-    ApplyMovement 0xFF, _01E0
+    ApplyMovement LOCALID_PLAYER, _01E0
     WaitMovement
     GoTo _0126
 
@@ -69,7 +70,7 @@ _00FE:
 
 _010E:
     ApplyMovement 5, _0228
-    ApplyMovement 0xFF, _01EC
+    ApplyMovement LOCALID_PLAYER, _01EC
     WaitMovement
     GoTo _0126
 
@@ -80,23 +81,23 @@ _0126:
     End
 
 _013A:
-    ScrCmd_1BD 0x8000
+    GetPlayerDir 0x8000
     FacePlayer
     Message 2
     CloseMessage
-    StartTrainerBattle trainer_galactic_grunt_valor_lakefront
+    StartTrainerBattle TRAINER_GALACTIC_GRUNT_VALOR_LAKEFRONT
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _01D9
+    GoToIfEq 0x800C, FALSE, _01D9
     Message 3
     CloseMessage
-    ScrCmd_1BD 0x8004
+    GetPlayerDir 0x8004
     GoToIfEq 0x8004, 1, _0185
     GoToIfEq 0x8004, 0, _019D
     GoTo _01AD
 
 _0185:
     ApplyMovement 5, _0230
-    ApplyMovement 0xFF, _01F4
+    ApplyMovement LOCALID_PLAYER, _01F4
     WaitMovement
     GoTo _01C5
 
@@ -107,72 +108,72 @@ _019D:
 
 _01AD:
     ApplyMovement 5, _023C
-    ApplyMovement 0xFF, _0208
+    ApplyMovement LOCALID_PLAYER, _0208
     WaitMovement
     GoTo _01C5
 
 _01C5:
-    ScrCmd_065 5
+    RemoveObject 5
     SetFlag 0x211
     ClearFlag 0x156
     GoTo _0248
     End
 
 _01D9:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
     .balign 4, 0
 _01E0:
-    MoveAction_023
-    MoveAction_020
+    MoveAction_035
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _01EC:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _01F4:
-    MoveAction_03F
-    MoveAction_023
-    MoveAction_03F
-    MoveAction_020
+    MoveAction_063
+    MoveAction_035
+    MoveAction_063
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0208:
-    MoveAction_03F
-    MoveAction_020
+    MoveAction_063
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0214:
-    MoveAction_04B
+    MoveAction_075
     EndMovement
 
     .balign 4, 0
 _021C:
-    MoveAction_013
-    MoveAction_010 11
+    MoveAction_019
+    MoveAction_016 11
     EndMovement
 
     .balign 4, 0
 _0228:
-    MoveAction_010 10
+    MoveAction_016 10
     EndMovement
 
     .balign 4, 0
 _0230:
-    MoveAction_00F
+    MoveAction_015
     MoveAction_008 9
     EndMovement
 
     .balign 4, 0
 _023C:
-    MoveAction_00C
+    MoveAction_012
     MoveAction_008 9
     EndMovement
 
@@ -184,7 +185,7 @@ _0248:
     ClearFlag 0x1AD
     ScrCmd_189 0, 1
     ScrCmd_188 0, 15
-    ScrCmd_064 0
+    AddObject 0
     ApplyMovement 0, _0594
     WaitMovement
     Message 4
@@ -196,7 +197,7 @@ _0248:
     ClearFlag 0x1D5
     ScrCmd_189 10, 0
     ScrCmd_188 10, 14
-    ScrCmd_064 10
+    AddObject 10
     CallCommonScript 0x7FA
     CallIfEq 0x8000, 0, _046C
     CallIfEq 0x8000, 1, _0480
@@ -215,10 +216,10 @@ _0248:
     Message 7
     CloseMessage
     ApplyMovement 0, _05A8
-    ApplyMovement 0xFF, _05E8
+    ApplyMovement LOCALID_PLAYER, _05E8
     ApplyMovement 10, _058C
     WaitMovement
-    ScrCmd_065 10
+    RemoveObject 10
     CallCommonScript 0x7FB
     Message 8
     CloseMessage
@@ -227,25 +228,25 @@ _0248:
     CallIfEq 0x8000, 2, _042C
     CallIfEq 0x8000, 3, _0438
     Message 9
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _04EC
-    GoToIfEq 0x800C, 1, _04F7
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _04EC
+    GoToIfEq 0x800C, MENU_NO, _04F7
     End
 
 _03EC:
-    ScrCmd_186 0, 0x2D3, 0x2F9
+    SetObjectEventPos 0, 0x2D3, 0x2F9
     Return
 
 _03F6:
-    ScrCmd_186 0, 0x2D3, 0x2F7
+    SetObjectEventPos 0, 0x2D3, 0x2F7
     Return
 
 _0400:
-    ScrCmd_186 0, 0x2D4, 0x2F8
+    SetObjectEventPos 0, 0x2D4, 0x2F8
     Return
 
 _040A:
-    ScrCmd_186 0, 0x2D2, 0x2F8
+    SetObjectEventPos 0, 0x2D2, 0x2F8
     Return
 
 _0414:
@@ -269,41 +270,41 @@ _0438:
     Return
 
 _0444:
-    ScrCmd_186 10, 0x2D4, 0x30C
+    SetObjectEventPos 10, 0x2D4, 0x30C
     Return
 
 _044E:
-    ScrCmd_186 10, 0x2D4, 0x30A
+    SetObjectEventPos 10, 0x2D4, 0x30A
     Return
 
 _0458:
-    ScrCmd_186 10, 0x2D3, 0x30B
+    SetObjectEventPos 10, 0x2D3, 0x30B
     Return
 
 _0462:
-    ScrCmd_186 10, 0x2D3, 0x30B
+    SetObjectEventPos 10, 0x2D3, 0x30B
     Return
 
 _046C:
-    ApplyMovement 0xFF, _05D0
+    ApplyMovement LOCALID_PLAYER, _05D0
     ApplyMovement 10, _055C
     WaitMovement
     Return
 
 _0480:
-    ApplyMovement 0xFF, _05D0
+    ApplyMovement LOCALID_PLAYER, _05D0
     ApplyMovement 10, _055C
     WaitMovement
     Return
 
 _0494:
-    ApplyMovement 0xFF, _05DC
+    ApplyMovement LOCALID_PLAYER, _05DC
     ApplyMovement 10, _0568
     WaitMovement
     Return
 
 _04A8:
-    ApplyMovement 0xFF, _05D0
+    ApplyMovement LOCALID_PLAYER, _05D0
     ApplyMovement 10, _055C
     WaitMovement
     Return
@@ -350,12 +351,12 @@ _0502:
 
 _0522:
     ApplyMovement 0, _05BC
-    ApplyMovement 0xFF, _0600
+    ApplyMovement LOCALID_PLAYER, _0600
     WaitMovement
     GoTo _053A
 
 _053A:
-    ScrCmd_065 0
+    RemoveObject 0
     SetVar 0x4083, 2
     SetFlag 183
     SetFlag 0x1A9
@@ -366,58 +367,58 @@ _053A:
 
     .balign 4, 0
 _055C:
-    MoveAction_010 10
-    MoveAction_026
+    MoveAction_016 10
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
 _0568:
-    MoveAction_010 10
-    MoveAction_027
+    MoveAction_016 10
+    MoveAction_039
     EndMovement
 
     .balign 4, 0
 _0574:
-    MoveAction_024
+    MoveAction_036
     EndMovement
 
     .balign 4, 0
 _057C:
-    MoveAction_026
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
 _0584:
-    MoveAction_027
+    MoveAction_039
     EndMovement
 
     .balign 4, 0
 _058C:
-    MoveAction_010 8
+    MoveAction_016 8
     EndMovement
 
     .balign 4, 0
 _0594:
-    MoveAction_00D 4
-    MoveAction_020
-    MoveAction_03F 2
-    MoveAction_00D 4
+    MoveAction_013 4
+    MoveAction_032
+    MoveAction_063 2
+    MoveAction_013 4
     EndMovement
 
     .balign 4, 0
 _05A8:
-    MoveAction_03F
-    MoveAction_020
+    MoveAction_063
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _05B4:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _05BC:
-    MoveAction_00C 9
+    MoveAction_012 9
     EndMovement
 
     .byte 63
@@ -435,20 +436,20 @@ _05BC:
 
     .balign 4, 0
 _05D0:
-    MoveAction_03F 4
-    MoveAction_023
+    MoveAction_063 4
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _05DC:
-    MoveAction_03F 4
-    MoveAction_022
+    MoveAction_063 4
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _05E8:
-    MoveAction_03F 2
-    MoveAction_020
+    MoveAction_063 2
+    MoveAction_032
     EndMovement
 
     .byte 63
@@ -466,7 +467,7 @@ _05E8:
 
     .balign 4, 0
 _0600:
-    MoveAction_03F
+    MoveAction_063
     MoveAction_000
     EndMovement
 
@@ -513,7 +514,7 @@ _065A:
     ScrCmd_169 77
     ApplyMovement 8, _06B0
     WaitMovement
-    ScrCmd_065 8
+    RemoveObject 8
     ScrCmd_16C 77
     ScrCmd_169 77
     ScrCmd_16A 77
@@ -524,20 +525,16 @@ _065A:
 
     .balign 4, 0
 _06A8:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _06B0:
-    MoveAction_00C
+    MoveAction_012
     EndMovement
 
 _06B8:
-    ScrCmd_036 20, 2, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowLandmarkSign 20
     End
 
 _06CF:
@@ -559,7 +556,7 @@ _06E2:
     CallIfEq 0x8001, 0x316, _0769
     CallIfEq 0x8001, 0x317, _0775
     ApplyMovement 9, _07FC
-    ApplyMovement 0xFF, _0804
+    ApplyMovement LOCALID_PLAYER, _0804
     WaitMovement
     Message 16
     CloseMessage
@@ -601,54 +598,54 @@ _0799:
 
     .balign 4, 0
 _07A8:
-    MoveAction_04B
-    MoveAction_041
+    MoveAction_075
+    MoveAction_065
     EndMovement
 
     .balign 4, 0
 _07B4:
-    MoveAction_00F
-    MoveAction_00D
+    MoveAction_015
+    MoveAction_013
     EndMovement
 
     .balign 4, 0
 _07C0:
-    MoveAction_00F
-    MoveAction_00D 2
+    MoveAction_015
+    MoveAction_013 2
     EndMovement
 
     .balign 4, 0
 _07CC:
-    MoveAction_00F
-    MoveAction_00D 3
+    MoveAction_015
+    MoveAction_013 3
     EndMovement
 
     .balign 4, 0
 _07D8:
-    MoveAction_00C
+    MoveAction_012
     MoveAction_001
     EndMovement
 
     .balign 4, 0
 _07E4:
-    MoveAction_00C 2
+    MoveAction_012 2
     MoveAction_001
     EndMovement
 
     .balign 4, 0
 _07F0:
-    MoveAction_00C 3
+    MoveAction_012 3
     MoveAction_001
     EndMovement
 
     .balign 4, 0
 _07FC:
-    MoveAction_00E
+    MoveAction_014
     EndMovement
 
     .balign 4, 0
 _0804:
-    MoveAction_047
-    MoveAction_00E
-    MoveAction_048
+    MoveAction_071
+    MoveAction_014
+    MoveAction_072
     EndMovement

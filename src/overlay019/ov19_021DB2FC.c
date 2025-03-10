@@ -9,7 +9,6 @@
 #include "overlay019/struct_ov19_021DF964.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
 #include "enums.h"
 #include "graphics.h"
 #include "heap.h"
@@ -17,6 +16,7 @@
 #include "message.h"
 #include "narc.h"
 #include "render_window.h"
+#include "sprite.h"
 #include "strbuf.h"
 #include "string_template.h"
 #include "text.h"
@@ -28,7 +28,7 @@ static void ov19_021DB7BC(BgConfig *param0, u32 param1, u32 param2, u32 param3, 
 static void ov19_021DB84C(BgConfig *param0, Window *param1);
 static void ov19_021DB898(BgConfig *param0, Window *param1);
 
-BOOL ov19_021DB2FC(UnkStruct_ov19_021DB6F0 *param0, UnkStruct_ov19_021D61B0 *param1, const UnkStruct_ov19_021D4DF0 *param2, BgConfig *param3, CellActorCollection *param4, MessageLoader *param5, const StringTemplate *param6, int param7, NARC *param8)
+BOOL ov19_021DB2FC(UnkStruct_ov19_021DB6F0 *param0, UnkStruct_ov19_021D61B0 *param1, const UnkStruct_ov19_021D4DF0 *param2, BgConfig *param3, SpriteList *param4, MessageLoader *param5, const StringTemplate *param6, int param7, NARC *param8)
 {
     param0->unk_0C = param1;
     param0->unk_00 = param3;
@@ -36,13 +36,13 @@ BOOL ov19_021DB2FC(UnkStruct_ov19_021DB6F0 *param0, UnkStruct_ov19_021D61B0 *par
     param0->unk_2C = param6;
     param0->unk_20 = param7;
     param0->unk_10 = param5;
-    param0->unk_14 = MessageLoader_Init(0, 26, 18, 10);
-    param0->unk_30 = Strbuf_Init(64, 10);
-    param0->unk_34 = Strbuf_Init(64, 10);
+    param0->unk_14 = MessageLoader_Init(0, 26, 18, HEAP_ID_10);
+    param0->unk_30 = Strbuf_Init(64, HEAP_ID_10);
+    param0->unk_34 = Strbuf_Init(64, HEAP_ID_10);
     param0->unk_1C = 0;
     param0->unk_1E = 0;
     param0->unk_18 = NULL;
-    param0->unk_24 = Graphics_GetCharDataFromOpenNARC(param8, 25, 1, &(param0->unk_28), 10);
+    param0->unk_24 = Graphics_GetCharDataFromOpenNARC(param8, 25, 1, &(param0->unk_28), HEAP_ID_10);
 
     if ((param0->unk_24 == NULL) || (param0->unk_30 == NULL) || (param0->unk_34 == NULL)) {
         return 0;
@@ -88,7 +88,7 @@ void ov19_021DB3C4(UnkStruct_ov19_021DB6F0 *param0)
         { 1, 19, 3, 12, 16, 4, 593 }
     };
 
-    param0->unk_18 = Window_New(10, 2);
+    param0->unk_18 = Window_New(HEAP_ID_10, 2);
 
     if (param0->unk_18) {
         int v1;
@@ -98,9 +98,9 @@ void ov19_021DB3C4(UnkStruct_ov19_021DB6F0 *param0)
         }
     }
 
-    Graphics_LoadTilesToBgLayer(38, 0, param0->unk_00, 1, 512, 0, 0, 10);
-    Graphics_LoadPalette(38, 24, 0, 7 * 0x20, 0x20, 10);
-    LoadMessageBoxGraphics(param0->unk_00, 1, 521, 8, param0->unk_20, 10);
+    Graphics_LoadTilesToBgLayer(38, 0, param0->unk_00, 1, 512, 0, 0, HEAP_ID_10);
+    Graphics_LoadPalette(38, 24, 0, 7 * 0x20, 0x20, HEAP_ID_10);
+    LoadMessageBoxGraphics(param0->unk_00, 1, 521, 8, param0->unk_20, HEAP_ID_10);
 }
 
 void ov19_021DB448(UnkStruct_ov19_021DB6F0 *param0, u32 param1)

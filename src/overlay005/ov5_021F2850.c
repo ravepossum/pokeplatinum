@@ -13,10 +13,10 @@
 #include "overlay101/struct_ov101_021D5D90_decl.h"
 #include "overlay101/struct_ov101_021D86B0.h"
 
+#include "fx_util.h"
 #include "map_object.h"
 #include "map_object_move.h"
 #include "sys_task_manager.h"
-#include "unk_0201E190.h"
 #include "unk_020711EC.h"
 #include "unk_02073838.h"
 
@@ -57,9 +57,7 @@ static const UnkStruct_ov101_021D86B0 Unk_ov5_022004B0;
 
 void *ov5_021F2850(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_ov5_021F2874 *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F2874)), 0, 0);
+    UnkStruct_ov5_021F2874 *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F2874)), 0, 0);
     v0->unk_10 = param0;
 
     return v0;
@@ -135,7 +133,7 @@ UnkStruct_ov101_021D5D90 *ov5_021F28F4(MapObject *param0, int param1, int param2
         v3.z = (((param2) << 4) * FX32_ONE) + ((16 * FX32_ONE) >> 1);
         sub_020644A4(v2.fieldSystem, &v3);
     } else {
-        MapObject_PosVectorOut(param0, &v3);
+        MapObject_GetPosPtr(param0, &v3);
     }
 
     v0 = sub_02062758(param0, 2);
@@ -190,7 +188,7 @@ static void ov5_021F29D0(UnkStruct_ov101_021D5D90 *param0, void *param1)
     {
         VecFx32 v3;
 
-        MapObject_PosVectorOut(v1, &v3);
+        MapObject_GetPosPtr(v1, &v3);
         v3.y += 0;
         sub_020715D4(param0, &v3);
     }
@@ -198,9 +196,7 @@ static void ov5_021F29D0(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
 static void ov5_021F2A04(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
-    UnkStruct_ov5_021F2974 *v0;
-
-    v0 = param1;
+    UnkStruct_ov5_021F2974 *v0 = param1;
 
     if (v0->unk_00 == 1) {
         return;
@@ -230,7 +226,7 @@ static void ov5_021F2A04(UnkStruct_ov101_021D5D90 *param0, void *param1)
             break;
         }
 
-        sub_0201E2E0(&v2, 0, v1, 0);
+        MTX_Rot33Angles(&v2, 0, v1, 0);
         sub_020715E4(param0, &v3);
         sub_02073BA4(v5, &v3, &v4, &v2);
     }

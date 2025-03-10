@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_210_south.h"
 
     .data
 
@@ -9,7 +10,7 @@
     ScriptEntry _0390
     ScriptEntry _03A7
     ScriptEntry _001E
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001E:
     GetTimeOfDay 0x4000
@@ -44,9 +45,9 @@ _0079:
 
 _00A1:
     Message 1
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00CA
-    GoToIfEq 0x800C, 1, _00C4
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00CA
+    GoToIfEq 0x800C, MENU_NO, _00C4
     End
 
 _00C4:
@@ -59,7 +60,7 @@ _00CA:
     BufferItemName 1, 0x1D0
     Message 2
     CloseMessage
-    ScrCmd_04C 54, 0
+    PlayCry SPECIES_PSYDUCK
     ScrCmd_04D
     ApplyMovement 27, _024C
     ApplyMovement 28, _024C
@@ -71,10 +72,10 @@ _00CA:
     ApplyMovement 26, _0280
     ApplyMovement 19, _02B4
     WaitMovement
-    ScrCmd_065 27
-    ScrCmd_065 28
-    ScrCmd_065 26
-    ScrCmd_065 19
+    RemoveObject 27
+    RemoveObject 28
+    RemoveObject 26
+    RemoveObject 19
     WaitTime 45, 0x800C
     GetPlayerMapPos 0x8004, 0x8005
     GoToIfEq 0x8004, 0x230, _015B
@@ -82,34 +83,34 @@ _00CA:
     End
 
 _015B:
-    ScrCmd_186 20, 0x230, 0x254
+    SetObjectEventPos 20, 0x230, 0x254
     ScrCmd_188 20, 14
     GoTo _0183
 
 _016F:
-    ScrCmd_186 20, 0x231, 0x254
+    SetObjectEventPos 20, 0x231, 0x254
     ScrCmd_188 20, 14
     GoTo _0183
 
 _0183:
     ClearFlag 0x1B1
-    ScrCmd_064 20
+    AddObject 20
     ScrCmd_062 20
     ApplyMovement 20, _02C4
     WaitMovement
-    ApplyMovement 0xFF, _02DC
+    ApplyMovement LOCALID_PLAYER, _02DC
     WaitMovement
     Message 3
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _01E9
-    GoToIfEq 0x800C, 1, _01C6
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _01E9
+    GoToIfEq 0x800C, MENU_NO, _01C6
     End
 
 _01C6:
     Message 5
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _01E9
-    GoToIfEq 0x800C, 1, _01C6
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _01E9
+    GoToIfEq 0x800C, MENU_NO, _01C6
     End
 
 _01E9:
@@ -134,74 +135,74 @@ _0230:
     GoTo _0240
 
 _0240:
-    ScrCmd_065 20
+    RemoveObject 20
     SetFlag 0x107
     ReleaseAll
     End
 
     .balign 4, 0
 _024C:
-    MoveAction_04B
-    MoveAction_03F 4
+    MoveAction_075
+    MoveAction_063 4
     EndMovement
 
     .balign 4, 0
 _0258:
-    MoveAction_00C
-    MoveAction_021
-    MoveAction_03F 8
-    MoveAction_00C 8
+    MoveAction_012
+    MoveAction_033
+    MoveAction_063 8
+    MoveAction_012 8
     EndMovement
 
     .balign 4, 0
 _026C:
-    MoveAction_00C 2
-    MoveAction_021 2
-    MoveAction_03F 6
-    MoveAction_00C 8
+    MoveAction_012 2
+    MoveAction_033 2
+    MoveAction_063 6
+    MoveAction_012 8
     EndMovement
 
     .balign 4, 0
 _0280:
-    MoveAction_023
-    MoveAction_022
-    MoveAction_023
-    MoveAction_03F 2
-    MoveAction_020
-    MoveAction_010 2
-    MoveAction_03F 2
-    MoveAction_00E 3
-    MoveAction_023
-    MoveAction_04B
-    MoveAction_013 3
-    MoveAction_010 8
+    MoveAction_035
+    MoveAction_034
+    MoveAction_035
+    MoveAction_063 2
+    MoveAction_032
+    MoveAction_016 2
+    MoveAction_063 2
+    MoveAction_014 3
+    MoveAction_035
+    MoveAction_075
+    MoveAction_019 3
+    MoveAction_016 8
     EndMovement
 
     .balign 4, 0
 _02B4:
-    MoveAction_00C 2
-    MoveAction_03F 8
-    MoveAction_00C 8
+    MoveAction_012 2
+    MoveAction_063 8
+    MoveAction_012 8
     EndMovement
 
     .balign 4, 0
 _02C4:
-    MoveAction_00C 7
+    MoveAction_012 7
     EndMovement
 
     .balign 4, 0
 _02CC:
-    MoveAction_00D 9
+    MoveAction_013 9
     EndMovement
 
     .balign 4, 0
 _02D4:
-    MoveAction_00D 9
+    MoveAction_013 9
     EndMovement
 
     .balign 4, 0
 _02DC:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .byte 63
@@ -283,19 +284,11 @@ _036F:
     End
 
 _0379:
-    ScrCmd_036 10, 2, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowLandmarkSign 10
     End
 
 _0390:
-    ScrCmd_036 11, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 11
     End
 
 _03A7:

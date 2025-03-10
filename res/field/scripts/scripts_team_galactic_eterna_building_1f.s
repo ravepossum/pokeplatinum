@@ -1,4 +1,6 @@
 #include "macros/scrcmd.inc"
+#include "generated/distribution_events.h"
+#include "res/text/bank/team_galactic_eterna_building_1f.h"
 
     .data
 
@@ -9,7 +11,7 @@
     ScriptEntry _006A
     ScriptEntry _0134
     ScriptEntry _001E
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001E:
     End
@@ -56,18 +58,18 @@ _0057:
 _006A:
     LockAll
     ApplyMovement 4, _00FC
-    ApplyMovement 0xFF, _00F0
+    ApplyMovement LOCALID_PLAYER, _00F0
     WaitMovement
     Message 0
     CloseMessage
     ApplyMovement 4, _0110
     WaitMovement
     ClearFlag 0x1BB
-    ScrCmd_186 5, 12, 15
+    SetObjectEventPos 5, 12, 15
     ScrCmd_188 5, 16
     ScrCmd_189 5, 2
-    ScrCmd_064 5
-    ScrCmd_065 4
+    AddObject 5
+    RemoveObject 4
     SetFlag 113
     SetVar 0x411D, 1
     WaitTime 30, 0x800C
@@ -75,46 +77,46 @@ _006A:
     ApplyMovement 5, _0110
     WaitMovement
     ClearFlag 0x1C2
-    ScrCmd_186 4, 12, 15
+    SetObjectEventPos 4, 12, 15
     ScrCmd_188 4, 16
     ScrCmd_189 4, 2
-    ScrCmd_064 4
-    ScrCmd_065 5
+    AddObject 4
+    RemoveObject 5
     CloseMessage
     ReleaseAll
     End
 
     .balign 4, 0
 _00F0:
-    MoveAction_03F 9
-    MoveAction_023
+    MoveAction_063 9
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _00FC:
-    MoveAction_026
-    MoveAction_04B
-    MoveAction_03F 2
-    MoveAction_00E 2
+    MoveAction_038
+    MoveAction_075
+    MoveAction_063 2
+    MoveAction_014 2
     EndMovement
 
     .balign 4, 0
 _0110:
     MoveAction_001
-    MoveAction_03D
+    MoveAction_061
     MoveAction_003
-    MoveAction_03E
+    MoveAction_062
     MoveAction_000
-    MoveAction_03E
+    MoveAction_062
     MoveAction_002
-    MoveAction_03D
+    MoveAction_061
     EndMovement
 
 _0134:
     CheckItem ITEM_SECRET_KEY, 1, 0x800C
-    GoToIfEq 0x800C, 0, _01AA
-    ScrCmd_28B 3, 0x800C
-    GoToIfEq 0x800C, 0, _01AA
+    GoToIfEq 0x800C, FALSE, _01AA
+    CheckDistributionEvent DISTRIBUTION_EVENT_ROTOM, 0x800C
+    GoToIfEq 0x800C, FALSE, _01AA
     GoToIfUnset 129, _01AA
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
@@ -126,7 +128,7 @@ _0134:
     PlayFanfare SEQ_SE_DP_W062
     FadeScreen 6, 1, 0, 0x7FFF
     WaitFadeScreen
-    ScrCmd_065 6
+    RemoveObject 6
     WaitFanfare SEQ_SE_DP_W062
     FadeScreen 6, 1, 1, 0x7FFF
     WaitFadeScreen

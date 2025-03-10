@@ -3,8 +3,6 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_defs/struct_0200C738.h"
-
 #include "overlay063/ov63_0222D160.h"
 #include "overlay063/struct_ov63_0222CC3C.h"
 #include "overlay063/struct_ov63_0222D160.h"
@@ -13,10 +11,10 @@
 #include "bg_window.h"
 #include "graphics.h"
 #include "heap.h"
-#include "unk_020093B4.h"
+#include "sprite_util.h"
 
 typedef struct UnkStruct_ov63_0222D1C0_t {
-    UnkStruct_0200C738 *unk_00;
+    G2dRenderer *unk_00;
     BgConfig *unk_04;
     void *unk_08;
     NNSG2dScreenData *unk_0C;
@@ -33,11 +31,9 @@ static void ov63_0222D4F8(BgConfig *param0, u8 param1, u8 param2, u8 param3, u8 
 static u8 ov63_0222D688(u8 param0, u8 param1);
 static const void *ov63_0222D6BC(const u8 *param0, u8 param1, u8 param2, u8 param3, u8 param4, u8 param5, UnkStruct_ov63_0222CC3C *param6);
 
-UnkStruct_ov63_0222D1C0 *ov63_0222D1C0(UnkStruct_0200C738 *param0, BgConfig *param1, const UnkStruct_ov65_0223582C *param2, u32 param3)
+UnkStruct_ov63_0222D1C0 *ov63_0222D1C0(G2dRenderer *param0, BgConfig *param1, const UnkStruct_ov65_0223582C *param2, u32 heapID)
 {
-    UnkStruct_ov63_0222D1C0 *v0;
-
-    v0 = Heap_AllocFromHeap(param3, sizeof(UnkStruct_ov63_0222D1C0));
+    UnkStruct_ov63_0222D1C0 *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov63_0222D1C0));
     memset(v0, 0, sizeof(UnkStruct_ov63_0222D1C0));
 
     v0->unk_00 = param0;
@@ -47,7 +43,7 @@ UnkStruct_ov63_0222D1C0 *ov63_0222D1C0(UnkStruct_0200C738 *param0, BgConfig *par
 
     ov63_0222D31C(v0->unk_04, v0->unk_14, param2);
 
-    v0->unk_08 = Graphics_GetScrnData(param2->unk_08, param2->unk_09, param2->unk_0A, &v0->unk_0C, param3);
+    v0->unk_08 = Graphics_GetScrnData(param2->unk_08, param2->unk_09, param2->unk_0A, &v0->unk_0C, heapID);
 
     return v0;
 }
@@ -61,15 +57,13 @@ void ov63_0222D214(UnkStruct_ov63_0222D1C0 *param0)
 void ov63_0222D228(UnkStruct_ov63_0222D1C0 *param0, const UnkStruct_ov63_0222D160 *param1)
 {
     s16 v0;
-    s16 v1;
-
-    v1 = ov63_0222D1B0(param1);
+    s16 v1 = ov63_0222D1B0(param1);
     v0 = ov63_0222D1B8(param1);
 
     if (param0->unk_10 == 0) {
-        sub_0200962C(param0->unk_00, FX32_CONST(v0), FX32_CONST(v1));
+        SetMainScreenViewRect(param0->unk_00, FX32_CONST(v0), FX32_CONST(v1));
     } else {
-        sub_0200964C(param0->unk_00, FX32_CONST(v0), FX32_CONST(v1) + (192 << FX32_SHIFT));
+        SetSubScreenViewRect(param0->unk_00, FX32_CONST(v0), FX32_CONST(v1) + (192 << FX32_SHIFT));
     }
 
     ov63_0222D378(param0, v0, v1);
@@ -126,10 +120,8 @@ static void ov63_0222D408(BgConfig *param0, int param1, const NNSG2dScreenData *
     s16 v0, v1;
     s16 v2, v3;
     s16 v4, v5;
-    s16 v6, v7;
-
-    v6 = (param2->screenWidth / 8);
-    v7 = (param2->screenHeight / 8);
+    s16 v6 = (param2->screenWidth / 8);
+    s16 v7 = (param2->screenHeight / 8);
 
     if (param3 < 0) {
         v2 = -param3;

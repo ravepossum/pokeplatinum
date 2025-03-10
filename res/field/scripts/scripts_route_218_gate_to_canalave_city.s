@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_218_gate_to_canalave_city.h"
 
     .data
 
     ScriptEntry _0208
     ScriptEntry _000A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     LockAll
@@ -12,7 +13,7 @@ _000A:
     BufferPlayerName 0
     BufferCounterpartName 1
     GetPlayerGender 0x800C
-    GoToIfEq 0x800C, 0, _0031
+    GoToIfEq 0x800C, GENDER_MALE, _0031
     GoTo _003C
     End
 
@@ -33,7 +34,7 @@ _0047:
     Call _00E8
     PlayFanfare SEQ_SE_DP_KAIDAN2
     SetFlag 0x21C
-    ScrCmd_065 1
+    RemoveObject 1
     SetVar 0x4105, 1
     ReleaseAll
     End
@@ -108,72 +109,72 @@ _015A:
 
     .balign 4, 0
 _0168:
-    MoveAction_04B
-    MoveAction_00F
-    MoveAction_00C 2
-    MoveAction_023
+    MoveAction_075
+    MoveAction_015
+    MoveAction_012 2
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _017C:
-    MoveAction_04B
-    MoveAction_00F
-    MoveAction_00C
-    MoveAction_023
+    MoveAction_075
+    MoveAction_015
+    MoveAction_012
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0190:
-    MoveAction_04B
-    MoveAction_00F
+    MoveAction_075
+    MoveAction_015
     EndMovement
 
     .balign 4, 0
 _019C:
-    MoveAction_04B
-    MoveAction_00F
-    MoveAction_00D
-    MoveAction_023
+    MoveAction_075
+    MoveAction_015
+    MoveAction_013
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _01B0:
-    MoveAction_04B
-    MoveAction_00F
-    MoveAction_00D 2
-    MoveAction_023
+    MoveAction_075
+    MoveAction_015
+    MoveAction_013 2
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _01C4:
-    MoveAction_00D 2
-    MoveAction_00F 4
+    MoveAction_013 2
+    MoveAction_015 4
     EndMovement
 
     .balign 4, 0
 _01D0:
-    MoveAction_00D
-    MoveAction_00F 4
+    MoveAction_013
+    MoveAction_015 4
     EndMovement
 
     .balign 4, 0
 _01DC:
-    MoveAction_00C
-    MoveAction_00F 3
-    MoveAction_00D
-    MoveAction_00F
+    MoveAction_012
+    MoveAction_015 3
+    MoveAction_013
+    MoveAction_015
     EndMovement
 
     .balign 4, 0
 _01F0:
-    MoveAction_00C
-    MoveAction_00F 4
+    MoveAction_012
+    MoveAction_015 4
     EndMovement
 
     .balign 4, 0
 _01FC:
-    MoveAction_00C 2
-    MoveAction_00F 4
+    MoveAction_012 2
+    MoveAction_015 4
     EndMovement
 
 _0208:

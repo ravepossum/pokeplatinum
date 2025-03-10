@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/pokemon_mansion_office.h"
 
     .data
 
@@ -9,7 +10,7 @@
     ScriptEntry _0354
     ScriptEntry _0388
     ScriptEntry _0399
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001E:
     ScrCmd_268 0x4000
@@ -47,9 +48,9 @@ _009F:
 
 _00AA:
     Message 3
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00D8
-    GoToIfEq 0x800C, 1, _00CD
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00D8
+    GoToIfEq 0x800C, MENU_NO, _00CD
     End
 
 _00CD:
@@ -61,15 +62,15 @@ _00CD:
 
 _00D8:
     Message 5
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00FB
-    GoToIfEq 0x800C, 1, _00CD
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00FB
+    GoToIfEq 0x800C, MENU_NO, _00CD
     End
 
 _00FB:
-    ScrCmd_1EC
-    ScrCmd_1ED 0x8000
-    ScrCmd_0DA 0, 0x8000, 0, 0
+    AddTrophyGardenMon
+    GetTrophyGardenSlot1Species 0x8000
+    BufferSpeciesNameFromVar 0, 0x8000, 0, 0
     Message 6
     GetPlayerMapPos 0x8001, 0x8002
     ApplyMovement 2, _01D4
@@ -82,15 +83,15 @@ _00FB:
     CloseMessage
     ApplyMovement 2, _01F0
     WaitMovement
-    ScrCmd_065 2
+    RemoveObject 2
     SetVar 0x400B, 1
     Call _016C
     SetFlag 0xAA2
     GoTo _0155
 
 _0155:
-    ScrCmd_1ED 0x8000
-    ScrCmd_0DA 0, 0x8000, 0, 0
+    GetTrophyGardenSlot1Species 0x8000
+    BufferSpeciesNameFromVar 0, 0x8000, 0, 0
     Message 10
     WaitABXPadPress
     CloseMessage
@@ -130,43 +131,43 @@ _01CC:
 
     .balign 4, 0
 _01D4:
-    MoveAction_04B
-    MoveAction_041
+    MoveAction_075
+    MoveAction_065
     MoveAction_003
     EndMovement
 
     .balign 4, 0
 _01E4:
-    MoveAction_04B
-    MoveAction_022
+    MoveAction_075
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _01F0:
-    MoveAction_00D 2
-    MoveAction_00F
+    MoveAction_013 2
+    MoveAction_015
     MoveAction_001
-    MoveAction_045
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _0204:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _020C:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0214:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _021C:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
 _0224:
@@ -196,7 +197,7 @@ _0270:
     GoToIfSet 0xAA2, _0304
     CheckGameCompleted 0x800C
     GoToIfEq 0x800C, 1, _02C8
-    ScrCmd_1B7 0x800C, 2
+    GetRandom 0x800C, 2
     CallIfEq 0x800C, 0, _02BE
     CallIfEq 0x800C, 1, _02C3
     WaitABXPadPress
@@ -215,7 +216,7 @@ _02C3:
     Return
 
 _02C8:
-    ScrCmd_1B7 0x800C, 2
+    GetRandom 0x800C, 2
     CallIfEq 0x800C, 0, _02FA
     CallIfEq 0x800C, 1, _02FF
     WaitABXPadPress
@@ -234,8 +235,8 @@ _02FF:
     Return
 
 _0304:
-    ScrCmd_1ED 0x8000
-    ScrCmd_0DA 0, 0x8000, 0, 0
+    GetTrophyGardenSlot1Species 0x8000
+    BufferSpeciesNameFromVar 0, 0x8000, 0, 0
     Message 14
     WaitABXPadPress
     CloseMessage
@@ -272,7 +273,7 @@ _0354:
     WaitMovement
     Message 17
     CloseMessage
-    ApplyMovement 0xFF, _037C
+    ApplyMovement LOCALID_PLAYER, _037C
     ApplyMovement 3, _0344
     WaitMovement
     ReleaseAll
@@ -280,7 +281,7 @@ _0354:
 
     .balign 4, 0
 _037C:
-    MoveAction_00D
+    MoveAction_013
     MoveAction_000
     EndMovement
 
@@ -297,17 +298,17 @@ _0399:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     Message 19
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _03C2
-    GoToIfEq 0x800C, 1, _0408
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _03C2
+    GoToIfEq 0x800C, MENU_NO, _0408
     End
 
 _03C2:
     Message 20
     GoToIfSet 251, _0408
-    ScrCmd_337 0x1EA, 0x800C
+    CheckHasSeenSpecies SPECIES_MANAPHY, 0x800C
     GoToIfEq 0x800C, 1, _03FC
-    ScrCmd_208 0x1EA, 0
+    DrawPokemonPreview SPECIES_MANAPHY, GENDER_MALE
     WaitABPress
     ScrCmd_209
     SetFlag 251

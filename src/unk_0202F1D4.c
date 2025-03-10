@@ -14,7 +14,6 @@
 #include "struct_defs/struct_0202FD30.h"
 #include "struct_defs/struct_02030A80.h"
 #include "struct_defs/struct_02078B40.h"
-#include "struct_defs/struct_party.h"
 
 #include "savedata/save_table.h"
 
@@ -24,14 +23,14 @@
 #include "heap.h"
 #include "math.h"
 #include "party.h"
+#include "pokedex.h"
 #include "pokemon.h"
 #include "save_player.h"
 #include "savedata.h"
+#include "system.h"
 #include "trainer_info.h"
 #include "unk_02006224.h"
-#include "unk_02017728.h"
 #include "unk_02026150.h"
-#include "unk_0202631C.h"
 
 BattleRecording *Unk_021C07A4 = NULL;
 
@@ -139,9 +138,7 @@ BOOL sub_0202F330(SaveData *param0, int param1, int *param2, int param3)
 {
     UnkStruct_0202F298 *v0;
     UnkStruct_0202F41C *v1;
-    BattleRecording *v2;
-
-    v2 = SaveData_BattleRecording(param0, param1, param2, param3);
+    BattleRecording *v2 = SaveData_BattleRecording(param0, param1, param2, param3);
 
     if (*param2 != 1) {
         *param2 = 3;
@@ -478,7 +475,7 @@ void sub_0202F8AC(FieldBattleDTO *param0)
 
     for (v0 = 0; v0 < 4; v0++) {
         v2->unk_08[v0] = param0->trainerIDs[v0];
-        v2->unk_18[v0] = param0->trainerData[v0];
+        v2->unk_18[v0] = param0->trainer[v0];
 
         if (param0->systemVersion[v0] == 0) {
             v2->unk_114[v0] = 0x140;
@@ -537,7 +534,7 @@ BOOL sub_0202FAC0(void)
     return 1;
 }
 
-void sub_0202FAFC(FieldBattleDTO *param0, SaveData *param1)
+void sub_0202FAFC(FieldBattleDTO *param0, SaveData *saveData)
 {
     int v0;
     UnkStruct_0202F298 *v1 = &Unk_021C07A4->unk_E8;
@@ -561,11 +558,11 @@ void sub_0202FAFC(FieldBattleDTO *param0, SaveData *param1)
     param0->resultMask = BATTLE_IN_PROGRESS;
     param0->leveledUpMonsMask = 0;
 
-    Pokedex_Copy(SaveData_Pokedex(param1), param0->pokedex);
+    Pokedex_Copy(SaveData_GetPokedex(saveData), param0->pokedex);
 
     for (v0 = 0; v0 < 4; v0++) {
         param0->trainerIDs[v0] = v1->unk_00.unk_08[v0];
-        param0->trainerData[v0] = v1->unk_00.unk_18[v0];
+        param0->trainer[v0] = v1->unk_00.unk_18[v0];
         param0->systemVersion[v0] = v1->unk_00.unk_114[v0];
         param0->unk_178[v0] = v1->unk_00.unk_134[v0];
 
@@ -575,7 +572,7 @@ void sub_0202FAFC(FieldBattleDTO *param0, SaveData *param1)
         param0->unk_194[v0] = v1->unk_00.unk_14C[v0];
     }
 
-    Options_Copy(SaveData_Options(param1), param0->options);
+    Options_Copy(SaveData_Options(saveData), param0->options);
     param0->options->frame = v1->unk_1BE8.frame;
 
     if (param0->options->frame >= 20) {
@@ -583,60 +580,60 @@ void sub_0202FAFC(FieldBattleDTO *param0, SaveData *param1)
     }
 }
 
-static void sub_0202FCE8(const Party *param0, UnkStruct_0202FD30 *param1)
+static void sub_0202FCE8(const Party *party, UnkStruct_0202FD30 *param1)
 {
     int v0;
     Pokemon *v1;
 
     MI_CpuClear8(param1, sizeof(UnkStruct_0202FD30));
 
-    param1->unk_00 = Party_GetCapacity(param0);
-    param1->unk_02 = Party_GetCurrentCount(param0);
+    param1->unk_00 = Party_GetCapacity(party);
+    param1->unk_02 = Party_GetCurrentCount(party);
 
     for (v0 = 0; v0 < param1->unk_02; v0++) {
-        v1 = Party_GetPokemonBySlotIndex(param0, v0);
+        v1 = Party_GetPokemonBySlotIndex(party, v0);
         sub_02078B40(v1, &param1->unk_04[v0]);
     }
 }
 
-static void sub_0202FD30(UnkStruct_0202FD30 *param0, Party *param1)
+static void sub_0202FD30(UnkStruct_0202FD30 *param0, Party *party)
 {
     int v0;
     Pokemon *v1;
     u8 v2 = 0;
 
-    v1 = Pokemon_New(11);
+    v1 = Pokemon_New(HEAP_ID_FIELDMAP);
 
-    Party_InitWithCapacity(param1, param0->unk_00);
+    Party_InitWithCapacity(party, param0->unk_00);
 
     for (v0 = 0; v0 < param0->unk_02; v0++) {
         sub_02078E0C(&param0->unk_04[v0], v1);
         Pokemon_SetValue(v1, MON_DATA_MAIL_ID, &v2);
-        Party_AddPokemon(param1, v1);
+        Party_AddPokemon(party, v1);
     }
 
     Heap_FreeToHeap(v1);
 }
 
-UnkStruct_0202F41C *sub_0202FD88(int param0)
+UnkStruct_0202F41C *sub_0202FD88(int heapID)
 {
     UnkStruct_0202F41C *v0;
 
     GF_ASSERT(Unk_021C07A4 != NULL);
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_0202F41C));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_0202F41C));
     MI_CpuCopy32(&Unk_021C07A4->unk_84, v0, sizeof(UnkStruct_0202F41C));
 
     return v0;
 }
 
-UnkStruct_02030A80 *sub_0202FDB8(int param0)
+UnkStruct_02030A80 *sub_0202FDB8(int heapID)
 {
     UnkStruct_02030A80 *v0;
 
     GF_ASSERT(Unk_021C07A4 != NULL);
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_02030A80));
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_02030A80));
     MI_CpuCopy32(&Unk_021C07A4->unk_04, v0, sizeof(UnkStruct_02030A80));
 
     return v0;
@@ -707,11 +704,9 @@ u64 sub_0202FE98(UnkStruct_0202F41C *param0, int param1, int param2)
     return 0;
 }
 
-UnkStruct_0202F41C *sub_0202FF2C(int param0)
+UnkStruct_0202F41C *sub_0202FF2C(int heapID)
 {
-    UnkStruct_0202F41C *v0;
-
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_0202F41C));
+    UnkStruct_0202F41C *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_0202F41C));
     MI_CpuClear8(v0, sizeof(UnkStruct_0202F41C));
 
     return v0;

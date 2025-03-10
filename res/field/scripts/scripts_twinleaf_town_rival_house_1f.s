@@ -1,9 +1,10 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/twinleaf_town_rival_house_1f.h"
 
     .data
 
     ScriptEntry _0006
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0006:
     PlayFanfare SEQ_SE_CONFIRM
@@ -14,8 +15,8 @@ _0006:
     GoToIfSet 110, _0090
     GoToIfSet 234, _009E
     GetPlayerGender 0x800C
-    GoToIfEq 0x800C, 0, _005C
-    GoToIfEq 0x800C, 1, _006B
+    GoToIfEq 0x800C, GENDER_MALE, _005C
+    GoToIfEq 0x800C, GENDER_FEMALE, _006B
     End
 
 _005C:

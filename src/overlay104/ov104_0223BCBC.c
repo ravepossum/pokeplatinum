@@ -3,7 +3,6 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/struct_0204B184.h"
 
 #include "overlay104/ov104_0222DCE0.h"
@@ -200,7 +199,7 @@ FieldBattleDTO *ov104_0223BDD8(UnkStruct_ov104_0223BFFC *param0, UnkStruct_ov104
         v4 = 2;
     }
 
-    v6 = Pokemon_New(11);
+    v6 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v0 = 0; v0 < v2; v0++) {
         Pokemon_Copy(Party_GetPokemonBySlotIndex(v12, (v4 + v0)), v6);
@@ -217,10 +216,10 @@ FieldBattleDTO *ov104_0223BDD8(UnkStruct_ov104_0223BFFC *param0, UnkStruct_ov104
     Party_InitWithCapacity(v5->parties[1], ov104_0223BDA4(param0->unk_10, 0));
 
     for (v0 = 0; v0 < 4; v0++) {
-        v5->trainerData[v0].aiMask = ov104_0223C0D0(param0);
+        v5->trainer[v0].header.aiMask = ov104_0223C0D0(param0);
     }
 
-    v6 = Pokemon_New(11);
+    v6 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v0 = 0; v0 < v3; v0++) {
         Pokemon_Copy(Party_GetPokemonBySlotIndex(v13, v0), v6);
@@ -243,7 +242,7 @@ FieldBattleDTO *ov104_0223BDD8(UnkStruct_ov104_0223BFFC *param0, UnkStruct_ov104
         ov104_0222E284(v5, &v7, v3, 3, 11);
         Party_InitWithCapacity(v5->parties[3], ov104_0223BDA4(param0->unk_10, 0));
 
-        v6 = Pokemon_New(11);
+        v6 = Pokemon_New(HEAP_ID_FIELDMAP);
 
         for (v0 = 0; v0 < v3; v0++) {
             Pokemon_Copy(Party_GetPokemonBySlotIndex(v13, (v3 + v0)), v6);
@@ -317,7 +316,7 @@ void ov104_0223C04C(UnkStruct_ov104_0223BFFC *param0)
     Party_Init(param0->unk_74);
 
     v3 = ov104_0223BDA4(param0->unk_10, 1);
-    v5 = Pokemon_New(11);
+    v5 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v1 = 0; v1 < v3; v1++) {
         ov104_0222DF40(&param0->unk_330[v1], v5, ov104_0223BFFC(param0));
@@ -389,9 +388,7 @@ static u16 ov104_0223C0D0(UnkStruct_ov104_0223BFFC *param0)
 
 u16 ov104_0223C124(UnkStruct_ov104_0223BFFC *param0)
 {
-    u16 v0;
-
-    v0 = param0->unk_1A;
+    u16 v0 = param0->unk_1A;
 
     if (ov104_0223C000(param0->unk_10) == 1) {
         if (param0->unk_A76 > param0->unk_1A) {

@@ -1,8 +1,6 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_party_decl.h"
-
 #include "overlay104/ov104_0222DCE0.h"
 #include "overlay104/ov104_0222E63C.h"
 #include "overlay104/ov104_0222E930.h"
@@ -97,9 +95,7 @@ BOOL ov104_0223594C(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_02235968(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223BA10 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223BA10 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_022367AC(v0);
 
     return 0;
@@ -122,7 +118,7 @@ BOOL ov104_0223597C(UnkStruct_ov104_0222E930 *param0)
     };
 
     v1 = sub_0209B978(param0->unk_00->unk_00);
-    v2 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov104_0223597C));
+    v2 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov104_0223597C));
 
     MI_CpuClear8(v2, sizeof(UnkStruct_ov104_0223597C));
     v2->unk_00 = v3->unk_08;
@@ -150,7 +146,7 @@ BOOL ov104_022359D0(UnkStruct_ov104_0222E930 *param0)
     };
 
     v1 = sub_0209B978(param0->unk_00->unk_00);
-    v2 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov104_0223597C));
+    v2 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov104_0223597C));
 
     MI_CpuClear8(v2, sizeof(UnkStruct_ov104_0223597C));
     v2->unk_00 = v3->unk_08;
@@ -226,7 +222,7 @@ BOOL ov104_02235AE8(UnkStruct_ov104_0222E930 *param0)
     };
 
     v1 = sub_0209B978(param0->unk_00->unk_00);
-    v2 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov104_0223597C));
+    v2 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov104_0223597C));
 
     MI_CpuClear8(v2, sizeof(UnkStruct_ov104_0223597C));
     v2->unk_00 = v3->unk_08;
@@ -270,9 +266,7 @@ static void ov104_02235B84(void *param0)
 
 BOOL ov104_02235B98(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223BA10 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223BA10 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_02236BF0(v0);
 
     return 0;
@@ -280,9 +274,7 @@ BOOL ov104_02235B98(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_02235BAC(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223BA10 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223BA10 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_02236BF8(v0);
 
     return 0;
@@ -569,9 +561,7 @@ static BOOL ov104_02236058(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_02236090(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223BA10 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223BA10 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_02236FC0(param0->unk_00, v0);
 
     return 0;
@@ -579,9 +569,7 @@ BOOL ov104_02236090(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_022360A8(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223BA10 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223BA10 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_022370E0(param0->unk_00, v0);
 
     return 0;
@@ -589,9 +577,7 @@ BOOL ov104_022360A8(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_022360C0(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223BA10 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223BA10 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_02237180(param0->unk_00, v0);
 
     return 0;

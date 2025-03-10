@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/fight_area_mart.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _0028
     ScriptEntry _002A
     ScriptEntry _0086
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     PlayFanfare SEQ_SE_CONFIRM
@@ -14,7 +15,7 @@ _0012:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_147 1
+    PokeMartCommon
     ReleaseAll
     End
 

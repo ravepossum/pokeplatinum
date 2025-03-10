@@ -3,9 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/sprite_decl.h"
 #include "struct_decls/struct_02007768_decl.h"
-#include "struct_decls/struct_party_decl.h"
+#include "struct_defs/pokemon_sprite.h"
 #include "struct_defs/struct_0207C690.h"
 #include "struct_defs/struct_02099F80.h"
 
@@ -26,10 +25,9 @@
 #include "overlay105/struct_ov105_02246060_decl.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
 #include "communication_information.h"
 #include "communication_system.h"
-#include "core_sys.h"
+#include "dexmode_checker.h"
 #include "font.h"
 #include "game_options.h"
 #include "game_overlay.h"
@@ -43,26 +41,26 @@
 #include "palette.h"
 #include "party.h"
 #include "pokemon.h"
+#include "render_oam.h"
 #include "render_window.h"
 #include "save_player.h"
 #include "savedata.h"
+#include "sprite.h"
+#include "sprite_util.h"
 #include "strbuf.h"
 #include "string_list.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "trainer_info.h"
 #include "unk_02005474.h"
 #include "unk_0200762C.h"
-#include "unk_020093B4.h"
-#include "unk_0200A784.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
-#include "unk_0201DBEC.h"
 #include "unk_02024220.h"
 #include "unk_020363E8.h"
 #include "unk_020393C8.h"
-#include "unk_0207A274.h"
 #include "unk_0209BA80.h"
+#include "vram_transfer.h"
 
 #include "constdata/const_020F410C.h"
 
@@ -106,7 +104,7 @@ struct UnkStruct_ov105_02241FF4_t {
     PaletteData *unk_120;
     GenericPointerData *unk_124;
     UnkStruct_02007768 *unk_128;
-    Sprite *unk_12C[3];
+    PokemonSprite *unk_12C[3];
     Options *unk_138;
     SaveData *unk_13C;
     PokemonSummary *unk_140;
@@ -198,7 +196,7 @@ static void ov105_02244DC4(UnkStruct_ov105_02241FF4 *param0, u8 param1, u8 param
 static void ov105_02244DF0(UnkStruct_ov105_02241FF4 *param0);
 static void ov105_02244E94(UnkStruct_ov105_02241FF4 *param0);
 static void ov105_02244EE8(UnkStruct_ov105_02241FF4 *param0, u32 param1, s32 param2);
-static void ov105_02244F00(UnkStruct_ov105_02241FF4 *param0, u32 param1, BoxPokemon *param2);
+static void ov105_02244F00(UnkStruct_ov105_02241FF4 *param0, u32 param1, BoxPokemon *boxMon);
 static void ov105_02244F0C(UnkStruct_ov105_02241FF4 *param0, Window *param1, u32 param2, u32 param3, u8 param4);
 static void ov105_02244F84(UnkStruct_ov105_02241FF4 *param0, Window *param1, u32 param2, u32 param3, u8 param4);
 static void ov105_02244FF8(UnkStruct_ov105_02241FF4 *param0, Window *param1, u8 param2, u32 param3, u32 param4, u8 param5, u8 param6, u8 param7, u8 param8, const Party *param9);
@@ -356,13 +354,13 @@ int ov105_02241AE0(OverlayManager *param0, int *param1)
 
     Overlay_LoadByID(FS_OVERLAY_ID(overlay104), 2);
     ov105_022452E4();
-    Heap_Create(3, 93, 0x20000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_93, 0x20000);
 
-    v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov105_02241FF4), 93);
+    v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov105_02241FF4), HEAP_ID_93);
     memset(v1, 0, sizeof(UnkStruct_ov105_02241FF4));
 
-    v1->unk_124 = sub_02024220(93, 0, 2, 0, 2, ov105_02245CD0);
-    v1->unk_4C = BgConfig_New(93);
+    v1->unk_124 = sub_02024220(HEAP_ID_93, 0, 2, 0, 2, ov105_02245CD0);
+    v1->unk_4C = BgConfig_New(HEAP_ID_93);
     v1->unk_00 = param0;
 
     v2 = (UnkStruct_ov104_02234130 *)OverlayManager_Args(param0);
@@ -573,7 +571,7 @@ int ov105_02241BD8(OverlayManager *param0, int *param1)
         break;
     }
 
-    CellActorCollection_Update(v0->unk_144.unk_00);
+    SpriteList_Update(v0->unk_144.unk_00);
     ov105_02245D50(v0->unk_128);
 
     return 0;
@@ -602,8 +600,8 @@ int ov105_02241F54(OverlayManager *param0, int *param1)
     ov105_022451B4(v1);
 
     OverlayManager_FreeData(param0);
-    SetMainCallback(NULL, NULL);
-    Heap_Destroy(93);
+    SetVBlankCallback(NULL, NULL);
+    Heap_Destroy(HEAP_ID_93);
     Overlay_UnloadByID(FS_OVERLAY_ID(overlay104));
 
     return 1;
@@ -641,7 +639,7 @@ static BOOL ov105_02241FF4(UnkStruct_ov105_02241FF4 *param0)
 
         Bg_SetOffset(param0->unk_4C, 2, 0, (33 * 8));
         sub_02007DEC(param0->unk_12C[0], 6, 1);
-        StartScreenTransition(0, 1, 1, 0x0, 6, 1 * 3, 93);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1 * 3, HEAP_ID_93);
         param0->unk_08++;
         break;
     case 3:
@@ -724,7 +722,7 @@ static BOOL ov105_022421F0(UnkStruct_ov105_02241FF4 *param0)
         }
 
         if (param0->unk_13_4 == 1) {
-            StartScreenTransition(0, 1, 1, 0x0, 6, 1 * 3, 93);
+            StartScreenTransition(0, 1, 1, 0x0, 6, 1 * 3, HEAP_ID_93);
         }
 
         param0->unk_13_4 = 1;
@@ -743,9 +741,7 @@ static BOOL ov105_022421F0(UnkStruct_ov105_02241FF4 *param0)
 static void ov105_0224227C(UnkStruct_ov105_02241FF4 *param0)
 {
     int v0;
-    u8 v1;
-
-    v1 = ov104_0223AA50(param0->unk_09);
+    u8 v1 = ov104_0223AA50(param0->unk_09);
 
     ov105_02245528(param0, 0);
     param0->unk_30C = ov105_02245FB8(&param0->unk_144, param0->unk_12, param0->unk_12, 0, param0->unk_334, Unk_ov105_02246394, NULL);
@@ -812,9 +808,9 @@ static void ov105_022424CC(UnkStruct_ov105_02241FF4 *param0)
     ov105_0224628C(&param0->unk_50[5], Options_Frame(param0->unk_138));
 
     if (ov104_0223AED4(param0->unk_09) == 0) {
-        param0->unk_30C = ov105_02245FB8(&param0->unk_144, param0->unk_1A, ((NELEMS(Unk_ov105_02246340)) - 1), 2, param0->unk_334, Unk_ov105_02246340, Unk_ov105_022462D0);
+        param0->unk_30C = ov105_02245FB8(&param0->unk_144, param0->unk_1A, (NELEMS(Unk_ov105_02246340) - 1), 2, param0->unk_334, Unk_ov105_02246340, Unk_ov105_022462D0);
     } else {
-        param0->unk_30C = ov105_02245FB8(&param0->unk_144, param0->unk_1A, ((NELEMS(Unk_ov105_022462FC)) - 1), 2, param0->unk_334, Unk_ov105_022462FC, Unk_ov105_022462CC);
+        param0->unk_30C = ov105_02245FB8(&param0->unk_144, param0->unk_1A, (NELEMS(Unk_ov105_022462FC) - 1), 2, param0->unk_334, Unk_ov105_022462FC, Unk_ov105_022462CC);
     }
 
     ov105_02244F0C(param0, &param0->unk_50[0], 0, 0, 0);
@@ -863,7 +859,7 @@ static BOOL ov105_02242698(UnkStruct_ov105_02241FF4 *param0)
     case 0:
 
         if (OverlayManager_Exec(param0->unk_04) == 1) {
-            param0->unk_334 = param0->unk_140->pos;
+            param0->unk_334 = param0->unk_140->monIndex;
             Heap_FreeToHeap(param0->unk_140);
             Heap_FreeToHeap(param0->unk_04);
             param0->unk_04 = NULL;
@@ -895,19 +891,19 @@ static BOOL ov105_022426E0(UnkStruct_ov105_02241FF4 *param0)
     case 1:
         ov105_02246080(param0->unk_30C);
 
-        if (gCoreSys.pressedKeys & (PAD_KEY_LEFT | PAD_KEY_RIGHT)) {
+        if (gSystem.pressedKeys & (PAD_KEY_LEFT | PAD_KEY_RIGHT)) {
             Sound_PlayEffect(1500);
             ov105_022453F8(param0, param0->unk_11, ov105_022461A0(param0->unk_30C), 0, param0->unk_31C);
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             Sound_PlayEffect(1500);
             ov105_022461A4(param0->unk_30C, 1);
             ov105_02244DF0(param0);
 
             param0->unk_310 = ov105_02245FB8(&param0->unk_144, (NELEMS(Unk_ov105_02246308)), (NELEMS(Unk_ov105_02246308)), 1, 0, Unk_ov105_02246308, NULL);
             param0->unk_08++;
-        } else if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        } else if (gSystem.pressedKeys & PAD_BUTTON_B) {
             if (param0->unk_11 > 0) {
                 Sound_PlayEffect(1500);
                 ov105_0224296C(param0);
@@ -933,7 +929,7 @@ static BOOL ov105_022426E0(UnkStruct_ov105_02241FF4 *param0)
             ov105_02246060(param0->unk_310);
             param0->unk_310 = NULL;
             param0->unk_13_6 = 1;
-            StartScreenTransition(0, 0, 0, 0x0, 6, 1, 93);
+            StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_93);
             param0->unk_08++;
             break;
         case 1:
@@ -1386,9 +1382,7 @@ static BOOL ov105_02243144(UnkStruct_ov105_02241FF4 *param0)
 static void ov105_022433AC(UnkStruct_ov105_02241FF4 *param0)
 {
     int v0;
-    u8 v1;
-
-    v1 = ov104_0223AA50(param0->unk_09);
+    u8 v1 = ov104_0223AA50(param0->unk_09);
 
     for (v0 = 0; v0 < param0->unk_11; v0++) {
         ov105_02244FF8(param0, &param0->unk_50[2 + v0], param0->unk_324[v0], 0, 0, 15, 2, 0, 0, param0->unk_31C);
@@ -1426,12 +1420,12 @@ static BOOL ov105_022434BC(UnkStruct_ov105_02241FF4 *param0)
     case 1:
         ov105_02246080(param0->unk_30C);
 
-        if (gCoreSys.pressedKeys & (PAD_KEY_LEFT | PAD_KEY_RIGHT | PAD_KEY_UP | PAD_KEY_DOWN)) {
+        if (gSystem.pressedKeys & (PAD_KEY_LEFT | PAD_KEY_RIGHT | PAD_KEY_UP | PAD_KEY_DOWN)) {
             Sound_PlayEffect(1500);
             ov105_022453F8(param0, param0->unk_11, ov105_022461A0(param0->unk_30C), 1, param0->unk_31C);
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             Sound_PlayEffect(1500);
 
             if (ov105_022461A0(param0->unk_30C) == (param0->unk_1A - 1)) {
@@ -1444,7 +1438,7 @@ static BOOL ov105_022434BC(UnkStruct_ov105_02241FF4 *param0)
                 param0->unk_310 = ov105_02245FB8(&param0->unk_144, (NELEMS(Unk_ov105_02246308)), (NELEMS(Unk_ov105_02246308)), 1, 0, Unk_ov105_02246308, NULL);
                 param0->unk_08++;
             }
-        } else if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        } else if (gSystem.pressedKeys & PAD_BUTTON_B) {
             Sound_PlayEffect(1500);
             ov105_02245528(param0, 1);
             return 1;
@@ -1463,7 +1457,7 @@ static BOOL ov105_022434BC(UnkStruct_ov105_02241FF4 *param0)
             ov105_02246060(param0->unk_310);
             param0->unk_310 = NULL;
             param0->unk_13_6 = 1;
-            StartScreenTransition(0, 0, 0, 0x0, 6, 1, 93);
+            StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_93);
             param0->unk_08++;
             break;
         case 4:
@@ -1625,9 +1619,9 @@ static BOOL ov105_02243A3C(UnkStruct_ov105_02241FF4 *param0)
         Window_ScheduleCopyToVRAM(&param0->unk_50[7]);
 
         if (ov104_0223AED4(param0->unk_09) == 0) {
-            param0->unk_30C = ov105_02245FB8(&param0->unk_144, param0->unk_1B, ((NELEMS(Unk_ov105_02246350)) - 2), 2, 0, Unk_ov105_02246350, Unk_ov105_022462D4);
+            param0->unk_30C = ov105_02245FB8(&param0->unk_144, param0->unk_1B, (NELEMS(Unk_ov105_02246350) - 2), 2, 0, Unk_ov105_02246350, Unk_ov105_022462D4);
         } else {
-            param0->unk_30C = ov105_02245FB8(&param0->unk_144, param0->unk_1B, ((NELEMS(Unk_ov105_0224637C)) - 2), 2, 0, Unk_ov105_0224637C, Unk_ov105_022462E4);
+            param0->unk_30C = ov105_02245FB8(&param0->unk_144, param0->unk_1B, (NELEMS(Unk_ov105_0224637C) - 2), 2, 0, Unk_ov105_0224637C, Unk_ov105_022462E4);
         }
 
         v3 = ov105_022461A0(param0->unk_30C);
@@ -1642,17 +1636,17 @@ static BOOL ov105_02243A3C(UnkStruct_ov105_02241FF4 *param0)
     case 1:
         ov105_02246080(param0->unk_30C);
 
-        if (gCoreSys.pressedKeys & (PAD_KEY_UP | PAD_KEY_DOWN)) {
+        if (gSystem.pressedKeys & (PAD_KEY_UP | PAD_KEY_DOWN)) {
             Sound_PlayEffect(1500);
             ov105_022453F8(param0, 0, ov105_022461A0(param0->unk_30C), 0, param0->unk_320);
         }
 
-        if (gCoreSys.pressedKeys & (PAD_KEY_LEFT | PAD_KEY_RIGHT)) {
+        if (gSystem.pressedKeys & (PAD_KEY_LEFT | PAD_KEY_RIGHT)) {
             Sound_PlayEffect(1500);
             ov105_022453F8(param0, 0, ov105_022461A0(param0->unk_30C), 0, param0->unk_320);
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             Sound_PlayEffect(1500);
 
             if (ov105_022461A0(param0->unk_30C) == (param0->unk_1B - 1)) {
@@ -1669,7 +1663,7 @@ static BOOL ov105_02243A3C(UnkStruct_ov105_02241FF4 *param0)
                 param0->unk_10 = ov105_02244D14(param0, 14);
                 param0->unk_08++;
             }
-        } else if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        } else if (gSystem.pressedKeys & PAD_BUTTON_B) {
             Sound_PlayEffect(1500);
             ov105_02245528(param0, 1);
             return 1;
@@ -2056,7 +2050,7 @@ static BOOL ov105_022443DC(UnkStruct_ov105_02241FF4 *param0)
 
     switch (param0->unk_08) {
     case 0:
-        StartScreenTransition(0, 0, 0, 0x0, 6, 1, 93);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_93);
         param0->unk_08++;
         break;
     case 1:
@@ -2133,8 +2127,8 @@ static void ov105_0224451C(void *param0)
     }
 
     Bg_RunScheduledUpdates(v0->unk_4C);
-    sub_0201DCAC();
-    sub_0200A858();
+    VramTransfer_Process();
+    RenderOam_Transfer();
 
     OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
@@ -2189,7 +2183,7 @@ static void ov105_02244584(BgConfig *param0)
         };
 
         Bg_InitFromTemplate(param0, 1, &v1, 0);
-        Bg_ClearTilesRange(1, 32, 0, 93);
+        Bg_ClearTilesRange(1, 32, 0, HEAP_ID_93);
         Bg_ClearTilemap(param0, 1);
     }
 
@@ -2267,10 +2261,10 @@ static void ov105_02244678(UnkStruct_ov105_02241FF4 *param0)
     ov105_02244564();
     ov105_02244584(param0->unk_4C);
 
-    param0->unk_120 = PaletteData_New(93);
+    param0->unk_120 = PaletteData_New(HEAP_ID_93);
 
-    PaletteData_AllocBuffer(param0->unk_120, 2, (32 * 16), 93);
-    PaletteData_AllocBuffer(param0->unk_120, 0, (32 * 16), 93);
+    PaletteData_AllocBuffer(param0->unk_120, 2, (32 * 16), HEAP_ID_93);
+    PaletteData_AllocBuffer(param0->unk_120, 0, (32 * 16), HEAP_ID_93);
 
     ov105_02244AF8();
 
@@ -2441,12 +2435,12 @@ static void ov105_02244924(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 
 static void ov105_022449A4(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 {
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_338, 4, param0->unk_4C, param1, 0, 0, 1, 93);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_338, 4, param0->unk_4C, param1, 0, 0, 1, HEAP_ID_93);
 
     if (ov104_0223AED4(param0->unk_09) == 0) {
-        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 5, param0->unk_4C, param1, 0, 0, 1, 93);
+        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 5, param0->unk_4C, param1, 0, 0, 1, HEAP_ID_93);
     } else {
-        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 11, param0->unk_4C, param1, 0, 0, 1, 93);
+        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 11, param0->unk_4C, param1, 0, 0, 1, HEAP_ID_93);
     }
 
     return;
@@ -2454,24 +2448,24 @@ static void ov105_022449A4(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 
 static void ov105_02244A18(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 {
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_338, 4, param0->unk_4C, param1, 0, 0, 1, 93);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 7, param0->unk_4C, param1, 0, 0, 1, 93);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_338, 4, param0->unk_4C, param1, 0, 0, 1, HEAP_ID_93);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 7, param0->unk_4C, param1, 0, 0, 1, HEAP_ID_93);
 
     return;
 }
 
 static void ov105_02244A60(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 {
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_338, 4, param0->unk_4C, param1, 0, 0, 1, 93);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 8, param0->unk_4C, param1, 0, 0, 1, 93);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_338, 4, param0->unk_4C, param1, 0, 0, 1, HEAP_ID_93);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 8, param0->unk_4C, param1, 0, 0, 1, HEAP_ID_93);
 
     return;
 }
 
 static void ov105_02244AA8(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 {
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_338, 4, param0->unk_4C, param1, 0, 0, 1, 93);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 9, param0->unk_4C, param1, 0, 0, 1, 93);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_338, 4, param0->unk_4C, param1, 0, 0, 1, HEAP_ID_93);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 9, param0->unk_4C, param1, 0, 0, 1, HEAP_ID_93);
     Bg_SetPriority(1, 2);
 
     return;
@@ -2482,7 +2476,7 @@ static void ov105_02244AF8(void)
     void *v0;
     NNSG2dPaletteData *v1;
 
-    v0 = Graphics_GetPlttData(150, 130, &v1, 93);
+    v0 = Graphics_GetPlttData(150, 130, &v1, HEAP_ID_93);
 
     DC_FlushRange(v1->pRawData, (sizeof(u16) * 16 * 11));
     GX_LoadBGPltt(v1->pRawData, 0, (sizeof(u16) * 16 * 11));
@@ -2493,9 +2487,9 @@ static void ov105_02244AF8(void)
 
 static void ov105_02244B30(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 {
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_338, 125, param0->unk_4C, param1, 0, 0, 1, 93);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 126, param0->unk_4C, param1, 0, 0, 1, 93);
-    Graphics_LoadPaletteFromOpenNARC(param0->unk_338, 171, 4, 0, 0x20, 93);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_338, 125, param0->unk_4C, param1, 0, 0, 1, HEAP_ID_93);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 126, param0->unk_4C, param1, 0, 0, 1, HEAP_ID_93);
+    Graphics_LoadPaletteFromOpenNARC(param0->unk_338, 171, 4, 0, 0x20, HEAP_ID_93);
 
     return;
 }
@@ -2503,9 +2497,9 @@ static void ov105_02244B30(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 static void ov105_02244B90(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 {
     if (ov104_0223AED4(param0->unk_09) == 0) {
-        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 5, param0->unk_4C, 3, 0, 0, 1, 93);
+        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 5, param0->unk_4C, 3, 0, 0, 1, HEAP_ID_93);
     } else {
-        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 11, param0->unk_4C, 3, 0, 0, 1, 93);
+        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 11, param0->unk_4C, 3, 0, 0, 1, HEAP_ID_93);
     }
 
     return;
@@ -2513,16 +2507,16 @@ static void ov105_02244B90(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 
 static void ov105_02244BE4(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 {
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 7, param0->unk_4C, 3, 0, 0, 1, 93);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 7, param0->unk_4C, 3, 0, 0, 1, HEAP_ID_93);
     return;
 }
 
 static void ov105_02244C0C(UnkStruct_ov105_02241FF4 *param0, u32 param1)
 {
     if (ov104_0223AED4(param0->unk_09) == 0) {
-        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 10, param0->unk_4C, 3, 0, 0, 1, 93);
+        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 10, param0->unk_4C, 3, 0, 0, 1, HEAP_ID_93);
     } else {
-        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 12, param0->unk_4C, 3, 0, 0, 1, 93);
+        Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_338, 12, param0->unk_4C, 3, 0, 0, 1, HEAP_ID_93);
     }
 
     return;
@@ -2547,9 +2541,7 @@ static u8 ov105_02244CC0(UnkStruct_ov105_02241FF4 *param0, Window *param1, int p
 
 static u8 ov105_02244D14(UnkStruct_ov105_02241FF4 *param0, int param1)
 {
-    u8 v0;
-
-    v0 = ov105_02244C60(param0, &param0->unk_50[5], param1, 1, 1, TEXT_SPEED_NO_TRANSFER, 1, 2, 15, FONT_MESSAGE);
+    u8 v0 = ov105_02244C60(param0, &param0->unk_50[5], param1, 1, 1, TEXT_SPEED_NO_TRANSFER, 1, 2, 15, FONT_MESSAGE);
     Window_ScheduleCopyToVRAM(&param0->unk_50[5]);
 
     return v0;
@@ -2628,9 +2620,9 @@ static void ov105_02244EE8(UnkStruct_ov105_02241FF4 *param0, u32 param1, s32 par
     return;
 }
 
-static void ov105_02244F00(UnkStruct_ov105_02241FF4 *param0, u32 param1, BoxPokemon *param2)
+static void ov105_02244F00(UnkStruct_ov105_02241FF4 *param0, u32 param1, BoxPokemon *boxMon)
 {
-    StringTemplate_SetSpeciesName(param0->unk_20, param1, param2);
+    StringTemplate_SetSpeciesName(param0->unk_20, param1, boxMon);
     return;
 }
 
@@ -2641,7 +2633,7 @@ static void ov105_02244F0C(UnkStruct_ov105_02241FF4 *param0, Window *param1, u32
     Strbuf *v2;
 
     v1 = SaveData_GetTrainerInfo(param0->unk_13C);
-    v2 = Strbuf_Init((7 + 1), 93);
+    v2 = Strbuf_Init((7 + 1), HEAP_ID_93);
 
     Window_FillTilemap(param1, 0);
     Strbuf_CopyChars(v2, TrainerInfo_Name(v1));
@@ -2663,10 +2655,8 @@ static void ov105_02244F84(UnkStruct_ov105_02241FF4 *param0, Window *param1, u32
 {
     TextColor v0;
     Strbuf *v1;
-    TrainerInfo *v2;
-
-    v2 = CommInfo_TrainerInfo(1 - CommSys_CurNetId());
-    v1 = Strbuf_Init((7 + 1), 93);
+    TrainerInfo *v2 = CommInfo_TrainerInfo(1 - CommSys_CurNetId());
+    v1 = Strbuf_Init((7 + 1), HEAP_ID_93);
 
     Window_FillTilemap(param1, 0);
     TrainerInfo_NameStrbuf(v2, v1);
@@ -2697,7 +2687,7 @@ static void ov105_02244FF8(UnkStruct_ov105_02241FF4 *param0, Window *param1, u8 
     Pokemon_GetValue(v5, MON_DATA_SPECIES_NAME, v6);
     Window_FillTilemap(param1, param7);
 
-    v4 = Strbuf_Init((10 + 1), 93);
+    v4 = Strbuf_Init((10 + 1), HEAP_ID_93);
     Strbuf_CopyChars(v4, v6);
     Text_AddPrinterWithParamsAndColor(param1, param8, v4, param3, param4, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(param5, param6, param7), NULL);
 
@@ -2731,7 +2721,7 @@ static void ov105_022450DC(UnkStruct_ov105_02241FF4 *param0, Window *param1, u32
 
     Window_FillTilemap(param1, param6);
 
-    v3 = MessageLoader_Init(1, 26, 412, 93);
+    v3 = MessageLoader_Init(1, 26, 412, HEAP_ID_93);
     v4 = MessageLoader_GetNewStrbuf(v3, param8);
 
     MessageLoader_Free(v3);
@@ -2809,8 +2799,8 @@ static void ov105_022452A0(UnkStruct_ov105_02241FF4 *param0)
 
     ov105_022452E4();
 
-    param0->unk_124 = sub_02024220(93, 0, 2, 0, 2, ov105_02245CD0);
-    param0->unk_4C = BgConfig_New(93);
+    param0->unk_124 = sub_02024220(HEAP_ID_93, 0, 2, 0, 2, ov105_02245CD0);
+    param0->unk_4C = BgConfig_New(HEAP_ID_93);
 
     ov105_0224531C(param0);
     ov105_02246214(param0->unk_4C, param0->unk_50);
@@ -2820,7 +2810,7 @@ static void ov105_022452A0(UnkStruct_ov105_02241FF4 *param0)
 
 static void ov105_022452E4(void)
 {
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     SetHBlankCallback(NULL, NULL);
 
     GXLayers_DisableEngineALayers();
@@ -2836,28 +2826,28 @@ static void ov105_0224531C(UnkStruct_ov105_02241FF4 *param0)
 {
     int v0, v1;
 
-    param0->unk_338 = NARC_ctor(NARC_INDEX_RESOURCE__ENG__FRONTIER_GRAPHIC__FRONTIER_BG, 93);
+    param0->unk_338 = NARC_ctor(NARC_INDEX_RESOURCE__ENG__FRONTIER_GRAPHIC__FRONTIER_BG, HEAP_ID_93);
 
     ov105_02244678(param0);
     ov105_0224472C(param0);
 
-    param0->unk_1C = MessageLoader_Init(1, 26, 364, 93);
-    param0->unk_20 = StringTemplate_Default(93);
-    param0->unk_24 = Strbuf_Init(800, 93);
-    param0->unk_28 = Strbuf_Init(800, 93);
+    param0->unk_1C = MessageLoader_Init(1, 26, 364, HEAP_ID_93);
+    param0->unk_20 = StringTemplate_Default(HEAP_ID_93);
+    param0->unk_24 = Strbuf_Init(800, HEAP_ID_93);
+    param0->unk_28 = Strbuf_Init(800, HEAP_ID_93);
 
     for (v0 = 0; v0 < 4; v0++) {
-        param0->unk_2C[v0] = Strbuf_Init(64, 93);
+        param0->unk_2C[v0] = Strbuf_Init(64, HEAP_ID_93);
     }
 
-    Font_LoadTextPalette(0, 13 * 32, 93);
-    Font_LoadScreenIndicatorsPalette(0, 12 * 32, 93);
+    Font_LoadTextPalette(0, 13 * 32, HEAP_ID_93);
+    Font_LoadScreenIndicatorsPalette(0, 12 * 32, HEAP_ID_93);
 
-    param0->unk_128 = sub_0200762C(93);
+    param0->unk_128 = sub_0200762C(HEAP_ID_93);
 
     if (CommSys_IsInitialized()) {
-        sub_0200966C(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
-        sub_02009704(NNS_G2D_VRAM_TYPE_2DMAIN);
+        ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
+        ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DMAIN);
         sub_02039734();
     }
 
@@ -2870,7 +2860,7 @@ static void ov105_0224531C(UnkStruct_ov105_02241FF4 *param0)
     }
 
     GXLayers_TurnBothDispOn();
-    SetMainCallback(ov105_0224451C, (void *)param0);
+    SetVBlankCallback(ov105_0224451C, (void *)param0);
 
     return;
 }
@@ -2890,17 +2880,17 @@ static void ov105_022453F8(UnkStruct_ov105_02241FF4 *param0, u8 param1, u8 param
 
 static void ov105_02245464(UnkStruct_ov105_02241FF4 *param0)
 {
-    param0->unk_140 = Heap_AllocFromHeap(93, sizeof(PokemonSummary));
+    param0->unk_140 = Heap_AllocFromHeap(HEAP_ID_93, sizeof(PokemonSummary));
     memset(param0->unk_140, 0, sizeof(PokemonSummary));
 
     param0->unk_140->monData = param0->unk_31C;
     param0->unk_140->options = param0->unk_138;
-    param0->unk_140->dataType = 1;
-    param0->unk_140->mode = 1;
-    param0->unk_140->max = param0->unk_12;
-    param0->unk_140->pos = ov105_022461A0(param0->unk_30C);
+    param0->unk_140->dataType = SUMMARY_DATA_PARTY_MON;
+    param0->unk_140->mode = SUMMARY_MODE_LOCK_MOVES;
+    param0->unk_140->monMax = param0->unk_12;
+    param0->unk_140->monIndex = ov105_022461A0(param0->unk_30C);
     param0->unk_140->move = 0;
-    param0->unk_140->dexMode = sub_0207A274(param0->unk_13C);
+    param0->unk_140->dexMode = SaveData_GetDexMode(param0->unk_13C);
     param0->unk_140->showContest = FALSE;
 
     PokemonSummaryScreen_FlagVisiblePages(param0->unk_140, Unk_ov105_022462DC);
@@ -2946,9 +2936,7 @@ static void ov105_02245528(UnkStruct_ov105_02241FF4 *param0, u8 param1)
 
 static u8 ov105_02245538(UnkStruct_ov105_02241FF4 *param0, u8 param1, u8 param2)
 {
-    u8 v0;
-
-    v0 = 0;
+    u8 v0 = 0;
 
     switch (param1) {
     case 0:
@@ -3016,7 +3004,7 @@ static void ov105_022455C4(UnkStruct_ov105_02241FF4 *param0, u8 param1, Pokemon 
     v0 = Pokemon_GetValue(param2, MON_DATA_SPECIES, NULL);
     v1 = Pokemon_GetValue(param2, MON_DATA_FORM, NULL);
 
-    if (PokemonPersonalData_GetFormValue(v0, v1, 28) == 0) {
+    if (SpeciesData_GetFormValue(v0, v1, 28) == 0) {
         ov105_02245DB8(param0->unk_12C[param1], param5);
     }
 
@@ -3057,9 +3045,7 @@ BOOL ov105_02245620(UnkStruct_ov105_02241FF4 *param0, u16 param1, u16 param2)
 
 void ov105_02245684(UnkStruct_ov105_02241FF4 *param0, u16 param1)
 {
-    TrainerInfo *v0;
-
-    v0 = SaveData_GetTrainerInfo(param0->unk_13C);
+    TrainerInfo *v0 = SaveData_GetTrainerInfo(param0->unk_13C);
     param0->unk_33C[0] = param1;
 
     return;
@@ -3153,9 +3139,7 @@ void ov105_022457B8(int param0, int param1, void *param2, void *param3)
 static void ov105_022457C0(UnkStruct_ov105_02241FF4 *param0)
 {
     int v0;
-    u8 v1;
-
-    v1 = ov104_0223AA50(param0->unk_09);
+    u8 v1 = ov104_0223AA50(param0->unk_09);
 
     if (param0->unk_13_5 == 1) {
         Window_ClearAndCopyToVRAM(&param0->unk_50[1]);
@@ -3250,7 +3234,7 @@ static UnkStruct_ov105_02245EA8 *ov105_02245934(UnkStruct_ov105_02241FF4 *param0
         }
     }
 
-    return ov105_02245E54(&param0->unk_144, v0, v1, 93);
+    return ov105_02245E54(&param0->unk_144, v0, v1, HEAP_ID_93);
 }
 
 static UnkStruct_ov105_02245E1C *ov105_022459B0(UnkStruct_ov105_02241FF4 *param0, u32 param1)
@@ -3278,7 +3262,7 @@ static UnkStruct_ov105_02245E1C *ov105_022459B0(UnkStruct_ov105_02241FF4 *param0
         break;
     }
 
-    return ov105_02245DC4(&param0->unk_144, param1, v0, v1, 93);
+    return ov105_02245DC4(&param0->unk_144, param1, v0, v1, HEAP_ID_93);
 }
 
 static UnkStruct_ov105_02245E1C *ov105_02245A04(UnkStruct_ov105_02241FF4 *param0, u32 param1)
@@ -3298,7 +3282,7 @@ static UnkStruct_ov105_02245E1C *ov105_02245A04(UnkStruct_ov105_02241FF4 *param0
         break;
     }
 
-    return ov105_02245DC4(&param0->unk_144, param1, v0, v1, 93);
+    return ov105_02245DC4(&param0->unk_144, param1, v0, v1, HEAP_ID_93);
 }
 
 static void ov105_02245A30(UnkStruct_ov105_02241FF4 *param0)
@@ -3319,7 +3303,7 @@ static void ov105_02245A30(UnkStruct_ov105_02241FF4 *param0)
 static void ov105_02245A64(UnkStruct_ov105_02241FF4 *param0)
 {
     Bg_SetPriority(1, 1);
-    Bg_ClearTilesRange(1, 32, 0, 93);
+    Bg_ClearTilesRange(1, 32, 0, HEAP_ID_93);
     Bg_ClearTilemap(param0->unk_4C, 1);
     ov105_02246214(param0->unk_4C, param0->unk_50);
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG1, 1);

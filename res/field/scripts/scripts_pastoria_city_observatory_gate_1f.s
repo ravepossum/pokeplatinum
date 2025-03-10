@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/pastoria_city_observatory_gate_1f.h"
 
     .data
 
@@ -9,7 +10,7 @@
     ScriptEntry _02BF
     ScriptEntry _0300
     ScriptEntry _001E
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001E:
     End
@@ -19,15 +20,15 @@ _0020:
 
 _0022:
     LockAll
-    ApplyMovement 0xFF, _0194
+    ApplyMovement LOCALID_PLAYER, _0194
     WaitMovement
     GetPlayerMapPos 0x4000, 0x4001
     CallIfEq 0x4000, 5, _017D
     ScrCmd_072 20, 2
     Message 0
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _006A
-    GoToIfEq 0x800C, 1, _0156
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _006A
+    GoToIfEq 0x800C, MENU_NO, _0156
     End
 
 _006A:
@@ -54,12 +55,12 @@ _008C:
     End
 
 _00E2:
-    ApplyMovement 0xFF, _019C
+    ApplyMovement LOCALID_PLAYER, _019C
     WaitMovement
     GoTo _0102
 
 _00F2:
-    ApplyMovement 0xFF, _01B4
+    ApplyMovement LOCALID_PLAYER, _01B4
     WaitMovement
     GoTo _0102
 
@@ -79,7 +80,7 @@ _0141:
     Message 6
     CloseMessage
     ScrCmd_073
-    ApplyMovement 0xFF, _01C4
+    ApplyMovement LOCALID_PLAYER, _01C4
     WaitMovement
     ReleaseAll
     End
@@ -87,7 +88,7 @@ _0141:
 _0156:
     CloseMessage
     ScrCmd_073
-    ApplyMovement 0xFF, _01C4
+    ApplyMovement LOCALID_PLAYER, _01C4
     WaitMovement
     ReleaseAll
     End
@@ -96,59 +97,59 @@ _0168:
     ScrCmd_073
     Message 7
     CloseMessage
-    ApplyMovement 0xFF, _01C4
+    ApplyMovement LOCALID_PLAYER, _01C4
     WaitMovement
     ReleaseAll
     End
 
 _017D:
-    ApplyMovement 0xFF, _018C
+    ApplyMovement LOCALID_PLAYER, _018C
     WaitMovement
     Return
 
     .balign 4, 0
 _018C:
-    MoveAction_00E
+    MoveAction_014
     EndMovement
 
     .balign 4, 0
 _0194:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _019C:
-    MoveAction_020
-    MoveAction_00C 3
-    MoveAction_00F
-    MoveAction_00C
-    MoveAction_045
+    MoveAction_032
+    MoveAction_012 3
+    MoveAction_015
+    MoveAction_012
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _01B4:
-    MoveAction_020
-    MoveAction_00C 4
-    MoveAction_045
+    MoveAction_032
+    MoveAction_012 4
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _01C4:
-    MoveAction_00D
+    MoveAction_013
     EndMovement
 
 _01CC:
     LockAll
     Message 9
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _01F1
-    GoToIfEq 0x800C, 1, _024E
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _01F1
+    GoToIfEq 0x800C, MENU_NO, _024E
     End
 
 _01F1:
     Message 10
     CloseMessage
-    ApplyMovement 0xFF, _0280
+    ApplyMovement LOCALID_PLAYER, _0280
     WaitMovement
     SetVar 0x40DA, 0
     ScrCmd_202 1
@@ -175,7 +176,7 @@ _024A:
 
 _024E:
     CloseMessage
-    ApplyMovement 0xFF, _0288
+    ApplyMovement LOCALID_PLAYER, _0288
     WaitMovement
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
@@ -186,19 +187,19 @@ _024E:
 
     .balign 4, 0
 _0280:
-    MoveAction_00D 5
+    MoveAction_013 5
     EndMovement
 
     .balign 4, 0
 _0288:
     MoveAction_000
-    MoveAction_00C
-    MoveAction_045
+    MoveAction_012
+    MoveAction_069
     EndMovement
 
 _0298:
     LockAll
-    ApplyMovement 0xFF, _0280
+    ApplyMovement LOCALID_PLAYER, _0280
     WaitMovement
     SetVar 0x40DA, 0
     ScrCmd_31B 0x4002
@@ -211,9 +212,9 @@ _02BF:
     LockAll
     FacePlayer
     Message 12
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _02EA
-    GoToIfEq 0x800C, 1, _02F5
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _02EA
+    GoToIfEq 0x800C, MENU_NO, _02F5
     End
 
 _02EA:
@@ -252,8 +253,8 @@ _0329:
 
     .balign 4, 0
 _0334:
-    MoveAction_00F 4
-    MoveAction_020
+    MoveAction_015 4
+    MoveAction_032
     EndMovement
 
     .byte 14

@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/oreburgh_mine_b2f.h"
 
     .data
 
@@ -7,7 +8,7 @@
     ScriptEntry _011B
     ScriptEntry _013A
     ScriptEntry _0159
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0016:
     PlayFanfare SEQ_SE_CONFIRM
@@ -42,7 +43,7 @@ _0044:
     CloseMessage
     ScrCmd_29E 2, 0x8005
     WaitTime 10, 0x800C
-    ScrCmd_065 1
+    RemoveObject 1
 _0059:
     WaitTime 1, 0x800C
     GoToIfEq 0x8005, 0, _0059
@@ -82,7 +83,7 @@ _0091:
     GoTo _00A1
 
 _00A1:
-    ScrCmd_065 0
+    RemoveObject 0
     SetFlag 122
     SetFlag 0x17C
     ReleaseAll
@@ -106,7 +107,7 @@ _00A1:
 
     .balign 4, 0
 _00C0:
-    MoveAction_00F 10
+    MoveAction_015 10
     EndMovement
 
     .byte 63
@@ -128,9 +129,9 @@ _00C0:
 
     .balign 4, 0
 _00D8:
-    MoveAction_03F 2
-    MoveAction_023
-    MoveAction_03F 4
+    MoveAction_063 2
+    MoveAction_035
+    MoveAction_063 4
     EndMovement
 
     .byte 63
@@ -159,7 +160,7 @@ _00FC:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 66, 0
+    PlayCry SPECIES_MACHOP
     Message 2
     ScrCmd_04D
     WaitABXPadPress
@@ -172,7 +173,7 @@ _011B:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 66, 0
+    PlayCry SPECIES_MACHOP
     Message 3
     ScrCmd_04D
     WaitABXPadPress
@@ -185,7 +186,7 @@ _013A:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 66, 0
+    PlayCry SPECIES_MACHOP
     Message 4
     ScrCmd_04D
     WaitABXPadPress

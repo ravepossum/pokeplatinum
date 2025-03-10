@@ -9,11 +9,11 @@
 #include "struct_defs/struct_02029894_sub2.h"
 #include "struct_defs/struct_020298B0.h"
 
-#include "core_sys.h"
 #include "heap.h"
 #include "math.h"
 #include "rtc.h"
 #include "savedata.h"
+#include "system.h"
 #include "trainer_info.h"
 
 static void sub_02028B48(UndergroundData *param0, int param1, int param2);
@@ -85,11 +85,9 @@ int sub_02028558(void)
     return sizeof(SecretBaseRecord);
 }
 
-SecretBaseRecord *sub_0202855C(u32 param0)
+SecretBaseRecord *sub_0202855C(u32 heapID)
 {
-    SecretBaseRecord *v0;
-
-    v0 = Heap_AllocFromHeap(param0, sizeof(SecretBaseRecord));
+    SecretBaseRecord *v0 = Heap_AllocFromHeap(heapID, sizeof(SecretBaseRecord));
     MI_CpuFill8(v0, 0, sizeof(SecretBaseRecord));
     return v0;
 }
@@ -101,7 +99,7 @@ void Underground_Init(UndergroundData *param0)
     RTCTime v2;
 
     GetCurrentDateTime(&v1, &v2);
-    v0 = (((((((u32)v1.year * 32ULL + v1.month) * 32ULL) + v1.day) * 32ULL + v2.hour) * 32ULL + v2.minute) * 32ULL + (v2.second + gCoreSys.vblankCounter));
+    v0 = (((((((u32)v1.year * 32ULL + v1.month) * 32ULL) + v1.day) * 32ULL + v2.hour) * 32ULL + v2.minute) * 32ULL + (v2.second + gSystem.vblankCounter));
 
     MI_CpuFill8(param0, 0, sizeof(UndergroundData));
 
@@ -1360,17 +1358,13 @@ BOOL sub_0202988C(const UnkStruct_02029894 *param0)
 
 UnkStruct_02029894 *sub_02029894(SaveData *param0)
 {
-    UndergroundData *v0;
-
-    v0 = SaveData_SaveTable(param0, 12);
+    UndergroundData *v0 = SaveData_SaveTable(param0, 12);
     return &v0->unk_00;
 }
 
 SecretBaseRecord *SaveData_SecretBaseRecord(SaveData *param0)
 {
-    UndergroundData *v0;
-
-    v0 = SaveData_SaveTable(param0, 12);
+    UndergroundData *v0 = SaveData_SaveTable(param0, 12);
     return &v0->unk_00.unk_50;
 }
 
@@ -1381,8 +1375,6 @@ SecretBaseRecord *sub_020298AC(UnkStruct_02029894 *param0)
 
 UndergroundData *sub_020298B0(SaveData *param0)
 {
-    UndergroundData *v0;
-
-    v0 = SaveData_SaveTable(param0, 12);
+    UndergroundData *v0 = SaveData_SaveTable(param0, 12);
     return v0;
 }

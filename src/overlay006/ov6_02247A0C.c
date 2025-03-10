@@ -6,7 +6,6 @@
 #include "field/field_system.h"
 
 #include "bg_window.h"
-#include "core_sys.h"
 #include "field_system.h"
 #include "field_task.h"
 #include "font.h"
@@ -17,6 +16,7 @@
 #include "savedata.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "unk_0202F108.h"
 
@@ -90,9 +90,7 @@ static const UnkStruct_ov6_022496F4 Unk_ov6_0224971C[][4] = {
 
 void ov6_02247A0C(FieldTask *param0)
 {
-    UnkStruct_ov6_02247A0C *v0;
-
-    v0 = Heap_AllocFromHeapAtEnd(11, sizeof(UnkStruct_ov6_02247A0C));
+    UnkStruct_ov6_02247A0C *v0 = Heap_AllocFromHeapAtEnd(11, sizeof(UnkStruct_ov6_02247A0C));
     MI_CpuClear8(v0, sizeof(UnkStruct_ov6_02247A0C));
 
     FieldTask_InitCall(param0, ov6_02247A34, v0);
@@ -109,7 +107,7 @@ static BOOL ov6_02247A34(FieldTask *param0)
         v1->unk_04++;
         break;
     case 1:
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov6_02247CC8(v1->unk_00);
             v1->unk_04++;
         }
@@ -132,19 +130,19 @@ void *ov6_02247A90(void *param0)
 
     v1 = FieldSystem_GetBgConfig(param0);
     v8 = FieldSystem_GetSaveData(param0);
-    v0 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov6_02247A90));
+    v0 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov6_02247A90));
 
     MI_CpuClear8(v0, sizeof(UnkStruct_ov6_02247A90));
 
-    v0->unk_10 = MessageLoader_Init(0, 26, 208, 11);
-    v0->unk_14 = StringTemplate_Default(11);
+    v0->unk_10 = MessageLoader_Init(0, 26, 208, HEAP_ID_FIELDMAP);
+    v0->unk_14 = StringTemplate_Default(HEAP_ID_FIELDMAP);
 
     Window_Add(v1, &v0->unk_00, 3, 1, 3, 30, 17, 12, (1 + 10));
-    LoadStandardWindowGraphics(v1, 3, 1, 11, 0, 11);
+    LoadStandardWindowGraphics(v1, 3, 1, 11, 0, HEAP_ID_FIELDMAP);
     Window_DrawStandardFrame(&v0->unk_00, 1, 1, 11);
     Window_FillTilemap(&v0->unk_00, 15);
 
-    v3 = Strbuf_Init(100, 11);
+    v3 = Strbuf_Init(100, HEAP_ID_FIELDMAP);
     v2 = MessageLoader_GetNewStrbuf(v0->unk_10, 0);
 
     StringTemplate_SetPlayerName(v0->unk_14, 0, SaveData_GetTrainerInfo(v8));

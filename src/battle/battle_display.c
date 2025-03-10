@@ -7,16 +7,12 @@
 #include "constants/species.h"
 
 #include "struct_decls/battle_system.h"
-#include "struct_decls/sprite_decl.h"
 #include "struct_decls/struct_02007768_decl.h"
-#include "struct_decls/struct_0200C6E4_decl.h"
-#include "struct_decls/struct_0200C704_decl.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/archived_sprite.h"
 #include "struct_defs/battle_io.h"
+#include "struct_defs/pokemon_sprite.h"
 #include "struct_defs/sprite_animation_frame.h"
-#include "struct_defs/struct_0200D0F4.h"
-#include "struct_defs/trainer_data.h"
+#include "struct_defs/trainer.h"
 
 #include "battle/battle_context.h"
 #include "battle/battle_io.h"
@@ -101,7 +97,6 @@
 #include "battle/struct_ov16_0226C378.h"
 #include "battle/struct_ov16_0226D160_decl.h"
 #include "battle/trainer_ai.h"
-#include "functypes/funcptr_02007C34.h"
 #include "overlay012/const_ov12_0223B0A0.h"
 #include "overlay012/const_ov12_0223B0B8.h"
 #include "overlay012/const_ov12_0223B0DC.h"
@@ -121,7 +116,7 @@
 
 #include "assert.h"
 #include "bg_window.h"
-#include "core_sys.h"
+#include "brightness_controller.h"
 #include "enums.h"
 #include "flags.h"
 #include "heap.h"
@@ -133,15 +128,15 @@
 #include "party.h"
 #include "pokemon.h"
 #include "render_window.h"
+#include "sprite_system.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "text.h"
 #include "trainer_info.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
 #include "unk_0200762C.h"
-#include "unk_0200A9DC.h"
-#include "unk_0200C6E4.h"
 #include "unk_020131EC.h"
 #include "unk_0201567C.h"
 #include "unk_02015F84.h"
@@ -201,23 +196,23 @@ static void ShowPartyGaugeTask(SysTask *param0, void *param1);
 static void HidePartyGaugeTask(SysTask *param0, void *param1);
 static void ov16_02263688(SysTask *param0, void *param1);
 static void ov16_022636D4(SysTask *param0, void *param1);
-static Sprite *ov16_02263B30(BattleSystem *param0, UnkStruct_02007768 *param1, ArchivedSprite *param2, int param3, int param4, int param5, int param6, int param7, int param8, int param9, int param10, SpriteAnimationFrame *param11, UnkFuncPtr_02007C34 *param12);
-static void ov16_02263C1C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C3F8 *param2, BattleMessage *param3);
-static void ov16_02263CF0(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C40C *param2, BattleMessage *param3);
-static void ov16_02263DD0(BattleSystem *param0, BattlerData *param1, BattleMessage *param2);
-static void ov16_02263E7C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C430 *param2, BattleMessage *param3);
-static void ov16_022641B4(BattleSystem *param0, BattlerData *param1, BattleMessage *param2);
-static void ov16_02264270(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C9F0 *param2, BattleMessage *param3);
-static void ov16_02264360(BattleSystem *param0, BattlerData *param1, BattleMessage *param2);
-static CellActorData *ov16_022643B8(BattleSystem *param0, int param1, int param2, int param3, s16 param4, s16 param5);
-static void ov16_02264408(BattleSystem *param0, BattlerData *param1, UnkStruct_ov12_0221FCDC *param2, UnkStruct_ov16_02265BBC *param3);
-static void ov16_02264530(BattleSystem *param0, UnkStruct_ov16_02265BBC *param1, UnkStruct_ov12_022380DC *param2, int param3);
+static PokemonSprite *ov16_02263B30(BattleSystem *battleSys, UnkStruct_02007768 *param1, ArchivedSprite *param2, int param3, int param4, int param5, int param6, int param7, int param8, int param9, int param10, SpriteAnimationFrame *param11, UnkFuncPtr_02007C34 *param12);
+static void ov16_02263C1C(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C3F8 *param2, BattleMessage *param3);
+static void ov16_02263CF0(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C40C *param2, BattleMessage *param3);
+static void ov16_02263DD0(BattleSystem *battleSys, BattlerData *param1, BattleMessage *param2);
+static void ov16_02263E7C(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C430 *param2, BattleMessage *param3);
+static void ov16_022641B4(BattleSystem *battleSys, BattlerData *param1, BattleMessage *param2);
+static void ov16_02264270(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C9F0 *param2, BattleMessage *param3);
+static void ov16_02264360(BattleSystem *battleSys, BattlerData *param1, BattleMessage *param2);
+static ManagedSprite *ov16_022643B8(BattleSystem *battleSys, int param1, int param2, int param3, s16 param4, s16 param5);
+static void ov16_02264408(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov12_0221FCDC *param2, UnkStruct_ov16_02265BBC *param3);
+static void ov16_02264530(BattleSystem *battleSys, UnkStruct_ov16_02265BBC *param1, UnkStruct_ov12_022380DC *param2, int param3);
 static void ov16_022645B8(u8 *param0, u8 *param1, int param2, int param3, u16 param4);
-static BOOL ov16_02264650(UnkStruct_ov16_02264650_1 *param0, CellActorData *param1);
+static BOOL ov16_02264650(UnkStruct_ov16_02264650_1 *param0, ManagedSprite *param1);
 static void ov16_022646C8(SysTask *param0, void *param1);
-static void ov16_02264730(BattleSystem *param0);
-static void ov16_0226474C(BattleSystem *param0);
-static u8 ov16_02264768(BattleSystem *param0, u8 param1, u8 param2);
+static void ov16_02264730(BattleSystem *battleSys);
+static void ov16_0226474C(BattleSystem *battleSys);
+static u8 ov16_02264768(BattleSystem *battleSys, u8 param1, u8 param2);
 
 static const u16 Unk_ov16_0226F1AE[] = {
     0x0,
@@ -239,12 +234,10 @@ static const u16 Unk_ov16_0226F1AE[] = {
     0x151E
 };
 
-void ov16_0225CBB8(BattleSystem *param0, BattlerData *param1)
+void ov16_0225CBB8(BattleSystem *battleSys, BattlerData *param1)
 {
-    UnkStruct_ov16_0225CBB8 *v0;
-
-    v0 = (UnkStruct_ov16_0225CBB8 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225CBB8));
-    v0->unk_00 = param0;
+    UnkStruct_ov16_0225CBB8 *v0 = (UnkStruct_ov16_0225CBB8 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225CBB8));
+    v0->unk_00 = battleSys;
     v0->unk_14 = 0;
     v0->unk_15 = 0;
     v0->unk_16 = 0;
@@ -252,33 +245,33 @@ void ov16_0225CBB8(BattleSystem *param0, BattlerData *param1)
     SysTask_Start(ov16_02263014, v0, 0);
 }
 
-void ov16_0225CBDC(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C168 *param2)
+void ov16_0225CBDC(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C168 *param2)
 {
     int v0;
     ArchivedSprite v1;
     UnkStruct_02007768 *v2;
     SpriteAnimationFrame v3[10];
     UnkStruct_ov16_0225E4E8 *v4;
-    int v5;
+    int battleType;
     u8 v6;
     s8 v7;
     s8 v8;
     u8 v9;
 
-    v2 = ov16_0223E000(param0);
-    v5 = BattleSystem_BattleType(param0);
-    v4 = (UnkStruct_ov16_0225E4E8 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225E4E8));
+    v2 = ov16_0223E000(battleSys);
+    battleType = BattleSystem_BattleType(battleSys);
+    v4 = (UnkStruct_ov16_0225E4E8 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225E4E8));
 
     v4->unk_12 = 0;
 
     if (param1->battlerType & 0x1) {
         v4->unk_13 = 2;
-        v4->unk_0C = ov16_0223E020(param0, 1);
-        SpriteActor_SetSpritePositionXY(v4->unk_0C->unk_00, Unk_ov12_0223B0B8[param1->battlerType & 1][0], (8 * 11));
+        v4->unk_0C = ov16_0223E020(battleSys, 1);
+        ManagedSprite_SetPositionXY(v4->unk_0C->unk_00, Unk_ov12_0223B0B8[param1->battlerType & 1][0], (8 * 11));
     } else {
         v4->unk_13 = 0;
-        v4->unk_0C = ov16_0223E020(param0, 0);
-        SpriteActor_SetSpritePositionXY(v4->unk_0C->unk_00, Unk_ov12_0223B0B8[param1->battlerType & 1][0], (128 + 8));
+        v4->unk_0C = ov16_0223E020(battleSys, 0);
+        ManagedSprite_SetPositionXY(v4->unk_0C->unk_00, Unk_ov12_0223B0B8[param1->battlerType & 1][0], (128 + 8));
     }
 
     if (param2->unk_01_2) {
@@ -296,13 +289,13 @@ void ov16_0225CBDC(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     PokeSprite_LoadShadowSize(param1->unk_1A0, &v9, param2->unk_02);
     PokeSprite_LoadAnimationFrames(param1->unk_1A0, &v3[0], param2->unk_02, param1->battlerType);
 
-    v4->unk_08 = param1->unk_20 = ov16_02263B30(param0, v2, &v1, Unk_ov12_0223B0B8[param1->battlerType][0], Unk_ov12_0223B0B8[param1->battlerType][1], Unk_ov12_0223B0B8[param1->battlerType][2], v6, v7, v8, v9, param1->battler, &v3[0], NULL);
+    v4->unk_08 = param1->unk_20 = ov16_02263B30(battleSys, v2, &v1, Unk_ov12_0223B0B8[param1->battlerType][0], Unk_ov12_0223B0B8[param1->battlerType][1], Unk_ov12_0223B0B8[param1->battlerType][2], v6, v7, v8, v9, param1->battler, &v3[0], NULL);
 
     if (v4->unk_13 == 2) {
         sub_020086FC(v4->unk_08, 8, 8, 0, 0x0);
     }
 
-    if ((v4->unk_13 == 2) && (BattleSystem_BattleStatus(param0) & 0x40)) {
+    if ((v4->unk_13 == 2) && (BattleSystem_BattleStatus(battleSys) & 0x40)) {
         int v10, v11;
 
         v11 = sub_020080C0(v4->unk_08, 1);
@@ -317,7 +310,7 @@ void ov16_0225CBDC(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
         v4->unk_14 = Unk_ov12_0223B0A0[param1->battlerType][0];
     }
 
-    v4->unk_00 = param0;
+    v4->unk_00 = battleSys;
     v4->unk_04 = param1;
     v4->unk_10 = param2->unk_00;
     v4->unk_11 = param1->battler;
@@ -328,7 +321,7 @@ void ov16_0225CBDC(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     v4->unk_24 = Pokemon_GetNatureOf(param2->unk_04);
     v4->unk_28 = param2->unk_01_2;
 
-    if ((v4->unk_13 == 2) && (BattleSystem_BattleStatus(param0) & 0x40)) {
+    if ((v4->unk_13 == 2) && (BattleSystem_BattleStatus(battleSys) & 0x40)) {
         SysTask_Start(ov16_0225E894, v4, 0);
     } else {
         SysTask_Start(ov16_0225E4E8, v4, 0);
@@ -337,14 +330,12 @@ void ov16_0225CBDC(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     sub_02005454(1);
 }
 
-void ov16_0225CE1C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C17C *param2)
+void ov16_0225CE1C(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C17C *param2)
 {
     int v0;
     UnkStruct_ov16_0225EA80 *v1;
-    int v2;
-
-    v2 = BattleSystem_BattleType(param0);
-    v1 = (UnkStruct_ov16_0225EA80 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225EA80));
+    int battleType = BattleSystem_BattleType(battleSys);
+    v1 = (UnkStruct_ov16_0225EA80 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225EA80));
 
     if (param1->battlerType & 0x1) {
         v1->unk_84 = 2;
@@ -367,7 +358,7 @@ void ov16_0225CE1C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     PokeSprite_LoadShadowSize(param1->unk_1A0, &v1->unk_93, param2->unk_02);
     ov16_02263B10(param1);
 
-    v1->unk_00 = param0;
+    v1->unk_00 = battleSys;
     v1->unk_04 = param1;
     v1->unk_83 = 0;
     v1->unk_96 = 0;
@@ -387,15 +378,13 @@ void ov16_0225CE1C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(ov16_0225EA80, v1, 0);
 }
 
-void ov16_0225CF70(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C17C *param2)
+void ov16_0225CF70(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C17C *param2)
 {
     int i;
     int v1;
     UnkStruct_ov16_0225EA80 *v2;
-    int v3;
-
-    v3 = BattleSystem_BattleType(param0);
-    v2 = (UnkStruct_ov16_0225EA80 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225EA80));
+    int battleType = BattleSystem_BattleType(battleSys);
+    v2 = (UnkStruct_ov16_0225EA80 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225EA80));
     v2->unk_83 = 0;
 
     if (param1->battlerType & 0x1) {
@@ -419,7 +408,7 @@ void ov16_0225CF70(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     PokeSprite_LoadShadowSize(param1->unk_1A0, &v2->unk_93, param2->unk_02);
     ov16_02263B10(param1);
 
-    v2->unk_00 = param0;
+    v2->unk_00 = battleSys;
     v2->unk_04 = param1;
     v2->unk_80 = param2->unk_00;
     v2->unk_81 = param1->battler;
@@ -446,13 +435,11 @@ void ov16_0225CF70(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(ov16_0225F0C0, v2, 0);
 }
 
-void ov16_0225D118(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_02264EF8 *param2)
+void ov16_0225D118(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_02264EF8 *param2)
 {
     int i;
-    UnkStruct_ov16_0225F764 *v1;
-
-    v1 = (UnkStruct_ov16_0225F764 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225F764));
-    v1->unk_00 = param0;
+    UnkStruct_ov16_0225F764 *v1 = (UnkStruct_ov16_0225F764 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225F764));
+    v1->unk_00 = battleSys;
     v1->unk_04 = param1;
     v1->unk_08 = param1->unk_20;
     v1->unk_68 = param2->unk_00;
@@ -474,13 +461,11 @@ void ov16_0225D118(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(ov16_0225F764, v1, 0);
 }
 
-void ov16_0225D1C4(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_02265050 *param2)
+void ov16_0225D1C4(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_02265050 *param2)
 {
-    UnkStruct_ov16_0225D1C4 *v0;
+    UnkStruct_ov16_0225D1C4 *v0 = (UnkStruct_ov16_0225D1C4 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225D1C4));
 
-    v0 = (UnkStruct_ov16_0225D1C4 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225D1C4));
-
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_04 = param1->unk_20;
     v0->unk_08 = param2->unk_00;
     v0->unk_09 = param1->battler;
@@ -493,56 +478,54 @@ void ov16_0225D1C4(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(ov16_0225FA00, v0, 0);
 }
 
-void ov16_0225D228(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_02265124 *param2)
+void ov16_0225D228(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_02265124 *param2)
 {
     int v0;
     UnkStruct_ov16_02264650_1 *v1;
     int v2;
 
-    v1 = (UnkStruct_ov16_02264650_1 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_02264650_1));
+    v1 = (UnkStruct_ov16_02264650_1 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_02264650_1));
     v1->unk_0E = 0;
 
     if (param1->battlerType & 0x1) {
         v1->unk_0F = 2;
-        v1->unk_04 = ov16_0223E020(param0, 1);
-        SpriteActor_SetSpritePositionXY(v1->unk_04->unk_00, Unk_ov12_0223B0B8[param1->battlerType & 1][0], (8 * 11));
+        v1->unk_04 = ov16_0223E020(battleSys, 1);
+        ManagedSprite_SetPositionXY(v1->unk_04->unk_00, Unk_ov12_0223B0B8[param1->battlerType & 1][0], (8 * 11));
     } else {
         v1->unk_0F = 0;
-        v1->unk_04 = ov16_0223E020(param0, 0);
-        SpriteActor_SetSpritePositionXY(v1->unk_04->unk_00, Unk_ov12_0223B0B8[param1->battlerType & 1][0], (128 + 8));
+        v1->unk_04 = ov16_0223E020(battleSys, 0);
+        ManagedSprite_SetPositionXY(v1->unk_04->unk_00, Unk_ov12_0223B0B8[param1->battlerType & 1][0], (128 + 8));
     }
 
-    if ((BattleSystem_BattleType(param0) & 0x8) || ((BattleSystem_BattleType(param0) & 0x10) && (param1->battlerType & 0x1))) {
+    if ((BattleSystem_BattleType(battleSys) & BATTLE_TYPE_2vs2) || ((BattleSystem_BattleType(battleSys) & BATTLE_TYPE_TAG) && (param1->battlerType & BATTLE_TYPE_TRAINER))) {
         v2 = param1->battlerType;
     } else {
         v2 = param1->battlerType & 1;
     }
 
-    param2->unk_02 = ov16_02264768(param0, param1->battler, param2->unk_02);
+    param2->unk_02 = ov16_02264768(battleSys, param1->battler, param2->unk_02);
 
-    v1->unk_08 = param1->unk_18 = ov16_022643B8(param0, v2, param2->unk_02, param1->battlerType, Unk_ov12_0223B0B8[v2][0], Unk_ov12_0223B0B8[v2][1]);
+    v1->unk_08 = param1->unk_18 = ov16_022643B8(battleSys, v2, param2->unk_02, param1->battlerType, Unk_ov12_0223B0B8[v2][0], Unk_ov12_0223B0B8[v2][1]);
     v1->unk_10 = Unk_ov12_0223B0A0[v2][0];
-    v1->unk_00 = param0;
+    v1->unk_00 = battleSys;
     v1->unk_0C = param2->unk_00;
     v1->unk_0D = param1->battler;
     v1->unk_14 = param1->battlerType;
     v1->unk_1C = 0;
 
     if ((v1->unk_14 == 0) || (v1->unk_14 == 2)) {
-        Bg_SetOffset(BattleSystem_BGL(param0), 3, 2, 4 * 33);
+        Bg_SetOffset(BattleSystem_BGL(battleSys), 3, 2, 4 * 33);
     }
 
     SysTask_Start(ov16_0225FA70, v1, 0);
 }
 
-void ov16_0225D360(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_02265154 *param2)
+void ov16_0225D360(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_02265154 *param2)
 {
-    UnkStruct_ov16_0225D360 *v0;
-
-    v0 = (UnkStruct_ov16_0225D360 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225D360));
+    UnkStruct_ov16_0225D360 *v0 = (UnkStruct_ov16_0225D360 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225D360));
 
     v0->unk_0A = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_08 = param2->unk_00;
     v0->unk_10 = param2->unk_01;
     v0->unk_09 = param1->battler;
@@ -553,25 +536,21 @@ void ov16_0225D360(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
         v0->unk_0C = 0;
     } else {
         {
-            TrainerData *v1;
-
-            v1 = BattleSystem_TrainerData(param0, param1->battler);
+            Trainer *trainer = BattleSystem_GetTrainer(battleSys, param1->battler);
             v0->unk_0B = 0;
-            v0->unk_0C = sub_020788D0(ov16_02264768(param0, param1->battler, v1->class));
+            v0->unk_0C = sub_020788D0(ov16_02264768(battleSys, param1->battler, trainer->header.trainerType));
         }
     }
 
     SysTask_Start(ov16_0225FD5C, v0, 0);
 }
 
-void ov16_0225D3CC(BattleSystem *param0, BattlerData *param1)
+void ov16_0225D3CC(BattleSystem *battleSys, BattlerData *param1)
 {
-    UnkStruct_ov16_0225D3CC *v0;
-
-    v0 = (UnkStruct_ov16_0225D3CC *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225D3CC));
+    UnkStruct_ov16_0225D3CC *v0 = (UnkStruct_ov16_0225D3CC *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225D3CC));
 
     v0->unk_0A = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_08 = param1->data[0];
     v0->unk_09 = param1->battler;
     v0->unk_04 = param1;
@@ -585,7 +564,7 @@ void ov16_0225D3CC(BattleSystem *param0, BattlerData *param1)
     SysTask_Start(ov16_02260284, v0, 0);
 }
 
-void ov16_0225D414(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022651A8 *param2)
+void ov16_0225D414(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_022651A8 *param2)
 {
     int v0;
     ArchivedSprite v1;
@@ -593,8 +572,8 @@ void ov16_0225D414(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     UnkStruct_ov16_02260384 *v3;
     u32 v4;
 
-    v2 = ov16_0223E000(param0);
-    v3 = (UnkStruct_ov16_02260384 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_02260384));
+    v2 = ov16_0223E000(battleSys);
+    v3 = (UnkStruct_ov16_02260384 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_02260384));
     v3->unk_0A = 0;
 
     if (param1->battlerType & 0x1) {
@@ -603,9 +582,9 @@ void ov16_0225D414(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
         v3->unk_0B = 0;
     }
 
-    v3->unk_04 = param1->unk_18 = ov16_022643B8(param0, param1->battlerType & 1, param2->unk_02, param1->battlerType, Unk_ov12_0223B0DC[param1->battlerType & 1][0], Unk_ov12_0223B0DC[param1->battlerType & 1][1]);
+    v3->unk_04 = param1->unk_18 = ov16_022643B8(battleSys, param1->battlerType & 1, param2->unk_02, param1->battlerType, Unk_ov12_0223B0DC[param1->battlerType & 1][0], Unk_ov12_0223B0DC[param1->battlerType & 1][1]);
     v3->unk_0C = Unk_ov12_0223B0A0[param1->battlerType & 1][param2->unk_04];
-    v3->unk_00 = param0;
+    v3->unk_00 = battleSys;
     v3->unk_08 = param2->unk_00;
     v3->unk_09 = param1->battler;
 
@@ -654,17 +633,17 @@ void BattleDisplay_SlideHealthbarOut(BattleSystem *battleSys, BattlerData *battl
     healthbar->unk_10 = SysTask_Start(SlideHealthbarOutTask, healthbar, 1000);
 }
 
-void ov16_0225D5B8(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C260 *param2)
+void ov16_0225D5B8(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C260 *param2)
 {
     UnkStruct_ov16_0225D5B8 *v0;
     int i, j;
 
-    v0 = (UnkStruct_ov16_0225D5B8 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225D5B8));
+    v0 = (UnkStruct_ov16_0225D5B8 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225D5B8));
     MI_CpuClearFast(v0, sizeof(UnkStruct_ov16_0225D5B8));
 
     v0->unk_0A = 0;
     v0->unk_0B = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_08 = param2->unk_00;
     v0->unk_09 = param1->battler;
     v0->unk_34 = param1->battlerType;
@@ -702,15 +681,15 @@ void ov16_0225D5B8(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(param1->unk_00.unk_00, v0, 0);
 }
 
-void ov16_0225D698(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022656F0 *param2)
+void ov16_0225D698(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_022656F0 *param2)
 {
     UnkStruct_ov16_0225D698 *v0;
     int i;
 
-    v0 = (UnkStruct_ov16_0225D698 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225D698));
+    v0 = (UnkStruct_ov16_0225D698 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225D698));
 
     v0->unk_20 = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_1C = param1->data[0];
     v0->unk_1D = param1->battler;
     v0->unk_1E = param1->battlerType;
@@ -728,17 +707,17 @@ void ov16_0225D698(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(param1->unk_00.unk_04, v0, 0);
 }
 
-void ov16_0225D708(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C29C *param2)
+void ov16_0225D708(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C29C *param2)
 {
     UnkStruct_ov16_0225D708 *v0;
     int i, v2;
-    u32 v3;
+    u32 battleType;
     u8 v4[6];
 
-    v0 = (UnkStruct_ov16_0225D708 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225D708));
+    v0 = (UnkStruct_ov16_0225D708 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225D708));
 
     v0->unk_0F = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_0C = param1->data[0];
     v0->unk_0D = param1->battler;
     v0->unk_0E = param1->battlerType;
@@ -746,10 +725,10 @@ void ov16_0225D708(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     v0->unk_04 = &param1->healthbar;
     v0->unk_32 = param2->unk_01;
 
-    ov16_0223F87C(param0, &v4[0]);
+    ov16_0223F87C(battleSys, &v4[0]);
 
-    v2 = BattleSystem_MaxBattlers(param0);
-    v3 = BattleSystem_BattleType(param0);
+    v2 = BattleSystem_MaxBattlers(battleSys);
+    battleType = BattleSystem_BattleType(battleSys);
 
     for (i = 0; i < v2; i++) {
         v0->unk_10[i] = param2->unk_04[i];
@@ -758,18 +737,18 @@ void ov16_0225D708(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(param1->unk_00.unk_08, v0, 0);
 }
 
-void ov16_0225D794(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C2B0 *param2)
+void ov16_0225D794(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C2B0 *param2)
 {
     UnkStruct_ov16_0225D794 *v0;
     int i, j;
 
-    v0 = (UnkStruct_ov16_0225D794 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225D794));
+    v0 = (UnkStruct_ov16_0225D794 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225D794));
 
-    v0->unk_08 = (UnkStruct_ov16_0225D840 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225D840));
-    v0->unk_08->unk_04 = Heap_AllocFromHeap(5, sizeof(UnkStruct_ov13_0221FC20));
-    v0->unk_08->unk_04->unk_00 = Party_New(5);
+    v0->unk_08 = (UnkStruct_ov16_0225D840 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225D840));
+    v0->unk_08->unk_04 = Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov13_0221FC20));
+    v0->unk_08->unk_04->unk_00 = Party_New(HEAP_ID_BATTLE);
     v0->unk_0E = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_0C = param2->unk_00;
     v0->unk_0D = param1->battler;
     v0->unk_0F = param1->battlerType;
@@ -790,15 +769,15 @@ void ov16_0225D794(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(param1->unk_00.unk_0C, v0, 0);
 }
 
-void ov16_0225D840(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C2C4 *param2)
+void ov16_0225D840(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C2C4 *param2)
 {
     UnkStruct_ov16_0225D840 *v0;
     int i, j;
 
-    v0 = (UnkStruct_ov16_0225D840 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225D840));
+    v0 = (UnkStruct_ov16_0225D840 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225D840));
 
     v0->unk_0A = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_08 = param2->unk_00;
     v0->unk_09 = param2->unk_01;
     v0->unk_0B = param2->unk_02;
@@ -818,14 +797,12 @@ void ov16_0225D840(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(param1->unk_00.unk_10, v0, 0);
 }
 
-void ov16_0225D8AC(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C2D8 *param2)
+void ov16_0225D8AC(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C2D8 *param2)
 {
-    UnkStruct_ov16_0225D8AC *v0;
-
-    v0 = (UnkStruct_ov16_0225D8AC *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225D8AC));
+    UnkStruct_ov16_0225D8AC *v0 = (UnkStruct_ov16_0225D8AC *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225D8AC));
 
     v0->unk_0E = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_0C = param2->unk_00;
     v0->unk_0D = param1->battler;
     v0->unk_04 = &param1->healthbar;
@@ -844,16 +821,16 @@ typedef struct BattleMessageWaitTask {
     u8 msgIdx;
 } BattleMessageWaitTask;
 
-void ov16_0225D8F0(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C2EC *param2)
+void ov16_0225D8F0(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C2EC *param2)
 {
     BattleMessageWaitTask *v0;
     MessageLoader *v1;
     BattleMessage v2;
 
-    v1 = ov16_0223E060(param0);
-    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(5, sizeof(BattleMessageWaitTask));
+    v1 = ov16_0223E060(battleSys);
+    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(BattleMessageWaitTask));
 
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->command = param2->unk_00;
     v0->battler = param1->battler;
 
@@ -861,7 +838,7 @@ void ov16_0225D8F0(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     v2.tags = 2;
     v2.params[0] = param1->battler | (param2->unk_01 << 8);
 
-    v0->msgIdx = BattleMessage_Print(param0, v1, &v2, BattleSystem_TextSpeed(param0));
+    v0->msgIdx = BattleMessage_Print(battleSys, v1, &v2, BattleSystem_TextSpeed(battleSys));
 
     SysTask_Start(WaitForBattleMessagePrint, v0, 0);
 }
@@ -879,18 +856,16 @@ void BattleDisplay_PrintMessage(BattleSystem *battleSys, BattlerData *battlerDat
     SysTask_Start(WaitForBattleMessagePrint, taskData, 0);
 }
 
-void ov16_0225D9A8(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_02265BBC *param2)
+void ov16_0225D9A8(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_02265BBC *param2)
 {
-    UnkStruct_ov16_0225D9A8 *v0;
-
-    v0 = (UnkStruct_ov16_0225D9A8 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225D9A8));
+    UnkStruct_ov16_0225D9A8 *v0 = (UnkStruct_ov16_0225D9A8 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225D9A8));
 
     v0->unk_6A = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_04 = param1;
     v0->unk_68 = param1->data[0];
     v0->unk_69 = param1->battler;
-    v0->unk_0C = ov16_0223E008(param0);
+    v0->unk_0C = ov16_0223E008(battleSys);
     v0->unk_10 = *param2;
     v0->unk_08 = param1->unk_20;
 
@@ -906,14 +881,12 @@ void ov16_0225D9A8(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(ov16_022626C0, v0, 0);
 }
 
-void ov16_0225DA44(BattleSystem *param0, BattlerData *param1)
+void ov16_0225DA44(BattleSystem *battleSys, BattlerData *param1)
 {
-    UnkStruct_ov16_0225DA44 *v0;
-
-    v0 = (UnkStruct_ov16_0225DA44 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225DA44));
+    UnkStruct_ov16_0225DA44 *v0 = (UnkStruct_ov16_0225DA44 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225DA44));
 
     v0->unk_09 = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_04 = param1->unk_20;
     v0->unk_08 = param1->battler;
     v0->unk_0A = 0;
@@ -921,19 +894,19 @@ void ov16_0225DA44(BattleSystem *param0, BattlerData *param1)
     SysTask_Start(ov16_0226292C, v0, 0);
 }
 
-void ov16_0225DA74(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C35C *param2)
+void ov16_0225DA74(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C35C *param2)
 {
     Healthbar *v0;
 
-    GF_ASSERT(param1->healthbar.mainActor != NULL);
+    GF_ASSERT(param1->healthbar.mainSprite != NULL);
 
     v0 = &param1->healthbar;
     MI_CpuClear8(&v0->state, sizeof(u8));
 
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->unk_4C = param2->unk_00;
     v0->battler = param1->battler;
-    v0->type = Healthbar_Type(param1->battlerType, BattleSystem_BattleType(param0));
+    v0->type = Healthbar_Type(param1->battlerType, BattleSystem_BattleType(battleSys));
     v0->curHP = param2->unk_02;
     v0->maxHP = param2->unk_04;
     v0->damage = param2->unk_08;
@@ -947,17 +920,17 @@ void ov16_0225DA74(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     v0->unk_10 = SysTask_Start(ov16_02262988, v0, 1000);
 }
 
-void ov16_0225DB00(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C370 *param2)
+void ov16_0225DB00(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C370 *param2)
 {
     Healthbar *v0;
 
-    GF_ASSERT(param1->healthbar.mainActor != NULL);
+    GF_ASSERT(param1->healthbar.mainSprite != NULL);
 
     v0 = &param1->healthbar;
 
     MI_CpuClear8(&v0->state, sizeof(u8));
 
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->unk_4C = param2->unk_00;
     v0->battler = param1->battler;
     v0->curExp = param2->unk_04;
@@ -972,12 +945,12 @@ void ov16_0225DB00(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     }
 }
 
-void ov16_0225DB74(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C384 *param2)
+void ov16_0225DB74(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C384 *param2)
 {
     UnkStruct_ov16_0225DB74 *v0;
     int i;
 
-    v0 = (UnkStruct_ov16_0225DB74 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225DB74));
+    v0 = (UnkStruct_ov16_0225DB74 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225DB74));
 
     if (param1->battlerType & 0x1) {
         v0->unk_67 = 2;
@@ -986,7 +959,7 @@ void ov16_0225DB74(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     }
 
     v0->unk_66 = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_04 = param1;
     v0->unk_64 = param2->unk_00;
     v0->unk_65 = param1->battler;
@@ -1009,7 +982,7 @@ void ov16_0225DB74(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(ov16_02262A9C, v0, 0);
 }
 
-void ov16_0225DC4C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C398 *param2)
+void ov16_0225DC4C(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C398 *param2)
 {
     int v0;
 
@@ -1019,32 +992,30 @@ void ov16_0225DC4C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
         v0 = -117;
     }
 
-    ClearCommand(param0, param1->battler, param2->unk_00);
+    ClearCommand(battleSys, param1->battler, param2->unk_00);
     sub_02005728(param2->unk_04, v0);
 }
 
-void ov16_0225DC7C(BattleSystem *param0, BattlerData *param1)
+void ov16_0225DC7C(BattleSystem *battleSys, BattlerData *param1)
 {
-    UnkStruct_ov16_0225DC7C *v0;
-
-    v0 = (UnkStruct_ov16_0225DC7C *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225DC7C));
+    UnkStruct_ov16_0225DC7C *v0 = (UnkStruct_ov16_0225DC7C *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225DC7C));
 
     v0->unk_06 = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_04 = param1->data[0];
     v0->unk_05 = param1->battler;
 
     SysTask_Start(ov16_02262D28, v0, 0);
 }
 
-void ov16_0225DCB0(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C3BC *param2)
+void ov16_0225DCB0(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C3BC *param2)
 {
     UnkStruct_ov16_0225DCB0 *v0;
     int i;
 
-    v0 = (UnkStruct_ov16_0225DCB0 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225DCB0));
+    v0 = (UnkStruct_ov16_0225DCB0 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225DCB0));
 
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_04 = param1;
     v0->unk_60 = param2->unk_00;
     v0->unk_61 = param1->battler;
@@ -1063,115 +1034,111 @@ void ov16_0225DCB0(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(ov16_02262DC4, v0, 0);
 }
 
-void ov16_0225DD44(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C3D0 *param2)
+void ov16_0225DD44(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C3D0 *param2)
 {
-    GF_ASSERT(param1->healthbar.mainActor != NULL);
+    GF_ASSERT(param1->healthbar.mainSprite != NULL);
 
     param1->healthbar.status = param2->unk_01;
 
     Healthbar_DrawInfo(&param1->healthbar, param1->healthbar.curHP, HEALTHBAR_INFO_STATUS);
-    ClearCommand(param0, param1->battler, param2->unk_00);
+    ClearCommand(battleSys, param1->battler, param2->unk_00);
 }
 
-void ov16_0225DD7C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C3E4 *param2)
+void ov16_0225DD7C(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C3E4 *param2)
 {
     BattleMessageWaitTask *v0;
-    int v1;
+    int v1 = Battler_TrainerID(battleSys, param1->battler);
+    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(BattleMessageWaitTask));
 
-    v1 = Battler_TrainerID(param0, param1->battler);
-    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(5, sizeof(BattleMessageWaitTask));
-
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->command = param2->unk_00;
     v0->battler = param1->battler;
-    v0->msgIdx = ov16_0223F9FC(param0, v1, param1->battler, param2->unk_01, BattleSystem_TextSpeed(param0));
+    v0->msgIdx = ov16_0223F9FC(battleSys, v1, param1->battler, param2->unk_01, BattleSystem_TextSpeed(battleSys));
 
     SysTask_Start(WaitForBattleMessagePrint, v0, 0);
 }
 
-void ov16_0225DDD8(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C3F8 *param2)
+void ov16_0225DDD8(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C3F8 *param2)
 {
     BattleMessageWaitTask *v0;
     MessageLoader *v1;
     BattleMessage v2;
 
-    ov16_02263C1C(param0, param1, param2, &v2);
+    ov16_02263C1C(battleSys, param1, param2, &v2);
 
-    v1 = BattleSystem_MessageLoader(param0);
-    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(5, sizeof(BattleMessageWaitTask));
+    v1 = BattleSystem_MessageLoader(battleSys);
+    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(BattleMessageWaitTask));
 
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->command = param2->unk_00;
     v0->battler = param1->battler;
-    v0->msgIdx = BattleMessage_Print(param0, v1, &v2, BattleSystem_TextSpeed(param0));
+    v0->msgIdx = BattleMessage_Print(battleSys, v1, &v2, BattleSystem_TextSpeed(battleSys));
 
     SysTask_Start(WaitForBattleMessagePrint, v0, 0);
 }
 
-void ov16_0225DE30(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C40C *param2)
+void ov16_0225DE30(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C40C *param2)
 {
     BattleMessageWaitTask *v0;
     MessageLoader *v1;
     BattleMessage v2;
 
-    ov16_02263CF0(param0, param1, param2, &v2);
+    ov16_02263CF0(battleSys, param1, param2, &v2);
 
-    v1 = BattleSystem_MessageLoader(param0);
-    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(5, sizeof(BattleMessageWaitTask));
+    v1 = BattleSystem_MessageLoader(battleSys);
+    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(BattleMessageWaitTask));
 
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->command = param2->unk_00;
     v0->battler = param1->battler;
-    v0->msgIdx = BattleMessage_Print(param0, v1, &v2, BattleSystem_TextSpeed(param0));
+    v0->msgIdx = BattleMessage_Print(battleSys, v1, &v2, BattleSystem_TextSpeed(battleSys));
 
     SysTask_Start(WaitForBattleMessagePrint, v0, 0);
 }
 
-void ov16_0225DE88(BattleSystem *param0, BattlerData *param1)
+void ov16_0225DE88(BattleSystem *battleSys, BattlerData *param1)
 {
     BattleMessageWaitTask *v0;
     MessageLoader *v1;
     BattleMessage v2;
 
-    ov16_02263DD0(param0, param1, &v2);
+    ov16_02263DD0(battleSys, param1, &v2);
 
-    v1 = BattleSystem_MessageLoader(param0);
-    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(5, sizeof(BattleMessageWaitTask));
+    v1 = BattleSystem_MessageLoader(battleSys);
+    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(BattleMessageWaitTask));
 
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->command = 34;
     v0->battler = param1->battler;
-    v0->msgIdx = BattleMessage_Print(param0, v1, &v2, BattleSystem_TextSpeed(param0));
+    v0->msgIdx = BattleMessage_Print(battleSys, v1, &v2, BattleSystem_TextSpeed(battleSys));
 
     SysTask_Start(WaitForBattleMessagePrint, v0, 0);
 }
 
-void ov16_0225DEDC(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C430 *param2)
+void ov16_0225DEDC(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C430 *param2)
 {
     BattleMessageWaitTask *v0;
     MessageLoader *v1;
     BattleMessage v2;
 
-    ov16_02263E7C(param0, param1, param2, &v2);
+    ov16_02263E7C(battleSys, param1, param2, &v2);
 
-    v1 = BattleSystem_MessageLoader(param0);
-    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(5, sizeof(BattleMessageWaitTask));
+    v1 = BattleSystem_MessageLoader(battleSys);
+    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(BattleMessageWaitTask));
 
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->command = param2->unk_00;
     v0->battler = param1->battler;
-    v0->msgIdx = BattleMessage_Print(param0, v1, &v2, BattleSystem_TextSpeed(param0));
+    v0->msgIdx = BattleMessage_Print(battleSys, v1, &v2, BattleSystem_TextSpeed(battleSys));
 
     SysTask_Start(WaitForBattleMessagePrint, v0, 0);
 }
 
-void ov16_0225DF34(BattleSystem *param0, BattlerData *param1)
+void ov16_0225DF34(BattleSystem *battleSys, BattlerData *param1)
 {
-    UnkStruct_ov16_0225DF34 *v0;
+    UnkStruct_ov16_0225DF34 *v0 = (UnkStruct_ov16_0225DF34 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225DF34));
 
-    v0 = (UnkStruct_ov16_0225DF34 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225DF34));
-
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_08 = param1->data[0];
     v0->unk_09 = param1->battler;
     v0->unk_0A = 0;
@@ -1180,45 +1147,43 @@ void ov16_0225DF34(BattleSystem *param0, BattlerData *param1)
     SysTask_Start(ov16_02262F30, v0, 0);
 }
 
-void ov16_0225DF6C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C454 *param2)
+void ov16_0225DF6C(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C454 *param2)
 {
     UnkStruct_ov16_0225DF6C *v0;
     MessageLoader *v1;
 
     if (param1->bootState == 0x0) {
-        v1 = BattleSystem_MessageLoader(param0);
-        v0 = (UnkStruct_ov16_0225DF6C *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225DF6C));
+        v1 = BattleSystem_MessageLoader(battleSys);
+        v0 = (UnkStruct_ov16_0225DF6C *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225DF6C));
 
-        v0->unk_00 = param0;
+        v0->unk_00 = battleSys;
         v0->unk_04 = param2->unk_00;
         v0->unk_05 = param1->battler;
         v0->unk_07 = 0;
-        v0->unk_06 = BattleMessage_Print(param0, v1, &param2->unk_04, BattleSystem_TextSpeed(param0));
+        v0->unk_06 = BattleMessage_Print(battleSys, v1, &param2->unk_04, BattleSystem_TextSpeed(battleSys));
 
         SysTask_Start(ov16_02262FC0, v0, 0);
     } else if (param1->bootState == 0x1) {
-        ov16_022661B0(param0, param1->battler);
-        ClearCommand(param0, param1->battler, param2->unk_00);
+        ov16_022661B0(battleSys, param1->battler);
+        ClearCommand(battleSys, param1->battler, param2->unk_00);
     } else {
-        if ((BattleSystem_BattleType(param0) & 0x4) == 0) {
-            ov16_022661B0(param0, param1->battler);
+        if ((BattleSystem_BattleType(battleSys) & BATTLE_TYPE_LINK) == 0) {
+            ov16_022661B0(battleSys, param1->battler);
         }
 
-        ClearCommand(param0, param1->battler, param2->unk_00);
+        ClearCommand(battleSys, param1->battler, param2->unk_00);
     }
 }
 
-void ov16_0225E008(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C468 *param2)
+void ov16_0225E008(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C468 *param2)
 {
-    Healthbar *v0;
-
-    v0 = &param1->healthbar;
+    Healthbar *v0 = &param1->healthbar;
 
     MI_CpuClearFast(&v0->state, sizeof(u8));
 
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->battler = param1->battler;
-    v0->type = Healthbar_Type(param1->battlerType, BattleSystem_BattleType(param0));
+    v0->type = Healthbar_Type(param1->battlerType, BattleSystem_BattleType(battleSys));
     v0->unk_4C = param2->unk_00;
     v0->curHP = param2->unk_02;
     v0->maxHP = param2->unk_04;
@@ -1236,14 +1201,12 @@ void ov16_0225E008(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     ClearCommand(v0->battleSys, v0->battler, v0->unk_4C);
 }
 
-void ov16_0225E0BC(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C65C *param2)
+void ov16_0225E0BC(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C65C *param2)
 {
-    UnkStruct_ov16_0225E0BC *v0;
-
-    v0 = (UnkStruct_ov16_0225E0BC *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225E0BC));
+    UnkStruct_ov16_0225E0BC *v0 = (UnkStruct_ov16_0225E0BC *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225E0BC));
 
     v0->unk_0A = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_08 = param2->unk_00;
     v0->unk_09 = param1->battler;
     v0->unk_0C = param2->unk_02;
@@ -1252,14 +1215,12 @@ void ov16_0225E0BC(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
     SysTask_Start(ov16_022633A4, v0, 0);
 }
 
-void ov16_0225E0F4(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022664F8 *param2)
+void ov16_0225E0F4(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_022664F8 *param2)
 {
-    UnkStruct_ov16_0225E0F4 *v0;
-
-    v0 = (UnkStruct_ov16_0225E0F4 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225E0F4));
+    UnkStruct_ov16_0225E0F4 *v0 = (UnkStruct_ov16_0225E0F4 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225E0F4));
 
     v0->unk_0A = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_04 = param1->unk_20;
     v0->unk_08 = param2->unk_00;
     v0->unk_09 = param1->battler;
@@ -1344,41 +1305,39 @@ void BattleDisplay_HidePartyGauge(BattleSystem *battleSys, BattlerData *battlerD
     SysTask_Start(HidePartyGaugeTask, task, 0);
 }
 
-void ov16_0225E23C(BattleSystem *param0, BattlerData *param1)
+void ov16_0225E23C(BattleSystem *battleSys, BattlerData *param1)
 {
     MessageLoader *v0;
     BattleMessage v1;
 
     if (param1->bootState == 0x0) {
-        v0 = BattleSystem_MessageLoader(param0);
+        v0 = BattleSystem_MessageLoader(battleSys);
 
         v1.id = 923;
         v1.tags = 0;
 
-        BattleMessage_Print(param0, v0, &v1, NULL);
-        Battle_SetWaitDial(param0, Window_AddWaitDial(BattleSystem_Window(param0, 0), 1));
+        BattleMessage_Print(battleSys, v0, &v1, NULL);
+        Battle_SetWaitDial(battleSys, Window_AddWaitDial(BattleSystem_Window(battleSys, 0), 1));
     }
 
-    ClearCommand(param0, param1->battler, 55);
+    ClearCommand(battleSys, param1->battler, 55);
 }
 
-void ov16_0225E294(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_02265BBC *param2)
+void ov16_0225E294(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_02265BBC *param2)
 {
     UnkStruct_ov12_022380DC v0;
 
-    ov16_02264530(param0, param2, &v0, param1->battler);
-    ov12_022382BC(&v0, 5);
-    ClearCommand(param0, param1->battler, param2->unk_00);
+    ov16_02264530(battleSys, param2, &v0, param1->battler);
+    ov12_022382BC(&v0, HEAP_ID_BATTLE);
+    ClearCommand(battleSys, param1->battler, param2->unk_00);
 }
 
-void ov16_0225E2C8(BattleSystem *param0, BattlerData *param1)
+void ov16_0225E2C8(BattleSystem *battleSys, BattlerData *param1)
 {
-    UnkStruct_ov16_0225E2C8 *v0;
-
-    v0 = (UnkStruct_ov16_0225E2C8 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225E2C8));
+    UnkStruct_ov16_0225E2C8 *v0 = (UnkStruct_ov16_0225E2C8 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225E2C8));
 
     v0->unk_0E = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_04 = param1;
     v0->unk_0C = param1->data[0];
     v0->unk_0D = param1->battler;
@@ -1387,14 +1346,12 @@ void ov16_0225E2C8(BattleSystem *param0, BattlerData *param1)
     SysTask_Start(ov16_02263688, v0, 0);
 }
 
-void ov16_0225E300(BattleSystem *param0, BattlerData *param1)
+void ov16_0225E300(BattleSystem *battleSys, BattlerData *param1)
 {
-    UnkStruct_ov16_0225E300 *v0;
-
-    v0 = (UnkStruct_ov16_0225E300 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_0225E300));
+    UnkStruct_ov16_0225E300 *v0 = (UnkStruct_ov16_0225E300 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_0225E300));
 
     v0->unk_0E = 0;
-    v0->unk_00 = param0;
+    v0->unk_00 = battleSys;
     v0->unk_04 = param1;
     v0->unk_0C = param1->data[0];
     v0->unk_0D = param1->battler;
@@ -1403,73 +1360,73 @@ void ov16_0225E300(BattleSystem *param0, BattlerData *param1)
     SysTask_Start(ov16_022636D4, v0, 0);
 }
 
-void ov16_0225E338(BattleSystem *param0, BattlerData *param1)
+void ov16_0225E338(BattleSystem *battleSys, BattlerData *param1)
 {
     BattleMessageWaitTask *v0;
     MessageLoader *v1;
     BattleMessage v2;
 
-    ov16_022641B4(param0, param1, &v2);
+    ov16_022641B4(battleSys, param1, &v2);
 
-    v1 = BattleSystem_MessageLoader(param0);
-    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(5, sizeof(BattleMessageWaitTask));
+    v1 = BattleSystem_MessageLoader(battleSys);
+    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(BattleMessageWaitTask));
 
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->command = 59;
     v0->battler = param1->battler;
-    v0->msgIdx = BattleMessage_Print(param0, v1, &v2, BattleSystem_TextSpeed(param0));
+    v0->msgIdx = BattleMessage_Print(battleSys, v1, &v2, BattleSystem_TextSpeed(battleSys));
 
     SysTask_Start(WaitForBattleMessagePrint, v0, 0);
 }
 
-void ov16_0225E38C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C9F0 *param2)
+void ov16_0225E38C(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C9F0 *param2)
 {
     BattleMessageWaitTask *v0;
     MessageLoader *v1;
     BattleMessage v2;
 
-    ov16_02264270(param0, param1, param2, &v2);
+    ov16_02264270(battleSys, param1, param2, &v2);
 
-    v1 = BattleSystem_MessageLoader(param0);
-    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(5, sizeof(BattleMessageWaitTask));
+    v1 = BattleSystem_MessageLoader(battleSys);
+    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(BattleMessageWaitTask));
 
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->command = 60;
     v0->battler = param1->battler;
-    v0->msgIdx = BattleMessage_Print(param0, v1, &v2, BattleSystem_TextSpeed(param0));
+    v0->msgIdx = BattleMessage_Print(battleSys, v1, &v2, BattleSystem_TextSpeed(battleSys));
 
     SysTask_Start(WaitForBattleMessagePrint, v0, 0);
 }
 
-void ov16_0225E3E0(BattleSystem *param0, BattlerData *param1)
+void ov16_0225E3E0(BattleSystem *battleSys, BattlerData *param1)
 {
     BattleMessageWaitTask *v0;
     MessageLoader *v1;
     BattleMessage v2;
 
-    ov16_02264360(param0, param1, &v2);
+    ov16_02264360(battleSys, param1, &v2);
 
-    v1 = BattleSystem_MessageLoader(param0);
-    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(5, sizeof(BattleMessageWaitTask));
+    v1 = BattleSystem_MessageLoader(battleSys);
+    v0 = (BattleMessageWaitTask *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(BattleMessageWaitTask));
 
-    v0->battleSys = param0;
+    v0->battleSys = battleSys;
     v0->command = 61;
     v0->battler = param1->battler;
-    v0->msgIdx = BattleMessage_Print(param0, v1, &v2, BattleSystem_TextSpeed(param0));
+    v0->msgIdx = BattleMessage_Print(battleSys, v1, &v2, BattleSystem_TextSpeed(battleSys));
 
     SysTask_Start(WaitForBattleMessagePrint, v0, 0);
 }
 
-void ov16_0225E434(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_02265BBC *param2)
+void ov16_0225E434(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_02265BBC *param2)
 {
     UnkStruct_ov12_022380DC v0;
 
-    ov16_02264530(param0, param2, &v0, param1->battler);
-    ov12_02238390(&v0, 5);
-    ClearCommand(param0, param1->battler, param2->unk_00);
+    ov16_02264530(battleSys, param2, &v0, param1->battler);
+    ov12_02238390(&v0, HEAP_ID_BATTLE);
+    ClearCommand(battleSys, param1->battler, param2->unk_00);
 }
 
-void ov16_0225E468(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225CA4C *param2)
+void ov16_0225E468(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225CA4C *param2)
 {
     int v0;
 
@@ -1491,13 +1448,13 @@ void ov16_0225E468(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_022
         break;
     }
 
-    ClearCommand(param0, param1->battler, param2->unk_00);
+    ClearCommand(battleSys, param1->battler, param2->unk_00);
 }
 
-void ov16_0225E4C8(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225CA60 *param2)
+void ov16_0225E4C8(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225CA60 *param2)
 {
     Sound_PlayBGM(param2->unk_02);
-    ClearCommand(param0, param1->battler, param2->unk_00);
+    ClearCommand(battleSys, param1->battler, param2->unk_00);
 }
 
 static void ov16_0225E4E8(SysTask *param0, void *param1)
@@ -1518,17 +1475,17 @@ static void ov16_0225E4E8(SysTask *param0, void *param1)
         v0->unk_12++;
     case 2:
         if (v0->unk_13 == 2) {
-            SpriteActor_GetSpritePositionXY(v0->unk_0C->unk_00, &v2, &v3);
+            ManagedSprite_GetPositionXY(v0->unk_0C->unk_00, &v2, &v3);
 
             if ((v0->unk_1C == 1) || (v0->unk_1C == 3)) {
                 if (v2 < (24 * 8)) {
-                    sub_0200D5DC(v0->unk_0C->unk_00, 8, 0);
+                    ManagedSprite_OffsetPositionXY(v0->unk_0C->unk_00, 8, 0);
                 } else {
-                    SpriteActor_SetSpritePositionXY(v0->unk_0C->unk_00, (24 * 8), (8 * 11));
+                    ManagedSprite_SetPositionXY(v0->unk_0C->unk_00, (24 * 8), (8 * 11));
                 }
             }
 
-            SpriteActor_GetSpritePositionXY(v0->unk_0C->unk_00, &v2, &v3);
+            ManagedSprite_GetPositionXY(v0->unk_0C->unk_00, &v2, &v3);
 
             if (v0->unk_1C == 1) {
                 sub_02007DEC(v0->unk_08, 0, v2);
@@ -1549,7 +1506,7 @@ static void ov16_0225E4E8(SysTask *param0, void *param1)
                 sub_02007DEC(v0->unk_08, 44, 0);
                 sub_02007DEC(v0->unk_08, 45, 0);
                 sub_02007DEC(v0->unk_08, 0, v0->unk_14);
-                PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, ov16_0223EE28(v0->unk_00), v0->unk_08, v0->unk_16, v0->unk_13, 0, v0->unk_11);
+                PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, BattleSystem_GetPokemonAnimationSystem(v0->unk_00), v0->unk_08, v0->unk_16, v0->unk_13, 0, v0->unk_11);
 
                 {
                     u8 v4;
@@ -1558,24 +1515,24 @@ static void ov16_0225E4E8(SysTask *param0, void *param1)
                 }
 
                 if ((v0->unk_1C == 1) || (v0->unk_1C == 3)) {
-                    SpriteActor_SetSpritePositionXY(v0->unk_0C->unk_00, (24 * 8), (8 * 11));
+                    ManagedSprite_SetPositionXY(v0->unk_0C->unk_00, (24 * 8), (8 * 11));
                 }
 
                 sub_020086FC(v0->unk_08, 8, 0, 0, 0x0);
                 v0->unk_12++;
             }
         } else {
-            SpriteActor_GetSpritePositionXY(v0->unk_0C->unk_00, &v2, &v3);
+            ManagedSprite_GetPositionXY(v0->unk_0C->unk_00, &v2, &v3);
 
             if ((v0->unk_1C == 0) || (v0->unk_1C == 2)) {
                 if (v2 > 64) {
-                    sub_0200D5DC(v0->unk_0C->unk_00, -8, 0);
+                    ManagedSprite_OffsetPositionXY(v0->unk_0C->unk_00, -8, 0);
                 } else {
-                    SpriteActor_SetSpritePositionXY(v0->unk_0C->unk_00, 64, (128 + 8));
+                    ManagedSprite_SetPositionXY(v0->unk_0C->unk_00, 64, (128 + 8));
                 }
             }
 
-            SpriteActor_GetSpritePositionXY(v0->unk_0C->unk_00, &v2, &v3);
+            ManagedSprite_GetPositionXY(v0->unk_0C->unk_00, &v2, &v3);
 
             if (v0->unk_1C == 0) {
                 sub_02007DEC(v0->unk_08, 0, v2);
@@ -1591,7 +1548,7 @@ static void ov16_0225E4E8(SysTask *param0, void *param1)
 
             if (sub_020080C0(v0->unk_08, 0) <= v0->unk_14) {
                 sub_02007DEC(v0->unk_08, 0, v0->unk_14);
-                PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, ov16_0223EE28(v0->unk_00), v0->unk_08, v0->unk_16, v0->unk_13, 0, v0->unk_11);
+                PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, BattleSystem_GetPokemonAnimationSystem(v0->unk_00), v0->unk_08, v0->unk_16, v0->unk_13, 0, v0->unk_11);
 
                 {
                     u8 v5;
@@ -1601,7 +1558,7 @@ static void ov16_0225E4E8(SysTask *param0, void *param1)
                 }
 
                 if ((v0->unk_1C == 0) || (v0->unk_1C == 2)) {
-                    SpriteActor_SetSpritePositionXY(v0->unk_0C->unk_00, 64, (128 + 8));
+                    ManagedSprite_SetPositionXY(v0->unk_0C->unk_00, 64, (128 + 8));
                 }
 
                 v0->unk_12++;
@@ -1609,7 +1566,7 @@ static void ov16_0225E4E8(SysTask *param0, void *param1)
         }
         break;
     case 3:
-        if ((sub_020160F4(ov16_0223EE28(v0->unk_00), v0->unk_11) == 1) && (sub_02007C24(v0->unk_08) == 0)) {
+        if ((sub_020160F4(BattleSystem_GetPokemonAnimationSystem(v0->unk_00), v0->unk_11) == 1) && (sub_02007C24(v0->unk_08) == 0)) {
             if (v0->unk_28) {
                 {
                     UnkStruct_ov16_02265BBC v6;
@@ -1657,17 +1614,17 @@ static void ov16_0225E894(SysTask *param0, void *param1)
 
         v0->unk_12++;
     case 2:
-        SpriteActor_GetSpritePositionXY(v0->unk_0C->unk_00, &v2, &v3);
+        ManagedSprite_GetPositionXY(v0->unk_0C->unk_00, &v2, &v3);
 
         if ((v0->unk_1C == 1) || (v0->unk_1C == 3)) {
             if (v2 < (24 * 8)) {
-                sub_0200D5DC(v0->unk_0C->unk_00, 8, 0);
+                ManagedSprite_OffsetPositionXY(v0->unk_0C->unk_00, 8, 0);
             } else {
-                SpriteActor_SetSpritePositionXY(v0->unk_0C->unk_00, (24 * 8), (8 * 11));
+                ManagedSprite_SetPositionXY(v0->unk_0C->unk_00, (24 * 8), (8 * 11));
             }
         }
 
-        SpriteActor_GetSpritePositionXY(v0->unk_0C->unk_00, &v2, &v3);
+        ManagedSprite_GetPositionXY(v0->unk_0C->unk_00, &v2, &v3);
         sub_02008274(v0->unk_08, 1, 8 / 2);
 
         if (sub_020080C0(v0->unk_08, 1) >= v0->unk_14) {
@@ -1675,7 +1632,7 @@ static void ov16_0225E894(SysTask *param0, void *param1)
             sub_02007DEC(v0->unk_08, 44, 0);
             sub_02007DEC(v0->unk_08, 45, 0);
             sub_02007DEC(v0->unk_08, 1, v0->unk_14);
-            PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, ov16_0223EE28(v0->unk_00), v0->unk_08, v0->unk_16, v0->unk_13, 0, v0->unk_11);
+            PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, BattleSystem_GetPokemonAnimationSystem(v0->unk_00), v0->unk_08, v0->unk_16, v0->unk_13, 0, v0->unk_11);
 
             {
                 u8 v4;
@@ -1684,14 +1641,14 @@ static void ov16_0225E894(SysTask *param0, void *param1)
                 Pokemon_PlayDelayedCry(BattleSystem_ChatotVoice(v0->unk_00, v0->unk_11), v0->unk_18, v0->unk_16, v0->unk_2C, 117, 127, NULL, 5, v4);
             }
 
-            SpriteActor_SetSpritePositionXY(v0->unk_0C->unk_00, (24 * 8), (8 * 11));
+            ManagedSprite_SetPositionXY(v0->unk_0C->unk_00, (24 * 8), (8 * 11));
             sub_020086FC(v0->unk_08, 8, 0, 0, 0x0);
 
             v0->unk_12++;
         }
         break;
     case 3:
-        if ((sub_020160F4(ov16_0223EE28(v0->unk_00), v0->unk_11) == 1) && (sub_02007C24(v0->unk_08) == 0)) {
+        if ((sub_020160F4(BattleSystem_GetPokemonAnimationSystem(v0->unk_00), v0->unk_11) == 1) && (sub_02007C24(v0->unk_08) == 0)) {
             if (v0->unk_28) {
                 {
                     UnkStruct_ov16_02265BBC v5;
@@ -1742,18 +1699,18 @@ static void ov16_0225EA80(SysTask *param0, void *param1)
         {
             v0->unk_10 = NULL;
 
-            if (BattleSystem_BattleType(v0->unk_00) & 0x8) {
+            if (BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_2vs2) {
                 if ((BattleSystem_BattleStatus(v0->unk_00) & 0x20) == 0) {
                     if (v0->unk_82 == 2) {
-                        v0->unk_10 = ov12_02223764(v0->unk_00, 5);
+                        v0->unk_10 = ov12_02223764(v0->unk_00, HEAP_ID_BATTLE);
                     }
                 }
             } else {
                 if ((BattleSystem_BattleStatus(v0->unk_00) & 0x20) == 0) {
                     if ((ov16_0223ED60(v0->unk_00) == 1) && (v0->unk_82 == 2)) {
-                        v0->unk_10 = ov12_02223764(v0->unk_00, 5);
+                        v0->unk_10 = ov12_02223764(v0->unk_00, HEAP_ID_BATTLE);
                     } else if (v0->unk_82 == 0) {
-                        v0->unk_10 = ov12_02223764(v0->unk_00, 5);
+                        v0->unk_10 = ov12_02223764(v0->unk_00, HEAP_ID_BATTLE);
                     } else {
                         (void)0;
                     }
@@ -1768,7 +1725,7 @@ static void ov16_0225EA80(SysTask *param0, void *param1)
 
         v1.unk_00 = v0->unk_82;
         v1.unk_08 = BattleSystem_PartyPokemon(v0->unk_00, v0->unk_81, v0->unk_8C);
-        v0->unk_08 = ov12_02236004(5, &v1);
+        v0->unk_08 = ov12_02236004(HEAP_ID_BATTLE, &v1);
 
         ov12_02236320(v0->unk_08);
     }
@@ -1854,7 +1811,7 @@ static void ov16_0225EA80(SysTask *param0, void *param1)
                 }
             }
 
-            PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, ov16_0223EE28(v0->unk_00), v0->unk_04->unk_20, v0->unk_86, v0->unk_84, 0, v0->unk_81);
+            PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, BattleSystem_GetPokemonAnimationSystem(v0->unk_00), v0->unk_04->unk_20, v0->unk_86, v0->unk_84, 0, v0->unk_81);
             sub_020086FC(v0->unk_04->unk_20, 16, 0, 0, Unk_ov16_0226F1AE[v0->unk_8E]);
 
             v0->unk_83 = 5;
@@ -1883,7 +1840,7 @@ static void ov16_0225EA80(SysTask *param0, void *param1)
                 }
             }
 
-            PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, ov16_0223EE28(v0->unk_00), v0->unk_04->unk_20, v0->unk_86, v0->unk_84, 0, v0->unk_81);
+            PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, BattleSystem_GetPokemonAnimationSystem(v0->unk_00), v0->unk_04->unk_20, v0->unk_86, v0->unk_84, 0, v0->unk_81);
             sub_020086FC(v0->unk_04->unk_20, 16, 0, 1, Unk_ov16_0226F1AE[v0->unk_8E]);
 
             v0->unk_83 = 5;
@@ -1899,7 +1856,7 @@ static void ov16_0225EA80(SysTask *param0, void *param1)
         }
         break;
     case 6:
-        if ((sub_020160F4(ov16_0223EE28(v0->unk_00), v0->unk_81) == 1) && (sub_02007C24(v0->unk_04->unk_20) == 0)) {
+        if ((sub_020160F4(BattleSystem_GetPokemonAnimationSystem(v0->unk_00), v0->unk_81) == 1) && (sub_02007C24(v0->unk_04->unk_20) == 0)) {
             ov12_0223783C(v0->unk_04->unk_84);
             v0->unk_04->unk_84 = NULL;
             ov12_02236428(v0->unk_08);
@@ -1908,7 +1865,7 @@ static void ov16_0225EA80(SysTask *param0, void *param1)
                 {
                     UnkStruct_ov16_02265BBC v8;
 
-                    v0->unk_24 = ov12_0221FCDC(5);
+                    v0->unk_24 = ov12_0221FCDC(HEAP_ID_BATTLE);
                     ov16_02266B78(v0->unk_00, NULL, &v8, 1, 11, v0->unk_81, v0->unk_81, NULL);
                     ov16_02264408(v0->unk_00, v0->unk_04, v0->unk_24, &v8);
                 }
@@ -1977,7 +1934,7 @@ static void ov16_0225F0C0(SysTask *param0, void *param1)
         }
         {
             v0->unk_10 = NULL;
-            v0->unk_10 = ov12_02223764(v0->unk_00, 5);
+            v0->unk_10 = ov12_02223764(v0->unk_00, HEAP_ID_BATTLE);
         }
         v0->unk_83++;
         break;
@@ -1988,7 +1945,7 @@ static void ov16_0225F0C0(SysTask *param0, void *param1)
         v5.unk_08 = BattleSystem_PartyPokemon(v0->unk_00, v0->unk_81, v0->unk_8C);
         v5.unk_04 = v0->unk_8E;
 
-        v0->unk_08 = ov12_02236004(5, &v5);
+        v0->unk_08 = ov12_02236004(HEAP_ID_BATTLE, &v5);
         ov12_02236320(v0->unk_08);
     }
         v0->unk_83++;
@@ -2048,7 +2005,7 @@ static void ov16_0225F0C0(SysTask *param0, void *param1)
                 }
             }
 
-            PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, ov16_0223EE28(v0->unk_00), v0->unk_04->unk_20, v0->unk_86, v0->unk_84, 0, v0->unk_81);
+            PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, BattleSystem_GetPokemonAnimationSystem(v0->unk_00), v0->unk_04->unk_20, v0->unk_86, v0->unk_84, 0, v0->unk_81);
             sub_020086FC(v0->unk_04->unk_20, 16, 0, 0, Unk_ov16_0226F1AE[v0->unk_8E]);
             v0->unk_83 = 5;
         } else if (sub_020080C0(v0->unk_04->unk_20, 12) >= 0x100) {
@@ -2076,7 +2033,7 @@ static void ov16_0225F0C0(SysTask *param0, void *param1)
                 }
             }
 
-            PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, ov16_0223EE28(v0->unk_00), v0->unk_04->unk_20, v0->unk_86, v0->unk_84, 0, v0->unk_81);
+            PokeSprite_LoadAnimation(v0->unk_04->unk_1A0, BattleSystem_GetPokemonAnimationSystem(v0->unk_00), v0->unk_04->unk_20, v0->unk_86, v0->unk_84, 0, v0->unk_81);
             sub_020086FC(v0->unk_04->unk_20, 16, 0, 1, Unk_ov16_0226F1AE[v0->unk_8E]);
             v0->unk_83 = 5;
         } else {
@@ -2091,7 +2048,7 @@ static void ov16_0225F0C0(SysTask *param0, void *param1)
         }
         break;
     case 6:
-        if ((sub_020160F4(ov16_0223EE28(v0->unk_00), v0->unk_81) == 1) && (sub_02007C24(v0->unk_04->unk_20) == 0)) {
+        if ((sub_020160F4(BattleSystem_GetPokemonAnimationSystem(v0->unk_00), v0->unk_81) == 1) && (sub_02007C24(v0->unk_04->unk_20) == 0)) {
             ov12_0223783C(v0->unk_0C);
             ov12_02236428(v0->unk_08);
 
@@ -2136,7 +2093,7 @@ static void ov16_0225F0C0(SysTask *param0, void *param1)
         UnkStruct_ov16_02265BBC v13;
 
         ov16_02264530(v0->unk_00, &v0->unk_28, &v12, v0->unk_81);
-        ov12_02238390(&v12, 5);
+        ov12_02238390(&v12, HEAP_ID_BATTLE);
         ov16_02266B78(v0->unk_00, NULL, &v13, 1, 16, v0->unk_81, v0->unk_81, NULL);
         ov16_02264408(v0->unk_00, v0->unk_04, v1, &v13);
 
@@ -2176,7 +2133,7 @@ static void ov16_0225F764(SysTask *param0, void *param1)
         UnkStruct_ov16_02265BBC v4;
 
         ov16_02264530(v0->unk_00, &v0->unk_10, &v3, v0->unk_69);
-        ov12_022382BC(&v3, 5);
+        ov12_022382BC(&v3, HEAP_ID_BATTLE);
         ov16_02266B78(v0->unk_00, NULL, &v4, 1, 16, v0->unk_69, v0->unk_69, NULL);
         ov16_02264408(v0->unk_00, v0->unk_04, v1, &v4);
         v0->unk_04->unk_19C = 0;
@@ -2308,9 +2265,7 @@ static void ov16_0225FA70(SysTask *param0, void *param1)
 {
     UnkStruct_ov16_02264650_1 *v0 = (UnkStruct_ov16_02264650_1 *)param1;
     s16 v1, v2, v3, v4;
-    u32 v5;
-
-    v5 = BattleSystem_BattleType(v0->unk_00);
+    u32 battleType = BattleSystem_BattleType(v0->unk_00);
 
     if ((v0->unk_1C < 33) && (v0->unk_0E >= 2) && ((v0->unk_14 == 0) || (v0->unk_14 == 2))) {
         Bg_SetOffset(BattleSystem_BGL(v0->unk_00), 3, 1, 4);
@@ -2319,9 +2274,9 @@ static void ov16_0225FA70(SysTask *param0, void *param1)
 
     switch (v0->unk_0E) {
     case 0:
-        if (sub_0200D358(v0->unk_08) > 2) {
-            sub_0200D3CC(v0->unk_08, 0);
-            sub_0200D364(v0->unk_08, 2);
+        if (ManagedSprite_GetNumFrames(v0->unk_08) > 2) {
+            ManagedSprite_SetAnimationFrame(v0->unk_08, 0);
+            ManagedSprite_SetAnim(v0->unk_08, 2);
         }
 
         v0->unk_18 = 28;
@@ -2333,46 +2288,46 @@ static void ov16_0225FA70(SysTask *param0, void *param1)
 
         v0->unk_0E = 2;
     case 2:
-        SpriteActor_GetSpritePositionXY(v0->unk_04->unk_00, &v1, &v2);
-        SpriteActor_GetSpritePositionXY(v0->unk_08, &v3, &v4);
+        ManagedSprite_GetPositionXY(v0->unk_04->unk_00, &v1, &v2);
+        ManagedSprite_GetPositionXY(v0->unk_08, &v3, &v4);
 
         if (v0->unk_0F == 2) {
             if ((v0->unk_14 == 1) || (v0->unk_14 == 3)) {
                 if (v1 < (24 * 8)) {
-                    sub_0200D5DC(v0->unk_04->unk_00, 8, 0);
+                    ManagedSprite_OffsetPositionXY(v0->unk_04->unk_00, 8, 0);
                 } else {
-                    SpriteActor_SetSpritePositionXY(v0->unk_04->unk_00, (24 * 8), (8 * 11));
+                    ManagedSprite_SetPositionXY(v0->unk_04->unk_00, (24 * 8), (8 * 11));
                 }
             }
 
-            SpriteActor_GetSpritePositionXY(v0->unk_04->unk_00, &v1, &v2);
+            ManagedSprite_GetPositionXY(v0->unk_04->unk_00, &v1, &v2);
 
-            if ((v0->unk_14 == 1) || ((v0->unk_14 == 3) && ((v5 == (0x2 | 0x1)) || (v5 == ((0x2 | 0x1) | 0x80)) || (v5 == ((0x4 | 0x1) | 0x2))))) {
-                SpriteActor_SetSpritePositionXY(v0->unk_08, v1, v4);
+            if ((v0->unk_14 == 1) || ((v0->unk_14 == 3) && ((battleType == BATTLE_TYPE_TRAINER_DOUBLES) || (battleType == BATTLE_TYPE_FRONTIER_DOUBLES) || (battleType == ((BATTLE_TYPE_LINK | BATTLE_TYPE_TRAINER) | BATTLE_TYPE_DOUBLES))))) {
+                ManagedSprite_SetPositionXY(v0->unk_08, v1, v4);
             } else if (v0->unk_14 == 3) {
                 v1 = v3 - v1;
                 v1 -= 24;
 
-                sub_0200D5DC(v0->unk_08, -v1, 0);
+                ManagedSprite_OffsetPositionXY(v0->unk_08, -v1, 0);
             } else if (v0->unk_14 == 5) {
                 v1 = v1 - v3;
                 v1 -= 16;
 
-                sub_0200D5DC(v0->unk_08, v1, 0);
+                ManagedSprite_OffsetPositionXY(v0->unk_08, v1, 0);
             }
 
-            SpriteActor_GetSpritePositionXY(v0->unk_08, &v3, &v4);
+            ManagedSprite_GetPositionXY(v0->unk_08, &v3, &v4);
 
             if (v3 >= v0->unk_10) {
-                SpriteActor_SetSpritePositionXY(v0->unk_08, v0->unk_10, v4);
+                ManagedSprite_SetPositionXY(v0->unk_08, v0->unk_10, v4);
 
                 if ((v0->unk_14 == 1) || (v0->unk_14 == 3)) {
-                    SpriteActor_SetSpritePositionXY(v0->unk_04->unk_00, (24 * 8), (8 * 11));
+                    ManagedSprite_SetPositionXY(v0->unk_04->unk_00, (24 * 8), (8 * 11));
                 }
 
-                if (sub_0200D358(v0->unk_08) > 1) {
-                    sub_0200D3CC(v0->unk_08, 0);
-                    sub_0200D364(v0->unk_08, 1);
+                if (ManagedSprite_GetNumFrames(v0->unk_08) > 1) {
+                    ManagedSprite_SetAnimationFrame(v0->unk_08, 0);
+                    ManagedSprite_SetAnim(v0->unk_08, 1);
                     v0->unk_12_0 = 0;
                     v0->unk_0E = 3;
                 } else {
@@ -2382,35 +2337,35 @@ static void ov16_0225FA70(SysTask *param0, void *param1)
         } else {
             if ((v0->unk_14 == 0) || (v0->unk_14 == 2)) {
                 if (v1 > 64) {
-                    sub_0200D5DC(v0->unk_04->unk_00, -8, 0);
+                    ManagedSprite_OffsetPositionXY(v0->unk_04->unk_00, -8, 0);
                 } else {
-                    SpriteActor_SetSpritePositionXY(v0->unk_04->unk_00, 64, (128 + 8));
+                    ManagedSprite_SetPositionXY(v0->unk_04->unk_00, 64, (128 + 8));
                 }
             }
 
-            SpriteActor_GetSpritePositionXY(v0->unk_04->unk_00, &v1, &v2);
+            ManagedSprite_GetPositionXY(v0->unk_04->unk_00, &v1, &v2);
 
-            if ((v0->unk_14 == 0) || ((v0->unk_14 == 2) && ((v5 == (0x2 | 0x1)) || (v5 == ((0x2 | 0x1) | 0x80)) || (v5 == ((0x2 | 0x1) | 0x10)) || (v5 == ((0x4 | 0x1) | 0x2))))) {
-                SpriteActor_SetSpritePositionXY(v0->unk_08, v1, v4);
+            if ((v0->unk_14 == 0) || ((v0->unk_14 == 2) && ((battleType == BATTLE_TYPE_TRAINER_DOUBLES) || (battleType == BATTLE_TYPE_FRONTIER_DOUBLES) || (battleType == BATTLE_TYPE_TAG_DOUBLES) || (battleType == BATTLE_TYPE_LINK_DOUBLES)))) {
+                ManagedSprite_SetPositionXY(v0->unk_08, v1, v4);
             } else if (v0->unk_14 == 2) {
                 v1 = v1 - v3;
                 v1 -= 24;
 
-                sub_0200D5DC(v0->unk_08, v1, 0);
+                ManagedSprite_OffsetPositionXY(v0->unk_08, v1, 0);
             } else if (v0->unk_14 == 4) {
                 v1 = v3 - v1;
                 v1 -= 16;
 
-                sub_0200D5DC(v0->unk_08, -v1, 0);
+                ManagedSprite_OffsetPositionXY(v0->unk_08, -v1, 0);
             }
 
-            SpriteActor_GetSpritePositionXY(v0->unk_08, &v3, &v4);
+            ManagedSprite_GetPositionXY(v0->unk_08, &v3, &v4);
 
             if (v3 <= v0->unk_10) {
-                SpriteActor_SetSpritePositionXY(v0->unk_08, v0->unk_10, v4);
+                ManagedSprite_SetPositionXY(v0->unk_08, v0->unk_10, v4);
 
                 if ((v0->unk_14 == 0) || (v0->unk_14 == 2)) {
-                    SpriteActor_SetSpritePositionXY(v0->unk_04->unk_00, 64, (128 + 8));
+                    ManagedSprite_SetPositionXY(v0->unk_04->unk_00, 64, (128 + 8));
                 }
 
                 v0->unk_0E = 4;
@@ -2418,7 +2373,7 @@ static void ov16_0225FA70(SysTask *param0, void *param1)
         }
         break;
     case 3:
-        if (sub_0200D3B8(v0->unk_08) == 1) {
+        if (ManagedSprite_IsAnimated(v0->unk_08) == 1) {
             if (ov16_02264650(v0, v0->unk_08) == 0) {
                 break;
             }
@@ -2438,7 +2393,7 @@ static void ov16_0225FD5C(SysTask *param0, void *param1)
     UnkStruct_ov16_0225D360 *v0 = (UnkStruct_ov16_0225D360 *)param1;
     s16 v1, v2;
     int v3;
-    u32 v4;
+    u32 battleType;
     s16 v5[][6][2] = {
         {
             { 0x0, 0x80 },
@@ -2521,7 +2476,7 @@ static void ov16_0225FD5C(SysTask *param0, void *param1)
         },
     };
 
-    v4 = BattleSystem_BattleType(v0->unk_00);
+    battleType = BattleSystem_BattleType(v0->unk_00);
 
     switch (v0->unk_0A) {
     case 0:
@@ -2569,9 +2524,9 @@ static void ov16_0225FD5C(SysTask *param0, void *param1)
                 ov12_02237E40(v0->unk_04->unk_84, 2);
                 ov12_02237E30(v0->unk_04->unk_84, 0);
 
-                sub_0200D3CC(v0->unk_04->unk_18, 0);
-                sub_0200D364(v0->unk_04->unk_18, 1);
-                sub_0200D390(v0->unk_04->unk_18, 1);
+                ManagedSprite_SetAnimationFrame(v0->unk_04->unk_18, 0);
+                ManagedSprite_SetAnim(v0->unk_04->unk_18, 1);
+                ManagedSprite_SetAnimateFlag(v0->unk_04->unk_18, 1);
 
                 v0->unk_0A = 3;
             }
@@ -2579,14 +2534,14 @@ static void ov16_0225FD5C(SysTask *param0, void *param1)
         break;
     case 1:
         if (v0->unk_0B == 2) {
-            sub_0200D5DC(v0->unk_04->unk_18, 5, 0);
-            SpriteActor_GetSpritePositionXY(v0->unk_04->unk_18, &v1, &v2);
+            ManagedSprite_OffsetPositionXY(v0->unk_04->unk_18, 5, 0);
+            ManagedSprite_GetPositionXY(v0->unk_04->unk_18, &v1, &v2);
 
             if ((v1 >= (256 - 48) - 48) && (ov12_02237890(v0->unk_04->unk_84) != 0)) {
                 ov12_02237E0C(v0->unk_04->unk_84, 1);
                 ov12_0223786C(v0->unk_04->unk_84, 0);
 
-                if ((v4 & 0x2) && ((v4 & 0x8) == 0)) {
+                if ((battleType & BATTLE_TYPE_DOUBLES) && ((battleType & BATTLE_TYPE_2vs2) == 0)) {
                     {
                         BattlerData *v7;
 
@@ -2599,32 +2554,32 @@ static void ov16_0225FD5C(SysTask *param0, void *param1)
                 }
             } else if (v1 >= (256 + 40)) {
                 {
-                    SpriteGfxHandler *v8;
+                    SpriteManager *v8;
 
                     v8 = ov16_0223E018(v0->unk_00);
-                    sub_0200D0F4(v0->unk_04->unk_18);
+                    Sprite_DeleteAndFreeResources(v0->unk_04->unk_18);
                     v0->unk_04->unk_18 = NULL;
 
-                    SpriteGfxHandler_UnloadCharObjById(v8, 20015 + v0->unk_04->battlerType);
-                    SpriteGfxHandler_UnloadPlttObjById(v8, 20010 + v0->unk_04->battlerType);
-                    SpriteGfxHandler_UnloadCellObjById(v8, 20007 + v0->unk_04->battlerType);
-                    SpriteGfxHandler_UnloadAnimObjById(v8, 20007 + v0->unk_04->battlerType);
+                    SpriteManager_UnloadCharObjById(v8, 20015 + v0->unk_04->battlerType);
+                    SpriteManager_UnloadPlttObjById(v8, 20010 + v0->unk_04->battlerType);
+                    SpriteManager_UnloadCellObjById(v8, 20007 + v0->unk_04->battlerType);
+                    SpriteManager_UnloadAnimObjById(v8, 20007 + v0->unk_04->battlerType);
                 }
                 v0->unk_0A = 6;
             }
         } else {
-            sub_0200D3CC(v0->unk_04->unk_18, 0);
-            sub_0200D364(v0->unk_04->unk_18, 1);
-            sub_0200D390(v0->unk_04->unk_18, 1);
+            ManagedSprite_SetAnimationFrame(v0->unk_04->unk_18, 0);
+            ManagedSprite_SetAnim(v0->unk_04->unk_18, 1);
+            ManagedSprite_SetAnimateFlag(v0->unk_04->unk_18, 1);
             v0->unk_0A = 2;
         }
         break;
     case 2:
-        sub_0200D5DC(v0->unk_04->unk_18, -5, 0);
-        SpriteActor_GetSpritePositionXY(v0->unk_04->unk_18, &v1, &v2);
+        ManagedSprite_OffsetPositionXY(v0->unk_04->unk_18, -5, 0);
+        ManagedSprite_GetPositionXY(v0->unk_04->unk_18, &v1, &v2);
 
         if (v0->unk_04->unk_84) {
-            v3 = sub_0200D3E0(v0->unk_04->unk_18);
+            v3 = ManagedSprite_GetAnimationFrame(v0->unk_04->unk_18);
 
             if (v5[v0->unk_0C][v3][0] != 0x7fff) {
                 ov12_02237E0C(v0->unk_04->unk_84, 1);
@@ -2634,7 +2589,7 @@ static void ov16_0225FD5C(SysTask *param0, void *param1)
                     ov12_0223786C(v0->unk_04->unk_84, 0);
                     ov12_02237E30(v0->unk_04->unk_84, 1);
 
-                    if ((v4 & 0x2) && ((v4 & 0x8) == 0)) {
+                    if ((battleType & BATTLE_TYPE_DOUBLES) && ((battleType & BATTLE_TYPE_2vs2) == 0)) {
                         {
                             BattlerData *v9;
 
@@ -2652,24 +2607,24 @@ static void ov16_0225FD5C(SysTask *param0, void *param1)
 
         if (v1 <= -40) {
             {
-                SpriteGfxHandler *v10;
+                SpriteManager *v10;
 
                 v10 = ov16_0223E018(v0->unk_00);
 
-                sub_0200D0F4(v0->unk_04->unk_18);
+                Sprite_DeleteAndFreeResources(v0->unk_04->unk_18);
                 v0->unk_04->unk_18 = NULL;
 
-                SpriteGfxHandler_UnloadCharObjById(v10, 20015 + v0->unk_04->battlerType);
-                SpriteGfxHandler_UnloadPlttObjById(v10, 20010 + v0->unk_04->battlerType);
-                SpriteGfxHandler_UnloadCellObjById(v10, 20007 + v0->unk_04->battlerType);
-                SpriteGfxHandler_UnloadAnimObjById(v10, 20007 + v0->unk_04->battlerType);
+                SpriteManager_UnloadCharObjById(v10, 20015 + v0->unk_04->battlerType);
+                SpriteManager_UnloadPlttObjById(v10, 20010 + v0->unk_04->battlerType);
+                SpriteManager_UnloadCellObjById(v10, 20007 + v0->unk_04->battlerType);
+                SpriteManager_UnloadAnimObjById(v10, 20007 + v0->unk_04->battlerType);
             }
             v0->unk_0A = 6;
         }
         break;
     case 3:
-        SpriteActor_GetSpritePositionXY(v0->unk_04->unk_18, &v1, &v2);
-        v3 = sub_0200D3E0(v0->unk_04->unk_18);
+        ManagedSprite_GetPositionXY(v0->unk_04->unk_18, &v1, &v2);
+        v3 = ManagedSprite_GetAnimationFrame(v0->unk_04->unk_18);
 
         if (v3 == 4) {
             v0->unk_14 = 8;
@@ -2726,15 +2681,15 @@ static void ov16_02260284(SysTask *param0, void *param1)
     switch (v0->unk_0A) {
     case 0:
         if (v0->unk_0B == 2) {
-            sub_0200D5DC(v0->unk_04->unk_18, 5, 0);
-            SpriteActor_GetSpritePositionXY(v0->unk_04->unk_18, &v1, &v2);
+            ManagedSprite_OffsetPositionXY(v0->unk_04->unk_18, 5, 0);
+            ManagedSprite_GetPositionXY(v0->unk_04->unk_18, &v1, &v2);
 
             if (v1 >= (256 + 40)) {
                 v0->unk_0A++;
             }
         } else {
-            sub_0200D5DC(v0->unk_04->unk_18, -5, 0);
-            SpriteActor_GetSpritePositionXY(v0->unk_04->unk_18, &v1, &v2);
+            ManagedSprite_OffsetPositionXY(v0->unk_04->unk_18, -5, 0);
+            ManagedSprite_GetPositionXY(v0->unk_04->unk_18, &v1, &v2);
 
             if (v1 <= -40) {
                 v0->unk_0A++;
@@ -2742,16 +2697,16 @@ static void ov16_02260284(SysTask *param0, void *param1)
         }
         break;
     case 1: {
-        SpriteGfxHandler *v3;
+        SpriteManager *v3;
 
         v3 = ov16_0223E018(v0->unk_00);
-        sub_0200D0F4(v0->unk_04->unk_18);
+        Sprite_DeleteAndFreeResources(v0->unk_04->unk_18);
         v0->unk_04->unk_18 = NULL;
 
-        SpriteGfxHandler_UnloadCharObjById(v3, 20015 + v0->unk_04->battlerType);
-        SpriteGfxHandler_UnloadPlttObjById(v3, 20010 + v0->unk_04->battlerType);
-        SpriteGfxHandler_UnloadCellObjById(v3, 20007 + v0->unk_04->battlerType);
-        SpriteGfxHandler_UnloadAnimObjById(v3, 20007 + v0->unk_04->battlerType);
+        SpriteManager_UnloadCharObjById(v3, 20015 + v0->unk_04->battlerType);
+        SpriteManager_UnloadPlttObjById(v3, 20010 + v0->unk_04->battlerType);
+        SpriteManager_UnloadCellObjById(v3, 20007 + v0->unk_04->battlerType);
+        SpriteManager_UnloadAnimObjById(v3, 20007 + v0->unk_04->battlerType);
     }
         ClearCommand(v0->unk_00, v0->unk_09, v0->unk_08);
         Heap_FreeToHeap(param1);
@@ -2767,7 +2722,7 @@ static void ov16_02260384(SysTask *param0, void *param1)
 
     switch (v0->unk_0A) {
     case 0:
-        SpriteActor_GetSpritePositionXY(v0->unk_04, &v1, &v2);
+        ManagedSprite_GetPositionXY(v0->unk_04, &v1, &v2);
 
         if (v0->unk_0B == 0) {
             v1 += 5;
@@ -2785,7 +2740,7 @@ static void ov16_02260384(SysTask *param0, void *param1)
             }
         }
 
-        SpriteActor_SetSpritePositionXY(v0->unk_04, v1, v2);
+        ManagedSprite_SetPositionXY(v0->unk_04, v1, v2);
         break;
     case 1:
         ClearCommand(v0->unk_00, v0->unk_09, v0->unk_08);
@@ -2874,7 +2829,7 @@ static void ov16_022604C8(SysTask *param0, void *param1)
     BgConfig *v1;
     UnkStruct_ov16_02268A14 *v2;
     BattlerData *v3;
-    u32 v4;
+    u32 battleType;
     int v5;
     Healthbar *v6;
 
@@ -2882,7 +2837,7 @@ static void ov16_022604C8(SysTask *param0, void *param1)
     v1 = BattleSystem_BGL(v0->unk_00);
     v2 = ov16_0223E02C(v0->unk_00);
     v3 = BattleSystem_BattlerData(v0->unk_00, v0->unk_09);
-    v4 = BattleSystem_BattleType(v0->unk_00);
+    battleType = BattleSystem_BattleType(v0->unk_00);
     v5 = BattleSystem_Partner(v0->unk_00, v0->unk_09);
 
     if (v5 != v0->unk_09) {
@@ -2914,7 +2869,7 @@ static void ov16_022604C8(SysTask *param0, void *param1)
 
         v9 = BattleSystem_MessageLoader(v0->unk_00);
 
-        if (v4 & 0x400) {
+        if (battleType & BATTLE_TYPE_CATCH_TUTORIAL) {
             switch (ov16_0223F228(v0->unk_00)) {
             case 0:
                 v10.tags = 2;
@@ -2925,17 +2880,17 @@ static void ov16_022604C8(SysTask *param0, void *param1)
                 break;
             case 1:
                 v10.tags = 0;
-                v10.id = 1226 + ov16_0223E1B4(v0->unk_00, 0);
+                v10.id = 1226 + BattleSystem_GetTrainerGender(v0->unk_00, 0);
                 v0->unk_35 = BattleMessage_Print(v0->unk_00, v9, &v10, BattleSystem_TextSpeed(v0->unk_00));
                 v0->unk_0A = 2;
                 break;
             }
         } else {
-            if (v4 & 0x20) {
+            if (battleType & BATTLE_TYPE_SAFARI) {
                 v10.tags = 8;
                 v10.params[0] = Battler_TrainerID(v0->unk_00, v0->unk_09);
                 v10.id = 922;
-            } else if (v4 & 0x200) {
+            } else if (battleType & BATTLE_TYPE_PAL_PARK) {
                 v10.tags = 8;
                 v10.params[0] = Battler_TrainerID(v0->unk_00, v0->unk_09);
                 v10.id = 1222;
@@ -2968,8 +2923,8 @@ static void ov16_022604C8(SysTask *param0, void *param1)
             NARC *v12;
             NARC *v13;
 
-            v12 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, 5);
-            v13 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, 5);
+            v12 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, HEAP_ID_BATTLE);
+            v13 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, HEAP_ID_BATTLE);
 
             v11.unk_01 = v0->unk_09;
             v11.unk_00 = v0->unk_34;
@@ -2984,11 +2939,11 @@ static void ov16_022604C8(SysTask *param0, void *param1)
 
                 if (BattleSystem_BattleStatus(v0->unk_00) & 0x1) {
                     ov16_02268C04(v12, v13, v2, 6, 0, &v11);
-                } else if (BattleSystem_BattleType(v0->unk_00) & 0x200) {
+                } else if (BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_PAL_PARK) {
                     ov16_02268C04(v12, v13, v2, 10, 0, &v11);
-                } else if (BattleSystem_BattleType(v0->unk_00) & 0x20) {
+                } else if (BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_SAFARI) {
                     ov16_02268C04(v12, v13, v2, 8, 0, &v11);
-                } else if ((v11.unk_00 == 4) && ((BattleSystem_BattleType(v0->unk_00) & 0x8) == 0)) {
+                } else if ((v11.unk_00 == 4) && ((BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_2vs2) == FALSE)) {
                     ov16_02268C04(v12, v13, v2, 4, 0, &v11);
                 } else {
                     ov16_02268C04(v12, v13, v2, 3, 0, &v11);
@@ -2998,9 +2953,9 @@ static void ov16_022604C8(SysTask *param0, void *param1)
             } else {
                 if (BattleSystem_BattleStatus(v0->unk_00) & 0x1) {
                     ov16_02268C04(v12, v13, v2, 5, 0, &v11);
-                } else if (BattleSystem_BattleType(v0->unk_00) & 0x200) {
+                } else if (BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_PAL_PARK) {
                     ov16_02268C04(v12, v13, v2, 9, 0, &v11);
-                } else if (BattleSystem_BattleType(v0->unk_00) & 0x20) {
+                } else if (BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_SAFARI) {
                     ov16_02268C04(v12, v13, v2, 7, 0, &v11);
                 } else if (v11.unk_00 != 4) {
                     ov16_02268C04(v12, v13, v2, 1, 0, &v11);
@@ -3025,7 +2980,7 @@ static void ov16_022604C8(SysTask *param0, void *param1)
         v0->unk_0A = 5;
         break;
     case 5:
-        if (gCoreSys.pressedKeys & PAD_BUTTON_START) {
+        if (gSystem.pressedKeys & PAD_BUTTON_START) {
             BattlerData *v14;
             int i;
 
@@ -3047,13 +3002,13 @@ static void ov16_022604C8(SysTask *param0, void *param1)
         if ((ov16_02269348(v2) == 1) || (v0->unk_0C == 1)) {
             switch (v0->unk_0C) {
             case 1:
-                if (BattleSystem_BattleType(v0->unk_00) & (0x20 | 0x200)) {
+                if (BattleSystem_BattleType(v0->unk_00) & (BATTLE_TYPE_SAFARI | BATTLE_TYPE_PAL_PARK)) {
                     v0->unk_0A = 7;
                 }
                 break;
             case 2: {
-                NARC *v16 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, 5);
-                NARC *v17 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, 5);
+                NARC *v16 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, HEAP_ID_BATTLE);
+                NARC *v17 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, HEAP_ID_BATTLE);
 
                 ov16_02268C04(v16, v17, v2, 0, 0, NULL);
                 ov16_0226BCCC(v2, 0);
@@ -3064,8 +3019,8 @@ static void ov16_022604C8(SysTask *param0, void *param1)
                 NARC_dtor(v17);
             } break;
             case 3: {
-                NARC *v18 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, 5);
-                NARC *v19 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, 5);
+                NARC *v18 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, HEAP_ID_BATTLE);
+                NARC *v19 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, HEAP_ID_BATTLE);
 
                 ov16_02268C04(v18, v19, v2, 0, 0, NULL);
                 ov16_0226BCCC(v2, 0);
@@ -3076,8 +3031,8 @@ static void ov16_022604C8(SysTask *param0, void *param1)
                 NARC_dtor(v19);
             } break;
             case 4: {
-                NARC *v20 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, 5);
-                NARC *v21 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, 5);
+                NARC *v20 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, HEAP_ID_BATTLE);
+                NARC *v21 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, HEAP_ID_BATTLE);
 
                 if (ov16_0226D088(v2) == 1) {
                     ov16_0226846C(v6);
@@ -3099,8 +3054,8 @@ static void ov16_022604C8(SysTask *param0, void *param1)
         break;
     case 7:
         if (ov16_02269348(v2) == 1) {
-            NARC *v22 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, 5);
-            NARC *v23 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, 5);
+            NARC *v22 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, HEAP_ID_BATTLE);
+            NARC *v23 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, HEAP_ID_BATTLE);
 
             ov16_02268C04(v22, v23, v2, 0, 0, NULL);
             ov16_0226BCCC(v2, 0);
@@ -3129,9 +3084,7 @@ static void ov16_022604C8(SysTask *param0, void *param1)
 static void ov16_02260AB4(SysTask *param0, void *param1)
 {
     UnkStruct_ov16_0225D5B8 *v0 = (UnkStruct_ov16_0225D5B8 *)param1;
-    int v1;
-
-    v1 = TrainerAI_PickCommand(v0->unk_00, v0->unk_09);
+    int v1 = TrainerAI_PickCommand(v0->unk_00, v0->unk_09);
 
     ov16_022656D4(v0->unk_00, v0->unk_09, v1);
     ClearCommand(v0->unk_00, v0->unk_09, v0->unk_08);
@@ -3170,11 +3123,9 @@ static void ov16_02260B04(SysTask *param0, void *param1)
     UnkStruct_ov16_0225D5B8 *v0 = (UnkStruct_ov16_0225D5B8 *)param1;
     int v1;
     u16 v2;
-    u8 v3;
-
-    v3 = ov16_0223ED6C(v0->unk_00);
+    u8 v3 = ov16_0223ED6C(v0->unk_00);
     v2 = BattleMon_Get(BattleSystem_Context(v0->unk_00), v0->unk_09, 0, NULL);
-    v1 = PokemonPersonalData_GetSpeciesValue(v2, 26);
+    v1 = SpeciesData_GetSpeciesValue(v2, SPECIES_DATA_SAFARI_FLEE_RATE);
     v1 = v1 * Unk_ov16_0226F194[v3][0] / Unk_ov16_0226F194[v3][1];
 
     if ((BattleSystem_RandNext(v0->unk_00) % 255) <= v1) {
@@ -3262,8 +3213,8 @@ static void ov16_02260C00(SysTask *param0, void *param1)
         {
             UnkStruct_ov16_02260C00 v8;
             int i;
-            NARC *v10 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, 5);
-            NARC *v11 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, 5);
+            NARC *v10 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, HEAP_ID_BATTLE);
+            NARC *v11 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, HEAP_ID_BATTLE);
 
             for (i = 0; i < 4; i++) {
                 v8.unk_00[i] = v0->unk_0C[i];
@@ -3290,7 +3241,7 @@ static void ov16_02260C00(SysTask *param0, void *param1)
     case 2:
         if (1) {
             if (v0->unk_08 != 0xff) {
-                if ((BattleSystem_BattleType(v0->unk_00) & 0x2) == 0) {
+                if ((BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_DOUBLES) == FALSE) {
                     ov16_0226BCCC(v2, 0);
                     ov16_0226846C(v4);
                     ov16_022675AC(v0->unk_04);
@@ -3320,12 +3271,10 @@ static void ov16_02260DB0(SysTask *param0, void *param1)
     UnkStruct_ov16_0225D698 *v0 = (UnkStruct_ov16_0225D698 *)param1;
     BattleContext *v1;
     int v2;
-    u32 v3;
-
-    v3 = BattleSystem_BattleType(v0->unk_00);
+    u32 battleType = BattleSystem_BattleType(v0->unk_00);
     v1 = BattleSystem_Context(v0->unk_00);
 
-    if ((v3 & (0x1 | 0x100)) || (BattleSystem_BattleStatus(v0->unk_00) & 0x1) || (Battler_Side(v0->unk_00, v0->unk_1D) == 0)) {
+    if ((battleType & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_ROAMER)) || (BattleSystem_BattleStatus(v0->unk_00) & 0x1) || (Battler_Side(v0->unk_00, v0->unk_1D) == 0)) {
         v2 = TrainerAI_Main(v0->unk_00, v0->unk_1D);
 
         switch (v2) {
@@ -3410,9 +3359,7 @@ static void ov16_02260F14(SysTask *param0, void *param1)
     UnkStruct_ov16_02268A14 *v2;
     int v3;
     Healthbar *v4;
-    BattlerData *v5;
-
-    v5 = BattleSystem_BattlerData(v0->unk_00, v0->unk_0D);
+    BattlerData *v5 = BattleSystem_BattlerData(v0->unk_00, v0->unk_0D);
     v2 = ov16_0223E02C(v0->unk_00);
     v3 = BattleSystem_Partner(v0->unk_00, v0->unk_0D);
 
@@ -3431,8 +3378,8 @@ static void ov16_02260F14(SysTask *param0, void *param1)
         {
             UnkStruct_ov16_02260F14 v6;
             int i;
-            NARC *v8 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, 5);
-            NARC *v9 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, 5);
+            NARC *v8 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, HEAP_ID_BATTLE);
+            NARC *v9 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, HEAP_ID_BATTLE);
 
             for (i = 0; i < 4; i++) {
                 v6.unk_00[i] = v0->unk_10[i];
@@ -3477,16 +3424,16 @@ static void ov16_02260F14(SysTask *param0, void *param1)
         if (ov16_0226BCD0(v2) == 1) {
             {
                 u8 v10[6];
-                u32 v11;
+                u32 battleType;
                 int v12;
 
                 v12 = v0->unk_08;
-                v11 = BattleSystem_BattleType(v0->unk_00);
+                battleType = BattleSystem_BattleType(v0->unk_00);
 
                 if (v12 != 0xff) {
                     ov16_0223F858(v0->unk_00, &v10[0]);
 
-                    if (v11 & 0x2) {
+                    if (battleType & BATTLE_TYPE_DOUBLES) {
                         v12 = v10[2 + (v0->unk_08 - 1)] + 1;
                     } else {
                         v12 = v10[0 + (v0->unk_08 - 1)] + 1;
@@ -3584,9 +3531,7 @@ static void ov16_0226110C(SysTask *param0, void *param1)
 static void ov16_022611DC(SysTask *param0, void *param1)
 {
     UnkStruct_ov16_0225D794 *v0 = (UnkStruct_ov16_0225D794 *)param1;
-    PaletteData *v1;
-
-    v1 = BattleSystem_PaletteSys(v0->unk_00);
+    PaletteData *v1 = BattleSystem_PaletteSys(v0->unk_00);
 
     switch (v0->unk_0E) {
     case 0:
@@ -3601,12 +3546,12 @@ static void ov16_022611DC(SysTask *param0, void *param1)
             {
                 ov16_0223B384(v0->unk_00);
 
-                v0->unk_04 = Heap_AllocFromHeap(5, sizeof(UnkStruct_ov13_022264F4));
+                v0->unk_04 = Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov13_022264F4));
                 memset(v0->unk_04, 0, sizeof(UnkStruct_ov13_022264F4));
 
                 v0->unk_04->unk_00 = v0->unk_00;
                 v0->unk_04->unk_04 = BattleSystem_TrainerInfo(v0->unk_00, v0->unk_0D);
-                v0->unk_04->unk_0C = 5;
+                v0->unk_04->heapID = HEAP_ID_BATTLE;
                 v0->unk_04->unk_26 = 0;
                 v0->unk_04->unk_08 = BattleSystem_Bag(v0->unk_00);
                 v0->unk_04->unk_10 = v0->unk_0D;
@@ -3652,7 +3597,7 @@ static void ov16_022611DC(SysTask *param0, void *param1)
         Party *v5 = BattleSystem_Party(v0->unk_00, v0->unk_0D);
         Pokemon *v6;
 
-        if ((BattleSystem_BattleType(v0->unk_00) & 0x2) && ((BattleSystem_BattleType(v0->unk_00) & 0x8) == 0)) {
+        if ((BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_DOUBLES) && ((BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_2vs2) == 0)) {
             v4 = v0->unk_0D & 1;
         } else {
             v4 = v0->unk_0D;
@@ -3667,7 +3612,7 @@ static void ov16_022611DC(SysTask *param0, void *param1)
         }
 
         v0->unk_08->unk_04->unk_08 = v0->unk_00;
-        v0->unk_08->unk_04->unk_0C = 5;
+        v0->unk_08->unk_04->heapID = HEAP_ID_BATTLE;
         v0->unk_08->unk_04->unk_11 = 0;
         v0->unk_08->unk_04->unk_36 = 0;
         v0->unk_08->unk_04->unk_24 = 0;
@@ -3720,7 +3665,7 @@ static void ov16_022611DC(SysTask *param0, void *param1)
                 case 1:
                     if ((v0->unk_04->unk_1C == 28) || (v0->unk_04->unk_1C == 29)) {
                         v0->unk_0E = 8;
-                    } else if (((v0->unk_08->unk_04->unk_11 < 2) && ((BattleSystem_BattleType(v0->unk_00) == (0x2 | 0x1)) || (BattleSystem_BattleType(v0->unk_00) == ((0x2 | 0x1) | 0x10)))) || (v0->unk_08->unk_04->unk_11 < 1)) {
+                    } else if (((v0->unk_08->unk_04->unk_11 < 2) && ((BattleSystem_BattleType(v0->unk_00) == BATTLE_TYPE_TRAINER_DOUBLES) || (BattleSystem_BattleType(v0->unk_00) == BATTLE_TYPE_TAG_DOUBLES))) || (v0->unk_08->unk_04->unk_11 < 1)) {
                         if (v0->unk_04->unk_1C == 23) {
                             if (BattleSystem_AnimationsOn(v0->unk_00) == 1) {
                                 v0->unk_12 = 17;
@@ -3741,7 +3686,7 @@ static void ov16_022611DC(SysTask *param0, void *param1)
                     }
                     break;
                 case 0:
-                    if ((((v0->unk_08->unk_04->unk_11 < 2) && ((BattleSystem_BattleType(v0->unk_00) == (0x2 | 0x1)) || (BattleSystem_BattleType(v0->unk_00) == ((0x2 | 0x1) | 0x10)))) || (v0->unk_08->unk_04->unk_11 < 1)) && (Item_LoadParam(v0->unk_04->unk_1C, 38, 5))) {
+                    if ((((v0->unk_08->unk_04->unk_11 < 2) && ((BattleSystem_BattleType(v0->unk_00) == BATTLE_TYPE_TRAINER_DOUBLES) || (BattleSystem_BattleType(v0->unk_00) == BATTLE_TYPE_TAG_DOUBLES))) || (v0->unk_08->unk_04->unk_11 < 1)) && (Item_LoadParam(v0->unk_04->unk_1C, 38, 5))) {
                         if (BattleSystem_AnimationsOn(v0->unk_00) == 1) {
                             v0->unk_12 = 17;
                         } else {
@@ -4170,9 +4115,7 @@ static void ov16_02261DE0(SysTask *param0, void *param1)
 static void ov16_02261E8C(SysTask *param0, void *param1)
 {
     UnkStruct_ov16_0225D840 *v0 = (UnkStruct_ov16_0225D840 *)param1;
-    PaletteData *v1;
-
-    v1 = BattleSystem_PaletteSys(v0->unk_00);
+    PaletteData *v1 = BattleSystem_PaletteSys(v0->unk_00);
 
     switch (v0->unk_0A) {
     case 0:
@@ -4202,10 +4145,10 @@ static void ov16_02261E8C(SysTask *param0, void *param1)
 
                 ov16_0223B384(v0->unk_00);
 
-                v0->unk_04 = Heap_AllocFromHeap(5, sizeof(UnkStruct_ov13_0221FC20));
-                v0->unk_04->unk_00 = Party_New(5);
+                v0->unk_04 = Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov13_0221FC20));
+                v0->unk_04->unk_00 = Party_New(HEAP_ID_BATTLE);
 
-                if (((BattleSystem_BattleType(v0->unk_00) & (0x4 | 0x8)) == (0x4 | 0x8)) || (BattleSystem_BattleType(v0->unk_00) == (((0x2 | 0x1) | 0x8 | 0x40) | 0x80))) {
+                if (((BattleSystem_BattleType(v0->unk_00) & (BATTLE_TYPE_LINK | BATTLE_TYPE_2vs2)) == (BATTLE_TYPE_LINK | BATTLE_TYPE_2vs2)) || (BattleSystem_BattleType(v0->unk_00) == ((BATTLE_TYPE_TRAINER_DOUBLES | BATTLE_TYPE_2vs2 | BATTLE_TYPE_AI) | BATTLE_TYPE_FRONTIER))) {
                     if (BattleSystem_BattlerSlot(v0->unk_00, v0->unk_09) == 2) {
                         v6 = v0->unk_09;
                         v7 = BattleSystem_Partner(v0->unk_00, v0->unk_09);
@@ -4214,7 +4157,7 @@ static void ov16_02261E8C(SysTask *param0, void *param1)
                         v7 = v0->unk_09;
                     }
 
-                    v9 = Pokemon_New(5);
+                    v9 = Pokemon_New(HEAP_ID_BATTLE);
 
                     for (i = 0; i < 6; i++) {
                         Party_AddPokemon(v0->unk_04->unk_00, v9);
@@ -4242,7 +4185,7 @@ static void ov16_02261E8C(SysTask *param0, void *param1)
                         v0->unk_04->unk_11 = 0;
                     }
                 } else {
-                    if ((BattleSystem_BattleType(v0->unk_00) & 0x2) && ((BattleSystem_BattleType(v0->unk_00) & 0x8) == 0)) {
+                    if ((BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_DOUBLES) && ((BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_2vs2) == FALSE)) {
                         v5 = v0->unk_09 & 1;
                     } else {
                         v5 = v0->unk_09;
@@ -4264,7 +4207,7 @@ static void ov16_02261E8C(SysTask *param0, void *param1)
                 }
 
                 v0->unk_04->unk_08 = v0->unk_00;
-                v0->unk_04->unk_0C = 5;
+                v0->unk_04->heapID = HEAP_ID_BATTLE;
                 v0->unk_04->unk_36 = 0;
                 v0->unk_04->unk_24 = v0->unk_10;
                 v0->unk_04->unk_12 = v0->unk_16;
@@ -4279,7 +4222,7 @@ static void ov16_02261E8C(SysTask *param0, void *param1)
                     v0->unk_04->unk_14 = 6;
                 }
 
-                if (BattleSystem_BattleType(v0->unk_00) & 0x8) {
+                if (BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_2vs2) {
                     v0->unk_04->unk_15 = 6;
                 } else if ((v0->unk_18 & FlagIndex(BattleSystem_Partner(v0->unk_00, v0->unk_09))) == 0) {
                     v0->unk_04->unk_15 = v0->unk_0C[BattleSystem_Partner(v0->unk_00, v0->unk_09)];
@@ -4328,12 +4271,10 @@ static void ov16_02262258(SysTask *param0, void *param1)
     Party *v2;
     Pokemon *v3;
     int v4, v5;
-    u32 v6;
-
-    v6 = BattleSystem_BattleType(v0->unk_00);
+    u32 battleType = BattleSystem_BattleType(v0->unk_00);
     v4 = v0->unk_09;
 
-    if ((v6 & 0x10) || (v6 & 0x8)) {
+    if ((battleType & BATTLE_TYPE_TAG) || (battleType & BATTLE_TYPE_2vs2)) {
         v5 = v4;
     } else {
         v5 = BattleSystem_Partner(v0->unk_00, v4);
@@ -4425,9 +4366,7 @@ static void ov16_022623F0(SysTask *param0, void *param1)
     UnkStruct_ov16_02268A14 *v2 = ov16_0223E02C(v0->unk_00);
     int v3;
     Healthbar *v4;
-    BattlerData *v5;
-
-    v5 = BattleSystem_BattlerData(v0->unk_00, v0->unk_0D);
+    BattlerData *v5 = BattleSystem_BattlerData(v0->unk_00, v0->unk_0D);
     v3 = BattleSystem_Partner(v0->unk_00, v0->unk_0D);
 
     if (v3 != v0->unk_0D) {
@@ -4467,8 +4406,8 @@ static void ov16_022623F0(SysTask *param0, void *param1)
     case 1:
         if ((Text_IsPrinterActive(v0->unk_1A) == 0) || (v0->unk_10 == NULL)) {
             {
-                NARC *v9 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, 5);
-                NARC *v10 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, 5);
+                NARC *v9 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, HEAP_ID_BATTLE);
+                NARC *v10 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, HEAP_ID_BATTLE);
                 UnkStruct_ov16_022623F0 v11;
 
                 ov16_02269218(v2);
@@ -4515,8 +4454,8 @@ static void ov16_022623F0(SysTask *param0, void *param1)
     case 3:
         if (ov16_02269348(v2) == 1) {
             {
-                NARC *v12 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, 5);
-                NARC *v13 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, 5);
+                NARC *v12 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_BG, HEAP_ID_BATTLE);
+                NARC *v13 = NARC_ctor(NARC_INDEX_BATTLE__GRAPHIC__PL_BATT_OBJ, HEAP_ID_BATTLE);
 
                 ov16_022675AC(v0->unk_04);
                 ov16_022647D8(v5);
@@ -4609,7 +4548,7 @@ static void ov16_022626C0(SysTask *param0, void *param1)
         UnkStruct_ov16_02265BBC v3;
 
         ov16_02264530(v0->unk_00, &v0->unk_10, &v2, v0->unk_69);
-        ov12_022382BC(&v2, 5);
+        ov12_022382BC(&v2, HEAP_ID_BATTLE);
 
         ov16_02266B78(v0->unk_00, NULL, &v3, 1, 16, v0->unk_69, v0->unk_69, NULL);
         ov16_02264408(v0->unk_00, v0->unk_04, v0->unk_0C, &v3);
@@ -4659,7 +4598,7 @@ static void ov16_022626C0(SysTask *param0, void *param1)
         UnkStruct_ov16_02265BBC v6;
 
         ov16_02264530(v0->unk_00, &v0->unk_10, &v5, v0->unk_69);
-        ov12_02238390(&v5, 5);
+        ov12_02238390(&v5, HEAP_ID_BATTLE);
 
         ov16_02266B78(v0->unk_00, NULL, &v6, 1, 16, v0->unk_69, v0->unk_69, NULL);
         ov16_02264408(v0->unk_00, v0->unk_04, v0->unk_0C, &v6);
@@ -4804,7 +4743,7 @@ static void ov16_02262A9C(SysTask *param0, void *param1)
         UnkStruct_ov16_02265BBC v6;
 
         ov16_02264530(v0->unk_00, &v0->unk_0C, &v5, v0->unk_65);
-        ov12_022382BC(&v5, 5);
+        ov12_022382BC(&v5, HEAP_ID_BATTLE);
 
         ov16_02266B78(v0->unk_00, NULL, &v6, 1, 16, v0->unk_65, v0->unk_65, NULL);
         ov16_02264408(v0->unk_00, v0->unk_04, v1, &v6);
@@ -4967,7 +4906,7 @@ static void ov16_02262DC4(SysTask *param0, void *param1)
         UnkStruct_ov16_02265BBC v4;
 
         ov16_02264530(v0->unk_00, &v0->unk_08, &v3, v0->unk_61);
-        ov12_02238390(&v3, 5);
+        ov12_02238390(&v3, HEAP_ID_BATTLE);
 
         ov16_02266B78(v0->unk_00, NULL, &v4, 1, 16, v0->unk_61, v0->unk_61, NULL);
         ov16_02264408(v0->unk_00, v0->unk_04, v1, &v4);
@@ -5122,7 +5061,7 @@ static void ov16_02263014(SysTask *param0, void *param1)
     case 0: {
         UnkStruct_ov12_02237F38 v5;
 
-        v0->unk_04 = ov12_02237EFC(5, NULL);
+        v0->unk_04 = ov12_02237EFC(HEAP_ID_BATTLE, NULL);
 
         v5.unk_00 = Unk_ov16_0226F31C[v3];
         v5.unk_04 = 1;
@@ -5176,11 +5115,11 @@ static void ov16_02263014(SysTask *param0, void *param1)
         if (v0->unk_15 == 28) {
             MI_CpuCopy16(ov16_0223F204(v0->unk_00), PaletteData_GetUnfadedBuffer(v2, 0), 0x20 * 7);
 
-            if (BattleSystem_BattleType(v0->unk_00) == (0x2 | 0x8 | 0x40)) {
+            if (BattleSystem_BattleType(v0->unk_00) == BATTLE_TYPE_AI_PARTNER) {
                 MI_CpuCopy16(ov16_0223F210(v0->unk_00), PaletteData_GetUnfadedBuffer(v2, 2), 0x20 * 5);
-            } else if (BattleSystem_BattleType(v0->unk_00) & 0x2) {
+            } else if (BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_DOUBLES) {
                 MI_CpuCopy16(ov16_0223F210(v0->unk_00), PaletteData_GetUnfadedBuffer(v2, 2), 0x20 * 7);
-            } else if (BattleSystem_BattleType(v0->unk_00) & 0x1) {
+            } else if (BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_TRAINER) {
                 MI_CpuCopy16(ov16_0223F210(v0->unk_00), PaletteData_GetUnfadedBuffer(v2, 2), 0x20 * 5);
             } else {
                 MI_CpuCopy16(ov16_0223F210(v0->unk_00), PaletteData_GetUnfadedBuffer(v2, 2), 0x20 * 4);
@@ -5214,11 +5153,11 @@ static void ov16_02263014(SysTask *param0, void *param1)
     case 5:
         MI_CpuCopy16(ov16_0223F204(v0->unk_00), PaletteData_GetUnfadedBuffer(v2, 0), 0x20 * 7);
 
-        if (BattleSystem_BattleType(v0->unk_00) == (0x2 | 0x8 | 0x40)) {
+        if (BattleSystem_BattleType(v0->unk_00) == BATTLE_TYPE_AI_PARTNER) {
             MI_CpuCopy16(ov16_0223F210(v0->unk_00), PaletteData_GetUnfadedBuffer(v2, 2), 0x20 * 5);
-        } else if (BattleSystem_BattleType(v0->unk_00) & 0x2) {
+        } else if (BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_DOUBLES) {
             MI_CpuCopy16(ov16_0223F210(v0->unk_00), PaletteData_GetUnfadedBuffer(v2, 2), 0x20 * 7);
-        } else if (BattleSystem_BattleType(v0->unk_00) & 0x1) {
+        } else if (BattleSystem_BattleType(v0->unk_00) & BATTLE_TYPE_TRAINER) {
             MI_CpuCopy16(ov16_0223F210(v0->unk_00), PaletteData_GetUnfadedBuffer(v2, 2), 0x20 * 5);
         } else {
             MI_CpuCopy16(ov16_0223F210(v0->unk_00), PaletteData_GetUnfadedBuffer(v2, 2), 0x20 * 4);
@@ -5235,9 +5174,7 @@ static void ov16_02263014(SysTask *param0, void *param1)
 static void ov16_022633A4(SysTask *param0, void *param1)
 {
     UnkStruct_ov16_0225E0BC *v0 = (UnkStruct_ov16_0225E0BC *)param1;
-    PaletteData *v1;
-
-    v1 = BattleSystem_PaletteSys(v0->unk_00);
+    PaletteData *v1 = BattleSystem_PaletteSys(v0->unk_00);
 
     switch (v0->unk_0A) {
     case 0:
@@ -5248,10 +5185,10 @@ static void ov16_022633A4(SysTask *param0, void *param1)
         if (PaletteData_GetSelectedBuffersMask(v1) == 0) {
             ov16_0223B384(v0->unk_00);
 
-            v0->unk_04 = Heap_AllocFromHeap(5, sizeof(UnkStruct_ov13_0221FC20));
+            v0->unk_04 = Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov13_0221FC20));
             v0->unk_04->unk_00 = BattleSystem_Party(v0->unk_00, v0->unk_09);
             v0->unk_04->unk_08 = v0->unk_00;
-            v0->unk_04->unk_0C = 5;
+            v0->unk_04->heapID = HEAP_ID_BATTLE;
             v0->unk_04->unk_11 = v0->unk_0E;
             v0->unk_04->unk_24 = v0->unk_0C;
             v0->unk_04->unk_36 = 0;
@@ -5430,7 +5367,7 @@ static void ov16_02263688(SysTask *param0, void *param1)
     switch (v0->unk_0E) {
     case 0:
         GF_ASSERT(v0->unk_04->unk_88 == NULL);
-        v0->unk_04->unk_88 = ov12_022234F8(v0->unk_00, 5, v0->unk_0D);
+        v0->unk_04->unk_88 = ov12_022234F8(v0->unk_00, HEAP_ID_BATTLE, v0->unk_0D);
         v0->unk_0E++;
         break;
     default:
@@ -5462,12 +5399,12 @@ static void ov16_022636D4(SysTask *param0, void *param1)
     SysTask_Done(param0);
 }
 
-void ov16_02263730(BattleSystem *param0, BattlerData *param1)
+void ov16_02263730(BattleSystem *battleSys, BattlerData *param1)
 {
-    u32 v0 = BattleSystem_BattleType(param0);
-    u32 v1 = BattleSystem_BattleStatus(param0);
+    u32 battleType = BattleSystem_BattleType(battleSys);
+    u32 v1 = BattleSystem_BattleStatus(battleSys);
 
-    if (v0 & 0x40) {
+    if (battleType & BATTLE_TYPE_AI) {
         if (param1->battler) {
             param1->unk_00.unk_00 = &ov16_02260AB4;
             param1->unk_00.unk_04 = &ov16_02260DB0;
@@ -5495,9 +5432,9 @@ void ov16_02263730(BattleSystem *param0, BattlerData *param1)
                 param1->bootState = 0x0;
             }
         }
-    } else if ((v0 & (0x8 | 0x80)) == (0x8 | 0x80)) {
+    } else if ((battleType & (BATTLE_TYPE_2vs2 | BATTLE_TYPE_FRONTIER)) == (BATTLE_TYPE_2vs2 | BATTLE_TYPE_FRONTIER)) {
         if (param1->battlerType & 0x1) {
-            if (ov16_0223ED60(param0)) {
+            if (ov16_0223ED60(battleSys)) {
                 param1->unk_00.unk_00 = &ov16_02260AB4;
                 param1->unk_00.unk_04 = &ov16_02260DB0;
                 param1->unk_00.unk_08 = &ov16_022610A8;
@@ -5522,7 +5459,7 @@ void ov16_02263730(BattleSystem *param0, BattlerData *param1)
             param1->unk_00.unk_10 = &ov16_0226232C;
             param1->unk_00.unk_14 = &ov16_0226266C;
             param1->bootState = 0x0;
-        } else if (param1->battlerType != BattleSystem_BattlerSlot(param0, ov16_0223F6E4(param0) * 2)) {
+        } else if (param1->battlerType != BattleSystem_BattlerSlot(battleSys, ov16_0223F6E4(battleSys) * 2)) {
             param1->unk_00.unk_00 = &ov16_02260AE4;
             param1->unk_00.unk_04 = &ov16_02260E78;
             param1->unk_00.unk_08 = &ov16_022610EC;
@@ -5539,7 +5476,7 @@ void ov16_02263730(BattleSystem *param0, BattlerData *param1)
             param1->unk_00.unk_14 = &ov16_022623F0;
             param1->bootState = 0x0;
         }
-    } else if (v0 & 0x8) {
+    } else if (battleType & BATTLE_TYPE_2vs2) {
         if (v1 & 0x10) {
             param1->unk_00.unk_00 = &ov16_02260BAC;
             param1->unk_00.unk_04 = &ov16_02260E98;
@@ -5548,7 +5485,7 @@ void ov16_02263730(BattleSystem *param0, BattlerData *param1)
             param1->unk_00.unk_10 = &ov16_0226232C;
             param1->unk_00.unk_14 = &ov16_0226266C;
             param1->bootState = 0x0;
-        } else if (param1->battlerType != BattleSystem_BattlerSlot(param0, ov16_0223F6E4(param0))) {
+        } else if (param1->battlerType != BattleSystem_BattlerSlot(battleSys, ov16_0223F6E4(battleSys))) {
             param1->unk_00.unk_00 = &ov16_02260AE4;
             param1->unk_00.unk_04 = &ov16_02260E78;
             param1->unk_00.unk_08 = &ov16_022610EC;
@@ -5565,7 +5502,7 @@ void ov16_02263730(BattleSystem *param0, BattlerData *param1)
             param1->unk_00.unk_14 = &ov16_022623F0;
             param1->bootState = 0x0;
         }
-    } else if (v0 & 0x4) {
+    } else if (battleType & BATTLE_TYPE_LINK) {
         if (v1 & 0x10) {
             param1->unk_00.unk_00 = &ov16_02260BAC;
             param1->unk_00.unk_04 = &ov16_02260E98;
@@ -5591,7 +5528,7 @@ void ov16_02263730(BattleSystem *param0, BattlerData *param1)
             param1->unk_00.unk_14 = &ov16_022623F0;
             param1->bootState = 0x0;
         }
-    } else if (v0 & 0x200) {
+    } else if (battleType & BATTLE_TYPE_PAL_PARK) {
         if (param1->battlerType & 0x1) {
             param1->unk_00.unk_00 = &ov16_02260B84;
             param1->unk_00.unk_04 = NULL;
@@ -5609,7 +5546,7 @@ void ov16_02263730(BattleSystem *param0, BattlerData *param1)
             param1->unk_00.unk_14 = NULL;
             param1->bootState = 0x0;
         }
-    } else if (v0 & 0x20) {
+    } else if (battleType & BATTLE_TYPE_SAFARI) {
         if (param1->battlerType & 0x1) {
             param1->unk_00.unk_00 = &ov16_02260B04;
             param1->unk_00.unk_04 = NULL;
@@ -5668,7 +5605,7 @@ u8 Battler_BootState(BattlerData *battler)
     return battler->bootState;
 }
 
-Sprite *ov16_02263AFC(BattlerData *param0)
+PokemonSprite *ov16_02263AFC(BattlerData *param0)
 {
     if (param0->unk_20) {
         return param0->unk_20;
@@ -5698,17 +5635,17 @@ void ov16_02263B20(BattlerData *param0, int param1)
         return;
     }
 
-    SpriteActor_EnableObject(param0->unk_18, param1);
+    ManagedSprite_SetDrawFlag(param0->unk_18, param1);
 }
 
-static Sprite *ov16_02263B30(BattleSystem *param0, UnkStruct_02007768 *param1, ArchivedSprite *param2, int param3, int param4, int param5, int param6, int param7, int param8, int param9, int param10, SpriteAnimationFrame *param11, UnkFuncPtr_02007C34 *param12)
+static PokemonSprite *ov16_02263B30(BattleSystem *battleSys, UnkStruct_02007768 *param1, ArchivedSprite *param2, int param3, int param4, int param5, int param6, int param7, int param8, int param9, int param10, SpriteAnimationFrame *param11, UnkFuncPtr_02007C34 *param12)
 {
-    Sprite *v0;
-    u8 *v1 = ov16_0223F2B8(ov16_0223E0C8(param0), param10);
+    PokemonSprite *v0;
+    u8 *v1 = ov16_0223F2B8(ov16_0223E0C8(battleSys), param10);
     int v2;
     int v3;
 
-    v2 = BattleSystem_BattlerSlot(param0, param10);
+    v2 = BattleSystem_BattlerSlot(battleSys, param10);
 
     if (v2 & 0x1) {
         v3 = 2;
@@ -5716,10 +5653,10 @@ static Sprite *ov16_02263B30(BattleSystem *param0, UnkStruct_02007768 *param1, A
         v3 = 0;
     }
 
-    sub_02013750(param2->archive, param2->character, 5, v1, param2->personality, 0, v3, param2->spindaSpots);
-    ov16_0223F2CC(ov16_0223E0C8(param0), param10, param2->archive);
-    ov16_0223F2E4(ov16_0223E0C8(param0), param10, param2->palette);
-    ov16_0223F2FC(ov16_0223E0C8(param0), param10, param6);
+    sub_02013750(param2->archive, param2->character, HEAP_ID_BATTLE, v1, param2->personality, 0, v3, param2->spindaSpots);
+    ov16_0223F2CC(ov16_0223E0C8(battleSys), param10, param2->archive);
+    ov16_0223F2E4(ov16_0223E0C8(battleSys), param10, param2->palette);
+    ov16_0223F2FC(ov16_0223E0C8(battleSys), param10, param6);
 
     v0 = sub_02007C7C(param1, param2, param3, param4 + param6, param5, param10, param10, param11, param12);
 
@@ -5739,10 +5676,10 @@ static Sprite *ov16_02263B30(BattleSystem *param0, UnkStruct_02007768 *param1, A
     return v0;
 }
 
-static void ov16_02263C1C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C3F8 *param2, BattleMessage *param3)
+static void ov16_02263C1C(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C3F8 *param2, BattleMessage *param3)
 {
     if (param1->battlerType & 0x1) {
-        if (BattleSystem_BattleType(param0) & 0x4) {
+        if (BattleSystem_BattleType(battleSys) & BATTLE_TYPE_LINK) {
             param3->id = 990;
             param3->tags = 27;
             param3->params[0] = param1->battler;
@@ -5755,7 +5692,7 @@ static void ov16_02263C1C(BattleSystem *param0, BattlerData *param1, UnkStruct_o
             param3->params[2] = param1->battler | (param2->unk_01 << 8);
         }
     } else {
-        if (((BattleSystem_BattleType(param0) & 0x2) == 0) && ((BattleSystem_BattleType(param0) & 0x4) == 0)) {
+        if (((BattleSystem_BattleType(battleSys) & BATTLE_TYPE_DOUBLES) == FALSE) && ((BattleSystem_BattleType(battleSys) & BATTLE_TYPE_LINK) == FALSE)) {
             if (param2->unk_02 == 0) {
                 param3->id = 984;
             } else if (param2->unk_02 < 25) {
@@ -5776,10 +5713,10 @@ static void ov16_02263C1C(BattleSystem *param0, BattlerData *param1, UnkStruct_o
     }
 }
 
-static void ov16_02263CF0(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C40C *param2, BattleMessage *param3)
+static void ov16_02263CF0(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C40C *param2, BattleMessage *param3)
 {
     if (param1->battlerType & 0x1) {
-        if ((BattleSystem_BattleType(param0) & 0x4) == 0) {
+        if ((BattleSystem_BattleType(battleSys) & BATTLE_TYPE_LINK) == 0) {
             param3->id = 972;
             param3->tags = 50;
             param3->params[0] = param1->battler;
@@ -5792,7 +5729,7 @@ static void ov16_02263CF0(BattleSystem *param0, BattlerData *param1, UnkStruct_o
             param3->params[1] = param1->battler | (param2->unk_01 << 8);
         }
     } else {
-        if (((BattleSystem_BattleType(param0) & 0x2) == 0) && ((BattleSystem_BattleType(param0) & 0x4) == 0)) {
+        if (((BattleSystem_BattleType(battleSys) & BATTLE_TYPE_DOUBLES) == 0) && ((BattleSystem_BattleType(battleSys) & BATTLE_TYPE_LINK) == FALSE)) {
             if (param2->unk_02 < 100) {
                 param3->id = 982;
             } else if (param2->unk_02 < 325) {
@@ -5813,76 +5750,76 @@ static void ov16_02263CF0(BattleSystem *param0, BattlerData *param1, UnkStruct_o
     }
 }
 
-static void ov16_02263DD0(BattleSystem *param0, BattlerData *param1, BattleMessage *param2)
+static void ov16_02263DD0(BattleSystem *battleSys, BattlerData *unused, BattleMessage *param2)
 {
-    u32 v0;
-    int v1;
-    int v2;
+    u32 battleType;
+    int battlerType1;
+    int battlerType2;
 
-    v0 = BattleSystem_BattleType(param0);
+    battleType = BattleSystem_BattleType(battleSys);
 
-    if (v0 & 0x2) {
-        v1 = BattleSystem_BattlerOfType(param0, 3);
-        v2 = BattleSystem_BattlerOfType(param0, 5);
+    if (battleType & BATTLE_TYPE_DOUBLES) {
+        battlerType1 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_ENEMY_SIDE_SLOT_1);
+        battlerType2 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_ENEMY_SIDE_SLOT_2);
     } else {
-        v1 = BattleSystem_BattlerOfType(param0, 1);
-        v2 = v1;
+        battlerType1 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_SOLO_ENEMY);
+        battlerType2 = battlerType1;
     }
 
-    if (v0 & 0x4) {
-        if (v0 & 0x80) {
+    if (battleType & BATTLE_TYPE_LINK) {
+        if (battleType & BATTLE_TYPE_FRONTIER) {
             param2->id = 992;
             param2->tags = 59;
-            param2->params[0] = v1;
-            param2->params[1] = v1;
-            param2->params[2] = v2;
-            param2->params[3] = v2;
-        } else if (v0 & 0x8) {
+            param2->params[0] = battlerType1;
+            param2->params[1] = battlerType1;
+            param2->params[2] = battlerType2;
+            param2->params[3] = battlerType2;
+        } else if (battleType & BATTLE_TYPE_2vs2) {
             param2->id = 971;
             param2->tags = 26;
-            param2->params[0] = v1;
-            param2->params[1] = v2;
+            param2->params[0] = battlerType1;
+            param2->params[1] = battlerType2;
         } else {
             param2->id = 970;
             param2->tags = 8;
-            param2->params[0] = v1;
+            param2->params[0] = battlerType1;
         }
     } else {
-        if ((v0 & 0x10) || (v0 & 0x8)) {
+        if ((battleType & BATTLE_TYPE_TAG) || (battleType & BATTLE_TYPE_2vs2)) {
             param2->id = 992;
             param2->tags = 59;
-            param2->params[0] = v1;
-            param2->params[1] = v1;
-            param2->params[2] = v2;
-            param2->params[3] = v2;
+            param2->params[0] = battlerType1;
+            param2->params[1] = battlerType1;
+            param2->params[2] = battlerType2;
+            param2->params[3] = battlerType2;
         } else {
             param2->id = 969;
             param2->tags = 30;
-            param2->params[0] = v1;
-            param2->params[1] = v1;
+            param2->params[0] = battlerType1;
+            param2->params[1] = battlerType1;
         }
     }
 }
 
-static void ov16_02263E7C(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C430 *param2, BattleMessage *param3)
+static void ov16_02263E7C(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C430 *param2, BattleMessage *param3)
 {
-    u32 v0;
+    u32 battleType;
     int v1;
     int v2;
 
-    v0 = BattleSystem_BattleType(param0);
+    battleType = BattleSystem_BattleType(battleSys);
 
     if (param1->battlerType & 0x1) {
-        if (v0 & 0x2) {
+        if (battleType & BATTLE_TYPE_DOUBLES) {
             v1 = param1->battler;
-            v2 = BattleSystem_Partner(param0, param1->battler);
+            v2 = BattleSystem_Partner(battleSys, param1->battler);
         } else {
             v1 = param1->battler;
             v2 = v1;
         }
 
-        if (v0 & 0x4) {
-            if (v0 & 0x80) {
+        if (battleType & BATTLE_TYPE_LINK) {
+            if (battleType & BATTLE_TYPE_FRONTIER) {
                 param3->id = 991;
                 param3->tags = 60;
                 param3->params[0] = v1;
@@ -5891,14 +5828,14 @@ static void ov16_02263E7C(BattleSystem *param0, BattlerData *param1, UnkStruct_o
                 param3->params[3] = v2;
                 param3->params[4] = v2;
                 param3->params[5] = v2 | (param2->unk_04[v2] << 8);
-            } else if (v0 & 0x8) {
+            } else if (battleType & BATTLE_TYPE_2vs2) {
                 param3->id = 976;
                 param3->tags = 56;
                 param3->params[0] = v1;
                 param3->params[1] = v1 | (param2->unk_04[v1] << 8);
                 param3->params[2] = v2;
                 param3->params[3] = v2 | (param2->unk_04[v2] << 8);
-            } else if (v0 & 0x2) {
+            } else if (battleType & BATTLE_TYPE_DOUBLES) {
                 param3->id = 975;
                 param3->tags = 49;
                 param3->params[0] = v1;
@@ -5911,7 +5848,7 @@ static void ov16_02263E7C(BattleSystem *param0, BattlerData *param1, UnkStruct_o
                 param3->params[1] = v1 | (param2->unk_04[v1] << 8);
             }
         } else {
-            if ((v0 & 0x10) || (v0 & 0x8)) {
+            if ((battleType & BATTLE_TYPE_TAG) || (battleType & BATTLE_TYPE_2vs2)) {
                 param3->id = 991;
                 param3->tags = 60;
                 param3->params[0] = v1;
@@ -5920,7 +5857,7 @@ static void ov16_02263E7C(BattleSystem *param0, BattlerData *param1, UnkStruct_o
                 param3->params[3] = v2;
                 param3->params[4] = v2;
                 param3->params[5] = v2 | (param2->unk_04[v2] << 8);
-            } else if (v0 & 0x2) {
+            } else if (battleType & BATTLE_TYPE_DOUBLES) {
                 param3->id = 973;
                 param3->tags = 57;
                 param3->params[0] = v1;
@@ -5936,50 +5873,50 @@ static void ov16_02263E7C(BattleSystem *param0, BattlerData *param1, UnkStruct_o
             }
         }
     } else {
-        if (v0 & 0x4) {
+        if (battleType & BATTLE_TYPE_LINK) {
             {
-                u8 v3 = ov16_0223F6E4(param0);
+                u8 v3 = ov16_0223F6E4(battleSys);
 
-                if (v0 & 0x8) {
-                    switch (ov16_0223F6F0(param0, v3)) {
+                if (battleType & BATTLE_TYPE_2vs2) {
+                    switch (ov16_0223F6F0(battleSys, v3)) {
                     case 0:
                     case 3:
-                        v1 = BattleSystem_BattlerOfType(param0, 4);
-                        v2 = BattleSystem_BattlerOfType(param0, 2);
+                        v1 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_PLAYER_SIDE_SLOT_2);
+                        v2 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_PLAYER_SIDE_SLOT_1);
                         break;
                     case 1:
                     case 2:
-                        v1 = BattleSystem_BattlerOfType(param0, 2);
-                        v2 = BattleSystem_BattlerOfType(param0, 4);
+                        v1 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_PLAYER_SIDE_SLOT_1);
+                        v2 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_PLAYER_SIDE_SLOT_2);
                         break;
                     }
-                } else if (v0 & 0x2) {
-                    v1 = BattleSystem_BattlerOfType(param0, 2);
-                    v2 = BattleSystem_BattlerOfType(param0, 4);
+                } else if (battleType & BATTLE_TYPE_DOUBLES) {
+                    v1 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_PLAYER_SIDE_SLOT_1);
+                    v2 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_PLAYER_SIDE_SLOT_2);
                 } else {
-                    v1 = BattleSystem_BattlerOfType(param0, 0);
+                    v1 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_SOLO_PLAYER);
                     v2 = v1;
                 }
             }
-        } else if (v0 & 0x8) {
-            v1 = BattleSystem_Partner(param0, param1->battler);
+        } else if (battleType & BATTLE_TYPE_2vs2) {
+            v1 = BattleSystem_Partner(battleSys, param1->battler);
             v2 = param1->battler;
-        } else if (v0 & 0x2) {
-            v1 = BattleSystem_BattlerOfType(param0, 2);
-            v2 = BattleSystem_BattlerOfType(param0, 4);
+        } else if (battleType & BATTLE_TYPE_DOUBLES) {
+            v1 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_PLAYER_SIDE_SLOT_1);
+            v2 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_PLAYER_SIDE_SLOT_2);
         } else {
             v1 = param1->battler;
             v2 = v1;
         }
 
-        if (v0 & 0x4) {
-            if (v0 & 0x8) {
+        if (battleType & BATTLE_TYPE_LINK) {
+            if (battleType & BATTLE_TYPE_2vs2) {
                 param3->id = 977;
                 param3->tags = 49;
                 param3->params[0] = v1;
                 param3->params[1] = v1 | (param2->unk_04[v1] << 8);
                 param3->params[2] = v2 | (param2->unk_04[v2] << 8);
-            } else if (v0 & 0x2) {
+            } else if (battleType & BATTLE_TYPE_DOUBLES) {
                 param3->id = 978;
                 param3->tags = 9;
                 param3->params[0] = v1 | (param2->unk_04[v1] << 8);
@@ -5990,14 +5927,14 @@ static void ov16_02263E7C(BattleSystem *param0, BattlerData *param1, UnkStruct_o
                 param3->params[0] = v1 | (param2->unk_04[v1] << 8);
             }
         } else {
-            if (v0 & 0x8) {
+            if (battleType & BATTLE_TYPE_2vs2) {
                 param3->id = 993;
                 param3->tags = 57;
                 param3->params[0] = v1;
                 param3->params[1] = v1;
                 param3->params[2] = v1 | (param2->unk_04[v1] << 8);
                 param3->params[3] = v2 | (param2->unk_04[v2] << 8);
-            } else if (v0 & 0x2) {
+            } else if (battleType & BATTLE_TYPE_DOUBLES) {
                 param3->id = 978;
                 param3->tags = 9;
                 param3->params[0] = v1 | (param2->unk_04[v1] << 8);
@@ -6011,27 +5948,27 @@ static void ov16_02263E7C(BattleSystem *param0, BattlerData *param1, UnkStruct_o
     }
 }
 
-static void ov16_022641B4(BattleSystem *param0, BattlerData *param1, BattleMessage *param2)
+static void ov16_022641B4(BattleSystem *battleSys, BattlerData *param1, BattleMessage *param2)
 {
-    u32 v0;
+    u32 battleType;
     int v1;
     int v2;
     int v3;
 
-    v0 = BattleSystem_BattleType(param0);
-    v3 = BattleSystem_ResultMask(param0);
+    battleType = BattleSystem_BattleType(battleSys);
+    v3 = BattleSystem_ResultMask(battleSys);
 
-    if (v0 & 0x2) {
-        v1 = BattleSystem_BattlerOfType(param0, 3);
-        v2 = BattleSystem_BattlerOfType(param0, 5);
+    if (battleType & BATTLE_TYPE_DOUBLES) {
+        v1 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_ENEMY_SIDE_SLOT_1);
+        v2 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_ENEMY_SIDE_SLOT_2);
     } else {
-        v1 = BattleSystem_BattlerOfType(param0, 1);
+        v1 = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_SOLO_ENEMY);
         v2 = v1;
     }
 
     switch (v3) {
     case 0x1:
-        if (v0 & 0x8) {
+        if (battleType & BATTLE_TYPE_2vs2) {
             param2->id = 786;
             param2->tags = 26;
             param2->params[0] = v1;
@@ -6043,7 +5980,7 @@ static void ov16_022641B4(BattleSystem *param0, BattlerData *param1, BattleMessa
         }
         break;
     case 0x2:
-        if (v0 & 0x8) {
+        if (battleType & BATTLE_TYPE_2vs2) {
             param2->id = 788;
             param2->tags = 26;
             param2->params[0] = v1;
@@ -6055,7 +5992,7 @@ static void ov16_022641B4(BattleSystem *param0, BattlerData *param1, BattleMessa
         }
         break;
     case 0x3:
-        if (v0 & 0x8) {
+        if (battleType & BATTLE_TYPE_2vs2) {
             param2->id = 790;
             param2->tags = 26;
             param2->params[0] = v1;
@@ -6069,15 +6006,15 @@ static void ov16_022641B4(BattleSystem *param0, BattlerData *param1, BattleMessa
     }
 }
 
-static void ov16_02264270(BattleSystem *param0, BattlerData *param1, UnkStruct_ov16_0225C9F0 *param2, BattleMessage *param3)
+static void ov16_02264270(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov16_0225C9F0 *param2, BattleMessage *param3)
 {
     int i;
     int v1 = 0;
     int v2 = 0;
 
-    for (i = 0; i < BattleSystem_MaxBattlers(param0); i++) {
+    for (i = 0; i < BattleSystem_MaxBattlers(battleSys); i++) {
         if (param2->unk_01 & FlagIndex(i)) {
-            if (Battler_Side(param0, i)) {
+            if (Battler_Side(battleSys, i)) {
                 v2++;
             } else {
                 v1++;
@@ -6088,60 +6025,60 @@ static void ov16_02264270(BattleSystem *param0, BattlerData *param1, UnkStruct_o
     if ((v1) && (v2)) {
         param3->id = 781;
         param3->tags = 0;
-        BattleSystem_SetResultFlag(param0, 0x3 | 0x80 | 0x40);
+        BattleSystem_SetResultFlag(battleSys, 0x3 | 0x80 | 0x40);
     } else if (v1) {
         param3->id = 781;
         param3->tags = 0;
-        BattleSystem_SetResultFlag(param0, 0x2 | 0x80 | 0x40);
+        BattleSystem_SetResultFlag(battleSys, 0x2 | 0x80 | 0x40);
     } else {
-        if (BattleSystem_BattleType(param0) & 0x8) {
+        if (BattleSystem_BattleType(battleSys) & BATTLE_TYPE_2vs2) {
             param3->id = 792;
             param3->tags = 26;
-            param3->params[0] = BattleSystem_BattlerOfType(param0, 3);
-            param3->params[1] = BattleSystem_BattlerOfType(param0, 5);
-        } else if (BattleSystem_BattleType(param0) & 0x2) {
+            param3->params[0] = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_ENEMY_SIDE_SLOT_1);
+            param3->params[1] = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_ENEMY_SIDE_SLOT_2);
+        } else if (BattleSystem_BattleType(battleSys) & BATTLE_TYPE_DOUBLES) {
             param3->id = 791;
             param3->tags = 8;
-            param3->params[0] = BattleSystem_BattlerOfType(param0, 3);
+            param3->params[0] = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_ENEMY_SIDE_SLOT_1);
         } else {
             param3->id = 791;
             param3->tags = 8;
-            param3->params[0] = BattleSystem_BattlerOfType(param0, 1);
+            param3->params[0] = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_SOLO_ENEMY);
         }
 
-        BattleSystem_SetResultFlag(param0, 0x1 | 0x80 | 0x40);
+        BattleSystem_SetResultFlag(battleSys, 0x1 | 0x80 | 0x40);
     }
 }
 
-static void ov16_02264360(BattleSystem *param0, BattlerData *param1, BattleMessage *param2)
+static void ov16_02264360(BattleSystem *battleSys, BattlerData *param1, BattleMessage *param2)
 {
     param2->id = 956;
     param2->tags = 8;
 
-    if (BattleSystem_BattleType(param0) & 0x4) {
-        if (ov16_0223F6F0(param0, ov16_0223F6E4(param0))) {
-            param2->params[0] = BattleSystem_BattlerOfType(param0, 4);
+    if (BattleSystem_BattleType(battleSys) & BATTLE_TYPE_LINK) {
+        if (ov16_0223F6F0(battleSys, ov16_0223F6E4(battleSys))) {
+            param2->params[0] = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_PLAYER_SIDE_SLOT_2);
         } else {
-            param2->params[0] = BattleSystem_BattlerOfType(param0, 2);
+            param2->params[0] = BattleSystem_BattlerOfType(battleSys, BATTLER_TYPE_PLAYER_SIDE_SLOT_1);
         }
     } else {
         param2->params[0] = param1->battler;
     }
 
-    BattleSystem_SetResultFlag(param0, 0x2 | 0x80 | 0x40);
+    BattleSystem_SetResultFlag(battleSys, 0x2 | 0x80 | 0x40);
 }
 
-static CellActorData *ov16_022643B8(BattleSystem *param0, int param1, int param2, int param3, s16 param4, s16 param5)
+static ManagedSprite *ov16_022643B8(BattleSystem *battleSys, int param1, int param2, int param3, s16 param4, s16 param5)
 {
-    SpriteRenderer *v0;
-    SpriteGfxHandler *v1;
+    SpriteSystem *v0;
+    SpriteManager *v1;
     PaletteData *v2;
-    CellActorData *v3;
+    ManagedSprite *v3;
     int v4;
 
-    v0 = ov16_0223E010(param0);
-    v1 = ov16_0223E018(param0);
-    v2 = BattleSystem_PaletteSys(param0);
+    v0 = ov16_0223E010(battleSys);
+    v1 = ov16_0223E018(battleSys);
+    v2 = BattleSystem_PaletteSys(battleSys);
 
     if (param1 & 0x1) {
         v4 = 2;
@@ -6154,7 +6091,7 @@ static CellActorData *ov16_022643B8(BattleSystem *param0, int param1, int param2
     return v3;
 }
 
-static void ov16_02264408(BattleSystem *param0, BattlerData *param1, UnkStruct_ov12_0221FCDC *param2, UnkStruct_ov16_02265BBC *param3)
+static void ov16_02264408(BattleSystem *battleSys, BattlerData *param1, UnkStruct_ov12_0221FCDC *param2, UnkStruct_ov16_02265BBC *param3)
 {
     UnkStruct_ov16_02264408 v0;
     int i;
@@ -6168,12 +6105,12 @@ static void ov16_02264408(BattleSystem *param0, BattlerData *param1, UnkStruct_o
         v2 = param3->unk_50;
     }
 
-    v0.unk_04 = BattleSystem_BGL(param0);
-    v0.unk_08 = BattleSystem_PaletteSys(param0);
-    v0.unk_00 = ov16_0223E010(param0);
+    v0.unk_04 = BattleSystem_BGL(battleSys);
+    v0.unk_08 = BattleSystem_PaletteSys(battleSys);
+    v0.unk_00 = ov16_0223E010(battleSys);
 
     for (i = 0; i < 4; i++) {
-        v0.unk_0C[i] = ov16_0223F2AC(param0, i);
+        v0.unk_0C[i] = ov16_0223F2AC(battleSys, i);
         v0.unk_34[i] = param3->unk_18[i];
         v0.unk_3C[i] = param3->unk_20[i];
         v0.unk_40[i] = param3->unk_24[i];
@@ -6182,16 +6119,16 @@ static void ov16_02264408(BattleSystem *param0, BattlerData *param1, UnkStruct_o
         v0.unk_4C[i] = param3->unk_3C[i];
     }
 
-    ov16_0223F87C(param0, &(v0.unk_1C[0]));
-    ov16_0223F8AC(param0, &(v0.unk_20[0]));
+    ov16_0223F87C(battleSys, &(v0.unk_1C[0]));
+    ov16_0223F8AC(battleSys, &(v0.unk_20[0]));
 
-    v0.unk_30 = BattleSystem_BattleType(param0);
-    v0.unk_6C = BattleSystem_ChatotVoice(param0, param1->battler);
-    v0.unk_70 = ov16_0223F1E8(param0);
-    v0.unk_74 = ov16_0223F1F0(param0);
+    v0.battleType = BattleSystem_BattleType(battleSys);
+    v0.unk_6C = BattleSystem_ChatotVoice(battleSys, param1->battler);
+    v0.unk_70 = ov16_0223F1E8(battleSys);
+    v0.unk_74 = ov16_0223F1F0(battleSys);
     v0.unk_54.unk_00 = 7;
-    v0.unk_54.unk_04 = 3 + ov16_0223E240(param0);
-    v0.unk_54.unk_08 = 172 + ov16_0223E240(param0) * 3 + ov16_0223EC04(param0);
+    v0.unk_54.unk_04 = 3 + ov16_0223E240(battleSys);
+    v0.unk_54.unk_08 = 172 + ov16_0223E240(battleSys) * 3 + ov16_0223EC04(battleSys);
     v0.unk_54.unk_0C = 2;
     v0.unk_54.unk_10 = 0;
     v0.unk_54.unk_14 = 8;
@@ -6199,7 +6136,7 @@ static void ov16_02264408(BattleSystem *param0, BattlerData *param1, UnkStruct_o
     ov12_0221FE30(param2, param3, v2, &v0);
 }
 
-static void ov16_02264530(BattleSystem *param0, UnkStruct_ov16_02265BBC *param1, UnkStruct_ov12_022380DC *param2, int param3)
+static void ov16_02264530(BattleSystem *battleSys, UnkStruct_ov16_02265BBC *param1, UnkStruct_ov12_022380DC *param2, int param3)
 {
     int i;
 
@@ -6207,7 +6144,7 @@ static void ov16_02264530(BattleSystem *param0, UnkStruct_ov16_02265BBC *param1,
     param2->unk_04 = param3;
 
     for (i = 0; i < 4; i++) {
-        param2->unk_08[i] = ov16_0223F2AC(param0, i);
+        param2->unk_08[i] = ov16_0223F2AC(battleSys, i);
         param2->unk_28[i] = param1->unk_18[i];
         param2->unk_30[i] = param1->unk_20[i];
         param2->unk_34[i] = param1->unk_24[i];
@@ -6215,8 +6152,8 @@ static void ov16_02264530(BattleSystem *param0, UnkStruct_ov16_02265BBC *param1,
         param2->unk_3C[i] = param1->unk_2C[i];
     }
 
-    ov16_0223F87C(param0, &(param2->unk_4C[0]));
-    ov16_0223F8AC(param0, &(param2->unk_18[0]));
+    ov16_0223F87C(battleSys, &(param2->unk_4C[0]));
+    ov16_0223F8AC(battleSys, &(param2->unk_18[0]));
 }
 
 static void ov16_022645B8(u8 *param0, u8 *param1, int param2, int param3, u16 param4)
@@ -6262,19 +6199,19 @@ static void ov16_022645B8(u8 *param0, u8 *param1, int param2, int param3, u16 pa
     }
 }
 
-static BOOL ov16_02264650(UnkStruct_ov16_02264650_1 *param0, CellActorData *param1)
+static BOOL ov16_02264650(UnkStruct_ov16_02264650_1 *param0, ManagedSprite *param1)
 {
     UnkStruct_ov16_02264650 *v0;
     int v1;
     BOOL v2 = 0;
 
-    v1 = sub_0200D81C(param0->unk_08);
+    v1 = ManagedSprite_SetUserAttrForCurrentAnimFrame(param0->unk_08);
 
     switch (v1) {
     case 1:
         if (param0->unk_12_0 == 0) {
             param0->unk_12_0 = 1;
-            v0 = (UnkStruct_ov16_02264650 *)Heap_AllocFromHeap(5, sizeof(UnkStruct_ov16_02264650));
+            v0 = (UnkStruct_ov16_02264650 *)Heap_AllocFromHeap(HEAP_ID_BATTLE, sizeof(UnkStruct_ov16_02264650));
             v0->unk_00 = 0;
             v0->unk_04 = 0;
 
@@ -6287,8 +6224,8 @@ static BOOL ov16_02264650(UnkStruct_ov16_02264650_1 *param0, CellActorData *para
         break;
     default:
         if (((v1 & 0xf00) == 0x100) && (v1 & 0xff)) {
-            sub_0200D3CC(param0->unk_08, 0);
-            sub_0200D364(param0->unk_08, (v1 & 0xff) - 1);
+            ManagedSprite_SetAnimationFrame(param0->unk_08, 0);
+            ManagedSprite_SetAnim(param0->unk_08, (v1 & 0xff) - 1);
             v2 = 1;
         }
 
@@ -6304,17 +6241,17 @@ static void ov16_022646C8(SysTask *param0, void *param1)
 
     switch (v0->unk_00) {
     case 0:
-        sub_0200AAE0(4, 16, 0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD) & (GX_BLEND_PLANEMASK_BG1 ^ 0xffff), 1);
+        BrightnessController_StartTransition(4, 16, 0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD) & (GX_BLEND_PLANEMASK_BG1 ^ 0xffff), BRIGHTNESS_MAIN_SCREEN);
         v0->unk_00++;
         break;
     case 1:
-        if (sub_0200AC1C(1) == 1) {
-            sub_0200AAE0(4, 0, 16, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD) & (GX_BLEND_PLANEMASK_BG1 ^ 0xffff), 1);
+        if (BrightnessController_IsTransitionComplete(BRIGHTNESS_MAIN_SCREEN) == TRUE) {
+            BrightnessController_StartTransition(4, 0, 16, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD) & (GX_BLEND_PLANEMASK_BG1 ^ 0xffff), BRIGHTNESS_MAIN_SCREEN);
             v0->unk_00++;
         }
         break;
     case 2:
-        if (sub_0200AC1C(1) == 1) {
+        if (BrightnessController_IsTransitionComplete(BRIGHTNESS_MAIN_SCREEN) == TRUE) {
             Heap_FreeToHeap(param1);
             SysTask_Done(param0);
         }
@@ -6322,22 +6259,22 @@ static void ov16_022646C8(SysTask *param0, void *param1)
     }
 }
 
-static void ov16_02264730(BattleSystem *param0)
+static void ov16_02264730(BattleSystem *battleSys)
 {
-    BattleSystem_SetStopRecording(param0, 1);
-    Battle_RecordingStopped(param0, BattleSystem_Context(param0));
+    BattleSystem_SetStopRecording(battleSys, 1);
+    Battle_RecordingStopped(battleSys, BattleSystem_Context(battleSys));
 }
 
-static void ov16_0226474C(BattleSystem *param0)
+static void ov16_0226474C(BattleSystem *battleSys)
 {
-    BattleSystem_SetStopRecording(param0, 2);
-    Battle_RecordingStopped(param0, BattleSystem_Context(param0));
+    BattleSystem_SetStopRecording(battleSys, 2);
+    Battle_RecordingStopped(battleSys, BattleSystem_Context(battleSys));
 }
 
-static u8 ov16_02264768(BattleSystem *param0, u8 param1, u8 param2)
+static u8 ov16_02264768(BattleSystem *battleSys, u8 param1, u8 param2)
 {
-    if (BattleSystem_BattleType(param0) & 0x4) {
-        if ((TrainerInfo_GameCode(BattleSystem_TrainerInfo(param0, param1)) == 0) && (param2 <= 1)) {
+    if (BattleSystem_BattleType(battleSys) & BATTLE_TYPE_LINK) {
+        if ((TrainerInfo_GameCode(BattleSystem_TrainerInfo(battleSys, param1)) == 0) && (param2 <= 1)) {
             param2 += 103;
         }
     }

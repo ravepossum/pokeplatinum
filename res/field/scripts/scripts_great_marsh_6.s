@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/great_marsh_6.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _00D1
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -12,7 +13,7 @@ _000A:
     FacePlayer
     GoToIfSet 0xAB4, _00BC
     Message 0
-    ScrCmd_1B7 0x8004, 4
+    GetRandom 0x8004, 4
     SetVar 0x8008, 0x8004
     GoToIfEq 0x8008, 0, _005B
     GoToIfEq 0x8008, 1, _0069
@@ -64,9 +65,5 @@ _00C7:
     End
 
 _00D1:
-    ScrCmd_036 2, 2, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowLandmarkSign 2
     End

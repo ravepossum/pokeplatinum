@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/oreburgh_gate_1f.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _0014
     ScriptEntry _007B
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     SetFlag 0x9CF
@@ -47,7 +48,7 @@ _006F:
 _007B:
     LockAll
     ApplyMovement 10, _00C0
-    ApplyMovement 0xFF, _00B4
+    ApplyMovement LOCALID_PLAYER, _00B4
     WaitMovement
     Message 0
     SetVar 0x8004, 0x1A9
@@ -62,13 +63,13 @@ _007B:
 
     .balign 4, 0
 _00B4:
-    MoveAction_03F
-    MoveAction_020
+    MoveAction_063
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _00C0:
-    MoveAction_021
-    MoveAction_04B
-    MoveAction_00D
+    MoveAction_033
+    MoveAction_075
+    MoveAction_013
     EndMovement

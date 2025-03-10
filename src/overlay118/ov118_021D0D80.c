@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/species.h"
+#include "generated/species.h"
 
 #include "struct_decls/struct_02014014_decl.h"
 #include "struct_defs/struct_0207F248.h"
@@ -15,6 +15,7 @@
 #include "heap.h"
 #include "message.h"
 #include "party.h"
+#include "pokedex.h"
 #include "pokemon.h"
 #include "spl.h"
 #include "strbuf.h"
@@ -23,7 +24,6 @@
 #include "unk_02005474.h"
 #include "unk_02014000.h"
 #include "unk_0202419C.h"
-#include "unk_0202631C.h"
 #include "unk_0207E0B8.h"
 #include "unk_020819DC.h"
 #include "unk_02082C2C.h"
@@ -62,7 +62,7 @@ void ov118_021D0D80(GameWindowLayout *param0)
 {
     GF_ASSERT(param0->unk_B24 == NULL);
 
-    param0->unk_B24 = Heap_AllocFromHeap(12, sizeof(OverlayMetadata));
+    param0->unk_B24 = Heap_AllocFromHeap(HEAP_ID_12, sizeof(OverlayMetadata));
     MI_CpuClear8(param0->unk_B24, sizeof(OverlayMetadata));
     param0->unk_B24->unk_14 = param0->unk_B11;
 }
@@ -93,7 +93,7 @@ int ov118_021D0DBC(GameWindowLayout *param0)
             break;
         }
 
-        sub_0202736C(SaveData_Pokedex(FieldSystem_GetSaveData(param0->unk_5A4->unk_1C)), v1);
+        Pokedex_Capture(SaveData_GetPokedex(FieldSystem_GetSaveData(param0->unk_5A4->unk_1C)), v1);
     }
         v0->unk_00++;
         break;
@@ -190,8 +190,8 @@ static void ov118_021D0FDC(OverlayMetadata *param0)
 
     sub_02014000();
 
-    v0 = Heap_AllocFromHeap(12, 0x4800);
-    param0->unk_18 = sub_02014014(ov118_021D1128, ov118_021D114C, v0, 0x4800, 1, 12);
+    v0 = Heap_AllocFromHeap(HEAP_ID_12, 0x4800);
+    param0->unk_18 = sub_02014014(ov118_021D1128, ov118_021D114C, v0, 0x4800, 1, HEAP_ID_12);
     camera = sub_02014784(param0->unk_18);
 
     Camera_SetClipping((FX32_ONE), (FX32_ONE * 900), camera);
@@ -199,9 +199,7 @@ static void ov118_021D0FDC(OverlayMetadata *param0)
 
 static void ov118_021D1028(OverlayMetadata *param0)
 {
-    void *v0;
-
-    v0 = sub_020144C4(185, param0->unk_10, 12);
+    void *v0 = sub_020144C4(185, param0->unk_10, 12);
     sub_020144CC(param0->unk_18, v0, (1 << 1) | (1 << 3), 1);
 
     switch (param0->unk_0C) {
@@ -221,9 +219,7 @@ static void ov118_021D1028(OverlayMetadata *param0)
 
 static void ov118_021D10B0(SPLEmitter *param0)
 {
-    OverlayMetadata *v0;
-
-    v0 = sub_02014764();
+    OverlayMetadata *v0 = sub_02014764();
 
     SPLEmitter_SetPosX(param0, Unk_ov118_021D1170[v0->unk_14][0]);
     SPLEmitter_SetPosY(param0, Unk_ov118_021D1170[v0->unk_14][1]);
@@ -249,9 +245,7 @@ static int ov118_021D10E8(void)
 
 static void ov118_021D110C(OverlayMetadata *param0)
 {
-    void *v0;
-
-    v0 = sub_02014730(param0->unk_18);
+    void *v0 = sub_02014730(param0->unk_18);
     sub_0201411C(param0->unk_18);
     Heap_FreeToHeap(v0);
 }

@@ -1,19 +1,20 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_205_house.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _006D
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
     Message 0
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0035
-    GoToIfEq 0x800C, 1, _0062
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0035
+    GoToIfEq 0x800C, MENU_NO, _0062
     End
 
 _0035:

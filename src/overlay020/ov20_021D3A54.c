@@ -15,13 +15,13 @@
 #include "overlay020/struct_ov20_021D4FF0.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
 #include "enums.h"
 #include "font.h"
 #include "graphics.h"
 #include "heap.h"
 #include "message.h"
 #include "narc.h"
+#include "sprite.h"
 #include "strbuf.h"
 #include "sys_task_manager.h"
 #include "text.h"
@@ -37,7 +37,7 @@ typedef struct UnkStruct_ov20_021D3E0C_t {
     SysTask *unk_18;
     UnkStruct_ov20_021D4FF0 unk_1C;
     UnkStruct_ov20_021D4E8C unk_3C;
-    CellActor *unk_5C;
+    Sprite *unk_5C;
 } UnkStruct_ov20_021D3E0C;
 
 static u32 ov20_021D3B74(UnkStruct_ov20_021D3E0C *param0, BgConfig *param1, u32 param2);
@@ -47,7 +47,7 @@ static void ov20_021D3E0C(UnkStruct_ov20_021D3E0C *param0);
 
 UnkStruct_ov20_021D3E0C *ov20_021D3A54(UnkStruct_ov20_021D2128 *param0, const UnkStruct_ov20_021D16E8 *param1, const UnkStruct_020998EC *param2)
 {
-    UnkStruct_ov20_021D3E0C *v0 = Heap_AllocFromHeap(35, sizeof(UnkStruct_ov20_021D3E0C));
+    UnkStruct_ov20_021D3E0C *v0 = Heap_AllocFromHeap(HEAP_ID_35, sizeof(UnkStruct_ov20_021D3E0C));
 
     v0->unk_00 = param0;
     v0->unk_04 = param1;
@@ -63,7 +63,7 @@ UnkStruct_ov20_021D3E0C *ov20_021D3A54(UnkStruct_ov20_021D2128 *param0, const Un
 void ov20_021D3A80(UnkStruct_ov20_021D3E0C *param0)
 {
     if (param0->unk_5C) {
-        CellActor_Delete(param0->unk_5C);
+        Sprite_Delete(param0->unk_5C);
     }
 
     Heap_FreeToHeap(param0);
@@ -76,9 +76,9 @@ void ov20_021D3A98(UnkStruct_ov20_021D3E0C *param0, NARC *param1)
 
     v0 = ov20_021D2E04(param0->unk_00);
 
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(param1, 2, v0, 1, 0, 0, 1, 35);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(param1, 2, v0, 1, 0, 0, 1, HEAP_ID_35);
 
-    v1 = Graphics_LoadTilesToBgLayerFromOpenNARC(param1, 3, v0, 1, 0, 0, 1, 35);
+    v1 = Graphics_LoadTilesToBgLayerFromOpenNARC(param1, 3, v0, 1, 0, 0, 1, HEAP_ID_35);
     v1 /= 0x20;
     v1 = ov20_021D3B74(param0, v0, v1);
     v1 = ov20_021D3C78(param0, v0, v1);
@@ -105,7 +105,7 @@ static u32 ov20_021D3B74(UnkStruct_ov20_021D3E0C *param0, BgConfig *param1, u32 
     Strbuf *v5;
     u32 v6, v7;
 
-    v4 = MessageLoader_Init(1, 26, 436, 35);
+    v4 = MessageLoader_Init(1, 26, 436, HEAP_ID_35);
 
     v1 = 1;
     v2 = 9;
@@ -157,7 +157,7 @@ static u32 ov20_021D3C78(UnkStruct_ov20_021D3E0C *param0, BgConfig *param1, u32 
     Window_Add(param1, &v0, 1, 34, 10, 25, 8, 11, param2);
     param2 += 200;
 
-    v1 = Strbuf_Init(4, 35);
+    v1 = Strbuf_Init(4, HEAP_ID_35);
 
     Window_FillTilemap(&v0, 15);
 
@@ -199,7 +199,7 @@ static u32 ov20_021D3D44(UnkStruct_ov20_021D3E0C *param0, BgConfig *param1, u32 
     Strbuf *v3;
     int v4, v5;
 
-    v2 = MessageLoader_Init(1, 26, 436, 35);
+    v2 = MessageLoader_Init(1, 26, 436, HEAP_ID_35);
     v3 = MessageLoader_GetNewStrbuf(v2, 13);
     v5 = ((8 * 8) - Font_CalcStrbufWidth(FONT_SYSTEM, v3, 0)) / 2;
 
@@ -224,23 +224,23 @@ static u32 ov20_021D3D44(UnkStruct_ov20_021D3E0C *param0, BgConfig *param1, u32 
 
 static void ov20_021D3E0C(UnkStruct_ov20_021D3E0C *param0)
 {
-    CellActorResourceData v0;
+    SpriteResourcesHeader v0;
 
     ov20_021D2E0C(param0->unk_00, &v0, 0, 1);
     param0->unk_5C = ov20_021D2E50(param0->unk_00, &v0, 48, 54, 2, NNS_G2D_VRAM_TYPE_2DMAIN);
-    CellActor_SetAnim(param0->unk_5C, 4);
-    CellActor_SetDrawFlag(param0->unk_5C, 0);
+    Sprite_SetAnim(param0->unk_5C, 4);
+    Sprite_SetDrawFlag(param0->unk_5C, 0);
 }
 
 void ov20_021D3E48(UnkStruct_ov20_021D3E0C *param0, BOOL param1)
 {
-    CellActor_SetDrawFlag(param0->unk_5C, param1);
+    Sprite_SetDrawFlag(param0->unk_5C, param1);
 
     if (param1) {
         if (ov20_021D1F94(param0->unk_04) == 0) {
-            CellActor_SetAnim(param0->unk_5C, 4);
+            Sprite_SetAnim(param0->unk_5C, 4);
         } else {
-            CellActor_SetAnim(param0->unk_5C, 6);
+            Sprite_SetAnim(param0->unk_5C, 6);
         }
     }
 }
@@ -276,8 +276,8 @@ void ov20_021D3E74(UnkStruct_ov20_021D3E0C *param0, u32 param1)
     v0.x *= FX32_ONE;
     v0.y *= FX32_ONE;
 
-    CellActor_SetPosition(param0->unk_5C, &v0);
-    CellActor_SetAnim(param0->unk_5C, v2);
+    Sprite_SetPosition(param0->unk_5C, &v0);
+    Sprite_SetAnim(param0->unk_5C, v2);
 }
 
 void ov20_021D3EF8(UnkStruct_ov20_021D3E0C *param0)

@@ -1,13 +1,14 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_214_gate_to_veilstone_city.h"
 
     .data
 
     ScriptEntry _0068
     ScriptEntry _000A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
-    ScrCmd_1B7 0x4032, 4
+    GetRandom 0x4032, 4
     ScrCmd_238 15, 0x4000
     GoToIfEq 0x4000, 0, _0062
     ScrCmd_238 16, 0x4000

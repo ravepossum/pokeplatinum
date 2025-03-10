@@ -11,6 +11,7 @@
 #include "bg_window.h"
 #include "communication_information.h"
 #include "communication_system.h"
+#include "field_message.h"
 #include "field_system.h"
 #include "field_task.h"
 #include "game_options.h"
@@ -30,7 +31,6 @@
 #include "unk_0202ACE0.h"
 #include "unk_0203061C.h"
 #include "unk_0203909C.h"
-#include "unk_0205D8CC.h"
 
 typedef struct {
     StringList *unk_00;
@@ -68,8 +68,8 @@ static BOOL ov5_021EA874(UnkStruct_ov5_021EAE78 *param0)
 
     param0->unk_8C = 0;
 
-    LoadMessageBoxGraphics(param0->fieldSystem->bgConfig, 3, (512 - (18 + 12)), 10, Options_Frame(SaveData_Options(param0->unk_34)), 4);
-    LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 1024 - (18 + 12) - 9, 11, 0, 4);
+    LoadMessageBoxGraphics(param0->fieldSystem->bgConfig, 3, (512 - (18 + 12)), 10, Options_Frame(SaveData_Options(param0->unk_34)), HEAP_ID_FIELD);
+    LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 1024 - (18 + 12) - 9, 11, 0, HEAP_ID_FIELD);
 
     param0->unk_48 = 1;
     return 0;
@@ -283,7 +283,7 @@ static BOOL ov5_021EAB58(UnkStruct_ov5_021EAE78 *param0)
     v1.choices = param0->unk_00;
     v1.window = &param0->unk_20;
     v1.cursorCallback = ov5_021EAF90;
-    v1.tmp = param0;
+    v1.parent = param0;
 
     param0->unk_04 = ListMenu_New(&v1, 0, 0, 4);
     Window_CopyToVRAM(&param0->unk_20);
@@ -295,9 +295,7 @@ static BOOL ov5_021EAB58(UnkStruct_ov5_021EAE78 *param0)
 static BOOL ov5_021EAC44(UnkStruct_ov5_021EAE78 *param0)
 {
     TrainerInfo *v0;
-    int v1;
-
-    v1 = ListMenu_ProcessInput(param0->unk_04);
+    int v1 = ListMenu_ProcessInput(param0->unk_04);
 
     switch (v1) {
     case 0xffffffff:
@@ -444,10 +442,10 @@ static void ov5_021EAEE0(UnkStruct_ov5_021EAE78 *param0)
 {
     MI_CpuClear8(param0, sizeof(UnkStruct_ov5_021EAE78));
 
-    param0->unk_38 = StringTemplate_Default(4);
-    param0->unk_3C = MessageLoader_Init(0, 26, 675, 4);
-    param0->unk_0C = Strbuf_Init(110, 4);
-    param0->unk_08 = Strbuf_Init(110, 4);
+    param0->unk_38 = StringTemplate_Default(HEAP_ID_FIELD);
+    param0->unk_3C = MessageLoader_Init(0, 26, 675, HEAP_ID_FIELD);
+    param0->unk_0C = Strbuf_Init(110, HEAP_ID_FIELD);
+    param0->unk_08 = Strbuf_Init(110, HEAP_ID_FIELD);
 }
 
 static void ov5_021EAF1C(UnkStruct_ov5_021EAE78 *param0)

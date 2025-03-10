@@ -46,9 +46,7 @@ static const UnkStruct_ov101_021D86B0 Unk_ov5_02200464;
 
 void *ov5_021F23D0(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_ov5_021F23FC *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F23FC)), 0, 0);
+    UnkStruct_ov5_021F23FC *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F23FC)), 0, 0);
     v0->unk_00 = param0;
 
     ov5_021F23FC(v0);
@@ -119,14 +117,14 @@ static int ov5_021F2488(UnkStruct_ov101_021D5D90 *param0, void *param1)
     ov5_021DFB40(v0->unk_10.unk_00, &v0->unk_1C, &v0->unk_10.unk_04->unk_04, &v0->unk_10.unk_04->unk_18, 0);
     sub_02073B90(&v0->unk_40, &v0->unk_10.unk_04->unk_04, &v0->unk_1C);
 
-    v0->unk_04 = MapObject_Id(v0->unk_10.unk_08);
+    v0->unk_04 = MapObject_GetLocalID(v0->unk_10.unk_08);
     v0->unk_08 = sub_02062918(v0->unk_10.unk_08);
 
     {
         VecFx32 v2, v3;
         MapObject *v4 = v0->unk_10.unk_08;
 
-        MapObject_PosVectorOut(v4, &v2);
+        MapObject_GetPosPtr(v4, &v2);
         sub_02063078(v4, &v3);
 
         v2.x += v3.x + 0;
@@ -167,7 +165,7 @@ static void ov5_021F251C(UnkStruct_ov101_021D5D90 *param0, void *param1)
     if (v0->unk_0C == 0) {
         VecFx32 v2, v3;
 
-        MapObject_PosVectorOut(v1, &v2);
+        MapObject_GetPosPtr(v1, &v2);
         sub_02063078(v1, &v3);
 
         v2.x += v3.x + 0;

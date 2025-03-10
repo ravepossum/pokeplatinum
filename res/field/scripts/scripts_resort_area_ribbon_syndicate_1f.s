@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/resort_area_ribbon_syndicate_1f.h"
 
     .data
 
@@ -10,14 +11,14 @@
     ScriptEntry _02D9
     ScriptEntry _003F
     ScriptEntry _0022
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0022:
     GoToIfSet 250, _002F
     End
 
 _002F:
-    ScrCmd_186 0, 16, 14
+    SetObjectEventPos 0, 16, 14
     ScrCmd_189 0, 1
     End
 
@@ -51,9 +52,9 @@ _0078:
     .balign 4, 0
 _00AC:
     MoveAction_002
-    MoveAction_047
-    MoveAction_00F
-    MoveAction_048
+    MoveAction_071
+    MoveAction_015
+    MoveAction_072
     EndMovement
 
 _00C0:
@@ -85,8 +86,8 @@ _00D6:
 _012F:
     ScrCmd_072 20, 2
     Message 3
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _025C
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _025C
     ScrCmd_071 0x800C, 0x2710
     GoToIfEq 0x800C, 0, _024F
     ScrCmd_334 35, 0x2710
@@ -106,8 +107,8 @@ _012F:
 _018A:
     ScrCmd_072 20, 2
     Message 4
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _025C
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _025C
     ScrCmd_071 0x800C, 0x186A0
     GoToIfEq 0x800C, 0, _024F
     ScrCmd_335 35, 0x186A0
@@ -127,8 +128,8 @@ _018A:
 _01E7:
     ScrCmd_072 20, 2
     Message 5
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _025C
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _025C
     ScrCmd_071 0x800C, 0xF423F
     GoToIfEq 0x800C, 0, _024F
     ScrCmd_335 35, 0xF423F
@@ -183,8 +184,8 @@ _027C:
     LockAll
     FacePlayer
     GetPlayerGender 0x800C
-    GoToIfEq 0x800C, 0, _02A4
-    GoToIfEq 0x800C, 1, _02AF
+    GoToIfEq 0x800C, GENDER_MALE, _02A4
+    GoToIfEq 0x800C, GENDER_FEMALE, _02AF
     End
 
 _02A4:
@@ -206,7 +207,7 @@ _02BA:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 0x12C, 0
+    PlayCry SPECIES_SKITTY
     Message 18
     ScrCmd_04D
     WaitABXPadPress
@@ -219,7 +220,7 @@ _02D9:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 54, 0
+    PlayCry SPECIES_PSYDUCK
     Message 19
     ScrCmd_04D
     WaitABXPadPress

@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/stark_mountain_room_3.h"
 
     .data
 
@@ -7,7 +8,7 @@
     ScriptEntry _00D0
     ScriptEntry _00E6
     ScriptEntry _019C
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0016:
     SetVar 0x4000, 0x409E
@@ -40,7 +41,7 @@ _0089:
 
 _0096:
     SetFlag 0x1DD
-    ScrCmd_065 1
+    RemoveObject 1
     ClearFlag 142
     End
 
@@ -63,7 +64,7 @@ _0096:
 
     .balign 4, 0
 _00B4:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .byte 32
@@ -104,18 +105,18 @@ _00E6:
     WaitFanfare SEQ_SE_CONFIRM
     CallIfUnset 215, _0174
     SetVar 0x409E, 2
-    ScrCmd_04C 0x1E5, 0
+    PlayCry SPECIES_HEATRAN
     Message 15
     CloseMessage
     SetFlag 142
     StartLegendaryBattle SPECIES_HEATRAN, 50
     ClearFlag 142
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _0168
+    GoToIfEq 0x800C, FALSE, _0168
     CheckLostBattle 0x800C
-    CallIfEq 0x800C, 0, _017A
+    CallIfEq 0x800C, FALSE, _017A
     CheckDidNotCapture 0x800C
-    GoToIfEq 0x800C, 1, _015D
+    GoToIfEq 0x800C, TRUE, _015D
     GoTo _0155
     End
 
@@ -133,7 +134,7 @@ _015D:
 
 _0168:
     SetVar 0x409E, 1
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
@@ -142,7 +143,7 @@ _0174:
     Return
 
 _017A:
-    SetFlag 0x983
+    SetFlag FLAG_UNLOCKED_VS_SEEKER_LVL_5
     Return
 
     .byte 12
@@ -183,7 +184,7 @@ _019C:
     ScrCmd_29F 0
     ScrCmd_04A 0x65C
     ApplyMovement 2, _03A4
-    ApplyMovement 0xFF, _0388
+    ApplyMovement LOCALID_PLAYER, _0388
     WaitMovement
     ApplyMovement 2, _00B4
     WaitMovement
@@ -191,14 +192,14 @@ _019C:
     CloseMessage
     ApplyMovement 5, _03B0
     WaitMovement
-    ScrCmd_065 3
+    RemoveObject 3
     Message 2
     Message 3
-    ScrCmd_04C 0x1C5, 0
+    PlayCry SPECIES_CROAGUNK
     ScrCmd_04D
     CloseMessage
     ClearFlag 0x232
-    ScrCmd_064 0
+    AddObject 0
     ApplyMovement 0, _0490
     WaitMovement
     ApplyMovement 5, _03C0
@@ -210,10 +211,10 @@ _019C:
     WaitTime 15, 0x800C
     Message 5
     CloseMessage
-    ScrCmd_065 0
-    ScrCmd_065 6
+    RemoveObject 0
+    RemoveObject 6
     ClearFlag 0x231
-    ScrCmd_064 4
+    AddObject 4
     CallCommonScript 0x807
     Message 6
     CloseMessage
@@ -238,7 +239,7 @@ _019C:
     CloseMessage
     ApplyMovement 9, _0464
     ApplyMovement 10, _047C
-    ApplyMovement 0xFF, _0390
+    ApplyMovement LOCALID_PLAYER, _0390
     WaitMovement
     ApplyMovement 5, _03D8
     WaitMovement
@@ -246,10 +247,10 @@ _019C:
     Message 12
     CloseMessage
     ClearFlag 0x230
-    ScrCmd_064 7
+    AddObject 7
     ApplyMovement 7, _04C8
     WaitMovement
-    ScrCmd_064 8
+    AddObject 8
     ApplyMovement 8, _04FC
     WaitMovement
     Message 13
@@ -261,9 +262,9 @@ _019C:
     ApplyMovement 7, _04E0
     ApplyMovement 8, _0510
     WaitMovement
-    ScrCmd_065 5
-    ScrCmd_065 7
-    ScrCmd_065 8
+    RemoveObject 5
+    RemoveObject 7
+    RemoveObject 8
     BufferPlayerName 0
     Message 14
     CloseMessage
@@ -287,179 +288,179 @@ _019C:
 
     .balign 4, 0
 _0388:
-    MoveAction_00C 3
+    MoveAction_012 3
     EndMovement
 
     .balign 4, 0
 _0390:
-    MoveAction_03F 2
-    MoveAction_023
-    MoveAction_03F 2
-    MoveAction_020
+    MoveAction_063 2
+    MoveAction_035
+    MoveAction_063 2
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _03A4:
-    MoveAction_03F
-    MoveAction_00C 2
+    MoveAction_063
+    MoveAction_012 2
     EndMovement
 
     .balign 4, 0
 _03B0:
-    MoveAction_00C 2
-    MoveAction_03F 2
-    MoveAction_021
+    MoveAction_012 2
+    MoveAction_063 2
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _03C0:
-    MoveAction_026
-    MoveAction_03F
-    MoveAction_027
-    MoveAction_03F
-    MoveAction_025
+    MoveAction_038
+    MoveAction_063
+    MoveAction_039
+    MoveAction_063
+    MoveAction_037
     EndMovement
 
     .balign 4, 0
 _03D8:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _03E0:
-    MoveAction_03F 2
-    MoveAction_00D 3
+    MoveAction_063 2
+    MoveAction_013 3
     EndMovement
 
     .balign 4, 0
 _03EC:
-    MoveAction_00D
-    MoveAction_00F
-    MoveAction_00D 3
-    MoveAction_00E
-    MoveAction_00D
-    MoveAction_045
+    MoveAction_013
+    MoveAction_015
+    MoveAction_013 3
+    MoveAction_014
+    MoveAction_013
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _0408:
-    MoveAction_03F 3
-    MoveAction_03E
-    MoveAction_020
+    MoveAction_063 3
+    MoveAction_062
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0418:
-    MoveAction_03F
-    MoveAction_021
-    MoveAction_03F
-    MoveAction_022
-    MoveAction_03E
-    MoveAction_020
+    MoveAction_063
+    MoveAction_033
+    MoveAction_063
+    MoveAction_034
+    MoveAction_062
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0434:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _043C:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0444:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _044C:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0454:
-    MoveAction_027 3
+    MoveAction_039 3
     EndMovement
 
     .balign 4, 0
 _045C:
-    MoveAction_026 3
+    MoveAction_038 3
     EndMovement
 
     .balign 4, 0
 _0464:
-    MoveAction_013 2
-    MoveAction_011 5
-    MoveAction_012
-    MoveAction_011
-    MoveAction_045
+    MoveAction_019 2
+    MoveAction_017 5
+    MoveAction_018
+    MoveAction_017
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _047C:
-    MoveAction_011 5
-    MoveAction_012
-    MoveAction_011
-    MoveAction_045
+    MoveAction_017 5
+    MoveAction_018
+    MoveAction_017
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _0490:
-    MoveAction_012 2
-    MoveAction_010 3
-    MoveAction_020
-    MoveAction_011 3
-    MoveAction_013 2
+    MoveAction_018 2
+    MoveAction_016 3
+    MoveAction_032
+    MoveAction_017 3
+    MoveAction_019 2
     EndMovement
 
     .balign 4, 0
 _04A8:
-    MoveAction_00E 3
-    MoveAction_00C 3
+    MoveAction_014 3
+    MoveAction_012 3
     EndMovement
 
     .balign 4, 0
 _04B4:
-    MoveAction_00E
-    MoveAction_00C
-    MoveAction_00F
-    MoveAction_00D 2
+    MoveAction_014
+    MoveAction_012
+    MoveAction_015
+    MoveAction_013 2
     EndMovement
 
     .balign 4, 0
 _04C8:
-    MoveAction_00C 2
-    MoveAction_00F
-    MoveAction_00C 3
-    MoveAction_00E 2
-    MoveAction_020
+    MoveAction_012 2
+    MoveAction_015
+    MoveAction_012 3
+    MoveAction_014 2
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _04E0:
-    MoveAction_00F
-    MoveAction_00D
-    MoveAction_00F
-    MoveAction_00D 3
-    MoveAction_00E
-    MoveAction_00D 2
+    MoveAction_015
+    MoveAction_013
+    MoveAction_015
+    MoveAction_013 3
+    MoveAction_014
+    MoveAction_013 2
     EndMovement
 
     .balign 4, 0
 _04FC:
-    MoveAction_00F
-    MoveAction_00C 4
-    MoveAction_00E
-    MoveAction_020
+    MoveAction_015
+    MoveAction_012 4
+    MoveAction_014
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0510:
-    MoveAction_00F
-    MoveAction_00D 3
-    MoveAction_00E
-    MoveAction_00D 2
-    MoveAction_045
+    MoveAction_015
+    MoveAction_013 3
+    MoveAction_014
+    MoveAction_013 2
+    MoveAction_069
     EndMovement

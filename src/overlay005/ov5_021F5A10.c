@@ -76,9 +76,7 @@ const UnkStruct_020217F4 Unk_ov5_02200BC0[];
 
 void *ov5_021F5A10(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_ov5_021F5A34 *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F5A34)), 0, 0);
+    UnkStruct_ov5_021F5A34 *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F5A34)), 0, 0);
     v0->unk_08 = param0;
 
     return v0;
@@ -246,9 +244,7 @@ static UnkStruct_020216E0 *ov5_021F5C18(UnkStruct_ov5_021DF47C *param0, int para
 
 int ov5_021F5C4C(UnkStruct_ov101_021D5D90 *param0)
 {
-    UnkStruct_ov5_021F5C4C *v0;
-
-    v0 = sub_02071598(param0);
+    UnkStruct_ov5_021F5C4C *v0 = sub_02071598(param0);
     return v0->unk_14;
 }
 
@@ -324,9 +320,7 @@ static void ov5_021F5CD4(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
 static void ov5_021F5D38(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
-    UnkStruct_ov5_021F5C4C *v0;
-
-    v0 = param1;
+    UnkStruct_ov5_021F5C4C *v0 = param1;
 
     sub_020211FC(v0->unk_40);
 
@@ -337,9 +331,7 @@ static void ov5_021F5D38(UnkStruct_ov101_021D5D90 *param0, void *param1)
 static void ov5_021F5D54(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
     VecFx32 v0;
-    UnkStruct_ov5_021F5C4C *v1;
-
-    v1 = param1;
+    UnkStruct_ov5_021F5C4C *v1 = param1;
 
     if (v1->unk_10 == 1) {
         return;
@@ -370,7 +362,7 @@ UnkStruct_ov101_021D5D90 *ov5_021F5D8C(MapObject *param0, int param1, int param2
     v1.unk_08 = ov5_021DF55C(v2, 20);
     v1.unk_0C = param0;
 
-    MapObject_PosVectorOut(param0, &v3);
+    MapObject_GetPosPtr(param0, &v3);
     v0 = sub_02062C0C(param0) + 1;
 
     if (param3 == 1) {
@@ -393,7 +385,7 @@ static int ov5_021F5DE4(UnkStruct_ov101_021D5D90 *param0, void *param1)
     v2 = sub_020715BC(param0);
 
     v1->unk_30 = *v2;
-    v1->unk_08 = MapObject_Id(v1->unk_30.unk_0C);
+    v1->unk_08 = MapObject_GetLocalID(v1->unk_30.unk_0C);
     v1->unk_0C = sub_02062918(v1->unk_30.unk_0C);
     v1->unk_24.y = (FX32_ONE * 6);
 
@@ -462,7 +454,7 @@ static int ov5_021F5EE0(UnkStruct_ov101_021D5D90 *param0, void *param1)
     v2 = sub_020715BC(param0);
 
     v1->unk_30 = *v2;
-    v1->unk_08 = MapObject_Id(v1->unk_30.unk_0C);
+    v1->unk_08 = MapObject_GetLocalID(v1->unk_30.unk_0C);
     v1->unk_0C = sub_02062918(v1->unk_30.unk_0C);
     v1->unk_24.y = (FX32_ONE * 6);
     v1->unk_10 = 1;

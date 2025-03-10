@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/oreburgh_mine_b1f.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _002F
     ScriptEntry _0042
     ScriptEntry _0055
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     SetFlag 0x9C2
@@ -81,7 +82,7 @@ _00F0:
 
 _0102:
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ScrCmd_065 3
+    RemoveObject 3
     SetVar 0x4056, 2
     ReleaseAll
     End
@@ -109,11 +110,11 @@ _012B:
 
     .balign 4, 0
 _0138:
-    MoveAction_00E
-    MoveAction_00C 3
+    MoveAction_014
+    MoveAction_012 3
     EndMovement
 
     .balign 4, 0
 _0144:
-    MoveAction_00C 3
+    MoveAction_012 3
     EndMovement

@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/trainer_score_events.h"
 
 #include "field/field_system.h"
 #include "overlay023/funcptr_ov23_0224DCB8.h"
@@ -17,7 +17,6 @@
 #include "comm_player_manager.h"
 #include "communication_information.h"
 #include "communication_system.h"
-#include "core_sys.h"
 #include "field_system.h"
 #include "game_records.h"
 #include "heap.h"
@@ -29,11 +28,12 @@
 #include "string_list.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
+#include "system_vars.h"
 #include "trainer_info.h"
 #include "unk_02005474.h"
 #include "unk_0202854C.h"
 #include "unk_020573FC.h"
-#include "unk_0206AFE0.h"
 #include "vars_flags.h"
 
 typedef struct {
@@ -207,7 +207,7 @@ void ov23_0224DCB8(int param0, UnkFuncPtr_ov23_0224DCB8 param1, FieldSystem *fie
     UnkStruct_ov23_0224E280 *v0;
     ListMenuTemplate v1;
 
-    v0 = Heap_AllocFromHeap(33, sizeof(UnkStruct_ov23_0224E280));
+    v0 = Heap_AllocFromHeap(HEAP_ID_33, sizeof(UnkStruct_ov23_0224E280));
     MI_CpuFill8(v0, 0, sizeof(UnkStruct_ov23_0224E280));
 
     Unk_ov23_022577B4 = v0;
@@ -240,7 +240,7 @@ static void ov23_0224DD2C(UnkStruct_ov23_0224E280 *param0)
         MessageLoader *v1;
         int v2;
 
-        v1 = MessageLoader_Init(0, 26, 634, 4);
+        v1 = MessageLoader_Init(0, 26, 634, HEAP_ID_FIELD);
 
         for (v2 = 0; v2 < NELEMS(Unk_ov23_022568B4); v2++) {
             StringList_AddFromMessageBank(param0->unk_1C, v1, Unk_ov23_022568B4[v2].unk_00, Unk_ov23_022568B4[v2].unk_04);
@@ -302,7 +302,7 @@ static void ov23_0224DE3C(UnkStruct_ov23_0224E280 *param0)
         int v2, v3;
         u8 v4[4];
 
-        v1 = MessageLoader_Init(0, 26, 633, 4);
+        v1 = MessageLoader_Init(0, 26, 633, HEAP_ID_FIELD);
 
         for (v2 = 0; v2 < 4; v2++) {
             u32 v5 = MTRNG_Next() % 12;
@@ -389,7 +389,7 @@ static void ov23_0224DFA0(UnkStruct_ov23_0224E280 *param0)
         MessageLoader *v1;
         int v2;
 
-        v1 = MessageLoader_Init(0, 26, 632, 4);
+        v1 = MessageLoader_Init(0, 26, 632, HEAP_ID_FIELD);
 
         for (v2 = 0; v2 < 4; v2++) {
             u32 v3 = 4 * param0->unk_32 + v2;
@@ -472,9 +472,7 @@ static void ov23_0224E17C(UnkStruct_ov23_0224E280 *param0, int param1)
 
 static void ov23_0224E19C(SysTask *param0, UnkStruct_ov23_0224E280 *param1)
 {
-    u32 v0;
-
-    v0 = Menu_ProcessInputAndHandleExit(param1->unk_24, 4);
+    u32 v0 = Menu_ProcessInputAndHandleExit(param1->unk_24, 4);
 
     if (v0 == 0xffffffff) {
         return;
@@ -495,9 +493,7 @@ static void ov23_0224E19C(SysTask *param0, UnkStruct_ov23_0224E280 *param1)
 static BOOL ov23_0224E1E0(SysTask *param0, void *param1)
 {
     UnkStruct_ov23_0224E280 *v0 = param1;
-    u32 v1;
-
-    v1 = ListMenu_ProcessInput(v0->unk_20);
+    u32 v1 = ListMenu_ProcessInput(v0->unk_20);
     ov23_0224F270(v0);
 
     if (CommSys_CheckError()) {
@@ -620,7 +616,7 @@ static void ov23_0224E2D8(SysTask *param0, void *param1)
         break;
     case 7:
         if (ov23_02254238(ov23_0224219C()) == 0) {
-            if ((PAD_BUTTON_A)&gCoreSys.pressedKeys) {
+            if ((PAD_BUTTON_A)&gSystem.pressedKeys) {
                 v0->unk_37 = 4;
             }
         }
@@ -657,7 +653,7 @@ static void ov23_0224E2D8(SysTask *param0, void *param1)
         break;
     case 15:
         if (ov23_02254238(ov23_0224219C()) == 0) {
-            if ((PAD_BUTTON_A)&gCoreSys.pressedKeys) {
+            if ((PAD_BUTTON_A)&gSystem.pressedKeys) {
                 v0->unk_37 = 14;
             }
         }
@@ -728,7 +724,7 @@ static void ov23_0224E2D8(SysTask *param0, void *param1)
         ov23_0224E124(v0);
         {
             VarsFlags *v2 = SaveData_GetVarsFlags(v0->fieldSystem->saveData);
-            sub_0206B3FC(v2, sub_0206B3EC(v2) + 1);
+            SystemVars_SetUndergroundItemsGivenAway(v2, SystemVars_GetUndergroundItemsGivenAway(v2) + 1);
         }
 
         GameRecords_IncrementTrainerScore(SaveData_GetGameRecordsPtr(v0->fieldSystem->saveData), TRAINER_SCORE_EVENT_UNK_31);
@@ -806,7 +802,7 @@ static void ov23_0224E2D8(SysTask *param0, void *param1)
         break;
     case 37:
         if (ov23_02254238(ov23_0224219C()) == 0) {
-            if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+            if (gSystem.pressedKeys & PAD_BUTTON_A) {
                 v0->unk_37 = 38;
             }
         }
@@ -870,9 +866,7 @@ static void ov23_0224E8E0(UnkStruct_ov23_0224E280 *param0)
 
 static void ov23_0224E8FC(SysTask *param0, UnkStruct_ov23_022577B0 *param1)
 {
-    u32 v0;
-
-    v0 = Menu_ProcessInputAndHandleExit(param1->unk_20, 4);
+    u32 v0 = Menu_ProcessInputAndHandleExit(param1->unk_20, 4);
 
     if (v0 == 0xffffffff) {
         return;
@@ -892,9 +886,7 @@ static void ov23_0224E8FC(SysTask *param0, UnkStruct_ov23_022577B0 *param1)
 
 static void ov23_0224E93C(SysTask *param0, UnkStruct_ov23_022577B0 *param1)
 {
-    u32 v0;
-
-    v0 = Menu_ProcessInputAndHandleExit(param1->unk_20, 4);
+    u32 v0 = Menu_ProcessInputAndHandleExit(param1->unk_20, 4);
 
     if (v0 == 0xffffffff) {
         return;
@@ -982,7 +974,7 @@ static void ov23_0224EAA4(UnkStruct_ov23_022577B0 *param0)
         MessageLoader *v2;
         int v3;
 
-        v2 = MessageLoader_Init(0, 26, 632, 4);
+        v2 = MessageLoader_Init(0, 26, 632, HEAP_ID_FIELD);
 
         for (v3 = 0; v3 < 4; v3++) {
             u32 v4 = 4 * param0->unk_2E + v3;
@@ -1084,7 +1076,7 @@ static void ov23_0224EC50(SysTask *param0, void *param1)
     case 2:
         v0->unk_2E = 12;
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        if (gSystem.pressedKeys & PAD_BUTTON_B) {
             ov23_0224DC40(v0, 8);
             v0->unk_34 = 8;
         } else if (v0->unk_35 == 5) {
@@ -1112,7 +1104,7 @@ static void ov23_0224EC50(SysTask *param0, void *param1)
         break;
     case 9:
         if (ov23_02254238(ov23_0224219C()) == 0) {
-            if ((PAD_BUTTON_A)&gCoreSys.pressedKeys) {
+            if ((PAD_BUTTON_A)&gSystem.pressedKeys) {
                 v0->unk_34 = 4;
             }
         }
@@ -1170,7 +1162,7 @@ static void ov23_0224EC50(SysTask *param0, void *param1)
         break;
     case 21:
         if (ov23_02254238(ov23_0224219C()) == 0) {
-            if ((PAD_BUTTON_A)&gCoreSys.pressedKeys) {
+            if ((PAD_BUTTON_A)&gSystem.pressedKeys) {
                 ov23_0224DC40(v0, 15);
                 v0->unk_34 = 15;
             }
@@ -1275,7 +1267,7 @@ void ov23_0224F07C(int param0, int param1, FieldSystem *fieldSystem)
         return;
     }
 
-    v0 = Heap_AllocFromHeap(33, sizeof(UnkStruct_ov23_022577B0));
+    v0 = Heap_AllocFromHeap(HEAP_ID_33, sizeof(UnkStruct_ov23_022577B0));
     MI_CpuFill8(v0, 0, sizeof(UnkStruct_ov23_022577B0));
 
     Unk_ov23_022577B0 = v0;
@@ -1409,9 +1401,7 @@ void ov23_0224F24C(void)
 
 static void ov23_0224F270(UnkStruct_ov23_0224E280 *param0)
 {
-    u16 v0;
-
-    v0 = param0->unk_3A;
+    u16 v0 = param0->unk_3A;
     ListMenu_CalcTrueCursorPos(param0->unk_20, &param0->unk_3A);
 
     if (v0 != param0->unk_3A) {

@@ -1,27 +1,28 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/pokemon_league_flint_room.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _0138
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
     GoToIfSet 178, _00D2
-    ScrCmd_0EA trainer_elite_four_flint
+    ScrCmd_0EA TRAINER_ELITE_FOUR_FLINT
     CallIfUnset 0x964, _00F0
     CallIfSet 0x964, _0104
     CloseMessage
     CallIfUnset 214, _00A0
     CallIfSet 214, _00A8
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _00CC
+    GoToIfEq 0x800C, FALSE, _00CC
     SetFlag 178
     PlayFanfare SEQ_SE_DP_KI_GASYAN
-    ScrCmd_065 1
+    RemoveObject 1
     CallIfUnset 214, _00B0
     CallIfSet 214, _00BE
     CallIfUnset 0x964, _0109
@@ -32,23 +33,23 @@ _000A:
     End
 
 _00A0:
-    StartTrainerBattle trainer_elite_four_flint
+    StartTrainerBattle TRAINER_ELITE_FOUR_FLINT
     Return
 
 _00A8:
-    StartTrainerBattle trainer_elite_four_flint_rematch
+    StartTrainerBattle TRAINER_ELITE_FOUR_FLINT_REMATCH
     Return
 
 _00B0:
-    ScrCmd_1CD 11, trainer_elite_four_flint, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_BEAT_ELITE_FOUR_MEMBER, TRAINER_ELITE_FOUR_FLINT, 0, 0, 0
     Return
 
 _00BE:
-    ScrCmd_1CD 11, trainer_elite_four_flint_rematch, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_BEAT_ELITE_FOUR_MEMBER, TRAINER_ELITE_FOUR_FLINT_REMATCH, 0, 0, 0
     Return
 
 _00CC:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
@@ -90,25 +91,25 @@ _0118:
 
     .balign 4, 0
 _0120:
-    MoveAction_047
-    MoveAction_021 3
-    MoveAction_025 4
-    MoveAction_029 2
-    MoveAction_048
+    MoveAction_071
+    MoveAction_033 3
+    MoveAction_037 4
+    MoveAction_041 2
+    MoveAction_072
     EndMovement
 
 _0138:
     LockAll
-    ApplyMovement 0xFF, _015C
+    ApplyMovement LOCALID_PLAYER, _015C
     WaitMovement
     PlayFanfare SEQ_SE_DP_KI_GASYAN
     ClearFlag 0x284
-    ScrCmd_064 2
+    AddObject 2
     SetVar 0x4001, 1
     ReleaseAll
     End
 
     .balign 4, 0
 _015C:
-    MoveAction_00C 2
+    MoveAction_012 2
     EndMovement

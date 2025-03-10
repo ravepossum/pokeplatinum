@@ -14,7 +14,6 @@
 
 #include "bg_window.h"
 #include "camera.h"
-#include "core_sys.h"
 #include "easy3d_object.h"
 #include "game_options.h"
 #include "gx_layers.h"
@@ -24,6 +23,7 @@
 #include "render_window.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "trainer_info.h"
 
@@ -32,7 +32,7 @@ int ov100_021D46C8(UnkStruct_ov100_021D46C8 *param0, UnkStruct_020985E4 *param1,
     int v0;
     MessageLoader *v1;
     Strbuf *v2;
-    Strbuf *v3 = Strbuf_Init(511, 111);
+    Strbuf *v3 = Strbuf_Init(511, HEAP_ID_111);
     u8 v4 = 0;
 
     v1 = param0->unk_2C;
@@ -40,7 +40,7 @@ int ov100_021D46C8(UnkStruct_ov100_021D46C8 *param0, UnkStruct_020985E4 *param1,
 
     if (param2 == 22) {
         Strbuf *v5 = TrainerInfo_NameNewStrbuf(param1->unk_08, 111);
-        StringTemplate *v6 = StringTemplate_Default(111);
+        StringTemplate *v6 = StringTemplate_Default(HEAP_ID_111);
 
         StringTemplate_SetStrbuf(v6, 0, v5, 0, 1, GAME_LANGUAGE);
         StringTemplate_Format(v6, v3, v2);
@@ -336,7 +336,7 @@ void ov100_021D4C94(UnkStruct_ov100_021D46C8 *param0, int param1)
 
 void ov100_021D4DC8(int param0)
 {
-    gCoreSys.unk_65 = param0;
+    gSystem.whichScreenIs3D = param0;
     GXLayers_SwapDisplay();
 }
 

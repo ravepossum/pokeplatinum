@@ -9,7 +9,7 @@
 #include "bg_window.h"
 #include "heap.h"
 #include "palette.h"
-#include "unk_0200C6E4.h"
+#include "sprite_system.h"
 
 typedef struct {
     u8 unk_00;
@@ -434,7 +434,7 @@ static void ov13_02225C4C(UnkStruct_ov13_022213F0 *param0, u16 *param1, u8 param
 
 static void ov13_02225D8C(UnkStruct_ov13_022213F0 *param0, u8 param1, u8 param2, u8 param3)
 {
-    u16 *v0 = Heap_AllocFromHeap(param0->unk_00->unk_0C, Unk_ov13_02229924[param1].unk_02 * Unk_ov13_02229924[param1].unk_03 * 2);
+    u16 *v0 = Heap_AllocFromHeap(param0->unk_00->heapID, Unk_ov13_02229924[param1].unk_02 * Unk_ov13_02229924[param1].unk_03 * 2);
 
     ov13_02225C4C(param0, v0, param1, param2, param3);
 
@@ -497,32 +497,32 @@ static void ov13_02225EB8(UnkStruct_ov13_022213F0 *param0, u8 param1, u8 param2)
     case 3:
     case 4:
     case 5:
-        sub_0200D5DC(param0->unk_1FB4[13 + param1 - 0], 0, Unk_ov13_02229896[param2]);
-        sub_0200D5DC(param0->unk_1FB4[0 + param1 - 0], 0, Unk_ov13_02229896[param2]);
-        sub_0200D5DC(param0->unk_1FB4[7 + param1 - 0], 0, Unk_ov13_02229896[param2]);
+        ManagedSprite_OffsetPositionXY(param0->unk_1FB4[13 + param1 - 0], 0, Unk_ov13_02229896[param2]);
+        ManagedSprite_OffsetPositionXY(param0->unk_1FB4[0 + param1 - 0], 0, Unk_ov13_02229896[param2]);
+        ManagedSprite_OffsetPositionXY(param0->unk_1FB4[7 + param1 - 0], 0, Unk_ov13_02229896[param2]);
         break;
     case 7:
-        sub_0200D5DC(param0->unk_1FB4[0 + param0->unk_00->unk_11], 0, Unk_ov13_02229890[param2]);
-        sub_0200D5DC(param0->unk_1FB4[7 + param0->unk_00->unk_11], 0, Unk_ov13_02229890[param2]);
+        ManagedSprite_OffsetPositionXY(param0->unk_1FB4[0 + param0->unk_00->unk_11], 0, Unk_ov13_02229890[param2]);
+        ManagedSprite_OffsetPositionXY(param0->unk_1FB4[7 + param0->unk_00->unk_11], 0, Unk_ov13_02229890[param2]);
         break;
     case 14:
     case 15:
     case 16:
     case 17:
-        sub_0200D5DC(param0->unk_1FB4[21 + param1 - 14], 0, Unk_ov13_02229890[param2]);
+        ManagedSprite_OffsetPositionXY(param0->unk_1FB4[21 + param1 - 14], 0, Unk_ov13_02229890[param2]);
         break;
     case 19:
     case 20:
     case 21:
     case 22:
-        sub_0200D5DC(param0->unk_1FB4[21 + param1 - 19], 0, Unk_ov13_02229890[param2]);
+        ManagedSprite_OffsetPositionXY(param0->unk_1FB4[21 + param1 - 19], 0, Unk_ov13_02229890[param2]);
         break;
     case 23:
     case 24:
     case 25:
     case 26:
     case 27:
-        sub_0200D5DC(param0->unk_1FB4[21 + param1 - 23], 0, Unk_ov13_02229890[param2]);
+        ManagedSprite_OffsetPositionXY(param0->unk_1FB4[21 + param1 - 23], 0, Unk_ov13_02229890[param2]);
         break;
     }
 }
@@ -707,9 +707,7 @@ void ov13_02226444(UnkStruct_ov13_022213F0 *param0, u8 param1)
 
 static u8 ov13_02226484(UnkStruct_ov13_022213F0 *param0)
 {
-    u16 v0, v1;
-
-    v1 = 0;
+    u16 v0, v1 = 0;
 
     for (v0 = 0; v0 < 6; v0++) {
         if ((param0->unk_04[v0].unk_04 != 0) && (param0->unk_04[v0].unk_17_7 == 0)) {

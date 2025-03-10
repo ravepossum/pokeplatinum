@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/snowpoint_city_pokecenter_1f.h"
 
     .data
 
@@ -7,7 +8,7 @@
     ScriptEntry _0035
     ScriptEntry _0048
     ScriptEntry _0067
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0016:
     SetVar 0x8007, 0
@@ -39,7 +40,7 @@ _0048:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 54, 0
+    PlayCry SPECIES_PSYDUCK
     Message 4
     ScrCmd_04D
     WaitABXPadPress
@@ -53,7 +54,7 @@ _0067:
     FacePlayer
     CheckBadgeAcquired BADGE_ID_ICICLE, 0x800C
     GoToIfEq 0x800C, 1, _00EC
-    ScrCmd_1BD 0x8000
+    GetPlayerDir 0x8000
     CallIfEq 0x8000, 0, _00C8
     CallIfEq 0x8000, 1, _00C8
     CallIfEq 0x8000, 2, _00D4
@@ -90,15 +91,15 @@ _00EC:
 
     .balign 4, 0
 _00FC:
-    MoveAction_029 2
+    MoveAction_041 2
     EndMovement
 
     .balign 4, 0
 _0104:
-    MoveAction_02B 2
+    MoveAction_043 2
     EndMovement
 
     .balign 4, 0
 _010C:
-    MoveAction_02A 2
+    MoveAction_042 2
     EndMovement

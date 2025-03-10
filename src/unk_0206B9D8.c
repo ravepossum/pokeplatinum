@@ -17,6 +17,7 @@
 
 #include "bag.h"
 #include "communication_system.h"
+#include "dexmode_checker.h"
 #include "field_system.h"
 #include "field_task.h"
 #include "heap.h"
@@ -33,7 +34,6 @@
 #include "unk_02038FFC.h"
 #include "unk_0203D1B8.h"
 #include "unk_0204AEE8.h"
-#include "unk_0207A274.h"
 
 #include "constdata/const_020F1E88.h"
 #include "constdata/const_020F410C.h"
@@ -139,11 +139,11 @@ static int sub_0206BAE0(UnkStruct_0206B9D8 *param0, FieldSystem *fieldSystem, in
 
     v0->options = SaveData_Options(v1);
     v0->monData = Party_GetFromSavedata(v1);
-    v0->dexMode = sub_0207A274(v1);
+    v0->dexMode = SaveData_GetDexMode(v1);
     v0->showContest = PokemonSummaryScreen_ShowContestData(v1);
-    v0->dataType = 1;
-    v0->pos = param0->unk_0D;
-    v0->max = (u8)Party_GetCurrentCount(v0->monData);
+    v0->dataType = SUMMARY_DATA_PARTY_MON;
+    v0->monIndex = param0->unk_0D;
+    v0->monMax = Party_GetCurrentCount(v0->monData);
     v0->move = 0;
     v0->mode = param0->unk_09;
     v0->specialRibbons = sub_0202D79C(v1);
@@ -165,7 +165,7 @@ static int sub_0206BB6C(UnkStruct_0206B9D8 *param0, FieldSystem *fieldSystem)
     }
 
     v0 = *(param0->unk_14);
-    param0->unk_0D = v0->pos;
+    param0->unk_0D = v0->monIndex;
     Heap_FreeToHeap(v0);
     *(param0->unk_14) = NULL;
 
@@ -201,7 +201,7 @@ static BOOL sub_0206BB94(FieldTask *param0)
 void sub_0206BBFC(FieldTask *param0, void **param1, u8 param2, u8 param3, u8 param4, u8 param5, u8 param6, u8 param7)
 {
     FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
-    UnkStruct_0206B9D8 *v1 = Heap_AllocFromHeap(11, sizeof(UnkStruct_0206B9D8));
+    UnkStruct_0206B9D8 *v1 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_0206B9D8));
 
     MI_CpuClear8(v1, sizeof(UnkStruct_0206B9D8));
 
@@ -270,7 +270,7 @@ static BOOL sub_0206BC94(FieldTask *param0)
 void sub_0206BCE4(FieldTask *param0, u16 param1, u16 param2, u16 param3)
 {
     FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
-    UnkStruct_0206BC48 *v1 = Heap_AllocFromHeap(11, sizeof(UnkStruct_0206BC48));
+    UnkStruct_0206BC48 *v1 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_0206BC48));
 
     MI_CpuClear8(v1, sizeof(UnkStruct_0206BC48));
 
@@ -314,7 +314,7 @@ static BOOL sub_0206BD1C(FieldTask *param0)
 void sub_0206BD88(FieldTask *param0, u16 param1, u16 param2)
 {
     FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
-    UnkStruct_0206BD88 *v1 = Heap_AllocFromHeap(11, sizeof(UnkStruct_0206BD88));
+    UnkStruct_0206BD88 *v1 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_0206BD88));
 
     MI_CpuClear8(v1, sizeof(UnkStruct_0206BD88));
 
@@ -472,9 +472,7 @@ u32 sub_0206BFFC(u32 param0)
 
 u32 sub_0206C008(SaveData *param0)
 {
-    u32 v0;
-
-    v0 = RecordMixedRNG_GetRand(SaveData_GetRecordMixedRNG(param0));
+    u32 v0 = RecordMixedRNG_GetRand(SaveData_GetRecordMixedRNG(param0));
     v0 = sub_0206BFFC(v0);
 
     sub_0202D470(sub_0202D750(param0), v0);

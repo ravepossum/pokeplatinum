@@ -12,12 +12,8 @@
 #include "overlay062/ov62_02231690.h"
 #include "overlay062/ov62_0224112C.h"
 #include "overlay062/ov62_const_funcptr_tables.h"
-#include "overlay104/struct_ov104_022412F4.h"
-#include "overlay104/struct_ov104_02241308.h"
-#include "overlay104/struct_ov104_0224133C.h"
 
 #include "bg_window.h"
-#include "core_sys.h"
 #include "gx_layers.h"
 #include "heap.h"
 #include "message.h"
@@ -25,14 +21,13 @@
 #include "palette.h"
 #include "render_text.h"
 #include "savedata_misc.h"
+#include "sprite_system.h"
+#include "sprite_util.h"
 #include "sys_task.h"
+#include "system.h"
 #include "unk_02005474.h"
 #include "unk_0200762C.h"
-#include "unk_020093B4.h"
-#include "unk_0200C6E4.h"
 #include "unk_02012744.h"
-#include "unk_02017728.h"
-#include "unk_0201DBEC.h"
 #include "unk_0201E3D8.h"
 #include "unk_02023FCC.h"
 #include "unk_0202419C.h"
@@ -42,33 +37,34 @@
 #include "unk_0208B284.h"
 #include "unk_0208BA78.h"
 #include "unk_0208C010.h"
+#include "vram_transfer.h"
 
 static void ov62_0222F670(BgConfig *param0);
 static void ov62_0222F848(UnkStruct_0208C06C *param0);
 
 void ov62_0222F2C0(UnkStruct_0208C06C *param0)
 {
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
     GXLayers_DisableEngineALayers();
     GXLayers_DisableEngineBLayers();
     GX_SetVisiblePlane(0);
     GXS_SetVisiblePlane(0);
-    VRAMTransferManager_New(4, 102);
+    VramTransfer_New(4, HEAP_ID_102);
 
-    param0->unk_14.unk_00 = NARC_ctor(NARC_INDEX_RESOURCE__ENG__BATT_REC__BATT_REC_GRA, 102);
-    param0->unk_14.unk_10 = BgConfig_New(102);
-    param0->unk_14.unk_14 = PaletteData_New(102);
-    param0->unk_14.unk_4C = sub_02024220(102, 0, 1, 0, 4, NULL);
-    param0->unk_14.unk_50 = sub_0200762C(102);
+    param0->unk_14.unk_00 = NARC_ctor(NARC_INDEX_RESOURCE__ENG__BATT_REC__BATT_REC_GRA, HEAP_ID_102);
+    param0->unk_14.unk_10 = BgConfig_New(HEAP_ID_102);
+    param0->unk_14.unk_14 = PaletteData_New(HEAP_ID_102);
+    param0->unk_14.unk_4C = sub_02024220(HEAP_ID_102, 0, 1, 0, 4, NULL);
+    param0->unk_14.unk_50 = sub_0200762C(HEAP_ID_102);
 
     NNS_G2dSetupSoftwareSpriteCamera();
 
     PaletteData_SetAutoTransparent(param0->unk_14.unk_14, 1);
-    PaletteData_AllocBuffer(param0->unk_14.unk_14, 0, 0x200, 102);
-    PaletteData_AllocBuffer(param0->unk_14.unk_14, 1, 0x200, 102);
-    PaletteData_AllocBuffer(param0->unk_14.unk_14, 2, 0x200, 102);
-    PaletteData_AllocBuffer(param0->unk_14.unk_14, 3, 0x200, 102);
+    PaletteData_AllocBuffer(param0->unk_14.unk_14, 0, 0x200, HEAP_ID_102);
+    PaletteData_AllocBuffer(param0->unk_14.unk_14, 1, 0x200, HEAP_ID_102);
+    PaletteData_AllocBuffer(param0->unk_14.unk_14, 2, 0x200, HEAP_ID_102);
+    PaletteData_AllocBuffer(param0->unk_14.unk_14, 3, 0x200, HEAP_ID_102);
     ov62_0222F670(param0->unk_14.unk_10);
     ov62_0222F848(param0);
 
@@ -82,14 +78,14 @@ void ov62_0222F2C0(UnkStruct_0208C06C *param0)
         RenderControlFlags_SetSpeedUpOnTouch(1);
     }
 
-    SetMainCallback(ov62_0222F8E4, param0);
+    SetVBlankCallback(ov62_0222F8E4, param0);
 
     if (param0->unk_00 != 0) {
         ov62_02241130(param0);
-        sub_0200966C(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_128K);
-        sub_02009704(NNS_G2D_VRAM_TYPE_2DMAIN);
-        sub_0200966C(NNS_G2D_VRAM_TYPE_2DSUB, GX_OBJVRAMMODE_CHAR_1D_128K);
-        sub_02009704(NNS_G2D_VRAM_TYPE_2DSUB);
+        ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_128K);
+        ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DMAIN);
+        ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DSUB, GX_OBJVRAMMODE_CHAR_1D_128K);
+        ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DSUB);
         sub_02039734();
         sub_020397C8(1, 102);
 
@@ -128,9 +124,9 @@ void ov62_0222F2C0(UnkStruct_0208C06C *param0)
     }
 
     {
-        param0->unk_14.unk_3C = sub_02012744((5 * 2) + 10, 102);
-        param0->unk_14.unk_34 = MessageLoader_Init(0, 26, 10, 102);
-        param0->unk_14.unk_38 = MessageLoader_Init(0, 26, 20, 102);
+        param0->unk_14.unk_3C = sub_02012744((5 * 2) + 10, HEAP_ID_102);
+        param0->unk_14.unk_34 = MessageLoader_Init(0, 26, 10, HEAP_ID_102);
+        param0->unk_14.unk_38 = MessageLoader_Init(0, 26, 20, HEAP_ID_102);
     }
 
     ov62_022338A8(param0);
@@ -171,8 +167,8 @@ void ov62_0222F514(UnkStruct_0208C06C *param0)
 
     NARC_dtor(param0->unk_14.unk_00);
     SysTask_Done(param0->unk_41E8);
-    sub_0200D0B0(param0->unk_14.unk_04, param0->unk_14.unk_08);
-    sub_0200C8D4(param0->unk_14.unk_04);
+    SpriteSystem_FreeResourcesAndManager(param0->unk_14.unk_04, param0->unk_14.unk_08);
+    SpriteSystem_Free(param0->unk_14.unk_04);
     sub_02039794();
 
     {
@@ -208,8 +204,8 @@ void ov62_0222F514(UnkStruct_0208C06C *param0)
 
     ov62_022411EC(param0);
 
-    SetMainCallback(NULL, NULL);
-    VRAMTransferManager_Destroy();
+    SetVBlankCallback(NULL, NULL);
+    VramTransfer_Free();
 }
 
 static const BgTemplate Unk_ov62_022487B0[] = {
@@ -304,7 +300,7 @@ static void ov62_0222F670(BgConfig *param0)
 
 void ov62_0222F824(int param0)
 {
-    gCoreSys.unk_65 = param0;
+    gSystem.whichScreenIs3D = param0;
     GXLayers_SwapDisplay();
 }
 
@@ -315,9 +311,9 @@ void ov62_0222F834(UnkStruct_0208C06C *param0)
 
 static void ov62_0222F848(UnkStruct_0208C06C *param0)
 {
-    param0->unk_14.unk_04 = sub_0200C6E4(102);
+    param0->unk_14.unk_04 = SpriteSystem_Alloc(102);
     {
-        const UnkStruct_ov104_0224133C v0 = {
+        const RenderOamTemplate v0 = {
             0,
             128,
             0,
@@ -328,16 +324,16 @@ static void ov62_0222F848(UnkStruct_0208C06C *param0)
             32,
         };
 
-        const UnkStruct_ov104_022412F4 v1 = {
+        const CharTransferTemplateWithModes v1 = {
             128, 0x10000, 0x4000, GX_OBJVRAMMODE_CHAR_1D_128K, GX_OBJVRAMMODE_CHAR_1D_128K
         };
 
-        sub_0200C73C(param0->unk_14.unk_04, &v0, &v1, 16 + 16);
+        SpriteSystem_Init(param0->unk_14.unk_04, &v0, &v1, 16 + 16);
     }
 
     {
         BOOL v2;
-        const UnkStruct_ov104_02241308 v3 = {
+        const SpriteResourceCapacities v3 = {
             128,
             32,
             128,
@@ -346,23 +342,23 @@ static void ov62_0222F848(UnkStruct_0208C06C *param0)
             16,
         };
 
-        param0->unk_14.unk_08 = sub_0200C704(param0->unk_14.unk_04);
+        param0->unk_14.unk_08 = SpriteManager_New(param0->unk_14.unk_04);
 
-        v2 = sub_0200C7C0(param0->unk_14.unk_04, param0->unk_14.unk_08, 64 + 64 + 64);
+        v2 = SpriteSystem_InitSprites(param0->unk_14.unk_04, param0->unk_14.unk_08, 64 + 64 + 64);
         GF_ASSERT(v2);
 
-        v2 = sub_0200CB30(param0->unk_14.unk_04, param0->unk_14.unk_08, &v3);
+        v2 = SpriteSystem_InitManagerWithCapacities(param0->unk_14.unk_04, param0->unk_14.unk_08, &v3);
         GF_ASSERT(v2);
     }
 
-    sub_0200964C(sub_0200C738(param0->unk_14.unk_04), 0, (256 * FX32_ONE));
+    SetSubScreenViewRect(SpriteSystem_GetRenderer(param0->unk_14.unk_04), 0, (256 * FX32_ONE));
 }
 
 void ov62_0222F8E4(void *param0)
 {
     UnkStruct_0208C06C *v0 = param0;
 
-    sub_0201DCAC();
+    VramTransfer_Process();
     PaletteData_CommitFadedBuffers(v0->unk_14.unk_14);
     Bg_RunScheduledUpdates(v0->unk_14.unk_10);
 
@@ -691,7 +687,7 @@ void ov62_0222FF40(UnkStruct_0208C06C *param0)
         param0->unk_534.unk_C8[v0].unk_10 = &param0->unk_14.unk_1C[v0];
     }
 
-    param0->unk_14.unk_18 = sub_02023FCC(param0->unk_14.unk_1C, 5, ov62_0222FE1C, param0, 102);
+    param0->unk_14.unk_18 = sub_02023FCC(param0->unk_14.unk_1C, 5, ov62_0222FE1C, param0, HEAP_ID_102);
 }
 
 void ov62_0222FF7C(UnkStruct_0208C06C *param0)
@@ -712,7 +708,7 @@ void ov62_0222FF7C(UnkStruct_0208C06C *param0)
             continue;
         }
 
-        SpriteActor_GetSpritePositionXY(param0->unk_534.unk_C8[v0].unk_00, &v1, &v2);
+        ManagedSprite_GetPositionXY(param0->unk_534.unk_C8[v0].unk_00, &v1, &v2);
 
         param0->unk_534.unk_C8[v0].unk_10->rect.top = v2 - 16;
         param0->unk_534.unk_C8[v0].unk_10->rect.bottom = v2 + 16;
@@ -727,7 +723,7 @@ void ov62_02230014(UnkStruct_0208C06C *param0)
     s16 v1, v2;
 
     for (v0 = 0; v0 < 5; v0++) {
-        SpriteActor_GetSpritePositionXY(param0->unk_534.unk_C8[v0].unk_00, &v1, &v2);
+        ManagedSprite_GetPositionXY(param0->unk_534.unk_C8[v0].unk_00, &v1, &v2);
         param0->unk_534.unk_C8[v0].unk_10->rect.top = 0;
         param0->unk_534.unk_C8[v0].unk_10->rect.bottom = 0;
         param0->unk_534.unk_C8[v0].unk_10->rect.left = 0;

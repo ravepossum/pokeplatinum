@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/villa.h"
 
     .data
 
@@ -46,13 +47,13 @@
     ScriptEntry _0EB4
     ScriptEntry _15F3
     ScriptEntry _1624
-    .short 0xFD13
+    ScriptEntryEnd
 
 _00B2:
     ScrCmd_2F0
     GetPlayerGender 0x4000
-    CallIfEq 0x4000, 0, _01EF
-    CallIfEq 0x4000, 1, _01F7
+    CallIfEq 0x4000, GENDER_MALE, _01EF
+    CallIfEq 0x4000, GENDER_FEMALE, _01F7
     GoToIfSet 0x9AC, _01ED
     SetFlag 0x2A7
     SetFlag 0x2A8
@@ -160,8 +161,8 @@ _0276:
     Return
 
 _0280:
-    ScrCmd_186 7, 6, 8
-    ScrCmd_186 10, 7, 8
+    SetObjectEventPos 7, 6, 8
+    SetObjectEventPos 10, 7, 8
     ClearFlag 0x2B1
     ClearFlag 0x2B6
     Return
@@ -218,32 +219,32 @@ _030C:
 
 _0360:
     GetPlayerGender 0x4000
-    CallIfEq 0x4000, 0, _0400
-    CallIfEq 0x4000, 1, _0405
+    CallIfEq 0x4000, GENDER_MALE, _0400
+    CallIfEq 0x4000, GENDER_FEMALE, _0405
     Return
 
 _0380:
     GetPlayerGender 0x4000
-    CallIfEq 0x4000, 0, _040A
-    CallIfEq 0x4000, 1, _040F
+    CallIfEq 0x4000, GENDER_MALE, _040A
+    CallIfEq 0x4000, GENDER_FEMALE, _040F
     Return
 
 _03A0:
     GetPlayerGender 0x4000
-    CallIfEq 0x4000, 0, _0414
-    CallIfEq 0x4000, 1, _0419
+    CallIfEq 0x4000, GENDER_MALE, _0414
+    CallIfEq 0x4000, GENDER_FEMALE, _0419
     Return
 
 _03C0:
     GetPlayerGender 0x4000
-    CallIfEq 0x4000, 0, _041E
-    CallIfEq 0x4000, 1, _0423
+    CallIfEq 0x4000, GENDER_MALE, _041E
+    CallIfEq 0x4000, GENDER_FEMALE, _0423
     Return
 
 _03E0:
     GetPlayerGender 0x4000
-    CallIfEq 0x4000, 0, _0428
-    CallIfEq 0x4000, 1, _042D
+    CallIfEq 0x4000, GENDER_MALE, _0428
+    CallIfEq 0x4000, GENDER_FEMALE, _042D
     Return
 
 _0400:
@@ -658,13 +659,13 @@ _0917:
 
     .balign 4, 0
 _0930:
-    MoveAction_03F
-    MoveAction_023
+    MoveAction_063
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _093C:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
 _0944:
@@ -779,13 +780,13 @@ _0AC8:
 
     .balign 4, 0
 _0AD8:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0AE0:
-    MoveAction_03F
-    MoveAction_022
+    MoveAction_063
+    MoveAction_034
     EndMovement
 
 _0AEC:
@@ -798,12 +799,12 @@ _0AF4:
     LockAll
     PlayFanfare SEQ_SE_DP_DOOR_OPEN
     ClearFlag 0x2B0
-    ScrCmd_186 6, 11, 11
+    SetObjectEventPos 6, 11, 11
     ScrCmd_188 6, 14
     ScrCmd_189 6, 0
-    ScrCmd_064 6
+    AddObject 6
     WaitFanfare SEQ_SE_DP_DOOR_OPEN
-    ApplyMovement 0xFF, _0B3C
+    ApplyMovement LOCALID_PLAYER, _0B3C
     ApplyMovement 6, _0B4C
     WaitMovement
     SetFlag 0x9AC
@@ -813,28 +814,28 @@ _0AF4:
 
     .balign 4, 0
 _0B3C:
-    MoveAction_021
-    MoveAction_03F 5
-    MoveAction_022
+    MoveAction_033
+    MoveAction_063 5
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0B4C:
-    MoveAction_00E 2
-    MoveAction_00C 5
-    MoveAction_00E 3
+    MoveAction_014 2
+    MoveAction_012 5
+    MoveAction_014 3
     EndMovement
 
 _0B5C:
     LockAll
     PlayFanfare SEQ_SE_DP_DOOR_OPEN
     ClearFlag 0x2B3
-    ScrCmd_186 9, 11, 11
+    SetObjectEventPos 9, 11, 11
     ScrCmd_188 9, 14
     ScrCmd_189 9, 0
-    ScrCmd_064 9
+    AddObject 9
     WaitFanfare SEQ_SE_DP_DOOR_OPEN
-    ApplyMovement 0xFF, _0BAC
+    ApplyMovement LOCALID_PLAYER, _0BAC
     ApplyMovement 9, _0BA4
     WaitMovement
     SetFlag 0x9AC
@@ -844,26 +845,26 @@ _0B5C:
 
     .balign 4, 0
 _0BA4:
-    MoveAction_00F 8
+    MoveAction_015 8
     EndMovement
 
     .balign 4, 0
 _0BAC:
-    MoveAction_021
-    MoveAction_03F 3
-    MoveAction_023
+    MoveAction_033
+    MoveAction_063 3
+    MoveAction_035
     EndMovement
 
 _0BBC:
     LockAll
     PlayFanfare SEQ_SE_DP_DOOR_OPEN
     ClearFlag 0x2B6
-    ScrCmd_186 10, 11, 11
+    SetObjectEventPos 10, 11, 11
     ScrCmd_188 10, 14
     ScrCmd_189 10, 0
-    ScrCmd_064 10
+    AddObject 10
     WaitFanfare SEQ_SE_DP_DOOR_OPEN
-    ApplyMovement 0xFF, _0C14
+    ApplyMovement LOCALID_PLAYER, _0C14
     ApplyMovement 10, _0C04
     WaitMovement
     SetFlag 0x9AC
@@ -873,28 +874,28 @@ _0BBC:
 
     .balign 4, 0
 _0C04:
-    MoveAction_00E 2
-    MoveAction_00C 3
-    MoveAction_00E 2
+    MoveAction_014 2
+    MoveAction_012 3
+    MoveAction_014 2
     EndMovement
 
     .balign 4, 0
 _0C14:
-    MoveAction_021
-    MoveAction_03F 4
-    MoveAction_022
+    MoveAction_033
+    MoveAction_063 4
+    MoveAction_034
     EndMovement
 
 _0C24:
     LockAll
     PlayFanfare SEQ_SE_DP_DOOR_OPEN
     ClearFlag 0x2B8
-    ScrCmd_186 12, 11, 11
+    SetObjectEventPos 12, 11, 11
     ScrCmd_188 12, 14
     ScrCmd_189 12, 0
-    ScrCmd_064 12
+    AddObject 12
     WaitFanfare SEQ_SE_DP_DOOR_OPEN
-    ApplyMovement 0xFF, _0C78
+    ApplyMovement LOCALID_PLAYER, _0C78
     ApplyMovement 12, _0C6C
     WaitMovement
     SetFlag 0x9AC
@@ -904,15 +905,15 @@ _0C24:
 
     .balign 4, 0
 _0C6C:
-    MoveAction_00E 8
-    MoveAction_00C 6
+    MoveAction_014 8
+    MoveAction_012 6
     EndMovement
 
     .balign 4, 0
 _0C78:
-    MoveAction_021
-    MoveAction_03F 5
-    MoveAction_022
+    MoveAction_033
+    MoveAction_063 5
+    MoveAction_034
     EndMovement
 
 _0C88:
@@ -1207,33 +1208,33 @@ _1092:
 _10DA:
     Call _2209
     GoToIfEq 0x404E, 0, _1103
-    ScrCmd_186 1, 11, 11
+    SetObjectEventPos 1, 11, 11
     ScrCmd_188 1, 14
     ScrCmd_189 1, 0
     Return
 
 _1103:
-    ScrCmd_186 1, 10, 8
+    SetObjectEventPos 1, 10, 8
     ScrCmd_188 1, 14
     ScrCmd_189 1, 0
     ClearFlag 0x2A7
-    ScrCmd_064 1
+    AddObject 1
     Return
 
 _1121:
     Call _2209
     GoToIfEq 0x404E, 1, _114A
-    ScrCmd_186 0, 11, 11
+    SetObjectEventPos 0, 11, 11
     ScrCmd_188 0, 14
     ScrCmd_189 0, 0
     Return
 
 _114A:
-    ScrCmd_186 0, 10, 8
+    SetObjectEventPos 0, 10, 8
     ScrCmd_188 0, 14
     ScrCmd_189 0, 0
     ClearFlag 0x2A8
-    ScrCmd_064 0
+    AddObject 0
     Return
 
 _1168:
@@ -1243,18 +1244,18 @@ _1168:
     End
 
 _1183:
-    ScrCmd_186 2, 11, 11
+    SetObjectEventPos 2, 11, 11
     ScrCmd_188 2, 14
     ScrCmd_189 2, 0
     Return
 
 _1199:
     GoToIfUnset 0x9AB, _1183
-    ScrCmd_186 2, 10, 8
+    SetObjectEventPos 2, 10, 8
     ScrCmd_188 2, 14
     ScrCmd_189 2, 0
     ClearFlag 0x2A9
-    ScrCmd_064 2
+    AddObject 2
     Return
 
 _11C2:
@@ -1264,41 +1265,41 @@ _11C2:
     End
 
 _11DD:
-    ScrCmd_186 5, 11, 11
+    SetObjectEventPos 5, 11, 11
     ScrCmd_188 5, 14
     ScrCmd_189 5, 0
     Return
 
 _11F3:
     GoToIfUnset 0x9AB, _11DD
-    ScrCmd_186 5, 10, 8
+    SetObjectEventPos 5, 10, 8
     ScrCmd_188 5, 14
     ScrCmd_189 5, 0
     ClearFlag 0x2AE
-    ScrCmd_064 5
+    AddObject 5
     Return
 
 _121C:
     Call _2209
     GoToIfEq 0x404E, 12, _1245
-    ScrCmd_186 12, 11, 11
+    SetObjectEventPos 12, 11, 11
     ScrCmd_188 12, 14
     ScrCmd_189 12, 0
     Return
 
 _1245:
-    ScrCmd_186 12, 10, 8
+    SetObjectEventPos 12, 10, 8
     ScrCmd_188 12, 14
     ScrCmd_189 12, 0
     ClearFlag 0x2B8
-    ScrCmd_064 12
+    AddObject 12
     Return
 
 _1263:
     CallIfNe 0x404E, 0, _12A3
     SetFlag 0x9AB
     SetVar 0x404E, 0xFF
-    ApplyMovement 0xFF, _1454
+    ApplyMovement LOCALID_PLAYER, _1454
     WaitMovement
     BufferRivalName 0
     BufferPlayerName 1
@@ -1307,12 +1308,12 @@ _1263:
     ApplyMovement 1, _1468
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ScrCmd_065 1
+    RemoveObject 1
     Return
 
 _12A3:
     ClearFlag 0x2A7
-    ScrCmd_064 1
+    AddObject 1
     PlayFanfare SEQ_SE_DP_DOOR_OPEN
     WaitFanfare SEQ_SE_DP_DOOR_OPEN
     ApplyMovement 1, _145C
@@ -1326,8 +1327,8 @@ _12BF:
     BufferRivalName 0
     BufferPlayerName 1
     GetPlayerGender 0x800C
-    GoToIfEq 0x800C, 0, _12FC
-    GoToIfEq 0x800C, 1, _1307
+    GoToIfEq 0x800C, GENDER_MALE, _12FC
+    GoToIfEq 0x800C, GENDER_FEMALE, _1307
     End
 
 _12FC:
@@ -1346,7 +1347,7 @@ _1312:
 
 _1316:
     ClearFlag 0x2A8
-    ScrCmd_064 0
+    AddObject 0
     PlayFanfare SEQ_SE_DP_DOOR_OPEN
     WaitFanfare SEQ_SE_DP_DOOR_OPEN
     ApplyMovement 0, _145C
@@ -1371,7 +1372,7 @@ _1367:
 
 _1374:
     ClearFlag 0x2A9
-    ScrCmd_064 2
+    AddObject 2
     PlayFanfare SEQ_SE_DP_DOOR_OPEN
     WaitFanfare SEQ_SE_DP_DOOR_OPEN
     ApplyMovement 2, _145C
@@ -1396,7 +1397,7 @@ _13C5:
 
 _13D2:
     ClearFlag 0x2AE
-    ScrCmd_064 5
+    AddObject 5
     PlayFanfare SEQ_SE_DP_DOOR_OPEN
     WaitFanfare SEQ_SE_DP_DOOR_OPEN
     ApplyMovement 5, _145C
@@ -1422,7 +1423,7 @@ _1429:
 
 _1436:
     ClearFlag 0x2B8
-    ScrCmd_064 12
+    AddObject 12
     PlayFanfare SEQ_SE_DP_DOOR_OPEN
     WaitFanfare SEQ_SE_DP_DOOR_OPEN
     ApplyMovement 12, _145C
@@ -1431,20 +1432,20 @@ _1436:
 
     .balign 4, 0
 _1454:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _145C:
-    MoveAction_00E
-    MoveAction_00C 3
+    MoveAction_014
+    MoveAction_012 3
     EndMovement
 
     .balign 4, 0
 _1468:
-    MoveAction_00D 3
-    MoveAction_00F
-    MoveAction_021
+    MoveAction_013 3
+    MoveAction_015
+    MoveAction_033
     EndMovement
 
 _1478:
@@ -1460,17 +1461,17 @@ _1485:
     CloseMessage
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
-    ScrCmd_065 15
+    RemoveObject 15
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ApplyMovement 14, _14FC
-    ApplyMovement 0xFF, _14F0
+    ApplyMovement LOCALID_PLAYER, _14F0
     WaitMovement
     Message 4
     CloseMessage
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
-    ScrCmd_065 14
+    RemoveObject 14
     Call _156D
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
@@ -1480,13 +1481,13 @@ _1485:
 
     .balign 4, 0
 _14F0:
-    MoveAction_03F
-    MoveAction_022
+    MoveAction_063
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _14FC:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .byte 13
@@ -1517,7 +1518,7 @@ _1532:
     CloseMessage
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
-    ScrCmd_065 15
+    RemoveObject 15
     Call _156D
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
@@ -1552,19 +1553,19 @@ _15F3:
     WaitMovement
     Message 2
     CloseMessage
-    ApplyMovement 0xFF, _161C
+    ApplyMovement LOCALID_PLAYER, _161C
     WaitMovement
     ReleaseAll
     End
 
     .balign 4, 0
 _1614:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _161C:
-    MoveAction_00C
+    MoveAction_012
     EndMovement
 
 _1624:
@@ -1614,8 +1615,8 @@ _1667:
     GoToIfEq 0x8002, -2, _18DE
     GoToIfEq 0x8003, 0, _18C8
     Message 121
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _18DE
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _18DE
     CallIfEq 0x8002, 0, _1FB1
     CallIfEq 0x8002, 1, _1FBB
     CallIfEq 0x8002, 2, _1FC5
@@ -2298,74 +2299,74 @@ _2209:
     Return
 
 _22CE:
-    ScrCmd_065 1
+    RemoveObject 1
     Return
 
 _22D4:
-    ScrCmd_065 0
+    RemoveObject 0
     Return
 
 _22DA:
     GoToIfUnset 0x9AB, _2395
-    ScrCmd_065 2
+    RemoveObject 2
     Return
 
 _22EB:
-    ScrCmd_065 3
+    RemoveObject 3
     Return
 
 _22F1:
     GoToIfUnset 0x9AB, _2395
-    ScrCmd_065 4
+    RemoveObject 4
     Return
 
 _2302:
     GoToIfUnset 0x9AB, _2395
-    ScrCmd_065 5
+    RemoveObject 5
     Return
 
 _2313:
     GoToIfUnset 0x9AC, _2393
-    ScrCmd_065 6
+    RemoveObject 6
     Return
 
 _2324:
     GoToIfUnset 0x9AB, _2395
-    ScrCmd_065 7
+    RemoveObject 7
     Return
 
 _2335:
     GoToIfUnset 0x9AC, _2393
-    ScrCmd_065 9
+    RemoveObject 9
     Return
 
 _2346:
     GoToIfUnset 0x9AB, _2395
-    ScrCmd_065 8
+    RemoveObject 8
     Return
 
 _2357:
     GoToIfUnset 0x9AC, _2393
-    ScrCmd_065 10
+    RemoveObject 10
     Return
 
 _2368:
-    ScrCmd_065 11
+    RemoveObject 11
     Return
 
 _236E:
     GoToIfUnset 0x9AC, _2393
-    ScrCmd_065 12
+    RemoveObject 12
     Return
 
 _237F:
-    ScrCmd_065 13
-    ScrCmd_065 11
+    RemoveObject 13
+    RemoveObject 11
     Return
 
 _2389:
-    ScrCmd_065 7
-    ScrCmd_065 10
+    RemoveObject 7
+    RemoveObject 10
     Return
 
 _2393:

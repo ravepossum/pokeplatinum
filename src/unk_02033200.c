@@ -1,8 +1,8 @@
 #include "unk_02033200.h"
 
-#include <nitro.h>
-#include <nitro/wvr.h>
 #include <string.h>
+
+#include "constants/heap.h"
 
 #include "struct_defs/sentence.h"
 #include "struct_defs/struct_0202610C.h"
@@ -12,9 +12,9 @@
 #include "communication_information.h"
 #include "communication_system.h"
 #include "heap.h"
+#include "system.h"
 #include "trainer_info.h"
 #include "unk_02014A84.h"
-#include "unk_02017728.h"
 #include "unk_0202602C.h"
 #include "unk_02030EE0.h"
 #include "unk_0203266C.h"
@@ -416,9 +416,7 @@ int sub_02033808(void)
 
 int sub_0203383C(int param0)
 {
-    int v0, v1;
-
-    v1 = 0;
+    int v0, v1 = 0;
 
     for (v0 = 0; v0 < 16; v0++) {
         if (sCommServerClient->unk_14C8[v0] != 0) {

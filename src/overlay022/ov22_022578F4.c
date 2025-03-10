@@ -180,9 +180,7 @@ void ov22_02257B10(UnkStruct_ov22_02257964 *param0)
 
 void ov22_02257B1C(UnkStruct_ov22_02257964 *param0, int param1)
 {
-    UnkStruct_ov22_02259560 *v0;
-
-    v0 = param0->unk_00.unk_14.unk_08;
+    UnkStruct_ov22_02259560 *v0 = param0->unk_00.unk_14.unk_08;
 
     while (v0 != &param0->unk_00.unk_14) {
         if (v0->unk_04 == 0) {
@@ -302,7 +300,7 @@ UnkStruct_ov22_02259560 *ov22_02257C20(UnkStruct_ov22_02257964 *param0, int *par
     return NULL;
 }
 
-void ov22_02257C88(UnkStruct_ov22_02257964 *param0, int param1, int param2)
+void ov22_02257C88(UnkStruct_ov22_02257964 *param0, int param1, int heapID)
 {
     UnkStruct_ov22_022599A0 v0;
 
@@ -317,7 +315,7 @@ void ov22_02257C88(UnkStruct_ov22_02257964 *param0, int param1, int param2)
     v0.unk_20 = 1;
     v0.unk_24 = 13;
     v0.unk_28 = 0;
-    v0.unk_2C = param2;
+    v0.heapID = heapID;
 
     ov22_022597BC(&param0->unk_2C.unk_1C, &v0);
 
@@ -346,9 +344,7 @@ void ov22_02257D04(UnkStruct_ov22_02257964 *param0, int *param1, int *param2)
     int v1;
     int v2;
     int v3;
-    UnkStruct_ov22_02259560 *v4;
-
-    v4 = param0->unk_00.unk_14.unk_08;
+    UnkStruct_ov22_02259560 *v4 = param0->unk_00.unk_14.unk_08;
     v0 = 0;
     v1 = 0;
 
@@ -372,9 +368,7 @@ void ov22_02257D04(UnkStruct_ov22_02257964 *param0, int *param1, int *param2)
 
 void ov22_02257D70(UnkStruct_ov22_02257964 *param0, GXRgb param1)
 {
-    UnkStruct_ov22_02259560 *v0;
-
-    v0 = param0->unk_00.unk_14.unk_08;
+    UnkStruct_ov22_02259560 *v0 = param0->unk_00.unk_14.unk_08;
 
     while (v0 != &param0->unk_00.unk_14) {
         if (v0->unk_04 == 0) {

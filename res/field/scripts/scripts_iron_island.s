@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/iron_island.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _0014
     ScriptEntry _00FC
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     SetFlag 0x9DA
@@ -15,12 +16,12 @@ _0014:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_1BD 0x8004
+    GetPlayerDir 0x8004
     FacePlayer
     Message 3
-    ScrCmd_03E 0x800C
+    ShowYesNoMenu 0x800C
     CloseMessage
-    GoToIfEq 0x800C, 0, _003E
+    GoToIfEq 0x800C, MENU_YES, _003E
     GoTo _0071
 
 _003E:
@@ -49,43 +50,43 @@ _007C:
     Return
 
 _0096:
-    ApplyMovement 0xFF, _00E0
+    ApplyMovement LOCALID_PLAYER, _00E0
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ApplyMovement 0xFF, _00D8
+    ApplyMovement LOCALID_PLAYER, _00D8
     WaitMovement
     Return
 
 _00B0:
-    ApplyMovement 0xFF, _00F0
+    ApplyMovement LOCALID_PLAYER, _00F0
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ApplyMovement 0xFF, _00D8
+    ApplyMovement LOCALID_PLAYER, _00D8
     WaitMovement
     Return
 
     .balign 4, 0
 _00CC:
     MoveAction_002
-    MoveAction_040
+    MoveAction_064
     EndMovement
 
     .balign 4, 0
 _00D8:
-    MoveAction_045
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _00E0:
-    MoveAction_00D
+    MoveAction_013
     MoveAction_002
-    MoveAction_040
+    MoveAction_064
     EndMovement
 
     .balign 4, 0
 _00F0:
-    MoveAction_00E
-    MoveAction_040
+    MoveAction_014
+    MoveAction_064
     EndMovement
 
 _00FC:
@@ -117,12 +118,12 @@ _014B:
     ApplyMovement 1, _0168
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ScrCmd_065 1
+    RemoveObject 1
     WaitFanfare SEQ_SE_DP_KAIDAN2
     ReleaseAll
     End
 
     .balign 4, 0
 _0168:
-    MoveAction_020
+    MoveAction_032
     EndMovement

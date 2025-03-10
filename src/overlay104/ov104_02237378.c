@@ -2,8 +2,6 @@
 #include <string.h>
 
 #include "struct_decls/struct_02014014_decl.h"
-#include "struct_decls/struct_party_decl.h"
-#include "struct_defs/struct_0200D0F4.h"
 
 #include "overlay063/ov63_0222CCE4.h"
 #include "overlay104/ov104_0222DCE0.h"
@@ -27,7 +25,6 @@
 #include "overlay104/struct_ov104_0223C634.h"
 #include "overlay108/ov108_02241AE0.h"
 
-#include "cell_actor.h"
 #include "communication_information.h"
 #include "field_battle_data_transfer.h"
 #include "gx_layers.h"
@@ -37,6 +34,8 @@
 #include "pokemon.h"
 #include "save_player.h"
 #include "spl.h"
+#include "sprite.h"
+#include "sprite_system.h"
 #include "strbuf.h"
 #include "string_template.h"
 #include "trainer_info.h"
@@ -106,9 +105,7 @@ BOOL ov104_022373DC(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_022373F8(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223BFFC *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223BFFC *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_02238210(v0);
 
     return 0;
@@ -131,7 +128,7 @@ BOOL ov104_0223740C(UnkStruct_ov104_0222E930 *param0)
     };
 
     v1 = sub_0209B978(param0->unk_00->unk_00);
-    v2 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov104_02238240));
+    v2 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov104_02238240));
 
     MI_CpuClear8(v2, sizeof(UnkStruct_ov104_02238240));
     v2->unk_00 = v3->unk_08;
@@ -285,9 +282,7 @@ static void ov104_0223770C(void *param0)
 
 BOOL ov104_02237720(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223BFFC *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223BFFC *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_022384D4(v0);
 
     return 0;
@@ -295,9 +290,7 @@ BOOL ov104_02237720(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_02237734(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223BFFC *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223BFFC *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_022384DC(v0);
 
     return 0;
@@ -402,27 +395,27 @@ BOOL ov104_02237748(UnkStruct_ov104_0222E930 *param0)
             {
                 VecFx32 v21;
                 VecFx32 v22;
-                CellActor *v23;
-                CellActor *v24;
+                Sprite *v23;
+                Sprite *v24;
 
                 for (v11 = 0; v11 < v4; v11++) {
-                    v23 = v3->unk_30[v11]->unk_00;
-                    v21 = *(CellActor_GetPosition((const CellActor *)v23));
+                    v23 = v3->unk_30[v11]->sprite;
+                    v21 = *(Sprite_GetPosition((const Sprite *)v23));
 
-                    v24 = v3->unk_40[v11]->unk_00;
-                    v22 = *(CellActor_GetPosition((const CellActor *)v24));
+                    v24 = v3->unk_40[v11]->sprite;
+                    v22 = *(Sprite_GetPosition((const Sprite *)v24));
 
-                    CellActor_SetPosition(v23, &v22);
-                    CellActor_SetPosition(v24, &v21);
+                    Sprite_SetPosition(v23, &v22);
+                    Sprite_SetPosition(v24, &v21);
 
-                    v23 = v3->unk_50[v11]->unk_00;
-                    v21 = *(CellActor_GetPosition((const CellActor *)v23));
+                    v23 = v3->unk_50[v11]->sprite;
+                    v21 = *(Sprite_GetPosition((const Sprite *)v23));
 
-                    v24 = v3->unk_60[v11]->unk_00;
-                    v22 = *(CellActor_GetPosition((const CellActor *)v24));
+                    v24 = v3->unk_60[v11]->sprite;
+                    v22 = *(Sprite_GetPosition((const Sprite *)v24));
 
-                    CellActor_SetPosition(v23, &v22);
-                    CellActor_SetPosition(v24, &v21);
+                    Sprite_SetPosition(v23, &v22);
+                    Sprite_SetPosition(v24, &v21);
                 }
             }
         }
@@ -450,11 +443,11 @@ BOOL ov104_02237748(UnkStruct_ov104_0222E930 *param0)
 
         if (v18 == 0) {
             for (v11 = 0; v11 < v4; v11++) {
-                CellActor_SetExplicitPriority(v3->unk_30[v11]->unk_00, 2);
+                Sprite_SetExplicitPriority(v3->unk_30[v11]->sprite, 2);
             }
         } else {
             for (v11 = 0; v11 < v5; v11++) {
-                CellActor_SetExplicitPriority(v3->unk_40[v11]->unk_00, 2);
+                Sprite_SetExplicitPriority(v3->unk_40[v11]->sprite, 2);
             }
         }
         break;
@@ -520,7 +513,7 @@ BOOL ov104_02237748(UnkStruct_ov104_0222E930 *param0)
             {
                 u32 v25;
                 UnkStruct_ov104_0223C634 *v26;
-                CellActor *v27;
+                Sprite *v27;
 
                 v26 = ov104_0223D5A8(param0->unk_00->unk_00, v19);
                 v25 = ov63_0222D050(v26->unk_04);
@@ -571,9 +564,7 @@ static void ov104_02237C0C(UnkStruct_ov104_0222E930 *param0, UnkStruct_ov104_022
 {
     UnkStruct_ov104_022320B4 *v0 = param0->unk_00;
     UnkStruct_ov104_0223C4CC *v1 = ov104_0222E924(param0->unk_00);
-    UnkStruct_02014014 *v2;
-
-    v2 = ov104_0223D6D0(v1->unk_10, 0);
+    UnkStruct_02014014 *v2 = ov104_0223D6D0(v1->unk_10, 0);
     sub_020146F4(v2, param2, ov104_02237C30, param1);
 
     return;
@@ -667,9 +658,7 @@ BOOL ov104_02237D48(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_02237D84(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223BFFC *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223BFFC *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_02238B88(v0, v0->unk_13);
 
     return 1;

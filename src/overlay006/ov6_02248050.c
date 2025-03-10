@@ -70,15 +70,13 @@ static void ov6_02248050(MapObjectManager *param0, u32 param1, Easy3DObject *par
     int v0;
     int v1, v2;
     VecFx32 v3;
-    MapObject *v4;
+    MapObject *v4 = MapObjMan_LocalMapObjByIndex(param0, param1);
 
-    v4 = MapObjMan_LocalMapObjByIndex(param0, param1);
+    MapObject_GetPosPtr(v4, &v3);
 
-    MapObject_PosVectorOut(v4, &v3);
-
-    v1 = MapObject_GetXPos(v4);
-    v2 = MapObject_GetZPos(v4);
-    v0 = MapObject_Dir(v4);
+    v1 = MapObject_GetX(v4);
+    v2 = MapObject_GetZ(v4);
+    v0 = MapObject_GetFacingDir(v4);
 
     switch (v0) {
     case 0:
@@ -173,9 +171,7 @@ static void ov6_022481BC(UnkStruct_ov6_02248140 *param0, NNSFndAllocator *param1
 static BOOL ov6_022481F0(UnkStruct_ov6_02248140 *param0)
 {
     int v0;
-    BOOL v1;
-
-    v1 = 1;
+    BOOL v1 = 1;
 
     for (v0 = 0; v0 < param0->unk_D8; v0++) {
         v1 &= Easy3DAnim_Update(&param0->unk_88[v0], FX32_ONE);
@@ -207,7 +203,7 @@ static void ov6_0224825C(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSyste
     memset(v0, 0, sizeof(UnkStruct_ov6_0224825C));
     Heap_FndInitAllocatorForExpHeap(&v0->unk_DC, 4, 32);
 
-    v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, 4);
+    v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, HEAP_ID_FIELD);
 
     ov6_02248140(&v0->unk_00, v2, 3, 0, 3, &v0->unk_DC);
     NARC_dtor(v2);
@@ -257,9 +253,7 @@ UnkStruct_ov5_021D1BEC *ov6_0224830C(FieldSystem *fieldSystem)
     static const UnkStruct_ov6_0223E6EC v0 = {
         1024, sizeof(UnkStruct_ov6_0224825C), ov6_0224825C, ov6_022482BC, ov6_022482CC, ov6_02248300
     };
-    UnkStruct_ov5_021D1BEC *v1;
-
-    v1 = ov5_021D1B6C(fieldSystem->unk_04->unk_04, &v0);
+    UnkStruct_ov5_021D1BEC *v1 = ov5_021D1B6C(fieldSystem->unk_04->unk_04, &v0);
     return v1;
 }
 
@@ -288,7 +282,7 @@ static void ov6_02248340(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSyste
     memset(v0, 0, sizeof(UnkStruct_ov6_02248340));
     Heap_FndInitAllocatorForExpHeap(&v0->unk_DC, 4, 32);
 
-    v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, 4);
+    v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, HEAP_ID_FIELD);
 
     ov6_02248140(&v0->unk_00, v2, 8, 4, 4, &v0->unk_DC);
     NARC_dtor(v2);
@@ -308,7 +302,7 @@ static void ov6_022483A0(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSyste
     memset(v0, 0, sizeof(UnkStruct_ov6_02248340));
     Heap_FndInitAllocatorForExpHeap(&v0->unk_DC, 4, 32);
 
-    v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, 4);
+    v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, HEAP_ID_FIELD);
 
     ov6_02248140(&v0->unk_00, v2, 8, 4, 4, &v0->unk_DC);
     ov6_02248050(fieldSystem->mapObjMan, 0, &v0->unk_00.unk_00);
@@ -363,9 +357,7 @@ UnkStruct_ov5_021D1BEC *ov6_02248450(FieldSystem *fieldSystem)
         ov6_02248410,
         ov6_02248444
     };
-    UnkStruct_ov5_021D1BEC *v1;
-
-    v1 = ov5_021D1B6C(fieldSystem->unk_04->unk_04, &v0);
+    UnkStruct_ov5_021D1BEC *v1 = ov5_021D1B6C(fieldSystem->unk_04->unk_04, &v0);
     return v1;
 }
 
@@ -379,9 +371,7 @@ UnkStruct_ov5_021D1BEC *ov6_02248464(FieldSystem *fieldSystem)
         ov6_02248410,
         ov6_02248444
     };
-    UnkStruct_ov5_021D1BEC *v1;
-
-    v1 = ov5_021D1B6C(fieldSystem->unk_04->unk_04, &v0);
+    UnkStruct_ov5_021D1BEC *v1 = ov5_021D1B6C(fieldSystem->unk_04->unk_04, &v0);
     return v1;
 }
 
@@ -410,7 +400,7 @@ static void ov6_02248498(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSyste
     memset(v0, 0, sizeof(UnkStruct_ov6_02248498));
     Heap_FndInitAllocatorForExpHeap(&v0->unk_1B8, 4, 32);
 
-    v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, 4);
+    v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, HEAP_ID_FIELD);
 
     ov6_02248140(&v0->unk_00[0], v2, 14, 12, 2, &v0->unk_1B8);
     ov6_02248124(fieldSystem->playerAvatar, &v0->unk_00[0].unk_00);
@@ -439,7 +429,7 @@ static void ov6_02248520(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSyste
 
     switch (v0->unk_1C8) {
     case 0:
-        v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, 4);
+        v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, HEAP_ID_FIELD);
         ov6_02248140(&v0->unk_00[1], v2, 11, 9, 2, &v0->unk_1B8);
         NARC_dtor(v2);
         ov6_02248124(fieldSystem->playerAvatar, &v0->unk_00[1].unk_00);
@@ -485,9 +475,7 @@ UnkStruct_ov5_021D1BEC *ov6_022485F4(FieldSystem *fieldSystem)
         ov6_02248520,
         ov6_022485DC
     };
-    UnkStruct_ov5_021D1BEC *v1;
-
-    v1 = ov5_021D1B6C(fieldSystem->unk_04->unk_04, &v0);
+    UnkStruct_ov5_021D1BEC *v1 = ov5_021D1B6C(fieldSystem->unk_04->unk_04, &v0);
     return v1;
 }
 
@@ -614,7 +602,7 @@ static void ov6_022487F8(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSyste
     memset(v0, 0, sizeof(UnkStruct_ov6_022487F8));
     Heap_FndInitAllocatorForExpHeap(&v0->unk_CFC, 4, 32);
 
-    v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, 4);
+    v2 = NARC_ctor(NARC_INDEX_GRAPHIC__HIDEN_EFFECT, HEAP_ID_FIELD);
 
     Easy3DModel_LoadFrom(&v0->unk_00, v2, 8, 4);
 
@@ -689,9 +677,7 @@ UnkStruct_ov5_021D1BEC *ov6_0224892C(FieldSystem *fieldSystem)
         ov6_022488D8,
         ov6_02248914
     };
-    UnkStruct_ov5_021D1BEC *v1;
-
-    v1 = ov5_021D1B6C(fieldSystem->unk_04->unk_04, &v0);
+    UnkStruct_ov5_021D1BEC *v1 = ov5_021D1B6C(fieldSystem->unk_04->unk_04, &v0);
     return v1;
 }
 

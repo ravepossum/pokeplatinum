@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_212_north.h"
 
     .data
 
@@ -12,7 +13,7 @@
     ScriptEntry _0144
     ScriptEntry _0157
     ScriptEntry _002A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _002A:
     GetTimeOfDay 0x4000
@@ -56,27 +57,15 @@ _00B5:
     End
 
 _00C8:
-    ScrCmd_036 6, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 6
     End
 
 _00DF:
-    ScrCmd_036 7, 2, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowLandmarkSign 7
     End
 
 _00F6:
-    ScrCmd_037 3, 0
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03A 8, 0x800C
-    CallCommonScript 0x7D0
+    ShowScrollingSign 8
     End
 
 _010B:

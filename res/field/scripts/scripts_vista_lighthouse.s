@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/vista_lighthouse.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _0025
     ScriptEntry _0038
     ScriptEntry _004C
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     PlayFanfare SEQ_SE_CONFIRM
@@ -47,7 +48,7 @@ _004C:
     Message 2
     CloseMessage
     WaitTime 15, 0x800C
-    ScrCmd_1BD 0x800C
+    GetPlayerDir 0x800C
     GoToIfEq 0x800C, 0, _0092
     GoToIfEq 0x800C, 2, _00AA
     GoToIfEq 0x800C, 3, _00C2
@@ -55,13 +56,13 @@ _004C:
 
 _0092:
     ApplyMovement 2, _0104
-    ApplyMovement 0xFF, _013C
+    ApplyMovement LOCALID_PLAYER, _013C
     WaitMovement
     GoTo _00D2
 
 _00AA:
     ApplyMovement 2, _0118
-    ApplyMovement 0xFF, _0148
+    ApplyMovement LOCALID_PLAYER, _0148
     WaitMovement
     GoTo _00D2
 
@@ -79,44 +80,44 @@ _00D2:
     ScrCmd_16C 77
     ScrCmd_169 77
     ScrCmd_16A 77
-    ScrCmd_065 2
+    RemoveObject 2
     SetFlag 0x162
     ReleaseAll
     End
 
     .balign 4, 0
 _0104:
-    MoveAction_00F 3
-    MoveAction_00D 6
-    MoveAction_00E 3
-    MoveAction_020
+    MoveAction_015 3
+    MoveAction_013 6
+    MoveAction_014 3
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0118:
-    MoveAction_00D
-    MoveAction_00F 3
-    MoveAction_00D 5
-    MoveAction_00E 3
-    MoveAction_020
+    MoveAction_013
+    MoveAction_015 3
+    MoveAction_013 5
+    MoveAction_014 3
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0130:
-    MoveAction_00C
-    MoveAction_045
+    MoveAction_012
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _013C:
-    MoveAction_03F
-    MoveAction_023
+    MoveAction_063
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0148:
-    MoveAction_03F
-    MoveAction_021
-    MoveAction_03F
-    MoveAction_023
+    MoveAction_063
+    MoveAction_033
+    MoveAction_063
+    MoveAction_035
     EndMovement

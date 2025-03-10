@@ -142,7 +142,7 @@ static void sub_02067C28(UnkStruct_02067C28 *param0, MapObject *param1, int para
 {
     param0->unk_00 = param2;
     param0->unk_04 = param3;
-    param0->unk_08 = MapObject_GetEventID(param1);
+    param0->unk_08 = MapObject_GetScript(param1);
     param0->unk_0C = Script_GetTrainerID(param0->unk_08);
     param0->unk_10 = Script_IsTrainerDoubleBattle(param0->unk_0C);
     param0->unk_14 = param1;
@@ -150,7 +150,7 @@ static void sub_02067C28(UnkStruct_02067C28 *param0, MapObject *param1, int para
 
 static int sub_02067C54(const MapObject *param0)
 {
-    int v0 = MapObject_GetEventType(param0);
+    int v0 = MapObject_GetTrainerType(param0);
 
     switch (v0) {
     case 0x4:
@@ -174,8 +174,8 @@ static int sub_02067C80(const MapObject *param0, PlayerAvatar *playerAvatar, int
     if (v0 == 0x1) {
         v3 = Player_GetXPos(playerAvatar);
         v4 = Player_GetZPos(playerAvatar);
-        v2 = MapObject_Dir(param0);
-        v1 = sub_020629D8(param0, 0);
+        v2 = MapObject_GetFacingDir(param0);
+        v1 = MapObject_GetDataAt(param0, 0);
         v5 = sub_02067DA8(param0, v2, v1, v3, v4, 0);
 
         if (v5 != -1) {
@@ -191,7 +191,7 @@ static int sub_02067C80(const MapObject *param0, PlayerAvatar *playerAvatar, int
     if (v0 == 0x2) {
         v3 = Player_GetXPos(playerAvatar);
         v4 = Player_GetZPos(playerAvatar);
-        v1 = sub_020629D8(param0, 0);
+        v1 = MapObject_GetDataAt(param0, 0);
         v2 = 0;
 
         do {
@@ -237,10 +237,10 @@ static int sub_02067DC4(const MapObject *mapObj, int param1, int param2, int par
 {
     int v0, v1;
 
-    v0 = MapObject_GetXPos(mapObj);
+    v0 = MapObject_GetX(mapObj);
 
     if (v0 == param2) {
-        v1 = MapObject_GetZPos(mapObj);
+        v1 = MapObject_GetZ(mapObj);
 
         if ((param3 < v1) && (param3 >= (v1 - param1))) {
             return v1 - param3;
@@ -254,10 +254,10 @@ static int sub_02067DF0(const MapObject *mapObj, int param1, int param2, int par
 {
     int v0, v1;
 
-    v0 = MapObject_GetXPos(mapObj);
+    v0 = MapObject_GetX(mapObj);
 
     if (v0 == param2) {
-        v1 = MapObject_GetZPos(mapObj);
+        v1 = MapObject_GetZ(mapObj);
 
         if ((param3 > v1) && (param3 <= (v1 + param1))) {
             return param3 - v1;
@@ -271,10 +271,10 @@ static int sub_02067E1C(const MapObject *mapObj, int param1, int param2, int par
 {
     int v0, v1;
 
-    v1 = MapObject_GetZPos(mapObj);
+    v1 = MapObject_GetZ(mapObj);
 
     if (v1 == param3) {
-        v0 = MapObject_GetXPos(mapObj);
+        v0 = MapObject_GetX(mapObj);
 
         if ((param2 < v0) && (param2 >= (v0 - param1))) {
             return v0 - param2;
@@ -288,10 +288,10 @@ static int sub_02067E48(const MapObject *mapObj, int param1, int param2, int par
 {
     int v0, v1;
 
-    v1 = MapObject_GetZPos(mapObj);
+    v1 = MapObject_GetZ(mapObj);
 
     if (v1 == param3) {
-        v0 = MapObject_GetXPos(mapObj);
+        v0 = MapObject_GetX(mapObj);
 
         if ((param2 > v0) && (param2 <= (v0 + param1))) {
             return param2 - v0;
@@ -317,11 +317,11 @@ static int sub_02067E74(const MapObject *mapObj, int param1, int param2)
         return 1;
     }
 
-    v1 = MapObject_GetXPos(mapObj);
-    v2 = MapObject_GetZPos(mapObj);
-    v3 = MapObject_GetYPos(mapObj);
+    v1 = MapObject_GetX(mapObj);
+    v2 = MapObject_GetZ(mapObj);
+    v3 = MapObject_GetY(mapObj);
     v1 += MapObject_GetDxFromDir(param1);
-    v2 += MapObject_GetDyFromDir(param1);
+    v2 += MapObject_GetDzFromDir(param1);
 
     for (v0 = 0; v0 < (param2 - 1); v0++) {
         v4 = sub_02063E94(mapObj, v1, v3, v2, param1);
@@ -332,7 +332,7 @@ static int sub_02067E74(const MapObject *mapObj, int param1, int param2)
         }
 
         v1 += MapObject_GetDxFromDir(param1);
-        v2 += MapObject_GetDyFromDir(param1);
+        v2 += MapObject_GetDzFromDir(param1);
     }
 
     v4 = sub_02063E94(mapObj, v1, v3, v2, param1);
@@ -347,10 +347,7 @@ static int sub_02067E74(const MapObject *mapObj, int param1, int param2)
 
 static int sub_02067F14(MapObject *mapObj)
 {
-    int v0;
-
-    v0 = MapObject_GetEventID(mapObj);
-    return Script_GetTrainerID(v0);
+    return Script_GetTrainerID(MapObject_GetScript(mapObj));
 }
 
 int sub_02067F24(MapObject *mapObj)
@@ -365,7 +362,7 @@ static MapObject *sub_02067F2C(FieldSystem *fieldSystem, MapObjectManager *param
 
     v0 = 0;
 
-    while (sub_020625B0(param1, &v1, &v0, (1 << 0))) {
+    while (sub_020625B0(param1, &v1, &v0, MAP_OBJ_STATUS_0)) {
         if (v1 != param2) {
             int v2 = sub_02067C54(v1);
 
@@ -413,9 +410,7 @@ void sub_02067FE8(SysTask *task)
 static SysTask *sub_02067FF0(FieldSystem *fieldSystem, MapObject *param1, PlayerAvatar *playerAvatar, int param3, int param4, int param5, int param6, int param7)
 {
     SysTask *v0;
-    UnkStruct_020EF6D0 *v1;
-
-    v1 = Heap_AllocFromHeapAtEnd(4, (sizeof(UnkStruct_020EF6D0)));
+    UnkStruct_020EF6D0 *v1 = Heap_AllocFromHeapAtEnd(4, (sizeof(UnkStruct_020EF6D0)));
     GF_ASSERT(v1 != NULL);
 
     memset(v1, 0, (sizeof(UnkStruct_020EF6D0)));
@@ -437,27 +432,21 @@ static SysTask *sub_02067FF0(FieldSystem *fieldSystem, MapObject *param1, Player
 
 static int sub_02068048(SysTask *task)
 {
-    UnkStruct_020EF6D0 *v0;
-
-    v0 = SysTask_GetParam(task);
+    UnkStruct_020EF6D0 *v0 = SysTask_GetParam(task);
     return v0->unk_04;
 }
 
 static void sub_02068054(SysTask *task)
 {
-    UnkStruct_020EF6D0 *v0;
+    UnkStruct_020EF6D0 *v0 = SysTask_GetParam(task);
 
-    v0 = SysTask_GetParam(task);
-
-    Heap_FreeToHeapExplicit(4, v0);
+    Heap_FreeToHeapExplicit(HEAP_ID_FIELD, v0);
     SysTask_Done(task);
 }
 
 static void sub_0206806C(SysTask *task, void *param1)
 {
-    UnkStruct_020EF6D0 *v0;
-
-    v0 = param1;
+    UnkStruct_020EF6D0 *v0 = param1;
 
     while (Unk_020EF6D0[v0->unk_00](v0) == 1) {
         (void)0;
@@ -469,7 +458,7 @@ static int sub_02068088(UnkStruct_020EF6D0 *param0)
     MapObject *v0 = param0->unk_24;
 
     if (MapObject_IsMoving(v0) == 1) {
-        sub_02062DDC(v0);
+        MapObject_SetPauseMovementOff(v0);
     }
 
     param0->unk_00 = 1;
@@ -485,7 +474,7 @@ static int sub_020680A4(UnkStruct_020EF6D0 *param0)
     }
 
     ov5_021ECDFC(param0->unk_24, param0->unk_08);
-    MapObject_SetStatusFlagOn(v0, (1 << 6));
+    MapObject_SetStatusFlagOn(v0, MAP_OBJ_STATUS_PAUSE_MOVEMENT);
 
     param0->unk_00 = 2;
     return 1;
@@ -500,7 +489,7 @@ static int sub_020680D0(UnkStruct_020EF6D0 *param0)
     }
 
     {
-        u32 v1 = MapObject_GetMoveCode(param0->unk_24);
+        u32 v1 = MapObject_GetMovementType(param0->unk_24);
 
         switch (v1) {
         case 0x33:
@@ -643,14 +632,12 @@ static int sub_02068248(UnkStruct_020EF6D0 *param0)
 static int sub_02068264(UnkStruct_020EF6D0 *param0)
 {
     int v0, v1;
-    MapObject *v2;
-
-    v2 = Player_MapObject(param0->playerAvatar);
-    v1 = sub_02064488(MapObject_GetXPos(v2), MapObject_GetZPos(v2), MapObject_GetXPos(param0->unk_24), MapObject_GetZPos(param0->unk_24));
+    MapObject *v2 = Player_MapObject(param0->playerAvatar);
+    v1 = sub_02064488(MapObject_GetX(v2), MapObject_GetZ(v2), MapObject_GetX(param0->unk_24), MapObject_GetZ(param0->unk_24));
 
     if ((PlayerAvatar_GetDir(param0->playerAvatar) != v1) && ((param0->unk_18 == 0) || (param0->unk_14 == 2))) {
         if (LocalMapObj_IsAnimationSet(v2) == 1) {
-            MapObject_SetStatusFlagOff(v2, (1 << 7));
+            MapObject_SetStatusFlagOff(v2, MAP_OBJ_STATUS_LOCK_DIR);
             v0 = sub_02065838(v1, 0x0);
             LocalMapObj_SetAnimationCode(v2, v0);
             param0->unk_00 = 15;
@@ -664,9 +651,7 @@ static int sub_02068264(UnkStruct_020EF6D0 *param0)
 
 static int sub_020682E0(UnkStruct_020EF6D0 *param0)
 {
-    MapObject *v0;
-
-    v0 = Player_MapObject(param0->playerAvatar);
+    MapObject *v0 = Player_MapObject(param0->playerAvatar);
 
     if (LocalMapObj_CheckAnimationFinished(v0) == 0) {
         return 0;

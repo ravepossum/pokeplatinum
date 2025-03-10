@@ -46,9 +46,7 @@ const UnkStruct_020217F4 Unk_ov5_0220059C[];
 
 void *ov5_021F3284(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_ov5_021F32B0 *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F32B0)), 0, 0);
+    UnkStruct_ov5_021F32B0 *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F32B0)), 0, 0);
     v0->unk_00 = param0;
 
     ov5_021F32B0(v0);
@@ -111,7 +109,7 @@ static int ov5_021F336C(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
     v1->unk_14 = *v2;
     v1->unk_04 = sub_02062924(v1->unk_14.unk_0C);
-    v1->unk_08 = MapObject_Id(v1->unk_14.unk_0C);
+    v1->unk_08 = MapObject_GetLocalID(v1->unk_14.unk_0C);
     v1->unk_0C = sub_02062918(v1->unk_14.unk_0C);
 
     sub_020715D4(param0, &v0);
@@ -122,9 +120,7 @@ static int ov5_021F336C(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
 static void ov5_021F33C4(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
-    UnkStruct_ov5_021F336C *v0;
-
-    v0 = param1;
+    UnkStruct_ov5_021F336C *v0 = param1;
     sub_020211FC(v0->unk_24);
 }
 
@@ -182,7 +178,7 @@ static void ov5_021F3448(UnkStruct_ov101_021D5D90 *param0, void *param1)
         return;
     }
 
-    MapObject_PosVectorOut(v2, &v0);
+    MapObject_GetPosPtr(v2, &v0);
 
     v0.z += FX32_ONE * 8;
     sub_020212A8(v1->unk_24, &v0);

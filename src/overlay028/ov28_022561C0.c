@@ -16,11 +16,11 @@
 
 #include "bg_window.h"
 #include "heap.h"
+#include "pokedex.h"
 #include "pokemon.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "touch_screen.h"
-#include "unk_0202631C.h"
 
 typedef struct {
     u8 unk_00;
@@ -170,7 +170,7 @@ static void ov28_022562CC(SysTask *param0, void *param1)
 
     if (v1->unk_00 < NELEMS(v0)) {
         v1->unk_06 = 17;
-        ov25_02254518(v1->poketchSys, v1->buttonManager);
+        PoketechSystem_UpdateButtonManager(v1->poketchSys, v1->buttonManager);
 
         if (v0[v1->unk_00](v1)) {
             ov28_02256298(v1);
@@ -632,19 +632,19 @@ static void ov28_02256914(UnkStruct_ov28_02256210 *param0, const UnkStruct_ov28_
     s64 v0 = ov28_02257468(param1);
 
     if ((v0 > 0) && (v0 <= NATIONAL_DEX_COUNT)) {
-        PokedexData *v1;
+        Pokedex *pokedex;
         u16 v2;
 
-        v1 = SaveData_Pokedex(PoketchSystem_GetSaveData(param0->poketchSys));
+        pokedex = SaveData_GetPokedex(PoketchSystem_GetSaveData(param0->poketchSys));
 
-        if (Pokedex_IsNationalDexObtained(v1)) {
+        if (Pokedex_IsNationalDexObtained(pokedex)) {
             v2 = v0;
         } else {
             v2 = Pokemon_NationalDexNumber((u16)v0);
         }
 
-        if (v2 > 0 && v2 <= NATIONAL_DEX_COUNT && Pokedex_HasSeenSpecies(v1, v2)) {
-            ov25_02254444(v2, 0);
+        if (v2 > 0 && v2 <= NATIONAL_DEX_COUNT && Pokedex_HasSeenSpecies(pokedex, v2)) {
+            PoketchSystem_PlayCry(v2, 0);
         }
     }
 }

@@ -3,22 +3,21 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "overlay022/struct_ov22_022559F8.h"
 #include "overlay111/struct_ov111_021D2F80.h"
 
-#include "cell_actor.h"
+#include "char_transfer.h"
 #include "gx_layers.h"
 #include "narc.h"
+#include "pltt_transfer.h"
+#include "render_oam.h"
+#include "sprite.h"
 #include "sprite_resource.h"
-#include "unk_020093B4.h"
-#include "unk_0200A328.h"
-#include "unk_0200A784.h"
-#include "unk_0201DBEC.h"
-#include "unk_0201E86C.h"
-#include "unk_0201F834.h"
+#include "sprite_transfer.h"
+#include "sprite_util.h"
+#include "vram_transfer.h"
 
 void ov111_021D2F80(UnkStruct_ov111_021D2F80 *param0);
-CellActor *ov111_021D3280(UnkStruct_ov111_021D2F80 *param0, u32 param1, u32 param2, u32 param3, u32 param4, u8 param5);
+Sprite *ov111_021D3280(UnkStruct_ov111_021D2F80 *param0, u32 param1, u32 param2, u32 param3, u32 param4, u8 param5);
 void ov111_021D3320(UnkStruct_ov111_021D2F80 *param0);
 void ov111_021D33B0(UnkStruct_ov111_021D2F80 *param0, int param1);
 static void ov111_021D3378(void);
@@ -39,14 +38,14 @@ void ov111_021D2F80(UnkStruct_ov111_021D2F80 *param0)
     int v0;
     NARC *v1;
 
-    VRAMTransferManager_New(32, 115);
+    VramTransfer_New(32, 115);
     ov111_021D3378();
 
     NNS_G2dInitOamManagerModule();
 
-    sub_0200A784(0, 128, 0, 32, 0, 128, 0, 32, 115);
-    param0->unk_00 = sub_020095C4(40, &param0->unk_04, 115);
-    sub_0200964C(&param0->unk_04, 0, (512 * FX32_ONE));
+    RenderOam_Init(0, 128, 0, 32, 0, 128, 0, 32, 115);
+    param0->unk_00 = SpriteList_InitRendering(40, &param0->unk_04, 115);
+    SetSubScreenViewRect(&param0->unk_04, 0, (512 * FX32_ONE));
 
     for (v0 = 0; v0 < 4; v0++) {
         param0->unk_190[v0] = SpriteResourceCollection_New(Unk_ov111_021D3820[v0], v0, 115);
@@ -59,8 +58,8 @@ void ov111_021D2F80(UnkStruct_ov111_021D2F80 *param0)
     ov111_021D30D8(param0, 0, 0, NNS_G2D_VRAM_TYPE_2DSUB);
 
     for (v0 = 0; v0 < 5; v0++) {
-        sub_0200A328(param0->unk_1A0[v0][0]);
-        sub_0200A5C8(param0->unk_1A0[v0][1]);
+        SpriteTransfer_RequestChar(param0->unk_1A0[v0][0]);
+        SpriteTransfer_RequestPlttWholeRange(param0->unk_1A0[v0][1]);
     }
 
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
@@ -109,18 +108,18 @@ static void ov111_021D31F4(UnkStruct_ov111_021D2F80 *param0, int param1)
     return;
 }
 
-CellActor *ov111_021D3280(UnkStruct_ov111_021D2F80 *param0, u32 param1, u32 param2, u32 param3, u32 param4, u8 param5)
+Sprite *ov111_021D3280(UnkStruct_ov111_021D2F80 *param0, u32 param1, u32 param2, u32 param3, u32 param4, u8 param5)
 {
     int v0;
-    CellActorResourceData v1;
-    CellActor *v2;
+    SpriteResourcesHeader v1;
+    Sprite *v2;
 
-    sub_020093B4(&v1, param1, param1, param1, param1, 0xffffffff, 0xffffffff, 0, param3, param0->unk_190[0], param0->unk_190[1], param0->unk_190[2], param0->unk_190[3], NULL, NULL);
+    SpriteResourcesHeader_Init(&v1, param1, param1, param1, param1, 0xffffffff, 0xffffffff, 0, param3, param0->unk_190[0], param0->unk_190[1], param0->unk_190[2], param0->unk_190[3], NULL, NULL);
 
     {
-        CellActorInitParamsEx v3;
+        AffineSpriteListTemplate v3;
 
-        v3.collection = param0->unk_00;
+        v3.list = param0->unk_00;
         v3.resourceData = &v1;
         v3.position.x = 0;
         v3.position.y = 0;
@@ -138,11 +137,11 @@ CellActor *ov111_021D3280(UnkStruct_ov111_021D2F80 *param0, u32 param1, u32 para
             v3.vramType = NNS_G2D_VRAM_TYPE_2DSUB;
         }
 
-        v2 = CellActorCollection_AddEx(&v3);
+        v2 = SpriteList_AddAffine(&v3);
 
-        CellActor_SetAnimateFlag(v2, 0);
-        CellActor_SetAnimSpeed(v2, FX32_ONE);
-        CellActor_SetAnim(v2, param2);
+        Sprite_SetAnimateFlag(v2, 0);
+        Sprite_SetAnimSpeed(v2, FX32_ONE);
+        Sprite_SetAnim(v2, param2);
     }
 
     return v2;
@@ -153,18 +152,18 @@ void ov111_021D3320(UnkStruct_ov111_021D2F80 *param0)
     u8 v0;
 
     for (v0 = 0; v0 < 5; v0++) {
-        sub_0200A4E4(param0->unk_1A0[v0][0]);
-        sub_0200A6DC(param0->unk_1A0[v0][1]);
+        SpriteTransfer_ResetCharTransfer(param0->unk_1A0[v0][0]);
+        SpriteTransfer_ResetPlttTransfer(param0->unk_1A0[v0][1]);
     }
 
     for (v0 = 0; v0 < 4; v0++) {
         SpriteResourceCollection_Delete(param0->unk_190[v0]);
     }
 
-    CellActorCollection_Delete(param0->unk_00);
-    sub_0200A878();
-    sub_0201E958();
-    sub_0201F8B4();
+    SpriteList_Delete(param0->unk_00);
+    RenderOam_Free();
+    CharTransfer_Free();
+    PlttTransfer_Free();
 
     return;
 }
@@ -172,16 +171,16 @@ void ov111_021D3320(UnkStruct_ov111_021D2F80 *param0)
 static void ov111_021D3378(void)
 {
     {
-        UnkStruct_ov22_022559F8 v0 = {
+        CharTransferTemplate v0 = {
             5, 3000, 5120, 115
         };
 
-        sub_0201E88C(&v0, GX_OBJVRAMMODE_CHAR_1D_128K, GX_OBJVRAMMODE_CHAR_1D_128K);
+        CharTransfer_InitWithVramModes(&v0, GX_OBJVRAMMODE_CHAR_1D_128K, GX_OBJVRAMMODE_CHAR_1D_128K);
     }
 
-    sub_0201F834(14, 115);
-    sub_0201E994();
-    sub_0201F8E4();
+    PlttTransfer_Init(14, 115);
+    CharTransfer_ClearBuffers();
+    PlttTransfer_Clear();
 
     return;
 }
@@ -208,7 +207,7 @@ void ov111_021D33B0(UnkStruct_ov111_021D2F80 *param0, int param1)
     v0 = SpriteResourceCollection_Find(param0->unk_190[1], 3);
 
     SpriteResourceCollection_ModifyPalette(param0->unk_190[1], v0, 184, Unk_ov111_021D3940[param1], 0, 115);
-    sub_0200A6B8(v0);
+    SpriteTransfer_ReplacePlttData(v0);
 
     return;
 }

@@ -8,30 +8,30 @@
     ScriptEntry _018F
     ScriptEntry _0225
     ScriptEntry _0289
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001A:
     ScrCmd_14F
-    ScrCmd_186 1, 72, 104
-    ScrCmd_186 2, 0x1A8, 87
-    ScrCmd_186 3, 200, 185
-    ScrCmd_186 4, 0x14F, 0x108
-    ScrCmd_186 8, 175, 0x117
-    ScrCmd_186 9, 0x1A8, 0x1B7
-    ScrCmd_186 10, 87, 0x1C8
-    ScrCmd_186 11, 0x137, 0x166
-    ScrCmd_186 0, 232, 87
-    ScrCmd_186 5, 0x148, 151
-    ScrCmd_186 6, 232, 215
-    ScrCmd_186 7, 232, 0x12A
-    ScrCmd_186 12, 0x117, 0x148
-    ScrCmd_186 13, 0x117, 0x1C8
-    ScrCmd_186 14, 183, 0x188
-    ScrCmd_186 15, 0x117, 245
-    ScrCmd_186 17, 40, 0x1D7
-    ScrCmd_186 18, 0x1D7, 72
-    ScrCmd_186 19, 0x1D7, 0x1D7
-    ScrCmd_186 20, 40, 72
+    SetObjectEventPos 1, 72, 104
+    SetObjectEventPos 2, 0x1A8, 87
+    SetObjectEventPos 3, 200, 185
+    SetObjectEventPos 4, 0x14F, 0x108
+    SetObjectEventPos 8, 175, 0x117
+    SetObjectEventPos 9, 0x1A8, 0x1B7
+    SetObjectEventPos 10, 87, 0x1C8
+    SetObjectEventPos 11, 0x137, 0x166
+    SetObjectEventPos 0, 232, 87
+    SetObjectEventPos 5, 0x148, 151
+    SetObjectEventPos 6, 232, 215
+    SetObjectEventPos 7, 232, 0x12A
+    SetObjectEventPos 12, 0x117, 0x148
+    SetObjectEventPos 13, 0x117, 0x1C8
+    SetObjectEventPos 14, 183, 0x188
+    SetObjectEventPos 15, 0x117, 245
+    SetObjectEventPos 17, 40, 0x1D7
+    SetObjectEventPos 18, 0x1D7, 72
+    SetObjectEventPos 19, 0x1D7, 0x1D7
+    SetObjectEventPos 20, 40, 72
     End
 
 _00BE:
@@ -180,7 +180,7 @@ _0289:
     PlayFanfare SEQ_SE_DP_PYUU2
     ApplyMovement 16, _02F0
     WaitMovement
-    ScrCmd_065 16
+    RemoveObject 16
     SetVar 0x40D0, 1
     SetFlag 0x992
     End
@@ -201,34 +201,34 @@ _0289:
 
     .balign 4, 0
 _02D4:
-    MoveAction_022
-    MoveAction_04B
-    MoveAction_03F
+    MoveAction_034
+    MoveAction_075
+    MoveAction_063
     EndMovement
 
     .balign 4, 0
 _02E4:
-    MoveAction_021
-    MoveAction_03F 2
+    MoveAction_033
+    MoveAction_063 2
     EndMovement
 
     .balign 4, 0
 _02F0:
     MoveAction_003
-    MoveAction_03D
+    MoveAction_061
     MoveAction_000
-    MoveAction_03D
+    MoveAction_061
     MoveAction_002
-    MoveAction_03D
+    MoveAction_061
     MoveAction_001
-    MoveAction_03D
+    MoveAction_061
     MoveAction_003
-    MoveAction_03C
+    MoveAction_060
     MoveAction_000
-    MoveAction_03C
+    MoveAction_060
     MoveAction_002
-    MoveAction_03C
+    MoveAction_060
     MoveAction_001
-    MoveAction_043
-    MoveAction_03F 2
+    MoveAction_067
+    MoveAction_063 2
     EndMovement

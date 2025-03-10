@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/oreburgh_city.h"
 
     .data
 
@@ -24,7 +25,7 @@
     ScriptEntry _0722
     ScriptEntry _0735
     ScriptEntry _0754
-    .short 0xFD13
+    ScriptEntryEnd
 
 _005A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -88,36 +89,36 @@ _00D7:
     End
 
 _011E:
-    ScrCmd_186 3, 0x10F, 0x2EC
-    ScrCmd_064 3
-    ApplyMovement 0xFF, _02A0
+    SetObjectEventPos 3, 0x10F, 0x2EC
+    AddObject 3
+    ApplyMovement LOCALID_PLAYER, _02A0
     ApplyMovement 3, _02B8
     WaitMovement
     GoTo _01B6
     End
 
 _0144:
-    ScrCmd_186 3, 0x10F, 0x2ED
-    ScrCmd_064 3
-    ApplyMovement 0xFF, _02A0
+    SetObjectEventPos 3, 0x10F, 0x2ED
+    AddObject 3
+    ApplyMovement LOCALID_PLAYER, _02A0
     ApplyMovement 3, _02B8
     WaitMovement
     GoTo _01B6
     End
 
 _016A:
-    ScrCmd_186 3, 0x10F, 0x2EE
-    ScrCmd_064 3
-    ApplyMovement 0xFF, _02A0
+    SetObjectEventPos 3, 0x10F, 0x2EE
+    AddObject 3
+    ApplyMovement LOCALID_PLAYER, _02A0
     ApplyMovement 3, _02B8
     WaitMovement
     GoTo _01B6
     End
 
 _0190:
-    ScrCmd_186 3, 0x10F, 0x2EF
-    ScrCmd_064 3
-    ApplyMovement 0xFF, _02A0
+    SetObjectEventPos 3, 0x10F, 0x2EF
+    AddObject 3
+    ApplyMovement LOCALID_PLAYER, _02A0
     ApplyMovement 3, _02B8
     WaitMovement
     GoTo _01B6
@@ -147,28 +148,28 @@ _01B6:
     End
 
 _021F:
-    ApplyMovement 0xFF, _0310
+    ApplyMovement LOCALID_PLAYER, _0310
     ApplyMovement 3, _02C0
     WaitMovement
     GoTo _0287
     End
 
 _0239:
-    ApplyMovement 0xFF, _031C
+    ApplyMovement LOCALID_PLAYER, _031C
     ApplyMovement 3, _02D0
     WaitMovement
     GoTo _0287
     End
 
 _0253:
-    ApplyMovement 0xFF, _0328
+    ApplyMovement LOCALID_PLAYER, _0328
     ApplyMovement 3, _02E8
     WaitMovement
     GoTo _0287
     End
 
 _026D:
-    ApplyMovement 0xFF, _0334
+    ApplyMovement LOCALID_PLAYER, _0334
     ApplyMovement 3, _02F8
     WaitMovement
     GoTo _0287
@@ -176,7 +177,7 @@ _026D:
 
 _0287:
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ScrCmd_065 3
+    RemoveObject 3
     CallCommonScript 0x7FB
     SetVar 0x4079, 3
     ReleaseAll
@@ -184,82 +185,82 @@ _0287:
 
     .balign 4, 0
 _02A0:
-    MoveAction_03E 7
-    MoveAction_047
-    MoveAction_012
-    MoveAction_048
+    MoveAction_062 7
+    MoveAction_071
+    MoveAction_018
+    MoveAction_072
     MoveAction_003
     EndMovement
 
     .balign 4, 0
 _02B8:
-    MoveAction_012 9
+    MoveAction_018 9
     EndMovement
 
     .balign 4, 0
 _02C0:
-    MoveAction_011
-    MoveAction_012 4
-    MoveAction_026
+    MoveAction_017
+    MoveAction_018 4
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
 _02D0:
-    MoveAction_011
-    MoveAction_012 3
-    MoveAction_010
-    MoveAction_012
-    MoveAction_026
+    MoveAction_017
+    MoveAction_018 3
+    MoveAction_016
+    MoveAction_018
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
 _02E8:
-    MoveAction_010
-    MoveAction_012 4
-    MoveAction_026
+    MoveAction_016
+    MoveAction_018 4
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
 _02F8:
-    MoveAction_010
-    MoveAction_012 3
-    MoveAction_010
-    MoveAction_012
-    MoveAction_026
+    MoveAction_016
+    MoveAction_018 3
+    MoveAction_016
+    MoveAction_018
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
 _0310:
-    MoveAction_021
-    MoveAction_022
+    MoveAction_033
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _031C:
-    MoveAction_021
-    MoveAction_022
+    MoveAction_033
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0328:
-    MoveAction_020
-    MoveAction_022
+    MoveAction_032
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0334:
-    MoveAction_020
-    MoveAction_022
+    MoveAction_032
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0340:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0348:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
 _0350:
@@ -340,28 +341,28 @@ _03F8:
     End
 
 _042F:
-    ApplyMovement 0xFF, _055C
+    ApplyMovement LOCALID_PLAYER, _055C
     ApplyMovement 4, _0604
     WaitMovement
     GoTo _0497
     End
 
 _0449:
-    ApplyMovement 0xFF, _055C
+    ApplyMovement LOCALID_PLAYER, _055C
     ApplyMovement 4, _0610
     WaitMovement
     GoTo _0497
     End
 
 _0463:
-    ApplyMovement 0xFF, _055C
+    ApplyMovement LOCALID_PLAYER, _055C
     ApplyMovement 4, _061C
     WaitMovement
     GoTo _0497
     End
 
 _047D:
-    ApplyMovement 0xFF, _055C
+    ApplyMovement LOCALID_PLAYER, _055C
     ApplyMovement 4, _0628
     WaitMovement
     GoTo _0497
@@ -379,28 +380,28 @@ _0497:
     End
 
 _04DC:
-    ApplyMovement 0xFF, _0564
+    ApplyMovement LOCALID_PLAYER, _0564
     ApplyMovement 4, _05B4
     WaitMovement
     GoTo _0544
     End
 
 _04F6:
-    ApplyMovement 0xFF, _0578
+    ApplyMovement LOCALID_PLAYER, _0578
     ApplyMovement 4, _05C8
     WaitMovement
     GoTo _0544
     End
 
 _0510:
-    ApplyMovement 0xFF, _058C
+    ApplyMovement LOCALID_PLAYER, _058C
     ApplyMovement 4, _05DC
     WaitMovement
     GoTo _0544
     End
 
 _052A:
-    ApplyMovement 0xFF, _05A0
+    ApplyMovement LOCALID_PLAYER, _05A0
     ApplyMovement 4, _05F0
     WaitMovement
     GoTo _0544
@@ -417,95 +418,95 @@ _0544:
 
     .balign 4, 0
 _055C:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0564:
-    MoveAction_00D
-    MoveAction_00F
-    MoveAction_00D 10
-    MoveAction_00F 12
+    MoveAction_013
+    MoveAction_015
+    MoveAction_013 10
+    MoveAction_015 12
     EndMovement
 
     .balign 4, 0
 _0578:
-    MoveAction_00D
-    MoveAction_00F
-    MoveAction_00D 9
-    MoveAction_00F 12
+    MoveAction_013
+    MoveAction_015
+    MoveAction_013 9
+    MoveAction_015 12
     EndMovement
 
     .balign 4, 0
 _058C:
-    MoveAction_00D
-    MoveAction_00F
-    MoveAction_00D 8
-    MoveAction_00F 12
+    MoveAction_013
+    MoveAction_015
+    MoveAction_013 8
+    MoveAction_015 12
     EndMovement
 
     .balign 4, 0
 _05A0:
-    MoveAction_00D
-    MoveAction_00F
-    MoveAction_00D 7
-    MoveAction_00F 12
+    MoveAction_013
+    MoveAction_015
+    MoveAction_013 7
+    MoveAction_015 12
     EndMovement
 
     .balign 4, 0
 _05B4:
-    MoveAction_00F
-    MoveAction_00D 10
-    MoveAction_00F 13
-    MoveAction_022
+    MoveAction_015
+    MoveAction_013 10
+    MoveAction_015 13
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _05C8:
-    MoveAction_00F
-    MoveAction_00D 9
-    MoveAction_00F 13
-    MoveAction_022
+    MoveAction_015
+    MoveAction_013 9
+    MoveAction_015 13
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _05DC:
-    MoveAction_00F
-    MoveAction_00D 8
-    MoveAction_00F 13
-    MoveAction_022
+    MoveAction_015
+    MoveAction_013 8
+    MoveAction_015 13
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _05F0:
-    MoveAction_00F
-    MoveAction_00D 7
-    MoveAction_00F 13
-    MoveAction_022
+    MoveAction_015
+    MoveAction_013 7
+    MoveAction_015 13
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0604:
-    MoveAction_04B
-    MoveAction_00C 3
+    MoveAction_075
+    MoveAction_012 3
     EndMovement
 
     .balign 4, 0
 _0610:
-    MoveAction_04B
-    MoveAction_00C 2
+    MoveAction_075
+    MoveAction_012 2
     EndMovement
 
     .balign 4, 0
 _061C:
-    MoveAction_04B
-    MoveAction_00C
+    MoveAction_075
+    MoveAction_012
     EndMovement
 
     .balign 4, 0
 _0628:
-    MoveAction_04B
-    MoveAction_020
+    MoveAction_075
+    MoveAction_032
     EndMovement
 
 _0634:
@@ -567,35 +568,19 @@ _0696:
     End
 
 _06A9:
-    ScrCmd_036 27, 0, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowMapSign 27
     End
 
 _06C0:
-    ScrCmd_037 3, 0
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03A 28, 0x800C
-    CallCommonScript 0x7D0
+    ShowScrollingSign 28
     End
 
 _06D5:
-    ScrCmd_036 29, 2, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowLandmarkSign 29
     End
 
 _06EC:
-    ScrCmd_036 30, 2, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowLandmarkSign 30
     End
 
 _0703:
@@ -603,7 +588,7 @@ _0703:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 66, 0
+    PlayCry SPECIES_MACHOP
     Message 24
     ScrCmd_04D
     WaitABXPadPress
@@ -626,7 +611,7 @@ _0735:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 66, 0
+    PlayCry SPECIES_MACHOP
     Message 25
     ScrCmd_04D
     WaitABXPadPress
@@ -639,7 +624,7 @@ _0754:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 66, 0
+    PlayCry SPECIES_MACHOP
     Message 26
     ScrCmd_04D
     WaitABXPadPress

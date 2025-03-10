@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/hearthome_city_gym_leader_room.h"
 
     .data
 
@@ -8,7 +9,7 @@
     ScriptEntry _01A0
     ScriptEntry _0248
     ScriptEntry _001A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001A:
     GoToIfSet 142, _0027
@@ -16,8 +17,8 @@ _001A:
 
 _0027:
     SetFlag 0x29C
-    ScrCmd_065 2
-    ScrCmd_065 1
+    RemoveObject 2
+    RemoveObject 1
     ClearFlag 142
     End
 
@@ -25,7 +26,7 @@ _0039:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_1BD 0x800C
+    GetPlayerDir 0x800C
     GoToIfEq 0x800C, 0, _007B
     GoToIfEq 0x800C, 1, _008B
     GoToIfEq 0x800C, 2, _009B
@@ -55,14 +56,14 @@ _00AB:
 _00BB:
     CheckBadgeAcquired BADGE_ID_RELIC, 0x800C
     GoToIfEq 0x800C, 1, _01A0
-    ScrCmd_1CD 9, 91, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_GYM_WAS_TOO_TOUGH, 91, 0, 0, 0
     Message 0
     CloseMessage
     SetFlag 142
-    StartTrainerBattle trainer_leader_fantina
+    StartTrainerBattle TRAINER_LEADER_FANTINA
     ClearFlag 142
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _0248
+    GoToIfEq 0x800C, FALSE, _0248
     Message 1
     BufferPlayerName 0
     Message 2
@@ -70,15 +71,15 @@ _00BB:
     WaitSound
     GiveBadge BADGE_ID_RELIC
     ScrCmd_260 23
-    SetTrainerFlag trainer_camper_drew
-    SetTrainerFlag trainer_ace_trainer_allen
-    SetTrainerFlag trainer_ace_trainer_catherine
-    SetTrainerFlag trainer_lass_molly
-    SetTrainerFlag trainer_picnicker_cheyenne
-    SetTrainerFlag trainer_school_kid_chance
-    SetTrainerFlag trainer_school_kid_mackenzie
-    SetTrainerFlag trainer_youngster_donny
-    ScrCmd_1CD 10, 91, trainer_leader_fantina, 0, 0
+    SetTrainerFlag TRAINER_CAMPER_DREW
+    SetTrainerFlag TRAINER_ACE_TRAINER_ALLEN
+    SetTrainerFlag TRAINER_ACE_TRAINER_CATHERINE
+    SetTrainerFlag TRAINER_LASS_MOLLY
+    SetTrainerFlag TRAINER_PICNICKER_CHEYENNE
+    SetTrainerFlag TRAINER_SCHOOL_KID_CHANCE
+    SetTrainerFlag TRAINER_SCHOOL_KID_MACKENZIE
+    SetTrainerFlag TRAINER_YOUNGSTER_DONNY
+    CreateJournalEvent LOCATION_EVENT_BEAT_GYM_LEADER, 91, TRAINER_LEADER_FANTINA, 0, 0
     SetVar 0x407B, 1
     SetFlag 0x206
     ClearFlag 0x207
@@ -164,7 +165,7 @@ _0224:
 
 _0248:
     ClearFlag 0x29C
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 

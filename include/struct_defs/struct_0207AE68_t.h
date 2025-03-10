@@ -3,9 +3,8 @@
 
 #include "struct_decls/pokedexdata_decl.h"
 #include "struct_decls/pokemon_animation_sys_decl.h"
-#include "struct_decls/sprite_decl.h"
 #include "struct_decls/struct_02007768_decl.h"
-#include "struct_decls/struct_party_decl.h"
+#include "struct_defs/pokemon_sprite.h"
 #include "struct_defs/struct_0207C690.h"
 #include "struct_defs/struct_0207C8C4.h"
 
@@ -19,8 +18,9 @@
 #include "narc.h"
 #include "overlay_manager.h"
 #include "palette.h"
+#include "party.h"
 #include "pokemon.h"
-#include "poketch_data.h"
+#include "poketch.h"
 #include "strbuf.h"
 #include "string_template.h"
 
@@ -32,7 +32,7 @@ struct UnkStruct_0207AE68_t {
     Strbuf *unk_10;
     PaletteData *unk_14;
     UnkStruct_02007768 *unk_18;
-    Sprite *unk_1C[2];
+    PokemonSprite *unk_1C[2];
     Party *unk_24;
     Pokemon *unk_28;
     Options *unk_2C;
@@ -42,10 +42,10 @@ struct UnkStruct_0207AE68_t {
     PokemonSummary *unk_3C;
     void *unk_40;
     PokemonAnimationSys *unk_44;
-    PokedexData *unk_48;
+    Pokedex *unk_48;
     Bag *unk_4C;
     GameRecords *records;
-    PoketchData *poketchData;
+    Poketch *poketch;
     void *unk_58;
     int unk_5C;
     u16 unk_60;

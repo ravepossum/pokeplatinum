@@ -5,11 +5,11 @@
 
 #include "constants/items.h"
 #include "constants/species.h"
+#include "generated/text_banks.h"
 
+#include "struct_decls/pc_boxes_decl.h"
 #include "struct_decls/struct_02023FCC_decl.h"
-#include "struct_decls/struct_020797DC_decl.h"
 #include "struct_decls/struct_0207CB08_decl.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/chatot_cry.h"
 #include "struct_defs/struct_02042434.h"
 #include "struct_defs/struct_0208737C.h"
@@ -18,6 +18,7 @@
 #include "overlay019/ov19_021D603C.h"
 #include "overlay019/ov19_021D61B0.h"
 #include "overlay019/ov19_021DF964.h"
+#include "overlay019/pc_mon_preview.h"
 #include "overlay019/struct_ov19_021D3CFC.h"
 #include "overlay019/struct_ov19_021D4DE4.h"
 #include "overlay019/struct_ov19_021D4DF0.h"
@@ -25,7 +26,6 @@
 #include "overlay019/struct_ov19_021D4F34.h"
 #include "overlay019/struct_ov19_021D4F5C.h"
 #include "overlay019/struct_ov19_021D5594.h"
-#include "overlay019/struct_ov19_021D5BAC.h"
 #include "overlay019/struct_ov19_021D5D20.h"
 #include "overlay019/struct_ov19_021D5FAC.h"
 #include "overlay019/struct_ov19_021D6104.h"
@@ -34,7 +34,7 @@
 #include "savedata/save_table.h"
 
 #include "bag.h"
-#include "core_sys.h"
+#include "dexmode_checker.h"
 #include "enums.h"
 #include "game_options.h"
 #include "game_overlay.h"
@@ -44,6 +44,7 @@
 #include "message.h"
 #include "overlay_manager.h"
 #include "party.h"
+#include "pc_boxes.h"
 #include "pokemon.h"
 #include "save_player.h"
 #include "savedata.h"
@@ -51,42 +52,42 @@
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "touch_screen.h"
 #include "unk_02005474.h"
 #include "unk_02023FCC.h"
 #include "unk_0202CC64.h"
 #include "unk_0202D778.h"
-#include "unk_020797C8.h"
-#include "unk_0207A274.h"
 #include "unk_0207CB08.h"
 #include "unk_0208694C.h"
 
 #include "constdata/const_020F2DAC.h"
 #include "constdata/const_020F410C.h"
+#include "res/text/bank/box_messages.h"
 
 FS_EXTERN_OVERLAY(overlay84);
 
-static const TouchScreenHitTable Unk_ov19_021DFDF6[] = {
-    { 0xFE, 0x0, 0xB8, 0x28 },
-    { 0xFE, 0xFF, 0xB8, 0x28 },
-    { 0xFF, 0x0, 0x0, 0x0 }
+static const TouchScreenHitTable sMainPcButtons[] = {
+    { TOUCHSCREEN_USE_CIRCLE, MAIN_PC_LEFT_BUTTON_X, MAIN_PC_BUTTON_Y, MAIN_PC_BUTTON_RADIUS },
+    { TOUCHSCREEN_USE_CIRCLE, MAIN_PC_RIGHT_BUTTON_X, MAIN_PC_BUTTON_Y, MAIN_PC_BUTTON_RADIUS },
+    { 255, 0, 0, 0 }
 };
 
-static const TouchScreenHitTable Unk_ov19_021DFE02[] = {
-    { 0xFE, 0x0, 0xB8, 0x28 },
-    { 0xFE, 0xFF, 0xB8, 0x28 },
-    { 0xFE, 0x80, 0xB2, 0xC },
-    { 0xFF, 0x0, 0x0, 0x0 }
+static const TouchScreenHitTable sComparePokemonButtons[] = {
+    { TOUCHSCREEN_USE_CIRCLE, MAIN_PC_LEFT_BUTTON_X, MAIN_PC_BUTTON_Y, MAIN_PC_BUTTON_RADIUS },
+    { TOUCHSCREEN_USE_CIRCLE, MAIN_PC_RIGHT_BUTTON_X, MAIN_PC_BUTTON_Y, MAIN_PC_BUTTON_RADIUS },
+    { TOUCHSCREEN_USE_CIRCLE, COMPARE_MON_PC_BUTTON_X, COMPARE_MON_PC_BUTTON_Y, COMPARE_MON_PC_BUTTON_RADIUS },
+    { 255, 0, 0, 0 }
 };
 
-static const TouchScreenHitTable Unk_ov19_021DFE12[] = {
-    { 0xFE, 0x98, 0xA8, 0x10 },
-    { 0xFE, 0xA3, 0x86, 0x10 },
-    { 0xFE, 0xB8, 0x68, 0x10 },
-    { 0xFE, 0xD8, 0x54, 0x10 },
-    { 0xFE, 0xF0, 0x34, 0x10 },
-    { 0xFE, 0xF0, 0x10, 0x10 },
-    { 0xFF, 0x0, 0x0, 0x0 }
+static const TouchScreenHitTable sPokemonMarkingsButtons[] = {
+    { TOUCHSCREEN_USE_CIRCLE, PC_MARKINGS_BUTTON1_X, PC_MARKINGS_BUTTON1_Y, PC_MARKINGS_BUTTONS_RADIUS },
+    { TOUCHSCREEN_USE_CIRCLE, PC_MARKINGS_BUTTON2_X, PC_MARKINGS_BUTTON2_Y, PC_MARKINGS_BUTTONS_RADIUS },
+    { TOUCHSCREEN_USE_CIRCLE, PC_MARKINGS_BUTTON3_X, PC_MARKINGS_BUTTON3_Y, PC_MARKINGS_BUTTONS_RADIUS },
+    { TOUCHSCREEN_USE_CIRCLE, PC_MARKINGS_BUTTON4_X, PC_MARKINGS_BUTTON4_Y, PC_MARKINGS_BUTTONS_RADIUS },
+    { TOUCHSCREEN_USE_CIRCLE, PC_MARKINGS_BUTTON5_X, PC_MARKINGS_BUTTON5_Y, PC_MARKINGS_BUTTONS_RADIUS },
+    { TOUCHSCREEN_USE_CIRCLE, PC_MARKINGS_BUTTON6_X, PC_MARKINGS_BUTTON6_Y, PC_MARKINGS_BUTTONS_RADIUS },
+    { 255, 0, 0, 0 }
 };
 
 static const u16 Unk_ov19_021DFDF0[] = {
@@ -129,10 +130,10 @@ typedef struct UnkStruct_ov19_021D5DF8_t {
     UnkStruct_02023FCC *unk_180;
     u32 unk_184;
     u32 unk_188;
-    MessageLoader *unk_18C;
-    MessageLoader *unk_190;
-    MessageLoader *unk_194;
-    MessageLoader *unk_198;
+    MessageLoader *boxMessagesLoader;
+    MessageLoader *speciesNameLoader;
+    MessageLoader *natureNameLoader;
+    MessageLoader *abilityNameLoader;
     StringTemplate *unk_19C;
     Pokemon *unk_1A0;
     Options *unk_1A4;
@@ -193,7 +194,7 @@ static BOOL ov19_021D357C(UnkStruct_ov19_021D5DF8 *param0, int *param1);
 static void ov19_021D35F8(UnkStruct_ov19_021D5DF8 *param0, u32 *param1);
 static void ov19_021D38E0(UnkStruct_ov19_021D5DF8 *param0);
 static void ov19_021D3978(SysTask *param0, void *param1);
-static BOOL ov19_021D3AC8(BoxPokemon *param0, u16 param1);
+static BOOL BoxPokemon_HasMove(BoxPokemon *boxMon, u16 param1);
 static void ov19_021D3B34(UnkStruct_ov19_021D5DF8 *param0, u32 *param1);
 static void ov19_021D3C28(UnkStruct_ov19_021D5DF8 *param0, u32 *param1);
 static void ov19_021D3CFC(UnkStruct_ov19_021D4DF0 *param0, UnkStruct_ov19_021D5DF8 *param1);
@@ -217,8 +218,8 @@ static void ov19_021D4E30(UnkStruct_ov19_021D5594 *param0);
 static void ov19_021D4E50(UnkStruct_ov19_021D5594 *param0);
 static void ov19_021D4E5C(PCBoxes *param0, UnkStruct_ov19_021D4F5C *param1);
 static void ov19_021D4E7C(UnkStruct_ov19_021D4F5C *param0);
-static void ov19_021D4E88(UnkStruct_ov19_021D5BAC *param0);
-static void ov19_021D4EC0(UnkStruct_ov19_021D5BAC *param0);
+static void PCMonPreviewInit(PCMonPreview *param0);
+static void PCMonPreviewFree(PCMonPreview *param0);
 static void ov19_021D4EE4(UnkStruct_ov19_021D4EE4 *param0);
 static void ov19_021D4F18(UnkStruct_ov19_021D4EE4 *param0);
 static void ov19_021D4F34(UnkStruct_ov19_021D4F34 *param0);
@@ -246,13 +247,13 @@ static BOOL ov19_021D57D8(UnkStruct_ov19_021D5DF8 *param0, u32 param1);
 static BOOL ov19_021D5800(UnkStruct_ov19_021D5DF8 *param0, u32 param1);
 static void ov19_021D5834(UnkStruct_ov19_021D5DF8 *param0);
 static void ov19_021D584C(UnkStruct_ov19_021D5DF8 *param0);
-static void ov19_021D5888(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *param1, UnkStruct_ov19_021D5DF8 *param2);
-static void ov19_021D58AC(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *param1, UnkStruct_ov19_021D5DF8 *param2);
-static void ov19_021D59F4(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *param1, UnkStruct_ov19_021D5DF8 *param2);
+static void ov19_021D5888(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *boxMon, UnkStruct_ov19_021D5DF8 *param2);
+static void ov19_LoadBoxMonIntoPreview(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *boxMon, UnkStruct_ov19_021D5DF8 *param2);
+static void ov19_021D59F4(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *boxMon, UnkStruct_ov19_021D5DF8 *param2);
 static void ov19_021D5B70(UnkStruct_ov19_021D4DF0 *param0);
 static void ov19_021D5B80(UnkStruct_ov19_021D4DF0 *param0);
 static void ov19_021D5BA0(UnkStruct_ov19_021D4DF0 *param0, BOOL param1);
-static void ov19_021D5BA8(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *param1);
+static void ov19_SetPreviewedBoxMon(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *boxMon);
 static void ov19_021D5BAC(UnkStruct_ov19_021D4DF0 *param0);
 static void ov19_021D5BE8(UnkStruct_ov19_021D4DF0 *param0, u16 param1, UnkStruct_ov19_021D5DF8 *param2);
 static void ov19_021D5CBC(UnkStruct_ov19_021D4DF0 *param0);
@@ -269,17 +270,17 @@ static void ov19_021D5DA4(UnkStruct_ov19_021D4DF0 *param0, u32 param1);
 static void ov19_021D5DAC(UnkStruct_ov19_021D4DF0 *param0, int param1);
 static void ov19_021D5DB4(UnkStruct_ov19_021D4DF0 *param0, u32 param1);
 static void ov19_021D5DD8(UnkStruct_ov19_021D4DF0 *param0);
-static u32 ov19_021D5FD0(UnkStruct_ov19_021D4DF0 *param0, int param1, void *param2);
-static u32 ov19_021D6014(UnkStruct_ov19_021D4DF0 *param0, int param1, void *param2);
+static u32 ov19_021D5FD0(UnkStruct_ov19_021D4DF0 *param0, enum PokemonDataParam value, void *dest);
+static u32 ov19_021D6014(UnkStruct_ov19_021D4DF0 *param0, enum PokemonDataParam value, void *dest);
 
 int ov19_021D0D80(OverlayManager *param0, int *param1)
 {
     UnkStruct_ov19_021D5DF8 *v0;
 
-    Heap_Create(3, 9, 16384);
-    Heap_Create(3, 10, 245760);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_9, 16384);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_10, 245760);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov19_021D5DF8), 9);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov19_021D5DF8), HEAP_ID_9);
 
     if (v0 != NULL) {
         ov19_021D4BE0(v0, OverlayManager_Args(param0));
@@ -303,7 +304,7 @@ int ov19_021D0DEC(OverlayManager *param0, int *param1)
         return 0;
     } else {
         if (v0->unk_1A8 != NULL) {
-            if (gCoreSys.pressedKeys & PAD_BUTTON_Y) {
+            if (gSystem.pressedKeys & PAD_BUTTON_Y) {
                 if (ov19_021D6628(v0->unk_114) == 1) {
                     ov19_021D5DD8(&v0->unk_00);
                     ov19_021D6594(v0->unk_114, 43);
@@ -332,8 +333,8 @@ int ov19_021D0E58(OverlayManager *param0, int *param1)
     ov19_021D64A0(v0->unk_114);
     ov19_021D4D58(v0);
 
-    Heap_Destroy(9);
-    Heap_Destroy(10);
+    Heap_Destroy(HEAP_ID_9);
+    Heap_Destroy(HEAP_ID_10);
 
     return 1;
 }
@@ -479,7 +480,7 @@ static int ov19_021D0FF0(UnkStruct_ov19_021D5DF8 *param0)
 {
     switch (param0->unk_1B0) {
     case 0:
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             if (ov19_021D5E4C(&param0->unk_00)) {
                 if (ov19_021D5E08(&param0->unk_00) != 3) {
                     ov19_021D0EB0(param0, ov19_021D20A4);
@@ -490,24 +491,24 @@ static int ov19_021D0FF0(UnkStruct_ov19_021D5DF8 *param0)
             }
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        if (gSystem.pressedKeys & PAD_BUTTON_B) {
             ov19_021D0EB0(param0, ov19_021D1F5C);
             break;
         }
 
-        if (gCoreSys.heldKeys & PAD_BUTTON_L) {
+        if (gSystem.heldKeys & PAD_BUTTON_L) {
             ov19_021D5CE8(&param0->unk_00);
             ov19_021D0EB0(param0, ov19_021D45A8);
             break;
         }
 
-        if (gCoreSys.heldKeys & PAD_BUTTON_R) {
+        if (gSystem.heldKeys & PAD_BUTTON_R) {
             ov19_021D5CBC(&(param0->unk_00));
             ov19_021D0EB0(param0, ov19_021D45A8);
             break;
         }
 
-        if (ov19_021D4F74(gCoreSys.heldKeys, param0)) {
+        if (ov19_021D4F74(gSystem.heldKeys, param0)) {
             ov19_021D6594(param0->unk_114, 5);
 
             if (ov19_021D5E38(&param0->unk_00) == 1) {
@@ -539,7 +540,7 @@ static int ov19_021D0FF0(UnkStruct_ov19_021D5DF8 *param0)
 
 static BOOL ov19_021D1238(UnkStruct_ov19_021D5DF8 *param0, int *param1)
 {
-    if (Item_IsMail(ov19_021D5E74(&param0->unk_00))) {
+    if (Item_IsMail(ov19_GetPreviewedMonHeldItem(&param0->unk_00))) {
         *param1 = 30;
         return 1;
     }
@@ -556,7 +557,7 @@ static int ov19_021D1270(UnkStruct_ov19_021D5DF8 *param0)
 {
     switch (param0->unk_1B0) {
     case 0:
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             if (ov19_021D5E2C(&param0->unk_00) == 6) {
                 param0->unk_1B0 = 2;
                 break;
@@ -573,12 +574,12 @@ static int ov19_021D1270(UnkStruct_ov19_021D5DF8 *param0)
             break;
         }
 
-        if ((gCoreSys.pressedKeys & PAD_BUTTON_B) || ((gCoreSys.pressedKeys & PAD_KEY_RIGHT) && (ov19_021D5E2C(&param0->unk_00) & 1)) || ((gCoreSys.pressedKeys & PAD_KEY_RIGHT) && (ov19_021D5E2C(&param0->unk_00) == 6))) {
+        if ((gSystem.pressedKeys & PAD_BUTTON_B) || ((gSystem.pressedKeys & PAD_KEY_RIGHT) && (ov19_021D5E2C(&param0->unk_00) & 1)) || ((gSystem.pressedKeys & PAD_KEY_RIGHT) && (ov19_021D5E2C(&param0->unk_00) == 6))) {
             param0->unk_1B0 = 2;
             break;
         }
 
-        if (ov19_021D4F74(gCoreSys.heldKeys, param0)) {
+        if (ov19_021D4F74(gSystem.heldKeys, param0)) {
             ov19_021D6594(param0->unk_114, 5);
 
             if (ov19_021D5E38(&param0->unk_00) == 1) {
@@ -639,7 +640,7 @@ static int ov19_021D1270(UnkStruct_ov19_021D5DF8 *param0)
             break;
         }
 
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D6594(param0->unk_114, 26);
             param0->unk_1B0 = 0;
         }
@@ -658,29 +659,29 @@ static int ov19_021D15C0(UnkStruct_ov19_021D5DF8 *param0)
 {
     switch (param0->unk_1B0) {
     case 0:
-        if (gCoreSys.heldKeys & (PAD_KEY_LEFT | PAD_BUTTON_L)) {
+        if (gSystem.heldKeys & (PAD_KEY_LEFT | PAD_BUTTON_L)) {
             ov19_021D5CE8(&param0->unk_00);
             ov19_021D0EB0(param0, ov19_021D45A8);
             break;
         }
 
-        if (gCoreSys.heldKeys & (PAD_KEY_RIGHT | PAD_BUTTON_R)) {
+        if (gSystem.heldKeys & (PAD_KEY_RIGHT | PAD_BUTTON_R)) {
             ov19_021D5CBC(&(param0->unk_00));
             ov19_021D0EB0(param0, ov19_021D45A8);
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             ov19_021D0EB0(param0, ov19_021D2694);
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        if (gSystem.pressedKeys & PAD_BUTTON_B) {
             ov19_021D0EB0(param0, ov19_021D1F5C);
             break;
         }
 
-        if (ov19_021D4F74(gCoreSys.heldKeys, param0)) {
+        if (ov19_021D4F74(gSystem.heldKeys, param0)) {
             ov19_021D6594(param0->unk_114, 5);
 
             if (ov19_021D5E38(&param0->unk_00) == 1) {
@@ -707,29 +708,29 @@ static int ov19_021D17AC(UnkStruct_ov19_021D5DF8 *param0)
 {
     switch (param0->unk_1B0) {
     case 0:
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             ov19_021D0EB0(param0, ov19_021D1DEC);
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        if (gSystem.pressedKeys & PAD_BUTTON_B) {
             ov19_021D0EB0(param0, ov19_021D1F5C);
             break;
         }
 
-        if (gCoreSys.heldKeys & PAD_BUTTON_L) {
+        if (gSystem.heldKeys & PAD_BUTTON_L) {
             ov19_021D5CE8(&param0->unk_00);
             ov19_021D0EB0(param0, ov19_021D45A8);
             break;
         }
 
-        if (gCoreSys.heldKeys & PAD_BUTTON_R) {
+        if (gSystem.heldKeys & PAD_BUTTON_R) {
             ov19_021D5CBC(&(param0->unk_00));
             ov19_021D0EB0(param0, ov19_021D45A8);
             break;
         }
 
-        if (ov19_021D4F74(gCoreSys.heldKeys, param0)) {
+        if (ov19_021D4F74(gSystem.heldKeys, param0)) {
             ov19_021D6594(param0->unk_114, 5);
 
             if (ov19_021D5E38(&param0->unk_00) == 1) {
@@ -761,7 +762,7 @@ static int ov19_021D19B8(UnkStruct_ov19_021D5DF8 *param0)
 {
     switch (param0->unk_1B0) {
     case 0:
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             if (ov19_021D5E08(&param0->unk_00) != 1) {
                 ov19_021D6594(param0->unk_114, 34);
                 param0->unk_1B0 = 1;
@@ -774,24 +775,24 @@ static int ov19_021D19B8(UnkStruct_ov19_021D5DF8 *param0)
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        if (gSystem.pressedKeys & PAD_BUTTON_B) {
             ov19_021D0EB0(param0, ov19_021D1F5C);
             break;
         }
 
-        if (gCoreSys.heldKeys & PAD_BUTTON_L) {
+        if (gSystem.heldKeys & PAD_BUTTON_L) {
             ov19_021D5CE8(&param0->unk_00);
             ov19_021D0EB0(param0, ov19_021D45A8);
             break;
         }
 
-        if (gCoreSys.heldKeys & PAD_BUTTON_R) {
+        if (gSystem.heldKeys & PAD_BUTTON_R) {
             ov19_021D5CBC(&(param0->unk_00));
             ov19_021D0EB0(param0, ov19_021D45A8);
             break;
         }
 
-        if (ov19_021D4F74(gCoreSys.heldKeys, param0)) {
+        if (ov19_021D4F74(gSystem.heldKeys, param0)) {
             ov19_021D6594(param0->unk_114, 5);
 
             if (ov19_021D5E38(&param0->unk_00) == 1) {
@@ -834,7 +835,7 @@ static int ov19_021D19B8(UnkStruct_ov19_021D5DF8 *param0)
         }
         break;
     case 5:
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D6594(param0->unk_114, 26);
             param0->unk_1B0 = 0;
         }
@@ -854,30 +855,30 @@ static void ov19_021D1C84(UnkStruct_ov19_021D5DF8 *param0)
         UnkStruct_ov19_021D5594 *v1 = &param0->unk_00.unk_14;
 
         param0->unk_12C.monData = param0->unk_00.unk_14.unk_00;
-        param0->unk_12C.dataType = (v1->unk_0B) ? 0 : 2;
-        param0->unk_12C.max = 1;
-        param0->unk_12C.pos = 0;
-        param0->unk_12C.mode = 0;
+        param0->unk_12C.dataType = (v1->unk_0B) ? SUMMARY_DATA_MON : SUMMARY_DATA_BOX_MON;
+        param0->unk_12C.monMax = 1;
+        param0->unk_12C.monIndex = 0;
+        param0->unk_12C.mode = SUMMARY_MODE_NORMAL;
         param0->unk_12C.move = 0;
         param0->unk_12C.options = param0->unk_1A4;
     } else if (ov19_021D5E10(&param0->unk_00) == 0) {
-        param0->unk_12C.monData = sub_02079C9C(param0->unk_120, sub_0207999C(param0->unk_120), 0);
-        param0->unk_12C.dataType = 2;
-        param0->unk_12C.max = (5 * 6);
-        param0->unk_12C.pos = ov19_021D5E24(&param0->unk_00);
-        param0->unk_12C.mode = 0;
+        param0->unk_12C.monData = PCBoxes_GetBoxMonAt(param0->unk_120, PCBoxes_GetCurrentBox(param0->unk_120), 0);
+        param0->unk_12C.dataType = SUMMARY_DATA_BOX_MON;
+        param0->unk_12C.monMax = MAX_MONS_PER_BOX;
+        param0->unk_12C.monIndex = ov19_021D5E24(&param0->unk_00);
+        param0->unk_12C.mode = SUMMARY_MODE_NORMAL;
         param0->unk_12C.move = 0;
     } else {
         param0->unk_12C.monData = param0->unk_124;
-        param0->unk_12C.dataType = 1;
-        param0->unk_12C.max = Party_GetCurrentCount(param0->unk_124);
-        param0->unk_12C.pos = ov19_021D5E2C(&param0->unk_00);
-        param0->unk_12C.mode = 0;
+        param0->unk_12C.dataType = SUMMARY_DATA_PARTY_MON;
+        param0->unk_12C.monMax = Party_GetCurrentCount(param0->unk_124);
+        param0->unk_12C.monIndex = ov19_021D5E2C(&param0->unk_00);
+        param0->unk_12C.mode = SUMMARY_MODE_NORMAL;
         param0->unk_12C.move = 0;
     }
 
     param0->unk_12C.chatotCry = NULL;
-    param0->unk_12C.dexMode = sub_0207A274(param0->unk_11C);
+    param0->unk_12C.dexMode = SaveData_GetDexMode(param0->unk_11C);
     param0->unk_12C.showContest = PokemonSummaryScreen_ShowContestData(param0->unk_11C);
     param0->unk_12C.specialRibbons = sub_0202D79C(param0->unk_11C);
 
@@ -955,7 +956,7 @@ static void ov19_021D1DEC(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         }
         (*param1) = 5;
     case 5:
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D6594(param0->unk_114, 26);
             (*param1) = 6;
         }
@@ -1011,7 +1012,7 @@ static void ov19_021D1F5C(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         }
         (*param1) = 3;
     case 3:
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D6594(param0->unk_114, 26);
             (*param1) = 4;
         }
@@ -1028,7 +1029,7 @@ static void ov19_021D20A4(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
 {
     switch (*param1) {
     case 0:
-        StringTemplate_SetNickname(param0->unk_19C, 0, ov19_021D5E9C(&param0->unk_00));
+        StringTemplate_SetNickname(param0->unk_19C, 0, ov19_GetPreviewedBoxMon(&param0->unk_00));
         ov19_021D5408(&param0->unk_00, 0);
         ov19_021DF990(&param0->unk_00);
 
@@ -1100,7 +1101,7 @@ static void ov19_021D20A4(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             ov19_021D0EB0(param0, ov19_021D3C28);
             break;
         case UnkEnum_021DFB94_40: {
-            if (ov19_021D5E74(&param0->unk_00) == 0) {
+            if (ov19_GetPreviewedMonHeldItem(&param0->unk_00) == 0) {
                 ov19_021D0EB0(param0, ov19_021D3D44);
             } else {
                 ov19_021D0EB0(param0, ov19_021D3FB0);
@@ -1141,7 +1142,7 @@ static void ov19_021D2308(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             StringTemplate_SetItemName(param0->unk_19C, 0, v0);
             ov19_021D5408(&param0->unk_00, 25);
         } else {
-            v0 = ov19_021D5E74(&param0->unk_00);
+            v0 = ov19_GetPreviewedMonHeldItem(&param0->unk_00);
 
             if (v0 != 0) {
                 StringTemplate_SetItemName(param0->unk_19C, 0, v0);
@@ -1154,7 +1155,7 @@ static void ov19_021D2308(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         ov19_021DFAD0(&param0->unk_00);
     }
 
-        if (ov19_021D5FC8(&param0->unk_00)) {
+        if (ov19_IsPreviewedMonEgg(&param0->unk_00)) {
             Sound_PlayEffect(1523);
             ov19_021D5408(&param0->unk_00, 34);
             ov19_021D6594(param0->unk_114, 24);
@@ -1197,7 +1198,7 @@ static void ov19_021D2308(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
     case 3:
         switch (param0->unk_1B8) {
         case UnkEnum_021DFB94_46:
-            if ((ov19_021D5F7C(&param0->unk_00) == ITEM_GRISEOUS_ORB) && (BoxPokemon_GetValue(param0->unk_00.unk_4C.unk_00, MON_DATA_SPECIES, NULL) != SPECIES_GIRATINA)) {
+            if ((ov19_021D5F7C(&param0->unk_00) == ITEM_GRISEOUS_ORB) && (BoxPokemon_GetValue(param0->unk_00.pcMonPreview.mon, MON_DATA_SPECIES, NULL) != SPECIES_GIRATINA)) {
                 StringTemplate_SetItemName(param0->unk_19C, 0, ITEM_GRISEOUS_ORB);
                 ov19_021D5408(&param0->unk_00, 45);
                 ov19_021D6594(param0->unk_114, 24);
@@ -1214,7 +1215,7 @@ static void ov19_021D2308(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
 
             break;
         case UnkEnum_021DFB94_47:
-            if (Item_IsMail(ov19_021D5E74(&param0->unk_00))) {
+            if (Item_IsMail(ov19_GetPreviewedMonHeldItem(&param0->unk_00))) {
                 Sound_PlayEffect(1523);
                 ov19_021D5408(&param0->unk_00, 24);
                 ov19_021D6594(param0->unk_114, 24);
@@ -1232,12 +1233,12 @@ static void ov19_021D2308(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             ov19_021D0EB0(param0, ov19_021D4390);
             break;
         case UnkEnum_021DFB94_49:
-            if (Item_IsMail(ov19_021D5E74(&param0->unk_00))) {
+            if (Item_IsMail(ov19_GetPreviewedMonHeldItem(&param0->unk_00))) {
                 Sound_PlayEffect(1523);
                 ov19_021D5408(&param0->unk_00, 24);
                 ov19_021D6594(param0->unk_114, 24);
                 (*param1) = 7;
-            } else if ((param0->unk_00.unk_112 == ITEM_GRISEOUS_ORB) && (BoxPokemon_GetValue(param0->unk_00.unk_4C.unk_00, MON_DATA_SPECIES, NULL) != SPECIES_GIRATINA)) {
+            } else if ((param0->unk_00.unk_112 == ITEM_GRISEOUS_ORB) && (BoxPokemon_GetValue(param0->unk_00.pcMonPreview.mon, MON_DATA_SPECIES, NULL) != SPECIES_GIRATINA)) {
                 StringTemplate_SetItemName(param0->unk_19C, 0, ITEM_GRISEOUS_ORB);
                 ov19_021D5408(&param0->unk_00, 45);
                 ov19_021D6594(param0->unk_114, 24);
@@ -1273,7 +1274,7 @@ static void ov19_021D2308(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         }
         break;
     case 7:
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D6594(param0->unk_114, 26);
             (*param1) = 6;
         }
@@ -1366,7 +1367,7 @@ static void ov19_021D27E8(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             (*param1) = 2;
         } else {
             ov19_021D5D08(&param0->unk_00, param0->unk_1BC.unk_05);
-            sub_02079A94(param0->unk_120, param0->unk_1BC.unk_05);
+            PCBoxes_SetCurrentBox(param0->unk_120, param0->unk_1BC.unk_05);
             ov19_021D6594(param0->unk_114, 4);
             (*param1) = 2;
         }
@@ -1446,7 +1447,7 @@ static void ov19_021D2890(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             param0->unk_1B8 = ov19_021DFDDC(&param0->unk_00);
 
             if ((param0->unk_1B8 >= UnkEnum_021DFB94_10) && (param0->unk_1B8 <= UnkEnum_021DFB94_33)) {
-                sub_02079AC4(param0->unk_120, 0xffffffff, (param0->unk_1B8 - UnkEnum_021DFB94_10));
+                PCBoxes_SetWallpaper(param0->unk_120, USE_CURRENT_BOX, (param0->unk_1B8 - UnkEnum_021DFB94_10));
                 ov19_021D4F5C(&param0->unk_00, param0->unk_120);
                 ov19_021D6594(param0->unk_114, 26);
                 (*param1) = 6;
@@ -1528,7 +1529,7 @@ static void ov19_021D2B54(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
 {
     switch (*param1) {
     case 0:
-        if (gCoreSys.heldKeys & PAD_BUTTON_A) {
+        if (gSystem.heldKeys & PAD_BUTTON_A) {
             ov19_021D5594(param0, &param0->unk_00);
             ov19_021D6594(param0->unk_114, 44);
             Sound_PlayEffect(1500);
@@ -1539,10 +1540,10 @@ static void ov19_021D2B54(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         break;
 
     case 1:
-        if (gCoreSys.heldKeys & PAD_BUTTON_A) {
-            switch (ov19_021D5150(gCoreSys.heldKeys, param0)) {
+        if (gSystem.heldKeys & PAD_BUTTON_A) {
+            switch (ov19_021D5150(gSystem.heldKeys, param0)) {
             case 2:
-                if ((gCoreSys.heldKeys & PAD_PLUS_KEY_MASK) == (gCoreSys.pressedKeys & PAD_PLUS_KEY_MASK)) {
+                if ((gSystem.heldKeys & PAD_PLUS_KEY_MASK) == (gSystem.pressedKeys & PAD_PLUS_KEY_MASK)) {
                     Sound_PlayEffect(1523);
                 }
                 break;
@@ -1573,9 +1574,9 @@ static void ov19_021D2B54(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             break;
         }
 
-        switch (ov19_021D5150(gCoreSys.heldKeys, param0)) {
+        switch (ov19_021D5150(gSystem.heldKeys, param0)) {
         case 2:
-            if ((gCoreSys.heldKeys & PAD_PLUS_KEY_MASK) == (gCoreSys.pressedKeys & PAD_PLUS_KEY_MASK)) {
+            if ((gSystem.heldKeys & PAD_PLUS_KEY_MASK) == (gSystem.pressedKeys & PAD_PLUS_KEY_MASK)) {
                 Sound_PlayEffect(1523);
             }
             break;
@@ -1589,20 +1590,20 @@ static void ov19_021D2B54(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
 
         case 3:
             ov19_021D5CE8(&param0->unk_00);
-            sub_02079A94(param0->unk_120, ov19_021D5E68(&param0->unk_00));
+            PCBoxes_SetCurrentBox(param0->unk_120, ov19_021D5E68(&param0->unk_00));
             ov19_021D6594(param0->unk_114, 4);
             *param1 = 5;
             break;
 
         case 4:
             ov19_021D5CBC(&(param0->unk_00));
-            sub_02079A94(param0->unk_120, ov19_021D5E68(&param0->unk_00));
+            PCBoxes_SetCurrentBox(param0->unk_120, ov19_021D5E68(&param0->unk_00));
             ov19_021D6594(param0->unk_114, 4);
             *param1 = 5;
             break;
 
         case 0:
-            if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+            if (gSystem.pressedKeys & PAD_BUTTON_A) {
                 if (ov19_021D2DD0(&param0->unk_00)) {
                     ov19_021D56AC(param0, &param0->unk_00);
                     ov19_021D6594(param0->unk_114, 10);
@@ -1613,7 +1614,7 @@ static void ov19_021D2B54(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
                 }
                 break;
             }
-            if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+            if (gSystem.pressedKeys & PAD_BUTTON_B) {
                 Sound_PlayEffect(1523);
             }
             break;
@@ -1656,7 +1657,7 @@ static BOOL ov19_021D2DD0(const UnkStruct_ov19_021D4DF0 *param0)
 
     for (v1 = 0; v1 < v6->unk_08; v1++) {
         v4 = v3 + (v6->unk_0C[v1] - v2);
-        v0 = sub_02079C9C(param0->unk_00, 0xffffffff, v4);
+        v0 = PCBoxes_GetBoxMonAt(param0->unk_00, USE_CURRENT_BOX, v4);
 
         if (BoxPokemon_GetValue(v0, MON_DATA_SPECIES_EXISTS, NULL)) {
             return 0;
@@ -1697,7 +1698,7 @@ static void ov19_021D2E1C(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         }
         break;
     case 2:
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D6594(param0->unk_114, 26);
             (*param1) = 3;
         }
@@ -1792,7 +1793,7 @@ static void ov19_021D3010(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             break;
         }
 
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D6594(param0->unk_114, 26);
             (*param1) = 2;
         }
@@ -1869,7 +1870,7 @@ static void ov19_021D30D0(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             break;
         }
 
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D6594(param0->unk_114, 26);
             (*param1) = 8;
         }
@@ -1951,7 +1952,7 @@ static void ov19_021D3294(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             break;
         }
 
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D4458(param0);
             (*param1) = 1;
         }
@@ -1961,7 +1962,7 @@ static void ov19_021D3294(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             break;
         }
 
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D6594(param0->unk_114, 26);
             (*param1) = 6;
         }
@@ -2030,9 +2031,9 @@ static BOOL ov19_021D357C(UnkStruct_ov19_021D5DF8 *param0, int *param1)
     }
 
     {
-        u16 v0 = ov19_021D5E74(&param0->unk_00);
+        u16 v0 = ov19_GetPreviewedMonHeldItem(&param0->unk_00);
 
-        if (Item_IsMail(ov19_021D5E74(&param0->unk_00))) {
+        if (Item_IsMail(ov19_GetPreviewedMonHeldItem(&param0->unk_00))) {
             *param1 = 30;
             return 0;
         }
@@ -2097,7 +2098,7 @@ static void ov19_021D35F8(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         break;
     case 2:
         if (ov19_021D6600(param0->unk_114, 26)) {
-            StringTemplate_SetNickname(param0->unk_19C, 0, ov19_021D5E9C(&param0->unk_00));
+            StringTemplate_SetNickname(param0->unk_19C, 0, ov19_GetPreviewedBoxMon(&param0->unk_00));
             ov19_021D38E0(param0);
 
             if (ov19_021D5E38(&param0->unk_00) == 2) {
@@ -2139,7 +2140,7 @@ static void ov19_021D35F8(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             break;
         }
 
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D5408(&param0->unk_00, 4);
             ov19_021D6594(param0->unk_114, 24);
             (*param1) = 6;
@@ -2150,7 +2151,7 @@ static void ov19_021D35F8(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             break;
         }
 
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D5408(&param0->unk_00, 33);
             ov19_021D6594(param0->unk_114, 24);
             (*param1) = 6;
@@ -2161,7 +2162,7 @@ static void ov19_021D35F8(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             break;
         }
 
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D6594(param0->unk_114, 26);
             (*param1) = 7;
         }
@@ -2185,7 +2186,7 @@ static void ov19_021D35F8(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             break;
         }
 
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             ov19_021D6594(param0->unk_114, 26);
             (*param1) = 9;
         }
@@ -2203,10 +2204,10 @@ static void ov19_021D38E0(UnkStruct_ov19_021D5DF8 *param0)
     UnkStruct_ov19_021D38E0 *v0 = &(param0->unk_15C);
     int v1, v2;
 
-    v0->unk_10 = param0->unk_00.unk_4C.unk_00;
+    v0->unk_10 = param0->unk_00.pcMonPreview.mon;
 
     for (v1 = 0, v2 = 0; v1 < (NELEMS(Unk_ov19_021DFDF0)); v1++) {
-        v0->unk_04[v1] = ov19_021D3AC8(v0->unk_10, Unk_ov19_021DFDF0[v1]);
+        v0->unk_04[v1] = BoxPokemon_HasMove(v0->unk_10, Unk_ov19_021DFDF0[v1]);
 
         if (v0->unk_04[v1]) {
             v2++;
@@ -2248,11 +2249,11 @@ static void ov19_021D3978(SysTask *param0, void *param1)
         }
 
         for (v2 = v0->unk_03; v2 < v4; v2++) {
-            v1 = sub_02079C9C(v0->unk_14, v0->unk_02, v2);
+            v1 = PCBoxes_GetBoxMonAt(v0->unk_14, v0->unk_02, v2);
 
             if (BoxPokemon_GetValue(v1, MON_DATA_SPECIES_EXISTS, NULL)) {
                 for (v3 = 0; v3 < (NELEMS(Unk_ov19_021DFDF0)); v3++) {
-                    if (ov19_021D3AC8(v1, Unk_ov19_021DFDF0[v3])) {
+                    if (BoxPokemon_HasMove(v1, Unk_ov19_021DFDF0[v3])) {
                         v0->unk_08[v3]++;
                     }
                 }
@@ -2272,7 +2273,7 @@ static void ov19_021D3978(SysTask *param0, void *param1)
             v1 = (BoxPokemon *)Party_GetPokemonBySlotIndex(v0->unk_18, v2);
 
             for (v3 = 0; v3 < (NELEMS(Unk_ov19_021DFDF0)); v3++) {
-                if (ov19_021D3AC8(v1, Unk_ov19_021DFDF0[v3])) {
+                if (BoxPokemon_HasMove(v1, Unk_ov19_021DFDF0[v3])) {
                     v0->unk_08[v3]++;
                 }
             }
@@ -2280,7 +2281,7 @@ static void ov19_021D3978(SysTask *param0, void *param1)
 
         if (v0->unk_1C) {
             for (v3 = 0; v3 < (NELEMS(Unk_ov19_021DFDF0)); v3++) {
-                if (ov19_021D3AC8(v0->unk_10, Unk_ov19_021DFDF0[v3])) {
+                if (BoxPokemon_HasMove(v0->unk_10, Unk_ov19_021DFDF0[v3])) {
                     v0->unk_08[v3]++;
                 }
             }
@@ -2300,26 +2301,22 @@ static void ov19_021D3978(SysTask *param0, void *param1)
     }
 }
 
-static BOOL ov19_021D3AC8(BoxPokemon *param0, u16 param1)
+static BOOL BoxPokemon_HasMove(BoxPokemon *boxMon, u16 move)
 {
-    BOOL v0, v1;
+    BOOL hasMove = FALSE;
+    BOOL reencrypt = BoxPokemon_EnterDecryptionContext(boxMon);
 
-    v0 = 0;
-    v1 = BoxPokemon_EnterDecryptionContext(param0);
-
-    if (BoxPokemon_GetValue(param0, MON_DATA_EGG_EXISTS, NULL) == 0) {
-        int v2;
-
-        for (v2 = 0; v2 < LEARNED_MOVES_MAX; v2++) {
-            if (BoxPokemon_GetValue(param0, MON_DATA_MOVE1 + v2, NULL) == param1) {
-                v0 = 1;
+    if (BoxPokemon_GetValue(boxMon, MON_DATA_EGG_EXISTS, NULL) == FALSE) {
+        for (int i = 0; i < LEARNED_MOVES_MAX; i++) {
+            if (BoxPokemon_GetValue(boxMon, MON_DATA_MOVE1 + i, NULL) == move) {
+                hasMove = TRUE;
                 break;
             }
         }
     }
 
-    BoxPokemon_ExitDecryptionContext(param0, v1);
-    return v0;
+    BoxPokemon_ExitDecryptionContext(boxMon, reencrypt);
+    return hasMove;
 }
 
 BOOL ov19_021D3B18(const UnkStruct_ov19_021D5DF8 *param0)
@@ -2349,19 +2346,19 @@ static void ov19_021D3B34(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
     case 1:
         if (ov19_021D6600(param0->unk_114, 3)) {
             ov19_021D64A0(param0->unk_114);
-            Heap_Destroy(10);
-            sub_02079AF4(param0->unk_120, sub_0207999C(param0->unk_120), param0->unk_128->unk_18);
+            Heap_Destroy(HEAP_ID_10);
+            PCBoxes_BufferBoxName(param0->unk_120, PCBoxes_GetCurrentBox(param0->unk_120), param0->unk_128->unk_18);
             param0->unk_210 = OverlayManager_New(&Unk_020F2DAC, param0->unk_128, 9);
             (*param1)++;
         }
         break;
     case 2:
         if (OverlayManager_Exec(param0->unk_210)) {
-            u32 v0 = sub_0207999C(param0->unk_120);
+            u32 v0 = PCBoxes_GetCurrentBox(param0->unk_120);
 
             OverlayManager_Free(param0->unk_210);
-            Heap_Create(3, 10, 245760);
-            sub_02079B24(param0->unk_120, v0, param0->unk_128->unk_18);
+            Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_10, 245760);
+            PCBoxes_RenameBox(param0->unk_120, v0, param0->unk_128->unk_18);
 
             ov19_021D4F40(param0->unk_120, &param0->unk_00.unk_40);
             ov19_021D61B0(&(param0->unk_114), &param0->unk_00, param0);
@@ -2381,7 +2378,7 @@ static void ov19_021D3C28(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
     case 1:
         if (ov19_021D6600(param0->unk_114, 3)) {
             ov19_021D64A0(param0->unk_114);
-            Heap_Destroy(10);
+            Heap_Destroy(HEAP_ID_10);
             ov19_021D1C84(param0);
             param0->unk_210 = OverlayManager_New(&gPokemonSummaryScreenApp, &(param0->unk_12C), 9);
             (*param1)++;
@@ -2389,10 +2386,10 @@ static void ov19_021D3C28(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         break;
     case 2:
         if (OverlayManager_Exec(param0->unk_210)) {
-            u32 v0 = sub_0207999C(param0->unk_120);
+            u32 v0 = PCBoxes_GetCurrentBox(param0->unk_120);
 
             OverlayManager_Free(param0->unk_210);
-            Heap_Create(3, 10, 245760);
+            Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_10, 245760);
 
             if (ov19_021D5E38(&param0->unk_00) == 1) {
                 ov19_021D3CFC(&(param0->unk_00), param0);
@@ -2411,12 +2408,12 @@ static void ov19_021D3CFC(UnkStruct_ov19_021D4DF0 *param0, UnkStruct_ov19_021D5D
 
     switch (v0->unk_04) {
     case 0:
-        v0->unk_07 = param1->unk_12C.pos;
+        v0->unk_07 = param1->unk_12C.monIndex;
         v0->unk_05 = v0->unk_07 % 6;
         v0->unk_06 = v0->unk_07 / 6;
         break;
     case 1:
-        v0->unk_08 = param1->unk_12C.pos;
+        v0->unk_08 = param1->unk_12C.monIndex;
         break;
     default:
         return;
@@ -2444,7 +2441,7 @@ static void ov19_021D3D44(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             Bag *v2;
 
             ov19_021D64A0(param0->unk_114);
-            Heap_Destroy(10);
+            Heap_Destroy(HEAP_ID_10);
 
             v2 = SaveData_GetBag(param0->unk_11C);
             param0->unk_214 = sub_0207D824(v2, v0, 9);
@@ -2462,7 +2459,7 @@ static void ov19_021D3D44(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             Heap_FreeToHeap(param0->unk_214);
             Overlay_UnloadByID(FS_OVERLAY_ID(overlay84));
 
-            if ((v1 == ITEM_GRISEOUS_ORB) && (BoxPokemon_GetValue(param0->unk_00.unk_4C.unk_00, MON_DATA_SPECIES, NULL) != SPECIES_GIRATINA)) {
+            if ((v1 == ITEM_GRISEOUS_ORB) && (BoxPokemon_GetValue(param0->unk_00.pcMonPreview.mon, MON_DATA_SPECIES, NULL) != SPECIES_GIRATINA)) {
                 (void)0;
             } else if (v1 != 0) {
                 Bag_TryRemoveItem(SaveData_GetBag(param0->unk_11C), v1, 1, 9);
@@ -2470,7 +2467,7 @@ static void ov19_021D3D44(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
                 ov19_021D0F14(param0);
             }
 
-            Heap_Create(3, 10, 245760);
+            Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_10, 245760);
             ov19_021D61B0(&(param0->unk_114), &param0->unk_00, param0);
             ov19_021D6594(param0->unk_114, 0);
             (*param1)++;
@@ -2486,7 +2483,7 @@ static void ov19_021D3D44(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         if (ov19_021D6600(param0->unk_114, 2)) {
             if (v1 == 0) {
                 ov19_021D0EC0(param0);
-            } else if ((v1 == ITEM_GRISEOUS_ORB) && (BoxPokemon_GetValue(param0->unk_00.unk_4C.unk_00, MON_DATA_SPECIES, NULL) != SPECIES_GIRATINA)) {
+            } else if ((v1 == ITEM_GRISEOUS_ORB) && (BoxPokemon_GetValue(param0->unk_00.pcMonPreview.mon, MON_DATA_SPECIES, NULL) != SPECIES_GIRATINA)) {
                 StringTemplate_SetItemName(param0->unk_19C, 0, v1);
                 ov19_021D5408(&param0->unk_00, 45);
                 ov19_021D6594(param0->unk_114, 24);
@@ -2501,7 +2498,7 @@ static void ov19_021D3D44(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         break;
     case 5:
         if (ov19_021D6600(param0->unk_114, 24)) {
-            if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+            if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
                 Sound_PlayEffect(1501);
                 ov19_021D6594(param0->unk_114, 26);
                 (*param1)++;
@@ -2522,7 +2519,7 @@ static void ov19_021D3FB0(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
 
     switch (*param1) {
     case 0:
-        v0 = ov19_021D5E74(&param0->unk_00);
+        v0 = ov19_GetPreviewedMonHeldItem(&param0->unk_00);
 
         if (Item_IsMail(v0)) {
             Sound_PlayEffect(1523);
@@ -2578,7 +2575,7 @@ static void ov19_021D3FB0(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         break;
     case 4:
         if (ov19_021D6600(param0->unk_114, 24)) {
-            if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+            if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
                 Sound_PlayEffect(1501);
                 ov19_021D6594(param0->unk_114, 26);
                 (*param1) = 5;
@@ -2667,7 +2664,7 @@ static void ov19_021D4184(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         break;
     case 5:
         if (ov19_021D6600(param0->unk_114, 24)) {
-            if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+            if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
                 Sound_PlayEffect(1501);
                 ov19_021D6594(param0->unk_114, 26);
                 (*param1) = 6;
@@ -2701,7 +2698,7 @@ static void ov19_021D4390(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
         }
         break;
     case 3:
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_PLUS_KEY_MASK)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_PLUS_KEY_MASK)) {
             ov19_021D6594(param0->unk_114, 18);
             (*param1)++;
         }
@@ -2765,7 +2762,7 @@ static BOOL ov19_021D4468(UnkStruct_ov19_021D5DF8 *param0)
             break;
         }
 
-        if (gCoreSys.pressedKeys & (PAD_KEY_LEFT | PAD_BUTTON_L)) {
+        if (gSystem.pressedKeys & (PAD_KEY_LEFT | PAD_BUTTON_L)) {
             v0->unk_05--;
 
             if (v0->unk_05 < 0) {
@@ -2777,7 +2774,7 @@ static BOOL ov19_021D4468(UnkStruct_ov19_021D5DF8 *param0)
             break;
         }
 
-        if (gCoreSys.pressedKeys & (PAD_KEY_RIGHT | PAD_BUTTON_R)) {
+        if (gSystem.pressedKeys & (PAD_KEY_RIGHT | PAD_BUTTON_R)) {
             if (++(v0->unk_05) >= 18) {
                 v0->unk_05 = 0;
             }
@@ -2787,12 +2784,12 @@ static BOOL ov19_021D4468(UnkStruct_ov19_021D5DF8 *param0)
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             Sound_PlayEffect(1501);
             return 1;
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        if (gSystem.pressedKeys & PAD_BUTTON_B) {
             Sound_PlayEffect(1501);
             v0->unk_05 = -1;
             return 1;
@@ -2807,7 +2804,7 @@ static void ov19_021D45A8(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
 {
     switch (*param1) {
     case 0:
-        sub_02079A94(param0->unk_120, ov19_021D5E68(&param0->unk_00));
+        PCBoxes_SetCurrentBox(param0->unk_120, ov19_021D5E68(&param0->unk_00));
         ov19_021D52F4(param0);
         ov19_021D6594(param0->unk_114, 4);
         (*param1)++;
@@ -2859,7 +2856,7 @@ static void ov19_021D4640(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             }
         }
 
-        if (gCoreSys.pressedKeys & (PAD_PLUS_KEY_MASK | PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_PLUS_KEY_MASK | PAD_BUTTON_A | PAD_BUTTON_B)) {
             Sound_PlayEffect(1501);
             ov19_021D5D94(&(param0->unk_00), 0);
             ov19_021D5D9C(&(param0->unk_00), ov19_021D5E68(&param0->unk_00));
@@ -2874,7 +2871,7 @@ static void ov19_021D4640(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
                     u32 v0 = ov19_021D5EB8(&param0->unk_00);
 
                     ov19_021D5D08(&param0->unk_00, v0);
-                    sub_02079A94(param0->unk_120, v0);
+                    PCBoxes_SetCurrentBox(param0->unk_120, v0);
                     ov19_021D52F4(param0);
 
                     if (ov19_021D5E38(&param0->unk_00) == 1) {
@@ -3001,7 +2998,7 @@ static void ov19_021D4938(UnkStruct_ov19_021D5DF8 *param0, u32 *param1)
             }
         }
 
-        if (gCoreSys.pressedKeys & (PAD_PLUS_KEY_MASK | PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_PLUS_KEY_MASK | PAD_BUTTON_A | PAD_BUTTON_B)) {
             Sound_PlayEffect(1501);
             ov19_021D5D94(&param0->unk_00, 0);
             ov19_021D6594(param0->unk_114, 40);
@@ -3128,30 +3125,30 @@ static void ov19_021D4BE0(UnkStruct_ov19_021D5DF8 *param0, UnkStruct_02042434 *p
     param0->unk_1A4 = SaveData_Options(param1->unk_00);
     param0->unk_118 = param1;
     param1->unk_08 = 0;
-    param0->unk_18C = MessageLoader_Init(0, 26, 19, 9);
-    param0->unk_190 = MessageLoader_Init(1, 26, 412, 9);
-    param0->unk_194 = MessageLoader_Init(0, 26, 202, 9);
-    param0->unk_198 = MessageLoader_Init(0, 26, 610, 9);
-    param0->unk_19C = StringTemplate_Default(9);
-    param0->unk_1A0 = Heap_AllocFromHeap(9, Pokemon_StructSize());
+    param0->boxMessagesLoader = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_BOX_MESSAGES, HEAP_ID_9);
+    param0->speciesNameLoader = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_SPECIES_NAME, HEAP_ID_9);
+    param0->natureNameLoader = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_NATURE_NAMES, HEAP_ID_9);
+    param0->abilityNameLoader = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_ABILITY_NAMES, HEAP_ID_9);
+    param0->unk_19C = StringTemplate_Default(HEAP_ID_9);
+    param0->unk_1A0 = Heap_AllocFromHeap(HEAP_ID_9, Pokemon_StructSize());
 
     GF_ASSERT(param0->unk_19C);
-    param0->unk_128 = sub_0208712C(9, 2, 0, 8, param0->unk_1A4);
+    param0->unk_128 = sub_0208712C(HEAP_ID_9, 2, 0, 8, param0->unk_1A4);
 
     if (param1->unk_04 != 4) {
-        param0->unk_17C = sub_02023FCC(Unk_ov19_021DFDF6, NELEMS(Unk_ov19_021DFDF6), ov19_021D53B8, param0, 9);
+        param0->unk_17C = sub_02023FCC(sMainPcButtons, NELEMS(sMainPcButtons), ov19_021D53B8, param0, HEAP_ID_9);
     } else {
-        param0->unk_17C = sub_02023FCC(Unk_ov19_021DFE02, NELEMS(Unk_ov19_021DFE02), ov19_021D53B8, param0, 9);
+        param0->unk_17C = sub_02023FCC(sComparePokemonButtons, NELEMS(sComparePokemonButtons), ov19_021D53B8, param0, HEAP_ID_9);
     }
 
-    param0->unk_180 = sub_02023FCC(Unk_ov19_021DFE12, NELEMS(Unk_ov19_021DFE12), ov19_021D4BB0, param0, 9);
+    param0->unk_180 = sub_02023FCC(sPokemonMarkingsButtons, NELEMS(sPokemonMarkingsButtons), ov19_021D4BB0, param0, HEAP_ID_9);
     param0->unk_00.unk_00 = param0->unk_120;
     param0->unk_00.unk_04 = param0->unk_124;
     param0->unk_00.unk_110 = 0;
     param0->unk_00.unk_112 = 0;
 
     ov19_021D4DE4(&(param0->unk_00.unk_48), param1->unk_04);
-    ov19_021D4E88(&(param0->unk_00.unk_4C));
+    PCMonPreviewInit(&(param0->unk_00.pcMonPreview));
     ov19_021D4E5C(param0->unk_120, &(param0->unk_00.unk_40));
     ov19_021D4EE4(&(param0->unk_00.unk_A4));
     ov19_021D4DF0(param0);
@@ -3169,13 +3166,13 @@ static void ov19_021D4D58(UnkStruct_ov19_021D5DF8 *param0)
     }
 
     StringTemplate_Free(param0->unk_19C);
-    MessageLoader_Free(param0->unk_18C);
-    MessageLoader_Free(param0->unk_190);
-    MessageLoader_Free(param0->unk_194);
-    MessageLoader_Free(param0->unk_198);
+    MessageLoader_Free(param0->boxMessagesLoader);
+    MessageLoader_Free(param0->speciesNameLoader);
+    MessageLoader_Free(param0->natureNameLoader);
+    MessageLoader_Free(param0->abilityNameLoader);
     sub_0208716C(param0->unk_128);
 
-    ov19_021D4EC0(&(param0->unk_00.unk_4C));
+    PCMonPreviewFree(&(param0->unk_00.pcMonPreview));
     ov19_021D4E50(&(param0->unk_00.unk_14));
     ov19_021D4E7C(&(param0->unk_00.unk_40));
     ov19_021D4F18(&(param0->unk_00.unk_A4));
@@ -3218,7 +3215,7 @@ static void ov19_021D4DF0(UnkStruct_ov19_021D5DF8 *param0)
 
 static void ov19_021D4E30(UnkStruct_ov19_021D5594 *param0)
 {
-    param0->unk_00 = Heap_AllocFromHeap(9, (5 * 6) * BoxPokemon_GetStructSize());
+    param0->unk_00 = Heap_AllocFromHeap(HEAP_ID_9, (5 * 6) * BoxPokemon_GetStructSize());
     param0->unk_08 = 0;
     param0->unk_0B = 0;
 }
@@ -3230,8 +3227,8 @@ static void ov19_021D4E50(UnkStruct_ov19_021D5594 *param0)
 
 static void ov19_021D4E5C(PCBoxes *param0, UnkStruct_ov19_021D4F5C *param1)
 {
-    param1->unk_00 = sub_0207999C(param0);
-    param1->unk_04 = Strbuf_Init(20, 9);
+    param1->unk_00 = PCBoxes_GetCurrentBox(param0);
+    param1->unk_04 = Strbuf_Init(20, HEAP_ID_9);
     ov19_021D4F40(param0, param1);
 }
 
@@ -3240,22 +3237,22 @@ static void ov19_021D4E7C(UnkStruct_ov19_021D4F5C *param0)
     Strbuf_Free(param0->unk_04);
 }
 
-static void ov19_021D4E88(UnkStruct_ov19_021D5BAC *param0)
+static void PCMonPreviewInit(PCMonPreview *param0)
 {
-    param0->unk_14 = Strbuf_Init(12, 9);
-    param0->unk_18 = Strbuf_Init(12, 9);
-    param0->unk_1C = Strbuf_Init(18, 9);
-    param0->unk_20 = Strbuf_Init(12, 9);
-    param0->unk_24 = Strbuf_Init(16, 9);
+    param0->nickname = Strbuf_Init(12, HEAP_ID_9);
+    param0->speciesName = Strbuf_Init(12, HEAP_ID_9);
+    param0->heldItemName = Strbuf_Init(18, HEAP_ID_9);
+    param0->nature = Strbuf_Init(12, HEAP_ID_9);
+    param0->ability = Strbuf_Init(16, HEAP_ID_9);
 }
 
-static void ov19_021D4EC0(UnkStruct_ov19_021D5BAC *param0)
+static void PCMonPreviewFree(PCMonPreview *param0)
 {
-    Strbuf_Free(param0->unk_14);
-    Strbuf_Free(param0->unk_18);
-    Strbuf_Free(param0->unk_1C);
-    Strbuf_Free(param0->unk_20);
-    Strbuf_Free(param0->unk_24);
+    Strbuf_Free(param0->nickname);
+    Strbuf_Free(param0->speciesName);
+    Strbuf_Free(param0->heldItemName);
+    Strbuf_Free(param0->nature);
+    Strbuf_Free(param0->ability);
 }
 
 static void ov19_021D4EE4(UnkStruct_ov19_021D4EE4 *param0)
@@ -3268,8 +3265,8 @@ static void ov19_021D4EE4(UnkStruct_ov19_021D4EE4 *param0)
 
     for (v0 = 0; v0 < 2; v0++) {
         param0->unk_02[v0] = 0;
-        param0->unk_08[v0].unk_28 = Strbuf_Init(12, 9);
-        param0->unk_08[v0].unk_2C = Strbuf_Init(12, 9);
+        param0->unk_08[v0].unk_28 = Strbuf_Init(12, HEAP_ID_9);
+        param0->unk_08[v0].unk_2C = Strbuf_Init(12, HEAP_ID_9);
     }
 }
 
@@ -3293,14 +3290,14 @@ static void ov19_021D4F34(UnkStruct_ov19_021D4F34 *param0)
 
 static void ov19_021D4F40(const PCBoxes *param0, UnkStruct_ov19_021D4F5C *param1)
 {
-    param1->unk_01 = sub_02079AA8(param0, param1->unk_00);
-    sub_02079AF4(param0, param1->unk_00, param1->unk_04);
+    param1->unk_01 = PCBoxes_GetWallpaper(param0, param1->unk_00);
+    PCBoxes_BufferBoxName(param0, param1->unk_00, param1->unk_04);
 }
 
 static void ov19_021D4F5C(UnkStruct_ov19_021D4DF0 *param0, PCBoxes *param1)
 {
     UnkStruct_ov19_021D4F5C *v0 = &(param0->unk_40);
-    v0->unk_01 = sub_02079AA8(param1, v0->unk_00);
+    v0->unk_01 = PCBoxes_GetWallpaper(param1, v0->unk_00);
 }
 
 static BOOL ov19_021D4F74(u32 param0, UnkStruct_ov19_021D5DF8 *param1)
@@ -3608,7 +3605,7 @@ static void ov19_021D52D0(UnkStruct_ov19_021D5DF8 *param0)
 static BOOL ov19_021D52F4(UnkStruct_ov19_021D5DF8 *param0)
 {
     UnkStruct_ov19_021D4DF0 *v0 = &param0->unk_00;
-    UnkStruct_ov19_021D5BAC *v1 = &v0->unk_4C;
+    PCMonPreview *preview = &v0->pcMonPreview;
     UnkStruct_ov19_021D3CFC *v2 = &v0->unk_08;
     u32 v3;
 
@@ -3616,7 +3613,7 @@ static BOOL ov19_021D52F4(UnkStruct_ov19_021D5DF8 *param0)
 
     switch (v2->unk_04) {
     case 0:
-        v2->unk_00 = sub_02079C9C(v0->unk_00, 0xffffffff, v2->unk_07);
+        v2->unk_00 = PCBoxes_GetBoxMonAt(v0->unk_00, USE_CURRENT_BOX, v2->unk_07);
         break;
     case 1:
         if (v2->unk_08 < Party_GetCurrentCount(param0->unk_124)) {
@@ -3700,7 +3697,7 @@ static void ov19_021D5420(UnkStruct_ov19_021D5DF8 *param0, UnkStruct_ov19_021D4D
 
     if (ov19_021D5E10(param1) == 0) {
         MI_CpuCopy32(v1->unk_00, v0->unk_00, BoxPokemon_GetStructSize());
-        sub_02079968(param0->unk_120, 0xffffffff, v1->unk_07);
+        PCBoxes_InitBoxMonAt(param0->unk_120, USE_CURRENT_BOX, v1->unk_07);
         v0->unk_0B = 0;
     } else {
         MI_CpuCopy32(v1->unk_00, v0->unk_00, Pokemon_GetStructSize());
@@ -3708,7 +3705,7 @@ static void ov19_021D5420(UnkStruct_ov19_021D5DF8 *param0, UnkStruct_ov19_021D4D
         v0->unk_0B = 1;
     }
 
-    ov19_021D5BA8(param1, v0->unk_00);
+    ov19_SetPreviewedBoxMon(param1, v0->unk_00);
 
     v0->unk_04 = v0->unk_06 = v1->unk_05;
     v0->unk_05 = v0->unk_07 = v1->unk_06;
@@ -3738,11 +3735,11 @@ static void ov19_021D54A4(UnkStruct_ov19_021D5DF8 *param0, UnkStruct_ov19_021D4D
         v6 = v1 * 6 + v2;
 
         for (v0 = v2; v0 <= v3; v0++) {
-            v10 = sub_02079C9C(param0->unk_120, 0xffffffff, v6);
+            v10 = PCBoxes_GetBoxMonAt(param0->unk_120, USE_CURRENT_BOX, v6);
 
             if (BoxPokemon_GetValue(v10, MON_DATA_SPECIES_EXISTS, NULL)) {
                 MI_CpuCopy32(v10, v12, v9);
-                sub_02079968(param0->unk_120, 0xffffffff, v6);
+                PCBoxes_InitBoxMonAt(param0->unk_120, USE_CURRENT_BOX, v6);
                 (u8 *)v12 += v9;
                 v11->unk_0C[v8++] = v6;
 
@@ -3790,8 +3787,8 @@ static void ov19_021D55C4(UnkStruct_ov19_021D5DF8 *param0, UnkStruct_ov19_021D4D
 
     if (ov19_021D5E10(param1) == 0) {
         v4 = BoxPokemon_GetValue(v0->unk_00, MON_DATA_FORM, NULL);
-        sub_02079914(param0->unk_120, 0xffffffff, v1->unk_07, v0->unk_00);
-        v2 = sub_02079C9C(param0->unk_120, 0xffffffff, v1->unk_07);
+        PCBoxes_TryStoreBoxMonAt(param0->unk_120, USE_CURRENT_BOX, v1->unk_07, v0->unk_00);
+        v2 = PCBoxes_GetBoxMonAt(param0->unk_120, USE_CURRENT_BOX, v1->unk_07);
 
         if ((BoxPokemon_GetValue(v2, MON_DATA_SPECIES, NULL) == SPECIES_SHAYMIN) && (v4 == 1)) {
             v3 = 1;
@@ -3807,11 +3804,11 @@ static void ov19_021D55C4(UnkStruct_ov19_021D5DF8 *param0, UnkStruct_ov19_021D4D
         v2 = (BoxPokemon *)Party_GetPokemonBySlotIndex(param0->unk_124, Party_GetCurrentCount(param0->unk_124) - 1);
     }
 
-    ov19_021D5BA8(param1, v2);
+    ov19_SetPreviewedBoxMon(param1, v2);
     v5 = ov19_021D52F4(param0);
 
     if ((v5 == 0) && (v3 == 1)) {
-        ov19_021D58AC(param1, v2, param0);
+        ov19_LoadBoxMonIntoPreview(param1, v2, param0);
         ov19_021D6594(param0->unk_114, 6);
     }
 
@@ -3833,11 +3830,11 @@ static void ov19_021D56AC(UnkStruct_ov19_021D5DF8 *param0, UnkStruct_ov19_021D4D
 
     for (v1 = 0; v1 < v7->unk_08; v1++) {
         v4 = v3 + (v7->unk_0C[v1] - v2);
-        sub_02079914(param0->unk_120, 0xffffffff, v4, v0);
+        PCBoxes_TryStoreBoxMonAt(param0->unk_120, USE_CURRENT_BOX, v4, v0);
         (u8 *)v0 += v5;
     }
 
-    ov19_021D5BA8(param1, sub_02079C9C(param0->unk_120, 0xffffffff, ov19_021D5E24(param1)));
+    ov19_SetPreviewedBoxMon(param1, PCBoxes_GetBoxMonAt(param0->unk_120, USE_CURRENT_BOX, ov19_021D5E24(param1)));
     ov19_021D52F4(param0);
 
     v7->unk_08 = 0;
@@ -3860,7 +3857,7 @@ static void ov19_021D5734(UnkStruct_ov19_021D5DF8 *param0, UnkStruct_ov19_021D4D
     MI_CpuCopy32(v3->unk_00, v2->unk_00, v0);
 
     if (ov19_021D5E10(param1) == 0) {
-        sub_02079914(param0->unk_120, 0xffffffff, v3->unk_07, v1);
+        PCBoxes_TryStoreBoxMonAt(param0->unk_120, USE_CURRENT_BOX, v3->unk_07, v1);
         v2->unk_0B = 0;
     } else {
         if (v2->unk_0B == 0) {
@@ -3886,7 +3883,7 @@ static BOOL ov19_021D57D8(UnkStruct_ov19_021D5DF8 *param0, u32 param1)
     v1 = &v0->unk_08;
     v2 = &v0->unk_14;
 
-    if (sub_020798A0(param0->unk_120, param1, v2->unk_00)) {
+    if (PCBoxes_TryStoreBoxMonInBox(param0->unk_120, param1, v2->unk_00)) {
         v0->unk_08.unk_0B = 1;
         ov19_021D52F4(param0);
         return 1;
@@ -3903,7 +3900,7 @@ static BOOL ov19_021D5800(UnkStruct_ov19_021D5DF8 *param0, u32 param1)
     v0 = &(param0->unk_00);
     v1 = &v0->unk_08;
 
-    if (sub_020798A0(param0->unk_120, param1, v1->unk_00)) {
+    if (PCBoxes_TryStoreBoxMonInBox(param0->unk_120, param1, v1->unk_00)) {
         Party_RemovePokemonBySlotIndex(param0->unk_124, v1->unk_08);
         ov19_021D52F4(param0);
         return 1;
@@ -3933,7 +3930,7 @@ static void ov19_021D584C(UnkStruct_ov19_021D5DF8 *param0)
     UnkStruct_ov19_021D3CFC *v1 = &v0->unk_08;
 
     if (ov19_021D5E10(v0) == 0) {
-        sub_02079968(param0->unk_120, 0xffffffff, v1->unk_07);
+        PCBoxes_InitBoxMonAt(param0->unk_120, USE_CURRENT_BOX, v1->unk_07);
     } else {
         Party_RemovePokemonBySlotIndex(param0->unk_124, v1->unk_08);
     }
@@ -3941,84 +3938,84 @@ static void ov19_021D584C(UnkStruct_ov19_021D5DF8 *param0)
     ov19_021D52F4(param0);
 }
 
-static void ov19_021D5888(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *param1, UnkStruct_ov19_021D5DF8 *param2)
+static void ov19_021D5888(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *boxMon, UnkStruct_ov19_021D5DF8 *param2)
 {
-    ov19_021D58AC(param0, param1, param2);
+    ov19_LoadBoxMonIntoPreview(param0, boxMon, param2);
 
     if (ov19_021D5E08(param0) == 4) {
-        ov19_021D59F4(param0, param1, param2);
+        ov19_021D59F4(param0, boxMon, param2);
     }
 }
 
-static void ov19_021D58AC(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *param1, UnkStruct_ov19_021D5DF8 *param2)
+static void ov19_LoadBoxMonIntoPreview(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *boxMon, UnkStruct_ov19_021D5DF8 *param2)
 {
-    UnkStruct_ov19_021D5BAC *v0 = &(param0->unk_4C);
-    BOOL v1 = BoxPokemon_EnterDecryptionContext(param1);
-    PokemonPersonalData *v2;
+    PCMonPreview *preview = &(param0->pcMonPreview);
+    BOOL reencrypt = BoxPokemon_EnterDecryptionContext(boxMon);
+    SpeciesData *speciesData;
 
-    v0->unk_00 = param1;
-    v0->unk_04 = BoxPokemon_GetValue(param1, MON_DATA_SPECIES, NULL);
-    v0->unk_06 = BoxPokemon_GetValue(param1, MON_DATA_HELD_ITEM, NULL);
-    v0->unk_08 = sub_0207A294(sub_0207A274(param2->unk_11C), v0->unk_04);
-    v0->unk_0F = BoxPokemon_GetValue(param1, MON_DATA_EGG_EXISTS, NULL);
-    v2 = PokemonPersonalData_FromMonSpecies(v0->unk_04, 9);
-    v0->unk_0A = PokemonPersonalData_GetLevelAt(v2, v0->unk_04, BoxPokemon_GetValue(param1, MON_DATA_EXP, NULL));
-    v0->unk_0B = BoxPokemon_GetValue(param1, MON_DATA_MARKS, NULL);
-    v0->unk_0C = BoxPokemon_GetValue(param1, MON_DATA_TYPE_1, NULL);
-    v0->unk_0D = BoxPokemon_GetValue(param1, MON_DATA_TYPE_2, NULL);
+    preview->mon = boxMon;
+    preview->species = BoxPokemon_GetValue(boxMon, MON_DATA_SPECIES, NULL);
+    preview->heldItem = BoxPokemon_GetValue(boxMon, MON_DATA_HELD_ITEM, NULL);
+    preview->dexNum = GetDexNumber(SaveData_GetDexMode(param2->unk_11C), preview->species);
+    preview->isEgg = BoxPokemon_GetValue(boxMon, MON_DATA_EGG_EXISTS, NULL);
+    speciesData = SpeciesData_FromMonSpecies(preview->species, HEAP_ID_9);
+    preview->level = SpeciesData_GetLevelAt(speciesData, preview->species, BoxPokemon_GetValue(boxMon, MON_DATA_EXP, NULL));
+    preview->markings = BoxPokemon_GetValue(boxMon, MON_DATA_MARKS, NULL);
+    preview->type1 = BoxPokemon_GetValue(boxMon, MON_DATA_TYPE_1, NULL);
+    preview->type2 = BoxPokemon_GetValue(boxMon, MON_DATA_TYPE_2, NULL);
 
-    if ((v0->unk_0F == 0) && BoxPokemon_GetValue(param1, MON_DATA_NIDORAN_HAS_NICKNAME, NULL)) {
-        v0->unk_0E = PokemonPersonalData_GetGenderOf(v2, v0->unk_04, BoxPokemon_GetValue(param1, MON_DATA_PERSONALITY, NULL));
+    if ((preview->isEgg == FALSE) && BoxPokemon_GetValue(boxMon, MON_DATA_NIDORAN_HAS_NICKNAME, NULL)) {
+        preview->gender = SpeciesData_GetGenderOf(speciesData, preview->species, BoxPokemon_GetValue(boxMon, MON_DATA_PERSONALITY, NULL));
     } else {
-        v0->unk_0E = 255;
+        preview->gender = GENDER_INVALID;
     }
 
-    BoxPokemon_GetValue(param1, MON_DATA_NICKNAME_STRBUF, v0->unk_14);
+    BoxPokemon_GetValue(boxMon, MON_DATA_NICKNAME_STRBUF, preview->nickname);
 
-    if (v0->unk_0F == 0) {
-        MessageLoader_GetStrbuf(param2->unk_190, v0->unk_04, v0->unk_18);
+    if (preview->isEgg == FALSE) {
+        MessageLoader_GetStrbuf(param2->speciesNameLoader, preview->species, preview->speciesName);
     } else {
-        Strbuf_Copy(v0->unk_18, v0->unk_14);
-        Strbuf_Clear(v0->unk_14);
+        Strbuf_Copy(preview->speciesName, preview->nickname);
+        Strbuf_Clear(preview->nickname);
     }
 
-    if (v0->unk_06 != 0) {
-        Item_LoadName(v0->unk_1C, v0->unk_06, 9);
+    if (preview->heldItem != ITEM_NONE) {
+        Item_LoadName(preview->heldItemName, preview->heldItem, 9);
     } else {
-        MessageLoader_GetStrbuf(param2->unk_18C, 20, v0->unk_1C);
+        MessageLoader_GetStrbuf(param2->boxMessagesLoader, box_message_no_item, preview->heldItemName);
     }
 
     {
-        u32 v3 = BoxPokemon_GetNature(param1);
+        u32 value = BoxPokemon_GetNature(boxMon);
+        MessageLoader_GetStrbuf(param2->natureNameLoader, value, preview->nature);
 
-        MessageLoader_GetStrbuf(param2->unk_194, v3, v0->unk_20);
-        v3 = BoxPokemon_GetValue(param1, MON_DATA_ABILITY, NULL);
-        MessageLoader_GetStrbuf(param2->unk_198, v3, v0->unk_24);
+        value = BoxPokemon_GetValue(boxMon, MON_DATA_ABILITY, NULL);
+        MessageLoader_GetStrbuf(param2->abilityNameLoader, value, preview->ability);
     }
 
-    PokemonPersonalData_Free(v2);
-    BoxPokemon_ExitDecryptionContext(param1, v1);
+    SpeciesData_Free(speciesData);
+    BoxPokemon_ExitDecryptionContext(boxMon, reencrypt);
 }
 
-static void ov19_021D59F4(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *param1, UnkStruct_ov19_021D5DF8 *param2)
+static void ov19_021D59F4(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *boxMon, UnkStruct_ov19_021D5DF8 *param2)
 {
-    UnkStruct_ov19_021D5BAC *v0 = &(param0->unk_4C);
+    PCMonPreview *preview = &(param0->pcMonPreview);
     UnkStruct_ov19_021D5FAC *v1 = &(param0->unk_A4.unk_08[param0->unk_A4.unk_00]);
     BOOL v2;
 
-    v1->unk_00 = param1;
-    v1->unk_04 = v0->unk_04;
-    v1->unk_06 = v0->unk_0F;
-    v1->unk_08 = v0->unk_0A;
+    v1->unk_00 = boxMon;
+    v1->species = preview->species;
+    v1->unk_06 = preview->isEgg;
+    v1->unk_08 = preview->level;
 
     if (v1->unk_06) {
-        Strbuf_Copy(v1->unk_28, v0->unk_18);
+        Strbuf_Copy(v1->unk_28, preview->speciesName);
     } else {
-        Strbuf_Copy(v1->unk_28, v0->unk_14);
+        Strbuf_Copy(v1->unk_28, preview->nickname);
     }
 
-    Strbuf_Copy(v1->unk_2C, v0->unk_20);
-    Pokemon_FromBoxPokemon(param1, param2->unk_1A0);
+    Strbuf_Copy(v1->unk_2C, preview->nature);
+    Pokemon_FromBoxPokemon(boxMon, param2->unk_1A0);
 
     v2 = Pokemon_EnterDecryptionContext(param2->unk_1A0);
 
@@ -4061,21 +4058,21 @@ static void ov19_021D5BA0(UnkStruct_ov19_021D4DF0 *param0, BOOL param1)
     param0->unk_A4.unk_04 = param1;
 }
 
-static void ov19_021D5BA8(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *param1)
+static void ov19_SetPreviewedBoxMon(UnkStruct_ov19_021D4DF0 *param0, BoxPokemon *boxMon)
 {
-    param0->unk_4C.unk_00 = param1;
+    param0->pcMonPreview.mon = boxMon;
 }
 
 static void ov19_021D5BAC(UnkStruct_ov19_021D4DF0 *param0)
 {
-    UnkStruct_ov19_021D5BAC *v0;
+    PCMonPreview *preview;
     u8 v1;
 
-    v0 = &(param0->unk_4C);
+    preview = &(param0->pcMonPreview);
     v1 = param0->unk_74.unk_22;
-    v0->unk_0B = v1;
+    preview->markings = v1;
 
-    BoxPokemon_SetValue(v0->unk_00, MON_DATA_MARKS, &(v1));
+    BoxPokemon_SetValue(preview->mon, MON_DATA_MARKS, &(v1));
 
     if ((ov19_021D5E10(param0) == 0) && (ov19_021D5E38(param0) == 1)) {
         SaveData_SetFullSaveRequired();
@@ -4084,37 +4081,35 @@ static void ov19_021D5BAC(UnkStruct_ov19_021D4DF0 *param0)
 
 static void ov19_021D5BE8(UnkStruct_ov19_021D4DF0 *param0, u16 param1, UnkStruct_ov19_021D5DF8 *param2)
 {
-    UnkStruct_ov19_021D5BAC *v0;
+    PCMonPreview *preview = &(param0->pcMonPreview);
+    preview->heldItem = param1;
 
-    v0 = &(param0->unk_4C);
-    v0->unk_06 = param1;
-
-    if (v0->unk_06 != 0) {
-        Item_LoadName(v0->unk_1C, v0->unk_06, 9);
+    if (preview->heldItem != 0) {
+        Item_LoadName(preview->heldItemName, preview->heldItem, 9);
     } else {
-        MessageLoader_GetStrbuf(param2->unk_18C, 20, v0->unk_1C);
+        MessageLoader_GetStrbuf(param2->boxMessagesLoader, box_message_no_item, preview->heldItemName);
     }
 
     if ((ov19_021D5E10(param0) == 0) && (ov19_021D5E38(param0) == 1)) {
         u32 v1 = ov19_021D5E24(param0);
-        sub_02079C50(param2->unk_120, 0xffffffff, v1, 6, &param1);
+        PCBoxes_SetBoxMonData(param2->unk_120, USE_CURRENT_BOX, v1, MON_DATA_HELD_ITEM, &param1);
     }
 
-    BoxPokemon_SetValue(v0->unk_00, MON_DATA_HELD_ITEM, &param1);
+    BoxPokemon_SetValue(preview->mon, MON_DATA_HELD_ITEM, &param1);
 
     {
-        int v2 = BoxPokemon_GetValue(v0->unk_00, MON_DATA_SPECIES, NULL);
+        int v2 = BoxPokemon_GetValue(preview->mon, MON_DATA_SPECIES, NULL);
 
         if (v2 == SPECIES_ARCEUS) {
-            BoxPokemon_SetArceusForm(v0->unk_00);
-            v0->unk_0C = BoxPokemon_GetValue(v0->unk_00, MON_DATA_TYPE_1, NULL);
-            v0->unk_0D = BoxPokemon_GetValue(v0->unk_00, MON_DATA_TYPE_2, NULL);
+            BoxPokemon_SetArceusForm(preview->mon);
+            preview->type1 = BoxPokemon_GetValue(preview->mon, MON_DATA_TYPE_1, NULL);
+            preview->type2 = BoxPokemon_GetValue(preview->mon, MON_DATA_TYPE_2, NULL);
         } else if (v2 == SPECIES_GIRATINA) {
             int v3;
 
-            BoxPokemon_SetGiratinaForm(v0->unk_00);
-            v3 = BoxPokemon_GetValue(v0->unk_00, MON_DATA_ABILITY, NULL);
-            MessageLoader_GetStrbuf(param2->unk_198, v3, v0->unk_24);
+            BoxPokemon_SetGiratinaForm(preview->mon);
+            v3 = BoxPokemon_GetValue(preview->mon, MON_DATA_ABILITY, NULL);
+            MessageLoader_GetStrbuf(param2->abilityNameLoader, v3, preview->ability);
         }
     }
 }
@@ -4159,12 +4154,12 @@ static void ov19_021D5D20(UnkStruct_ov19_021D4DF0 *param0, u32 param1)
 
 static void ov19_021D5D28(UnkStruct_ov19_021D4DF0 *param0, UnkStruct_ov19_021D5DF8 *param1)
 {
-    UnkStruct_ov19_021D5BAC *v0 = &(param0->unk_4C);
+    PCMonPreview *preview = &(param0->pcMonPreview);
     u16 v1 = 0;
 
-    param0->unk_112 = v0->unk_06;
+    param0->unk_112 = preview->heldItem;
 
-    MessageLoader_GetStrbuf(param1->unk_18C, 20, v0->unk_1C);
+    MessageLoader_GetStrbuf(param1->boxMessagesLoader, box_message_no_item, preview->heldItemName);
     ov19_021D5BE8(param0, v1, param1);
 }
 
@@ -4175,10 +4170,8 @@ static void ov19_021D5D54(UnkStruct_ov19_021D4DF0 *param0)
 
 static void ov19_021D5D60(UnkStruct_ov19_021D4DF0 *param0, UnkStruct_ov19_021D5DF8 *param1)
 {
-    UnkStruct_ov19_021D5BAC *v0 = &(param0->unk_4C);
-    u16 v1;
-
-    v1 = param0->unk_112;
+    PCMonPreview *preview = &(param0->pcMonPreview);
+    u16 v1 = param0->unk_112;
     param0->unk_112 = 0;
 
     ov19_021D5BE8(param0, v1, param1);
@@ -4186,11 +4179,9 @@ static void ov19_021D5D60(UnkStruct_ov19_021D4DF0 *param0, UnkStruct_ov19_021D5D
 
 static void ov19_021D5D78(UnkStruct_ov19_021D4DF0 *param0, UnkStruct_ov19_021D5DF8 *param1)
 {
-    UnkStruct_ov19_021D5BAC *v0 = &(param0->unk_4C);
-    u16 v1;
-
-    v1 = param0->unk_112;
-    param0->unk_112 = v0->unk_06;
+    PCMonPreview *preview = &(param0->pcMonPreview);
+    u16 v1 = param0->unk_112;
+    param0->unk_112 = preview->heldItem;
 
     ov19_021D5BE8(param0, v1, param1);
 }
@@ -4229,9 +4220,9 @@ static void ov19_021D5DD8(UnkStruct_ov19_021D4DF0 *param0)
     param0->unk_48.unk_01 ^= 1;
 }
 
-MessageLoader *ov19_021D5DE8(const UnkStruct_ov19_021D5DF8 *param0)
+MessageLoader *ov19_GetBoxMessagesLoader(const UnkStruct_ov19_021D5DF8 *param0)
 {
-    return param0->unk_18C;
+    return param0->boxMessagesLoader;
 }
 
 const StringTemplate *ov19_021D5DF0(const UnkStruct_ov19_021D5DF8 *param0)
@@ -4317,18 +4308,18 @@ u32 ov19_021D5E68(const UnkStruct_ov19_021D4DF0 *param0)
     return param0->unk_40.unk_00;
 }
 
-const UnkStruct_ov19_021D5BAC *ov19_021D5E70(const UnkStruct_ov19_021D4DF0 *param0)
+const PCMonPreview *ov19_GetPCMonPreview(const UnkStruct_ov19_021D4DF0 *param0)
 {
-    return &(param0->unk_4C);
+    return &(param0->pcMonPreview);
 }
 
-u32 ov19_021D5E74(const UnkStruct_ov19_021D4DF0 *param0)
+u32 ov19_GetPreviewedMonHeldItem(const UnkStruct_ov19_021D4DF0 *param0)
 {
     if (ov19_021D5E4C(param0)) {
-        return param0->unk_4C.unk_06;
+        return param0->pcMonPreview.heldItem;
     }
 
-    return 0;
+    return ITEM_NONE;
 }
 
 const UnkStruct_ov19_021D4F5C *ov19_021D5E8C(const UnkStruct_ov19_021D4DF0 *param0)
@@ -4346,14 +4337,14 @@ u32 ov19_021D5E94(const UnkStruct_ov19_021D4DF0 *param0)
     return param0->unk_10C;
 }
 
-BoxPokemon *ov19_021D5E9C(const UnkStruct_ov19_021D4DF0 *param0)
+BoxPokemon *ov19_GetPreviewedBoxMon(const UnkStruct_ov19_021D4DF0 *param0)
 {
-    return param0->unk_4C.unk_00;
+    return param0->pcMonPreview.mon;
 }
 
-u32 ov19_021D5EA0(const UnkStruct_ov19_021D4DF0 *param0)
+u32 ov19_GetPreviewedMonMarkings(const UnkStruct_ov19_021D4DF0 *param0)
 {
-    return param0->unk_4C.unk_0B;
+    return param0->pcMonPreview.markings;
 }
 
 u32 ov19_021D5EA8(const UnkStruct_ov19_021D4DF0 *param0)
@@ -4392,9 +4383,7 @@ BOOL ov19_021D5EE0(const UnkStruct_ov19_021D4DF0 *param0)
 
 void ov19_021D5EE8(const UnkStruct_ov19_021D4DF0 *param0, u32 *param1, u32 *param2, u32 *param3, u32 *param4)
 {
-    const UnkStruct_ov19_021D5594 *v0;
-
-    v0 = &param0->unk_14;
+    const UnkStruct_ov19_021D5594 *v0 = &param0->unk_14;
 
     if (v0->unk_04 <= v0->unk_06) {
         *param1 = v0->unk_04;
@@ -4415,9 +4404,7 @@ void ov19_021D5EE8(const UnkStruct_ov19_021D4DF0 *param0, u32 *param1, u32 *para
 
 BOOL ov19_021D5F20(const UnkStruct_ov19_021D4DF0 *param0)
 {
-    const UnkStruct_ov19_021D5594 *v0;
-
-    v0 = &param0->unk_14;
+    const UnkStruct_ov19_021D5594 *v0 = &param0->unk_14;
 
     if ((v0->unk_04 == v0->unk_06) && (v0->unk_05 == v0->unk_07)) {
         return 1;
@@ -4465,7 +4452,7 @@ u32 ov19_021D5F88(const UnkStruct_ov19_021D4DF0 *param0)
         return v0;
     }
 
-    return ov19_021D5E74(param0);
+    return ov19_GetPreviewedMonHeldItem(param0);
 }
 
 u32 ov19_021D5F9C(const UnkStruct_ov19_021D4DF0 *param0)
@@ -4493,33 +4480,33 @@ BOOL ov19_021D5FC0(const UnkStruct_ov19_021D4DF0 *param0)
     return param0->unk_A4.unk_04;
 }
 
-BOOL ov19_021D5FC8(const UnkStruct_ov19_021D4DF0 *param0)
+BOOL ov19_IsPreviewedMonEgg(const UnkStruct_ov19_021D4DF0 *param0)
 {
-    return param0->unk_4C.unk_0F;
+    return param0->pcMonPreview.isEgg;
 }
 
-static u32 ov19_021D5FD0(UnkStruct_ov19_021D4DF0 *param0, int param1, void *param2)
+static u32 ov19_021D5FD0(UnkStruct_ov19_021D4DF0 *param0, enum PokemonDataParam value, void *dest)
 {
     if (ov19_021D5E38(param0) == 1) {
         if (ov19_021D5E10(param0) == 0) {
-            return BoxPokemon_GetValue(param0->unk_4C.unk_00, param1, param2);
+            return BoxPokemon_GetValue(param0->pcMonPreview.mon, value, dest);
         }
     } else {
         UnkStruct_ov19_021D5594 *v0 = &param0->unk_14;
 
         if (v0->unk_0B == 0) {
-            return BoxPokemon_GetValue(param0->unk_4C.unk_00, param1, param2);
+            return BoxPokemon_GetValue(param0->pcMonPreview.mon, value, dest);
         }
     }
 
-    return Pokemon_GetValue(param0->unk_4C.unk_00, param1, param2);
+    return Pokemon_GetValue(param0->pcMonPreview.mon, value, dest);
 }
 
-static u32 ov19_021D6014(UnkStruct_ov19_021D4DF0 *param0, int param1, void *param2)
+static u32 ov19_021D6014(UnkStruct_ov19_021D4DF0 *param0, enum PokemonDataParam value, void *dest)
 {
     if (ov19_021D5E10(param0) == 0) {
-        return BoxPokemon_GetValue(param0->unk_4C.unk_00, param1, param2);
+        return BoxPokemon_GetValue(param0->pcMonPreview.mon, value, dest);
     } else {
-        return Pokemon_GetValue(param0->unk_08.unk_00, param1, param2);
+        return Pokemon_GetValue(param0->unk_08.unk_00, value, dest);
     }
 }

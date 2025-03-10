@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_209_gate_to_hearthome_city.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _001D
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -31,30 +32,30 @@ _001D:
     BufferPlayerName 1
     Message 1
     CloseMessage
-    ScrCmd_0DE 0x800C
-    GoToIfEq 0x800C, 0x183, _00B3
-    GoToIfEq 0x800C, 0x186, _00C1
+    GetPlayerStarterSpecies 0x800C
+    GoToIfEq 0x800C, SPECIES_TURTWIG, _00B3
+    GoToIfEq 0x800C, SPECIES_CHIMCHAR, _00C1
     GoTo _00A5
     End
 
 _00A5:
-    StartTrainerBattle trainer_rival_route_209_piplup
+    StartTrainerBattle TRAINER_RIVAL_ROUTE_209_PIPLUP
     GoTo _00CF
     End
 
 _00B3:
-    StartTrainerBattle trainer_rival_route_209_turtwig
+    StartTrainerBattle TRAINER_RIVAL_ROUTE_209_TURTWIG
     GoTo _00CF
     End
 
 _00C1:
-    StartTrainerBattle trainer_rival_route_209_chimchar
+    StartTrainerBattle TRAINER_RIVAL_ROUTE_209_CHIMCHAR
     GoTo _00CF
     End
 
 _00CF:
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _0148
+    GoToIfEq 0x800C, FALSE, _0148
     BufferRivalName 0
     BufferPlayerName 1
     Message 2
@@ -66,14 +67,14 @@ _00CF:
     CallIfEq 0x8005, 8, _01AE
     CallIfEq 0x8005, 9, _01BA
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ScrCmd_065 1
+    RemoveObject 1
     WaitFanfare SEQ_SE_DP_KAIDAN2
     SetVar 0x407B, 2
     ReleaseAll
     End
 
 _0148:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
@@ -144,73 +145,73 @@ _01BA:
 
     .balign 4, 0
 _01D4:
-    MoveAction_012 2
-    MoveAction_010 2
-    MoveAction_026
+    MoveAction_018 2
+    MoveAction_016 2
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
 _01E4:
-    MoveAction_012 2
-    MoveAction_010
-    MoveAction_026
+    MoveAction_018 2
+    MoveAction_016
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
 _01F4:
-    MoveAction_012 2
+    MoveAction_018 2
     EndMovement
 
     .balign 4, 0
 _01FC:
-    MoveAction_012 2
-    MoveAction_011
-    MoveAction_026
+    MoveAction_018 2
+    MoveAction_017
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
 _020C:
-    MoveAction_012 2
-    MoveAction_011 2
-    MoveAction_026
+    MoveAction_018 2
+    MoveAction_017 2
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
 _021C:
-    MoveAction_013 2
-    MoveAction_011 2
-    MoveAction_013 2
+    MoveAction_019 2
+    MoveAction_017 2
+    MoveAction_019 2
     EndMovement
 
     .balign 4, 0
 _022C:
-    MoveAction_013 2
-    MoveAction_011
-    MoveAction_013 2
+    MoveAction_019 2
+    MoveAction_017
+    MoveAction_019 2
     EndMovement
 
     .balign 4, 0
 _023C:
-    MoveAction_013 4
+    MoveAction_019 4
     EndMovement
 
     .balign 4, 0
 _0244:
-    MoveAction_013 2
-    MoveAction_010
-    MoveAction_013 2
+    MoveAction_019 2
+    MoveAction_016
+    MoveAction_019 2
     EndMovement
 
     .balign 4, 0
 _0254:
-    MoveAction_013 2
-    MoveAction_010 2
-    MoveAction_013 2
+    MoveAction_019 2
+    MoveAction_016 2
+    MoveAction_019 2
     EndMovement
 
     .balign 4, 0
 _0264:
-    MoveAction_03F
-    MoveAction_04B
-    MoveAction_03F
+    MoveAction_063
+    MoveAction_075
+    MoveAction_063
     EndMovement

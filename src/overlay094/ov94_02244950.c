@@ -10,7 +10,6 @@
 #include "overlay094/struct_ov94_0223FD4C.h"
 
 #include "bg_window.h"
-#include "core_sys.h"
 #include "font.h"
 #include "game_options.h"
 #include "graphics.h"
@@ -22,6 +21,7 @@
 #include "render_window.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "system_data.h"
 #include "text.h"
 #include "unk_0200F174.h"
@@ -97,7 +97,7 @@ static int (*Unk_ov94_02246A40[])(UnkStruct_ov94_0223FD4C *) = {
 int ov94_02244950(UnkStruct_ov94_0223FD4C *param0, int param1)
 {
     ov94_02244F2C(param0);
-    StartScreenTransition(0, 1, 1, 0x0, 6, 1, 62);
+    StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_62);
 
     ov94_02244A7C(param0->unk_04);
     ov94_02244B8C(param0);
@@ -252,8 +252,8 @@ static void ov94_02244A7C(BgConfig *param0)
         GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG1, 0);
     }
 
-    Bg_ClearTilesRange(0, 32, 0, 62);
-    Bg_ClearTilesRange(4, 32, 0, 62);
+    Bg_ClearTilesRange(0, 32, 0, HEAP_ID_62);
+    Bg_ClearTilesRange(4, 32, 0, HEAP_ID_62);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 0);
 }
 
@@ -268,20 +268,18 @@ static void ov94_02244B68(BgConfig *param0)
 static void ov94_02244B8C(UnkStruct_ov94_0223FD4C *param0)
 {
     BgConfig *v0 = param0->unk_04;
-    NARC *v1;
+    NARC *v1 = NARC_ctor(NARC_INDEX_DATA__WIFIP2PMATCH, HEAP_ID_62);
 
-    v1 = NARC_ctor(NARC_INDEX_DATA__WIFIP2PMATCH, 62);
-
-    Graphics_LoadPaletteFromOpenNARC(v1, 3, 0, 0, 0, 62);
-    Graphics_LoadPaletteFromOpenNARC(v1, 3, 4, 0, 0, 62);
-    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, 62);
-    Font_LoadScreenIndicatorsPalette(4, 13 * 0x20, 62);
-    LoadMessageBoxGraphics(v0, 0, 1, 10, Options_Frame(param0->unk_00->unk_24), 62);
-    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, 62);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 2, v0, 1, 0, 0, 0, 62);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 5, v0, 1, 0, 32 * 24 * 2, 0, 62);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 10, v0, 5, 0, 0, 0, 62);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 11, v0, 5, 0, 32 * 24 * 2, 0, 62);
+    Graphics_LoadPaletteFromOpenNARC(v1, 3, 0, 0, 0, HEAP_ID_62);
+    Graphics_LoadPaletteFromOpenNARC(v1, 3, 4, 0, 0, HEAP_ID_62);
+    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, HEAP_ID_62);
+    Font_LoadScreenIndicatorsPalette(4, 13 * 0x20, HEAP_ID_62);
+    LoadMessageBoxGraphics(v0, 0, 1, 10, Options_Frame(param0->unk_00->unk_24), HEAP_ID_62);
+    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, HEAP_ID_62);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 2, v0, 1, 0, 0, 0, HEAP_ID_62);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 5, v0, 1, 0, 32 * 24 * 2, 0, HEAP_ID_62);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 10, v0, 5, 0, 0, 0, HEAP_ID_62);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 11, v0, 5, 0, 32 * 24 * 2, 0, HEAP_ID_62);
     Bg_MaskPalette(0, 0);
     Bg_MaskPalette(4, 0);
 
@@ -312,8 +310,8 @@ static void ov94_02244F00(UnkStruct_ov94_0223FD4C *param0)
 
 static void ov94_02244F2C(UnkStruct_ov94_0223FD4C *param0)
 {
-    param0->unk_BAC = Strbuf_Init((90 * 2), 62);
-    param0->unk_BDC = Strbuf_Init((16 * 8 * 2), 62);
+    param0->unk_BAC = Strbuf_Init((90 * 2), HEAP_ID_62);
+    param0->unk_BDC = Strbuf_Init((16 * 8 * 2), HEAP_ID_62);
     param0->unk_BB0 = MessageLoader_GetNewStrbuf(param0->unk_B90, 31);
 }
 
@@ -734,9 +732,7 @@ static int ov94_022453EC(UnkStruct_ov94_0223FD4C *param0)
 
 static int ov94_02245540(UnkStruct_ov94_0223FD4C *param0)
 {
-    int v0;
-
-    v0 = ov4_021D1F3C(-param0->unk_44, param0->unk_48);
+    int v0 = ov4_021D1F3C(-param0->unk_44, param0->unk_48);
     ov94_022459B4(param0, v0, -param0->unk_44);
     param0->unk_2C = 24;
 
@@ -745,7 +741,7 @@ static int ov94_02245540(UnkStruct_ov94_0223FD4C *param0)
 
 static int ov94_02245564(UnkStruct_ov94_0223FD4C *param0)
 {
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A || gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    if (gSystem.pressedKeys & PAD_BUTTON_A || gSystem.pressedKeys & PAD_BUTTON_B) {
         Window_EraseStandardFrame(&param0->unk_F8C, 0);
         param0->unk_2C = 0;
     }
@@ -757,7 +753,7 @@ static int ov94_02245594(UnkStruct_ov94_0223FD4C *param0)
 {
     sub_02039794();
     ov94_0223C5F4(param0);
-    StartScreenTransition(0, 0, 0, 0x0, 6, 1, 62);
+    StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_62);
 
     param0->unk_2C = 0;
     param0->unk_1110 = 1;
@@ -897,9 +893,7 @@ static int ov94_022457F0(UnkStruct_ov94_0223FD4C *param0)
 
 void ov94_02245824(UnkStruct_ov94_0223FD4C *param0, MessageLoader *param1, int param2, int param3, u16 param4)
 {
-    Strbuf *v0;
-
-    v0 = MessageLoader_GetNewStrbuf(param1, param2);
+    Strbuf *v0 = MessageLoader_GetNewStrbuf(param1, param2);
 
     StringTemplate_Format(param0->unk_B8C, param0->unk_BAC, v0);
     Strbuf_Free(v0);
@@ -948,7 +942,7 @@ void ov94_02245934(UnkStruct_ov94_0223FD4C *param0)
 
 static void ov94_0224593C(UnkStruct_ov94_0223FD4C *param0, int param1)
 {
-    Strbuf *v0 = Strbuf_Init((16 * 8 * 2), 62);
+    Strbuf *v0 = Strbuf_Init((16 * 8 * 2), HEAP_ID_62);
 
     MessageLoader_GetStrbuf(param0->unk_B9C, param1, v0);
     StringTemplate_Format(param0->unk_B8C, param0->unk_BDC, v0);

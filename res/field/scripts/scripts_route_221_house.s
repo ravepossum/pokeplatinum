@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_221_house.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _017A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -12,7 +13,7 @@ _000A:
     FacePlayer
     GoToIfSet 0x137, _0114
     GoToIfSet 0xAAE, _016F
-    ScrCmd_277 0x8000
+    GetDailyRandomLevel 0x8000
     BufferNumber 0, 0x8000
     GetPartyCount 0x8002
     SetVar 0x8003, 0

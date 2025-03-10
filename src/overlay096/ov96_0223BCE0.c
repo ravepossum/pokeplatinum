@@ -16,8 +16,6 @@
 #include "overlay096/struct_ov96_0223BF40_t.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
-#include "core_sys.h"
 #include "font.h"
 #include "game_options.h"
 #include "graphics.h"
@@ -28,8 +26,10 @@
 #include "narc.h"
 #include "render_window.h"
 #include "savedata.h"
+#include "sprite.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "system_data.h"
 #include "text.h"
 #include "unk_02005474.h"
@@ -177,7 +177,7 @@ static int (*Unk_ov96_0223DCE0[])(UnkStruct_ov96_0223BF40 *) = {
 int ov96_0223BCE0(UnkStruct_ov96_0223BF40 *param0, int param1)
 {
     ov96_0223C358(param0);
-    StartScreenTransition(0, 1, 1, 0x0, 8, 1, 68);
+    StartScreenTransition(0, 1, 1, 0x0, 8, 1, HEAP_ID_68);
     ov96_0223BE38(param0->unk_04);
     ov96_0223BF40(param0);
     ov96_0223C1FC(param0);
@@ -334,8 +334,8 @@ static void ov96_0223BE38(BgConfig *param0)
         GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG1, 0);
     }
 
-    Bg_ClearTilesRange(0, 32, 0, 68);
-    Bg_ClearTilesRange(4, 32, 0, 68);
+    Bg_ClearTilesRange(0, 32, 0, HEAP_ID_68);
+    Bg_ClearTilesRange(4, 32, 0, HEAP_ID_68);
 }
 
 static void ov96_0223BF1C(BgConfig *param0)
@@ -349,18 +349,18 @@ static void ov96_0223BF1C(BgConfig *param0)
 static void ov96_0223BF40(UnkStruct_ov96_0223BF40 *param0)
 {
     BgConfig *v0 = param0->unk_04;
-    NARC *v1 = NARC_ctor(NARC_INDEX_DATA__WIFIP2PMATCH, 68);
+    NARC *v1 = NARC_ctor(NARC_INDEX_DATA__WIFIP2PMATCH, HEAP_ID_68);
 
-    Graphics_LoadPaletteFromOpenNARC(v1, 3, 0, 0, 0, 68);
-    Graphics_LoadPaletteFromOpenNARC(v1, 3, 4, 0, 0, 68);
-    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, 68);
-    Font_LoadScreenIndicatorsPalette(4, 13 * 0x20, 68);
-    LoadMessageBoxGraphics(v0, 0, 1, 14, Options_Frame(param0->unk_00->unk_10), 68);
-    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, 68);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 2, v0, 1, 0, 0, 0, 68);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 5, v0, 1, 0, 32 * 24 * 2, 0, 68);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 10, v0, 5, 0, 0, 0, 68);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 11, v0, 5, 0, 32 * 24 * 2, 0f, 68);
+    Graphics_LoadPaletteFromOpenNARC(v1, 3, 0, 0, 0, HEAP_ID_68);
+    Graphics_LoadPaletteFromOpenNARC(v1, 3, 4, 0, 0, HEAP_ID_68);
+    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, HEAP_ID_68);
+    Font_LoadScreenIndicatorsPalette(4, 13 * 0x20, HEAP_ID_68);
+    LoadMessageBoxGraphics(v0, 0, 1, 14, Options_Frame(param0->unk_00->unk_10), HEAP_ID_68);
+    LoadStandardWindowGraphics(v0, 0, (1 + (18 + 12)), 11, 0, HEAP_ID_68);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 2, v0, 1, 0, 0, 0, HEAP_ID_68);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 5, v0, 1, 0, 32 * 24 * 2, 0, HEAP_ID_68);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(v1, 10, v0, 5, 0, 0, 0, HEAP_ID_68);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(v1, 11, v0, 5, 0, 32 * 24 * 2, 0f, HEAP_ID_68);
     Bg_MaskPalette(0, 0);
     Bg_MaskPalette(4, 0);
 
@@ -395,11 +395,11 @@ static void ov96_0223C314(UnkStruct_ov96_0223BF40 *param0)
 
 static void ov96_0223C358(UnkStruct_ov96_0223BF40 *param0)
 {
-    param0->unk_BDC = Strbuf_Init((90 * 2), 68);
-    param0->unk_BE4 = Strbuf_Init(4, 68);
-    param0->unk_BE8 = Strbuf_Init(3, 68);
+    param0->unk_BDC = Strbuf_Init((90 * 2), HEAP_ID_68);
+    param0->unk_BE4 = Strbuf_Init(4, HEAP_ID_68);
+    param0->unk_BE8 = Strbuf_Init(3, HEAP_ID_68);
     param0->unk_BE0 = MessageLoader_GetNewStrbuf(param0->unk_BD0, 10);
-    param0->unk_BEC = Strbuf_Init((16 * 8 * 2), 68);
+    param0->unk_BEC = Strbuf_Init((16 * 8 * 2), HEAP_ID_68);
 }
 
 static void ov96_0223C3B0(UnkStruct_ov96_0223BF40 *param0)
@@ -607,9 +607,7 @@ static int ov96_0223C5CC(UnkStruct_ov96_0223BF40 *param0)
 
 static int ov96_0223C680(UnkStruct_ov96_0223BF40 *param0)
 {
-    s32 v0;
-
-    v0 = sub_02025D74(param0->unk_00->unk_08);
+    s32 v0 = sub_02025D74(param0->unk_00->unk_08);
 
     if (v0 == 0) {
         sub_02025D78(param0->unk_00->unk_08, param0->unk_00->unk_1C);
@@ -881,7 +879,7 @@ static int ov96_0223CA28(UnkStruct_ov96_0223BF40 *param0)
 
 static int ov96_0223CA70(UnkStruct_ov96_0223BF40 *param0)
 {
-    if (gCoreSys.pressedKeysRepeatable & PAD_KEY_UP) {
+    if (gSystem.pressedKeysRepeatable & PAD_KEY_UP) {
         param0->unk_98++;
 
         if (param0->unk_98 > param0->unk_94) {
@@ -890,7 +888,7 @@ static int ov96_0223CA70(UnkStruct_ov96_0223BF40 *param0)
 
         ov96_0223D90C(&param0->unk_E58, param0->unk_BE4, param0->unk_98, 3);
         Sound_PlayEffect(1500);
-    } else if (gCoreSys.pressedKeysRepeatable & PAD_KEY_DOWN) {
+    } else if (gSystem.pressedKeysRepeatable & PAD_KEY_DOWN) {
         param0->unk_98--;
 
         if (param0->unk_98 < 1) {
@@ -899,7 +897,7 @@ static int ov96_0223CA70(UnkStruct_ov96_0223BF40 *param0)
 
         ov96_0223D90C(&param0->unk_E58, param0->unk_BE4, param0->unk_98, 3);
         Sound_PlayEffect(1500);
-    } else if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    } else if (gSystem.pressedKeys & PAD_BUTTON_A) {
         {
             RTCTime v0;
             RTCDate v1;
@@ -915,7 +913,7 @@ static int ov96_0223CA70(UnkStruct_ov96_0223BF40 *param0)
 
         ov96_0223D950(param0, 0, 0);
         Sound_PlayEffect(1500);
-    } else if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    } else if (gSystem.pressedKeys & PAD_BUTTON_B) {
         ov96_0223D950(param0, 0, 0);
         param0->unk_1C = 21;
         Sound_PlayEffect(1500);
@@ -1146,7 +1144,7 @@ static int ov96_0223CF5C(UnkStruct_ov96_0223BF40 *param0)
 
 static int ov96_0223CFAC(UnkStruct_ov96_0223BF40 *param0)
 {
-    if (gCoreSys.pressedKeysRepeatable & PAD_KEY_UP) {
+    if (gSystem.pressedKeysRepeatable & PAD_KEY_UP) {
         param0->unk_90++;
 
         if (param0->unk_90 > 10) {
@@ -1155,7 +1153,7 @@ static int ov96_0223CFAC(UnkStruct_ov96_0223BF40 *param0)
 
         ov96_0223D90C(&param0->unk_E48, param0->unk_BE8, param0->unk_90, 2);
         Sound_PlayEffect(1500);
-    } else if (gCoreSys.pressedKeysRepeatable & PAD_KEY_DOWN) {
+    } else if (gSystem.pressedKeysRepeatable & PAD_KEY_DOWN) {
         param0->unk_90--;
 
         if (param0->unk_90 < 1) {
@@ -1164,11 +1162,11 @@ static int ov96_0223CFAC(UnkStruct_ov96_0223BF40 *param0)
 
         ov96_0223D90C(&param0->unk_E48, param0->unk_BE8, param0->unk_90, 2);
         Sound_PlayEffect(1500);
-    } else if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    } else if (gSystem.pressedKeys & PAD_BUTTON_A) {
         ov96_0223D950(param0, 0, 0);
         ov96_0223BBFC(param0, 11, 32);
         Sound_PlayEffect(1500);
-    } else if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    } else if (gSystem.pressedKeys & PAD_BUTTON_B) {
         ov96_0223D950(param0, 0, 0);
         param0->unk_1C = 23;
         Sound_PlayEffect(1500);
@@ -1201,7 +1199,7 @@ static int ov96_0223D0B0(UnkStruct_ov96_0223BF40 *param0)
 
 static int ov96_0223D100(UnkStruct_ov96_0223BF40 *param0)
 {
-    if (gCoreSys.pressedKeysRepeatable & PAD_KEY_UP) {
+    if (gSystem.pressedKeysRepeatable & PAD_KEY_UP) {
         param0->unk_98++;
 
         if (param0->unk_98 == param0->unk_94 + 1) {
@@ -1210,7 +1208,7 @@ static int ov96_0223D100(UnkStruct_ov96_0223BF40 *param0)
 
         ov96_0223D90C(&param0->unk_E58, param0->unk_BE4, param0->unk_98, 3);
         Sound_PlayEffect(1500);
-    } else if (gCoreSys.pressedKeysRepeatable & PAD_KEY_DOWN) {
+    } else if (gSystem.pressedKeysRepeatable & PAD_KEY_DOWN) {
         param0->unk_98--;
 
         if (param0->unk_98 < 1) {
@@ -1219,11 +1217,11 @@ static int ov96_0223D100(UnkStruct_ov96_0223BF40 *param0)
 
         ov96_0223D90C(&param0->unk_E58, param0->unk_BE4, param0->unk_98, 3);
         Sound_PlayEffect(1500);
-    } else if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    } else if (gSystem.pressedKeys & PAD_BUTTON_A) {
         ov96_0223D950(param0, 0, 0);
         param0->unk_1C = 35;
         Sound_PlayEffect(1500);
-    } else if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    } else if (gSystem.pressedKeys & PAD_BUTTON_B) {
         ov96_0223D950(param0, 0, 0);
         param0->unk_1C = 29;
         Sound_PlayEffect(1500);
@@ -1431,7 +1429,7 @@ static int ov96_0223D528(UnkStruct_ov96_0223BF40 *param0)
 {
     sub_02039794();
     sub_0203848C();
-    StartScreenTransition(0, 0, 0, 0x0, 8, 1, 68);
+    StartScreenTransition(0, 0, 0, 0x0, 8, 1, HEAP_ID_68);
 
     param0->unk_1C = 0;
 
@@ -1568,9 +1566,7 @@ static void ov96_0223D750(UnkStruct_ov96_0223BF40 *param0, MessageLoader *param1
 
 static int ov96_0223D7B8(UnkStruct_ov96_0223BF40 *param0)
 {
-    int v0;
-
-    v0 = ov4_021D1F3C(-param0->unk_F74, param0->unk_F78);
+    int v0 = ov4_021D1F3C(-param0->unk_F74, param0->unk_F78);
 
     ov96_0223DA34(param0, v0, -param0->unk_F74);
     param0->unk_1C = 56;
@@ -1580,7 +1576,7 @@ static int ov96_0223D7B8(UnkStruct_ov96_0223BF40 *param0)
 
 static int ov96_0223D7E4(UnkStruct_ov96_0223BF40 *param0)
 {
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A || gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    if (gSystem.pressedKeys & PAD_BUTTON_A || gSystem.pressedKeys & PAD_BUTTON_B) {
         Window_EraseStandardFrame(&param0->unk_E78, 0);
         param0->unk_1C = 0;
     }
@@ -1642,8 +1638,8 @@ void ov96_0223D948(UnkStruct_ov96_0223BF40 *param0)
 static void ov96_0223D950(UnkStruct_ov96_0223BF40 *param0, int param1, int param2)
 {
     if ((param1 == 0) || (param1 == 1)) {
-        CellActor_SetDrawFlag(param0->unk_E30[0], param2);
-        CellActor_SetDrawFlag(param0->unk_E30[1], param2);
+        Sprite_SetDrawFlag(param0->unk_E30[0], param2);
+        Sprite_SetDrawFlag(param0->unk_E30[1], param2);
     }
 }
 
@@ -1664,7 +1660,7 @@ static void ov96_0223D99C(UnkStruct_ov96_0223BF40 *param0)
 
 static void ov96_0223D9B8(UnkStruct_ov96_0223BF40 *param0, int param1)
 {
-    Strbuf *v0 = Strbuf_Init((16 * 8 * 2), 68);
+    Strbuf *v0 = Strbuf_Init((16 * 8 * 2), HEAP_ID_68);
 
     MessageLoader_GetStrbuf(param0->unk_BD8, param1, v0);
     StringTemplate_Format(param0->unk_BCC, param0->unk_BEC, v0);

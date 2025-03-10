@@ -3,9 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_0200C6E4_decl.h"
-#include "struct_decls/struct_0200C704_decl.h"
-#include "struct_defs/sprite_template.h"
+#include "constants/species.h"
 
 #include "overlay100/ov100_021D400C.h"
 #include "overlay100/ov100_021D44C0.h"
@@ -24,12 +22,12 @@
 #include "math.h"
 #include "narc.h"
 #include "palette.h"
+#include "sprite_system.h"
 #include "sys_task.h"
 #include "text.h"
 #include "trainer_info.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
-#include "unk_0200C6E4.h"
 #include "unk_0200F174.h"
 #include "unk_0202419C.h"
 
@@ -73,20 +71,20 @@ static void ov100_021D1C98(UnkStruct_ov100_021D1C98 *param0)
 {
     NARC *v0 = param0->unk_1EBC->unk_00;
     BgConfig *v1 = param0->unk_1EBC->unk_0C;
-    SpriteRenderer *v2 = param0->unk_1EBC->unk_04;
-    SpriteGfxHandler *v3 = param0->unk_1EBC->unk_08;
+    SpriteSystem *v2 = param0->unk_1EBC->unk_04;
+    SpriteManager *v3 = param0->unk_1EBC->unk_08;
     PaletteData *v4 = param0->unk_1EBC->unk_10;
     int v5 = 50000;
 
-    Graphics_LoadTilesToBgLayerFromOpenNARC(v0, 18, v1, 5, 0, 0, 0, 111);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(v0, 20, v1, 5, 0, 0, 0, 111);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(v0, 18, v1, 5, 0, 0, 0, HEAP_ID_111);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(v0, 20, v1, 5, 0, 0, 0, HEAP_ID_111);
     PaletteData_LoadBufferFromFileStart(v4, 172, 19, 111, 1, 0x20 * 2, 0);
     PaletteData_LoadBufferFromFileStart(v4, 172, 19, 111, 0, 0x20 * 2, 0);
 
-    SpriteRenderer_LoadPalette(v4, 3, v2, v3, v0, 50, 0, 3, NNS_G2D_VRAM_TYPE_2DSUB, v5);
-    SpriteRenderer_LoadCellResObjFromOpenNarc(v2, v3, v0, 48, 0, v5);
-    SpriteRenderer_LoadAnimResObjFromOpenNarc(v2, v3, v0, 47, 0, v5);
-    SpriteRenderer_LoadCharResObjFromOpenNarc(v2, v3, v0, 49, 0, NNS_G2D_VRAM_TYPE_2DSUB, v5);
+    SpriteSystem_LoadPaletteBufferFromOpenNarc(v4, PLTTBUF_SUB_OBJ, v2, v3, v0, 50, FALSE, 3, NNS_G2D_VRAM_TYPE_2DSUB, v5);
+    SpriteSystem_LoadCellResObjFromOpenNarc(v2, v3, v0, 48, FALSE, v5);
+    SpriteSystem_LoadAnimResObjFromOpenNarc(v2, v3, v0, 47, FALSE, v5);
+    SpriteSystem_LoadCharResObjFromOpenNarc(v2, v3, v0, 49, FALSE, NNS_G2D_VRAM_TYPE_2DSUB, v5);
 
     ov100_021D4AC8(&param0->unk_1A0.unk_04, 46, param0->unk_1EBC->unk_00);
 
@@ -197,8 +195,8 @@ static void ov100_021D2250(UnkStruct_ov100_021D1C98 *param0)
     int v0;
     NARC *v1 = param0->unk_1EBC->unk_00;
     BgConfig *v2 = param0->unk_1EBC->unk_0C;
-    SpriteRenderer *v3 = param0->unk_1EBC->unk_04;
-    SpriteGfxHandler *v4 = param0->unk_1EBC->unk_08;
+    SpriteSystem *v3 = param0->unk_1EBC->unk_04;
+    SpriteManager *v4 = param0->unk_1EBC->unk_08;
     PaletteData *v5 = param0->unk_1EBC->unk_10;
     SpriteTemplate v6;
 
@@ -210,7 +208,7 @@ static void ov100_021D2250(UnkStruct_ov100_021D1C98 *param0)
     v6.plttIdx = 0;
     v6.vramType = NNS_G2D_VRAM_TYPE_2DSUB;
     v6.bgPriority = 0;
-    v6.transferToVRAM = FALSE;
+    v6.vramTransfer = FALSE;
 
     v6.resources[4] = SPRITE_RESOURCE_NONE;
     v6.resources[5] = SPRITE_RESOURCE_NONE;
@@ -221,13 +219,13 @@ static void ov100_021D2250(UnkStruct_ov100_021D1C98 *param0)
     v6.resources[3] = 50000;
 
     for (v0 = 0; v0 < 3; v0++) {
-        param0->unk_08.unk_0C[v0].unk_00 = SpriteActor_LoadResources(v3, v4, &v6);
+        param0->unk_08.unk_0C[v0].unk_00 = SpriteSystem_NewSprite(v3, v4, &v6);
 
-        sub_0200D330(param0->unk_08.unk_0C[v0].unk_00);
-        sub_0200D6A4(param0->unk_08.unk_0C[v0].unk_00, 2);
-        sub_0200D6E8(param0->unk_08.unk_0C[v0].unk_00, 0.5f, 0.5f);
-        sub_0200D430(param0->unk_08.unk_0C[v0].unk_00, v0);
-        SpriteActor_SetSpritePositionXY(param0->unk_08.unk_0C[v0].unk_00, 16 + (v0 * 64), 64);
+        ManagedSprite_TickFrame(param0->unk_08.unk_0C[v0].unk_00);
+        ManagedSprite_SetAffineOverwriteMode(param0->unk_08.unk_0C[v0].unk_00, AFFINE_OVERWRITE_MODE_DOUBLE);
+        ManagedSprite_SetAffineScale(param0->unk_08.unk_0C[v0].unk_00, 0.5f, 0.5f);
+        ManagedSprite_SetExplicitPaletteOffset(param0->unk_08.unk_0C[v0].unk_00, v0);
+        ManagedSprite_SetPositionXY(param0->unk_08.unk_0C[v0].unk_00, 16 + (v0 * 64), 64);
 
         param0->unk_08.unk_0C[v0].unk_0C = 1;
         param0->unk_08.unk_0C[v0].unk_08 = v0;
@@ -249,13 +247,13 @@ static void ov100_021D2324(UnkStruct_ov100_021D1C98 *param0)
 
     for (v0 = 0; v0 < 3; v0++) {
         SysTask_Done(param0->unk_08.unk_0C[v0].unk_40);
-        sub_0200D0F4(param0->unk_08.unk_0C[v0].unk_00);
+        Sprite_DeleteAndFreeResources(param0->unk_08.unk_0C[v0].unk_00);
     }
 }
 
 void *ov100_021D2340(UnkStruct_ov100_021D4DD8 *param0)
 {
-    UnkStruct_ov100_021D1C98 *v0 = Heap_AllocFromHeap(111, sizeof(UnkStruct_ov100_021D1C98));
+    UnkStruct_ov100_021D1C98 *v0 = Heap_AllocFromHeap(HEAP_ID_111, sizeof(UnkStruct_ov100_021D1C98));
 
     memset(v0, 0, sizeof(UnkStruct_ov100_021D1C98));
 
@@ -306,7 +304,7 @@ BOOL ov100_021D2428(void *param0)
 
     switch (v0->unk_00) {
     case 0:
-        StartScreenTransition(0, 1, 1, 0x7fff, 6, 1, 111);
+        StartScreenTransition(0, 1, 1, 0x7fff, 6, 1, HEAP_ID_111);
         v0->unk_1EBC->unk_50.unk_03 = 0;
         G2_SetBlendBrightness((GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), v0->unk_1EBC->unk_50.unk_03);
         G2S_SetBlendBrightness((GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), v0->unk_1EBC->unk_50.unk_03);
@@ -517,11 +515,11 @@ BOOL ov100_021D2428(void *param0)
         }
 
         if (v0->unk_04 == 15 + 25) {
-            Sound_PlayPokemonCry(0, 483, -80, 40, 111, 0);
+            Sound_PlayPokemonCry(POKECRY_NORMAL, SPECIES_DIALGA, -80, 40, HEAP_ID_111, 0);
         }
 
         if (v0->unk_04 == 40 + 25) {
-            Sound_PlayPokemonCry(0, 484, +80, 40, 111, 0);
+            Sound_PlayPokemonCry(POKECRY_NORMAL, SPECIES_PALKIA, +80, 40, HEAP_ID_111, 0);
         }
 
         if (v0->unk_04 < 15 + 25) {
@@ -559,7 +557,7 @@ BOOL ov100_021D2428(void *param0)
 
         Easy3DObject_SetVisibility(&v0->unk_1A0.unk_934[1].unk_00, 0);
         Easy3DObject_SetVisibility(&v0->unk_1A0.unk_934[2].unk_00, 1);
-        Sound_PlayPokemonCry(2, 487, 0, 127, 111, 0);
+        Sound_PlayPokemonCry(POKECRY_FIELD_EVENT, SPECIES_GIRATINA, 0, 127, HEAP_ID_111, 0);
 
         v0->unk_04 = 0;
         v0->unk_00++;
@@ -599,7 +597,7 @@ BOOL ov100_021D2428(void *param0)
         break;
     case 19:
         if ((++v0->unk_04) == 238) {
-            Sound_PlayPokemonCry(2, 487, 0, 127, 111, 0);
+            Sound_PlayPokemonCry(POKECRY_FIELD_EVENT, SPECIES_GIRATINA, 0, 127, HEAP_ID_111, 0);
         }
 
         if (v0->unk_04 == 170) {
@@ -645,7 +643,7 @@ BOOL ov100_021D2428(void *param0)
         }
         break;
     case 20:
-        StartScreenTransition(0, 0, 0, 0x0, 1, 1, 111);
+        StartScreenTransition(0, 0, 0, 0x0, 1, 1, HEAP_ID_111);
         v0->unk_00++;
     case 21:
         if (IsScreenTransitionDone() == 0) {

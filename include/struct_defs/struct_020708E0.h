@@ -1,7 +1,6 @@
 #ifndef POKEPLATINUM_STRUCT_020708E0_H
 #define POKEPLATINUM_STRUCT_020708E0_H
 
-#include "struct_decls/cell_actor_data.h"
 #include "struct_defs/struct_020684D0.h"
 #include "struct_defs/struct_02070950.h"
 
@@ -10,6 +9,7 @@
 #include "bg_window.h"
 #include "field_task.h"
 #include "menu.h"
+#include "sprite_system.h"
 #include "string_list.h"
 
 typedef struct {
@@ -22,7 +22,7 @@ typedef struct {
     u32 unk_2C;
     u8 unk_30[7];
     UnkStruct_ov5_021D30A8 unk_38;
-    CellActorData *unk_200[8];
+    ManagedSprite *unk_200[8];
     u32 unk_220;
     u32 unk_224;
     u32 unk_228;
@@ -31,25 +31,25 @@ typedef struct {
     UnkStruct_02070950 unk_24C;
     void *unk_25C;
     void *unk_260;
-} FieldMenu;
+} StartMenu;
 
-enum FieldMenuState {
-    FIELD_MENU_STATE_INIT,
-    FIELD_MENU_STATE_SELECT,
-    FIELD_MENU_STATE_APP_START,
-    FIELD_MENU_STATE_APP_RUN,
-    FIELD_MENU_STATE_SAVE,
-    FIELD_MENU_STATE_SAVE_WAIT,
-    FIELD_MENU_STATE_EVOLVE_INIT,
-    FIELD_MENU_STATE_EVOLVE,
-    FIELD_MENU_STATE_8,
-    FIELD_MENU_STATE_9,
-    FIELD_MENU_STATE_10,
-    FIELD_MENU_STATE_11,
-    FIELD_MENU_STATE_12,
-    FIELD_MENU_STATE_END,
-    FIELD_MENU_STATE_14,
-    FIELD_MENU_STATE_15
+enum StartMenuState {
+    START_MENU_STATE_INIT,
+    START_MENU_STATE_SELECT,
+    START_MENU_STATE_APP_START,
+    START_MENU_STATE_APP_RUN,
+    START_MENU_STATE_SAVE,
+    START_MENU_STATE_SAVE_WAIT,
+    START_MENU_STATE_EVOLVE_INIT,
+    START_MENU_STATE_EVOLVE,
+    START_MENU_STATE_8,
+    START_MENU_STATE_9,
+    START_MENU_STATE_10,
+    START_MENU_STATE_11,
+    START_MENU_STATE_12,
+    START_MENU_STATE_END,
+    START_MENU_STATE_14,
+    START_MENU_STATE_15
 };
 
 #endif // POKEPLATINUM_STRUCT_020708E0_H

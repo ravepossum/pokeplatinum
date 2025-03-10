@@ -4,11 +4,11 @@
 #include <nnsys.h>
 #include <string.h>
 
+#include "constants/gx_colors.h"
 #include "constants/heap.h"
 #include "constants/narc.h"
 #include "constants/species.h"
 
-#include "struct_decls/sprite_decl.h"
 #include "struct_decls/struct_02007768_decl.h"
 #include "struct_decls/struct_02015064_decl.h"
 #include "struct_decls/struct_02015128_decl.h"
@@ -16,20 +16,18 @@
 #include "struct_decls/struct_02015214_decl.h"
 #include "struct_defs/archived_sprite.h"
 #include "struct_defs/choose_starter_data.h"
-#include "struct_defs/struct_0200C738.h"
+#include "struct_defs/pokemon_sprite.h"
 #include "struct_defs/struct_02099F80.h"
 
 #include "overlay021/struct_ov21_021E7F40.h"
 #include "overlay022/struct_ov22_022550D4.h"
 #include "overlay022/struct_ov22_022557A0.h"
 #include "overlay022/struct_ov22_02255800.h"
-#include "overlay022/struct_ov22_022559F8.h"
 #include "overlay115/camera_angle.h"
 
 #include "bg_window.h"
 #include "camera.h"
-#include "cell_actor.h"
-#include "core_sys.h"
+#include "char_transfer.h"
 #include "easy3d.h"
 #include "font.h"
 #include "game_options.h"
@@ -39,28 +37,28 @@
 #include "menu.h"
 #include "message.h"
 #include "overlay_manager.h"
+#include "pltt_transfer.h"
 #include "pokemon.h"
+#include "render_oam.h"
 #include "render_text.h"
 #include "render_window.h"
+#include "sprite.h"
 #include "sprite_resource.h"
+#include "sprite_transfer.h"
+#include "sprite_util.h"
 #include "strbuf.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "text.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
 #include "unk_0200762C.h"
-#include "unk_020093B4.h"
-#include "unk_0200A328.h"
-#include "unk_0200A784.h"
 #include "unk_0200F174.h"
 #include "unk_02015064.h"
-#include "unk_02017728.h"
-#include "unk_0201DBEC.h"
 #include "unk_0201E3D8.h"
-#include "unk_0201E86C.h"
-#include "unk_0201F834.h"
 #include "unk_0202419C.h"
+#include "vram_transfer.h"
 
 #define NUM_STARTER_OPTIONS 3
 #define STARTER_OPTION_0    SPECIES_TURTWIG
@@ -80,9 +78,6 @@
 #define OAM_NUM_BYTES               32
 #define OAM_VRAM_TRANSFER_MAIN_SIZE (0x14000)
 #define OAM_VRAM_TRANSFER_SUB_SIZE  (0x4000)
-
-#define COLOR_BLACK       GX_RGB(4, 4, 4)
-#define COLOR_TRANSPARENT GX_RGB(31, 31, 16)
 
 #define TRANSPARENT_DEPTH      0x7FFF
 #define TRANSPARENT_POLYGON_ID 63
@@ -159,7 +154,7 @@ typedef struct ChooseStarterRotation {
 } ChooseStarterRotation;
 
 typedef struct ChooseStarterCursor {
-    CellActor *unk_00;
+    Sprite *unk_00;
     SpriteResource *unk_04[6];
     VecFx32 unk_1C;
     SysTask *unk_28;
@@ -187,7 +182,7 @@ typedef struct StarterPreviewWindow {
 } StarterPreviewWindow;
 
 typedef struct StarterPreviewGraphics {
-    Sprite *unk_00;
+    PokemonSprite *unk_00;
     StarterPreviewAnimation unk_04;
     SysTask *unk_3C;
 } StarterPreviewGraphics;
@@ -208,11 +203,11 @@ typedef struct ChooseStarterApp {
     Strbuf *unk_AC;
     WindowTemplate unk_B0;
     Menu *unk_B8;
-    UnkStruct_0200C738 unk_BC;
-    CellActorCollection *unk_248;
+    G2dRenderer unk_BC;
+    SpriteList *unk_248;
     SpriteResourceCollection *unk_24C[6];
     UnkStruct_02007768 *spriteManager;
-    Sprite *sprites[NUM_STARTER_OPTIONS];
+    PokemonSprite *sprites[NUM_STARTER_OPTIONS];
     StarterPreviewGraphics unk_274;
     NNSFndAllocator unk_2B4;
     ChooseStarter3DGraphics unk_2C4[6];
@@ -278,7 +273,7 @@ static void ov78_021D1CA8(ChooseStarterApp *param0, int param1);
 static void ov78_021D1DF0(ChooseStarterApp *param0);
 static void ov78_021D1E28(ChooseStarterApp *param0);
 static void ov78_021D1E44(ChooseStarterApp *param0, int param1);
-static void MakePokemonSprite(Sprite **sprite, ChooseStarterApp *app, int species);
+static void MakePokemonSprite(PokemonSprite **sprite, ChooseStarterApp *app, int species);
 static void ov78_021D15CC(ChooseStarter3DGraphics *param0, int param1, int param2, int param3, NNSFndAllocator *param4);
 static void ov78_021D1604(ChooseStarter3DGraphics *param0, int param1, int param2);
 static void ov78_021D16D8(ChooseStarter3DGraphics *param0, NNSFndAllocator *param1);
@@ -302,7 +297,7 @@ static BOOL ov78_021D2608(StarterPreviewWindow *param0);
 static void ov78_021D2618(ChooseStarterApp *param0);
 static void ov78_021D2688(ChooseStarterApp *param0);
 static BOOL ov78_021D26A4(ChooseStarterApp *param0);
-static void ov78_021D26B4(StarterPreviewGraphics *param0, Sprite *param1, fx32 param2, fx32 param3, fx32 param4, fx32 param5, fx32 param6, fx32 param7, int param8);
+static void ov78_021D26B4(StarterPreviewGraphics *param0, PokemonSprite *param1, fx32 param2, fx32 param3, fx32 param4, fx32 param5, fx32 param6, fx32 param7, int param8);
 static void ov78_021D270C(StarterPreviewGraphics *param0);
 static void ov78_021D2740(SysTask *param0, void *param1);
 static void ov78_021D1C58(ChooseStarterApp *param0);
@@ -333,8 +328,8 @@ BOOL ChooseStarter_Init(OverlayManager *param0, int *param1)
     app->messageFrame = Options_Frame(data->options);
     app->unk_704 = Options_TextFrameDelay(data->options);
 
-    VRAMTransferManager_New(8, HEAP_ID_CHOOSE_STARTER_APP);
-    SetMainCallback(ChooseStarterAppMainCallback, app);
+    VramTransfer_New(8, HEAP_ID_CHOOSE_STARTER_APP);
+    SetVBlankCallback(ChooseStarterAppMainCallback, app);
     DisableHBlank();
 
     sub_0201E3D8();
@@ -442,7 +437,7 @@ BOOL ChooseStarter_Exit(OverlayManager *param0, int *param1)
     ChooseStarterData *v1 = OverlayManager_Args(param0);
     BOOL v2;
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
 
     v1->species = GetSelectedSpecies(v0->cursorPosition);
 
@@ -466,9 +461,9 @@ BOOL ChooseStarter_Exit(OverlayManager *param0, int *param1)
     Heap_FreeToHeap(v0->bgl);
     ov78_021D10DC();
 
-    VRAMTransferManager_Destroy();
+    VramTransfer_Free();
     OverlayManager_FreeData(param0);
-    Heap_Destroy(47);
+    Heap_Destroy(HEAP_ID_CHOOSE_STARTER_APP);
 
     return TRUE;
 }
@@ -477,20 +472,20 @@ static void ChooseStarterAppMainCallback(void *data)
 {
     ChooseStarterApp *app = data;
 
-    sub_0200A858();
+    RenderOam_Transfer();
     Bg_RunScheduledUpdates(app->bgl);
     sub_02008A94(app->spriteManager);
-    sub_0201DCAC();
+    VramTransfer_Process();
 }
 
 static void StartFadeIn(ChooseStarterApp *param0)
 {
-    StartScreenTransition(0, 1, 1, 0x0, 6, 1, 47);
+    StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_CHOOSE_STARTER_APP);
 }
 
 static void StartFadeOut(ChooseStarterApp *param0)
 {
-    StartScreenTransition(0, 0, 0, 0x0, 6, 1, 47);
+    StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_CHOOSE_STARTER_APP);
 }
 
 static BOOL IsFadeDone(ChooseStarterApp *param0)
@@ -507,9 +502,9 @@ static void SetupDrawing(ChooseStarterApp *app, enum HeapId heap)
 
 static void ov78_021D10DC(void)
 {
-    sub_0200A878();
-    sub_0201E958();
-    sub_0201F8B4();
+    RenderOam_Free();
+    CharTransfer_Free();
+    PlttTransfer_Free();
 
     ov78_021D1218();
 }
@@ -536,20 +531,20 @@ static void SetupOAM(enum HeapId heapID)
 {
     NNS_G2dInitOamManagerModule();
 
-    sub_0200A784(OAM_MAIN_START, OAM_MAIN_END, OAM_AFFINE_MAIN_START, OAM_AFFINE_MAIN_END, OAM_SUB_START, OAM_SUB_END, OAM_AFFINE_SUB_START, OAM_AFFINE_SUB_END, heapID);
+    RenderOam_Init(OAM_MAIN_START, OAM_MAIN_END, OAM_AFFINE_MAIN_START, OAM_AFFINE_MAIN_END, OAM_SUB_START, OAM_SUB_END, OAM_AFFINE_SUB_START, OAM_AFFINE_SUB_END, heapID);
 
-    UnkStruct_ov22_022559F8 v0 = {
+    CharTransferTemplate v0 = {
         OAM_NUM_BYTES,
         OAM_VRAM_TRANSFER_MAIN_SIZE,
         OAM_VRAM_TRANSFER_SUB_SIZE,
         heapID,
     };
 
-    sub_0201E88C(&v0, GX_OBJVRAMMODE_CHAR_1D_128K, GX_OBJVRAMMODE_CHAR_1D_32K);
+    CharTransfer_InitWithVramModes(&v0, GX_OBJVRAMMODE_CHAR_1D_128K, GX_OBJVRAMMODE_CHAR_1D_32K);
 
-    sub_0201F834(32, heapID);
-    sub_0201E994();
-    sub_0201F8E4();
+    PlttTransfer_Init(32, heapID);
+    CharTransfer_ClearBuffers();
+    PlttTransfer_Clear();
 }
 
 static void Setup3D(ChooseStarterApp *app)
@@ -564,7 +559,7 @@ static void Setup3D(ChooseStarterApp *app)
     G3X_EdgeMarking(TRUE);
 
     for (int i = 0; i < 8; i++) {
-        app->edgeMarkings[i] = COLOR_BLACK;
+        app->edgeMarkings[i] = COLOR_DARK_GRAY;
     }
 
     G3X_SetEdgeColorTable(app->edgeMarkings);
@@ -698,7 +693,7 @@ static void MakeSprite(ChooseStarterApp *app, enum HeapId heapID)
     }
 }
 
-static void MakePokemonSprite(Sprite **sprite, ChooseStarterApp *app, int species)
+static void MakePokemonSprite(PokemonSprite **sprite, ChooseStarterApp *app, int species)
 {
     int gender = Pokemon_GetGenderOf(species, 0);
 
@@ -728,13 +723,16 @@ static void ov78_021D14BC(ChooseStarterApp *param0)
     sub_02007B6C(param0->spriteManager);
 }
 
-static void MakeSpriteDisplay(ChooseStarterApp *param0, enum HeapId param1)
+static void MakeSpriteDisplay(ChooseStarterApp *param0, enum HeapId heapID)
 {
     UnkStruct_ov22_022550D4 v0 = {
-        1, 1, 1, 0
+        .unk_00 = 1,
+        .unk_04 = 1,
+        .unk_08 = 1,
+        .heapID = HEAP_ID_SYSTEM
     };
 
-    v0.unk_0C = param1;
+    v0.heapID = heapID;
     param0->spriteDisplay = sub_02015064(&v0);
 }
 
@@ -745,7 +743,7 @@ static void ov78_021D1518(ChooseStarterApp *param0)
 
 static void MakeCellActors(ChooseStarterApp *param0, int param1)
 {
-    param0->unk_248 = sub_020095C4(2, &param0->unk_BC, param1);
+    param0->unk_248 = SpriteList_InitRendering(2, &param0->unk_BC, param1);
     param0->unk_24C[0] = SpriteResourceCollection_New(2, 0, param1);
     param0->unk_24C[1] = SpriteResourceCollection_New(2, 1, param1);
     param0->unk_24C[2] = SpriteResourceCollection_New(2, 2, param1);
@@ -757,7 +755,7 @@ static void MakeCellActors(ChooseStarterApp *param0, int param1)
 
 static void ov78_021D1594(ChooseStarterApp *param0)
 {
-    CellActorCollection_Delete(param0->unk_248);
+    SpriteList_Delete(param0->unk_248);
     SpriteResourceCollection_Delete(param0->unk_24C[0]);
     SpriteResourceCollection_Delete(param0->unk_24C[1]);
     SpriteResourceCollection_Delete(param0->unk_24C[2]);
@@ -956,7 +954,7 @@ static BOOL IsSelectionMade(ChooseStarterApp *param0, int param1)
     case 3:
         ov78_021D1C58(param0);
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             ov78_021D1C98(param0, 1);
 
             Sound_PlayEffect(1500);
@@ -1040,7 +1038,7 @@ static void DrawScene(ChooseStarterApp *param0)
     NNS_G3dGePopMtx(1);
 
     G3_RequestSwapBuffers(GX_SORTMODE_AUTO, GX_BUFFERMODE_Z);
-    CellActorCollection_Update(param0->unk_248);
+    SpriteList_Update(param0->unk_248);
 }
 
 static void MakeCamera(ChooseStarterApp *param0, int param1)
@@ -1130,14 +1128,14 @@ static void SetSelectionMatrixObjects(ChooseStarterApp *param0)
 
 static void ov78_021D1C58(ChooseStarterApp *param0)
 {
-    if (gCoreSys.pressedKeys & PAD_KEY_LEFT) {
+    if (gSystem.pressedKeys & PAD_KEY_LEFT) {
         if (param0->cursorPosition - 1 >= 0) {
             param0->cursorPosition -= 1;
             Sound_PlayEffect(1500);
         }
     }
 
-    if (gCoreSys.pressedKeys & PAD_KEY_RIGHT) {
+    if (gSystem.pressedKeys & PAD_KEY_RIGHT) {
         if (param0->cursorPosition + 1 < 3) {
             param0->cursorPosition += 1;
             Sound_PlayEffect(1500);
@@ -1427,12 +1425,12 @@ static void MakeCursorOAM(ChooseStarterApp *param0, ChooseStarterCursor *param1,
 {
     param1->unk_04[0] = SpriteResourceCollection_AddTiles(param0->unk_24C[0], 82, 10, 0, 10, NNS_G2D_VRAM_TYPE_2DMAIN, param2);
 
-    sub_0200A3DC(param1->unk_04[0]);
+    SpriteTransfer_RequestCharAtEnd(param1->unk_04[0]);
     SpriteResource_ReleaseData(param1->unk_04[0]);
 
     param1->unk_04[1] = SpriteResourceCollection_AddPalette(param0->unk_24C[1], 82, 11, 0, 11, NNS_G2D_VRAM_TYPE_2DMAIN, 1, param2);
 
-    sub_0200A640(param1->unk_04[1]);
+    SpriteTransfer_RequestPlttFreeSpace(param1->unk_04[1]);
     SpriteResource_ReleaseData(param1->unk_04[1]);
 
     param1->unk_04[2] = SpriteResourceCollection_Add(param0->unk_24C[2], 82, 12, 0, 12, 2, param2);
@@ -1441,8 +1439,8 @@ static void MakeCursorOAM(ChooseStarterApp *param0, ChooseStarterCursor *param1,
 
 static void ov78_021D2290(ChooseStarterApp *param0, ChooseStarterCursor *param1)
 {
-    sub_0200A4E4(param1->unk_04[0]);
-    sub_0200A6DC(param1->unk_04[1]);
+    SpriteTransfer_ResetCharTransfer(param1->unk_04[0]);
+    SpriteTransfer_ResetPlttTransfer(param1->unk_04[1]);
 
     SpriteResourceCollection_Remove(param0->unk_24C[0], param1->unk_04[0]);
     SpriteResourceCollection_Remove(param0->unk_24C[1], param1->unk_04[1]);
@@ -1452,12 +1450,12 @@ static void ov78_021D2290(ChooseStarterApp *param0, ChooseStarterCursor *param1)
 
 static void AttachCursorCellActor(ChooseStarterApp *param0, ChooseStarterCursor *param1, int param2)
 {
-    CellActorResourceData v0;
-    CellActorInitParams v1;
+    SpriteResourcesHeader v0;
+    SpriteListTemplate v1;
 
-    sub_020093B4(&v0, 10, 11, 12, 13, 0xffffffff, 0xffffffff, 0, 1, param0->unk_24C[0], param0->unk_24C[1], param0->unk_24C[2], param0->unk_24C[3], NULL, NULL);
+    SpriteResourcesHeader_Init(&v0, 10, 11, 12, 13, 0xffffffff, 0xffffffff, 0, 1, param0->unk_24C[0], param0->unk_24C[1], param0->unk_24C[2], param0->unk_24C[3], NULL, NULL);
 
-    v1.collection = param0->unk_248;
+    v1.list = param0->unk_248;
     v1.resourceData = &v0;
     v1.priority = 32;
     v1.vramType = NNS_G2D_VRAM_TYPE_2DMAIN;
@@ -1466,8 +1464,8 @@ static void AttachCursorCellActor(ChooseStarterApp *param0, ChooseStarterCursor 
     v1.position.x = 0;
     v1.position.y = 0;
 
-    param1->unk_00 = CellActorCollection_Add(&v1);
-    CellActor_SetDrawFlag(param1->unk_00, 0);
+    param1->unk_00 = SpriteList_Add(&v1);
+    Sprite_SetDrawFlag(param1->unk_00, 0);
 
     param1->unk_1C.x = 0;
     param1->unk_1C.y = 0;
@@ -1475,7 +1473,7 @@ static void AttachCursorCellActor(ChooseStarterApp *param0, ChooseStarterCursor 
 
 static void ov78_021D2350(ChooseStarterCursor *param0)
 {
-    CellActor_Delete(param0->unk_00);
+    Sprite_Delete(param0->unk_00);
 }
 
 static void ov78_021D235C(ChooseStarterRotation *param0, fx32 param1, int param2)
@@ -1489,9 +1487,7 @@ static void ov78_021D235C(ChooseStarterRotation *param0, fx32 param1, int param2
 static void ov78_021D2368(ChooseStarterRotation *param0)
 {
     u16 v0;
-    int v1;
-
-    v1 = ((360 * 0xffff) / 360) * param0->unk_0C;
+    int v1 = ((360 * 0xffff) / 360) * param0->unk_0C;
     v1 = v1 / param0->unk_08;
     v0 = v1;
 
@@ -1517,7 +1513,7 @@ static void ov78_021D23E8(SysTask *param0, void *param1)
     v1 = v0->unk_1C;
     v1.y += v0->unk_2C.unk_00;
 
-    CellActor_SetPosition(v0->unk_00, &v1);
+    Sprite_SetPosition(v0->unk_00, &v1);
 }
 
 static void ov78_021D241C(ChooseStarterCursor *param0)
@@ -1530,7 +1526,7 @@ static void ov78_021D241C(ChooseStarterCursor *param0)
 
 static void ov78_021D2430(ChooseStarterCursor *param0, BOOL param1)
 {
-    CellActor_SetDrawFlag(param0->unk_00, param1);
+    Sprite_SetDrawFlag(param0->unk_00, param1);
 }
 
 static void ov78_021D243C(ChooseStarterCursor *param0, int param1, int param2)
@@ -1671,7 +1667,7 @@ static BOOL ov78_021D26A4(ChooseStarterApp *param0)
     return ov78_021D2608(&param0->unk_6A8);
 }
 
-static void ov78_021D26B4(StarterPreviewGraphics *param0, Sprite *param1, fx32 param2, fx32 param3, fx32 param4, fx32 param5, fx32 param6, fx32 param7, int param8)
+static void ov78_021D26B4(StarterPreviewGraphics *param0, PokemonSprite *param1, fx32 param2, fx32 param3, fx32 param4, fx32 param5, fx32 param6, fx32 param7, int param8)
 {
     GF_ASSERT(param0->unk_3C == NULL);
 

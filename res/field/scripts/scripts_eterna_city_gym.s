@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/eterna_city_gym.h"
 
     .data
 
@@ -9,7 +10,7 @@
     ScriptEntry _01C9
     ScriptEntry _021C
     ScriptEntry _027B
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001E:
     ScrCmd_2C9
@@ -64,12 +65,12 @@ _0094:
     FacePlayer
     CheckBadgeAcquired BADGE_ID_FOREST, 0x800C
     GoToIfEq 0x800C, 1, _0161
-    ScrCmd_1CD 9, 67, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_GYM_WAS_TOO_TOUGH, 67, 0, 0, 0
     Message 0
     CloseMessage
-    StartTrainerBattle trainer_leader_gardenia
+    StartTrainerBattle TRAINER_LEADER_GARDENIA
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _01C3
+    GoToIfEq 0x800C, FALSE, _01C3
     Message 1
     BufferPlayerName 0
     Message 2
@@ -77,12 +78,12 @@ _0094:
     WaitSound
     GiveBadge BADGE_ID_FOREST
     ScrCmd_260 23
-    SetTrainerFlag trainer_aroma_lady_jenna
-    SetTrainerFlag trainer_aroma_lady_angela
-    SetTrainerFlag trainer_lass_caroline
-    SetTrainerFlag trainer_beauty_lindsay
+    SetTrainerFlag TRAINER_AROMA_LADY_JENNA
+    SetTrainerFlag TRAINER_AROMA_LADY_ANGELA
+    SetTrainerFlag TRAINER_LASS_CAROLINE
+    SetTrainerFlag TRAINER_BEAUTY_LINDSAY
     ClearFlag 0x1FC
-    ScrCmd_1CD 10, 67, trainer_leader_gardenia, 0, 0
+    CreateJournalEvent LOCATION_EVENT_BEAT_GYM_LEADER, 67, TRAINER_LEADER_GARDENIA, 0, 0
     Message 3
     GoTo _0177
     End
@@ -140,7 +141,7 @@ _01B7:
     End
 
 _01C3:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
@@ -149,12 +150,12 @@ _01C9:
     LockAll
     FacePlayer
     GoToIfGe 0x40AE, 1, _0211
-    ScrCmd_0EA trainer_lass_caroline
+    ScrCmd_0EA TRAINER_LASS_CAROLINE
     Message 6
     CloseMessage
-    StartTrainerBattle trainer_lass_caroline
+    StartTrainerBattle TRAINER_LASS_CAROLINE
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _01C3
+    GoToIfEq 0x800C, FALSE, _01C3
     Message 7
     WaitABXPadPress
     SetVar 0x40AE, 1
@@ -175,14 +176,14 @@ _021C:
     LockAll
     FacePlayer
     GoToIfGe 0x40AE, 2, _0270
-    ScrCmd_0EA trainer_aroma_lady_jenna
+    ScrCmd_0EA TRAINER_AROMA_LADY_JENNA
     SetVar 0x8007, 3
     Call _02DA
     Message 8
     CloseMessage
-    StartTrainerBattle trainer_aroma_lady_jenna
+    StartTrainerBattle TRAINER_AROMA_LADY_JENNA
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _01C3
+    GoToIfEq 0x800C, FALSE, _01C3
     Message 9
     WaitABXPadPress
     SetVar 0x40AE, 2
@@ -203,14 +204,14 @@ _027B:
     LockAll
     FacePlayer
     GoToIfGe 0x40AE, 3, _02CF
-    ScrCmd_0EA trainer_aroma_lady_angela
+    ScrCmd_0EA TRAINER_AROMA_LADY_ANGELA
     SetVar 0x8007, 4
     Call _02DA
     Message 10
     CloseMessage
-    StartTrainerBattle trainer_aroma_lady_angela
+    StartTrainerBattle TRAINER_AROMA_LADY_ANGELA
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _01C3
+    GoToIfEq 0x800C, FALSE, _01C3
     Message 11
     WaitABXPadPress
     SetVar 0x40AE, 3
@@ -227,7 +228,7 @@ _02CF:
     End
 
 _02DA:
-    ScrCmd_1BD 0x800C
+    GetPlayerDir 0x800C
     CallIfEq 0x800C, 0, _0314
     CallIfEq 0x800C, 1, _0322
     CallIfEq 0x800C, 2, _0330

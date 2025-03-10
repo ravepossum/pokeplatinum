@@ -3,6 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/screen.h"
+
 #include "struct_decls/struct_02029C68_decl.h"
 #include "struct_decls/struct_02029C88_decl.h"
 #include "struct_defs/struct_02041DC8.h"
@@ -14,8 +16,6 @@
 #include "overlay022/struct_ov22_0225B1BC_decl.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
-#include "core_sys.h"
 #include "font.h"
 #include "graphics.h"
 #include "gx_layers.h"
@@ -23,11 +23,12 @@
 #include "message.h"
 #include "overlay_manager.h"
 #include "pokemon.h"
+#include "sprite.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
 #include "unk_0202419C.h"
 #include "unk_020298BC.h"
 #include "unk_02094EDC.h"
@@ -39,7 +40,7 @@ typedef struct {
     u32 unk_0C;
     UnkStruct_ov22_0225B1BC *unk_10;
     UnkStruct_ov22_0225A0E4 unk_14;
-    CellActor *unk_1FC;
+    Sprite *unk_1FC;
     Window *unk_200;
 } UnkStruct_ov22_0225B85C;
 
@@ -59,13 +60,13 @@ int ov22_0225B660(OverlayManager *param0, int *param1)
     UnkStruct_ov22_0225B85C *v0;
     UnkStruct_02041DC8 *v1;
 
-    Heap_Create(3, 13, 0x20000);
-    Heap_Create(3, 14, 0x40000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_13, 0x20000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_14, 0x40000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov22_0225B85C), 13);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov22_0225B85C), HEAP_ID_13);
     memset(v0, 0, sizeof(UnkStruct_ov22_0225B85C));
 
-    SetMainCallback(ov22_0225B848, v0);
+    SetVBlankCallback(ov22_0225B848, v0);
     DisableHBlank();
 
     v1 = OverlayManager_Args(param0);
@@ -80,7 +81,7 @@ int ov22_0225B660(OverlayManager *param0, int *param1)
     v0->unk_0C = v1->unk_08;
 
     ov22_02255094();
-    gCoreSys.unk_65 = 0;
+    gSystem.whichScreenIs3D = DS_SCREEN_MAIN;
     GXLayers_SwapDisplay();
     ov22_022555D4(&v0->unk_14, 14);
 
@@ -90,7 +91,7 @@ int ov22_0225B660(OverlayManager *param0, int *param1)
         v2.unk_00 = v0->unk_14.unk_40;
         v2.unk_04 = 72;
         v2.unk_08 = 16;
-        v2.unk_0C = 14;
+        v2.heapID = HEAP_ID_14;
 
         if (v0->unk_0C == 0) {
             v0->unk_10 = ov22_0225AF8C(&v2, v0->unk_00);
@@ -126,8 +127,7 @@ int ov22_0225B738(OverlayManager *param0, int *param1)
         (*param1)++;
         break;
     case 1:
-        StartScreenTransition(
-            0, 5, 1, 0x0, 6, 1, 13);
+        StartScreenTransition(0, 5, 1, 0x0, 6, 1, HEAP_ID_13);
         (*param1)++;
         break;
     case 2:
@@ -136,12 +136,12 @@ int ov22_0225B738(OverlayManager *param0, int *param1)
         }
         break;
     case 3:
-        if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             (*param1)++;
         }
         break;
     case 4:
-        StartScreenTransition(0, 2, 0, 0x0, 6, 1, 13);
+        StartScreenTransition(0, 2, 0, 0x0, 6, 1, HEAP_ID_13);
         (*param1)++;
         break;
     case 5:
@@ -164,11 +164,11 @@ int ov22_0225B7FC(OverlayManager *param0, int *param1)
     ov22_022555FC(&v0->unk_14);
     ov22_022550B4();
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
     OverlayManager_FreeData(param0);
-    Heap_Destroy(13);
-    Heap_Destroy(14);
+    Heap_Destroy(HEAP_ID_13);
+    Heap_Destroy(HEAP_ID_14);
 
     return 1;
 }
@@ -188,8 +188,8 @@ static void ov22_0225B85C(UnkStruct_ov22_0225B85C *param0)
     int v2;
     int v3;
 
-    Graphics_LoadPaletteFromOpenNARC(param0->unk_14.unk_5C, 126, 0, 3 * 32, 64, 14);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_14.unk_5C, 125, param0->unk_14.unk_40, 1, 0, 0, 0, 14);
+    Graphics_LoadPaletteFromOpenNARC(param0->unk_14.unk_5C, 126, 0, 3 * 32, 64, HEAP_ID_14);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_14.unk_5C, 125, param0->unk_14.unk_40, 1, 0, 0, 0, HEAP_ID_14);
 
     if (param0->unk_0C == 0) {
         v2 = 128;
@@ -199,7 +199,7 @@ static void ov22_0225B85C(UnkStruct_ov22_0225B85C *param0)
         v3 = 3;
     }
 
-    v0 = Graphics_GetScrnDataFromOpenNARC(param0->unk_14.unk_5C, v2, 0, &v1, 14);
+    v0 = Graphics_GetScrnDataFromOpenNARC(param0->unk_14.unk_5C, v2, 0, &v1, HEAP_ID_14);
 
     Bg_LoadToTilemapRect(param0->unk_14.unk_40, 1, v1->rawData, 0, 0, v1->screenWidth / 8, v1->screenHeight / 8);
     Bg_ChangeTilemapRectPalette(param0->unk_14.unk_40, 1, 0, 0, v1->screenWidth / 8, v1->screenHeight / 8, v3);
@@ -209,9 +209,9 @@ static void ov22_0225B85C(UnkStruct_ov22_0225B85C *param0)
 
 static void ov22_0225B910(UnkStruct_ov22_0225B85C *param0)
 {
-    Graphics_LoadPalette(12, 12, 4, 0, 32, 14);
-    Graphics_LoadTilemapToBgLayer(12, 11, param0->unk_14.unk_40, 4, 0, 0, 1, 14);
-    Graphics_LoadTilesToBgLayer(12, 10, param0->unk_14.unk_40, 4, 0, 0, 1, 14);
+    Graphics_LoadPalette(12, 12, 4, 0, 32, HEAP_ID_14);
+    Graphics_LoadTilemapToBgLayer(12, 11, param0->unk_14.unk_40, 4, 0, 0, 1, HEAP_ID_14);
+    Graphics_LoadTilesToBgLayer(12, 10, param0->unk_14.unk_40, 4, 0, 0, 1, HEAP_ID_14);
 }
 
 static void ov22_0225B964(UnkStruct_ov22_0225B85C *param0)
@@ -223,7 +223,7 @@ static void ov22_0225B964(UnkStruct_ov22_0225B85C *param0)
 
     param0->unk_1FC = ov22_022551E4(&param0->unk_14, 1000, 0, 144, 100, NNS_G2D_VRAM_TYPE_2DMAIN);
 
-    CellActor_SetExplicitPriority(param0->unk_1FC, 1);
+    Sprite_SetExplicitPriority(param0->unk_1FC, 1);
 }
 
 static void ov22_0225BA00(UnkStruct_ov22_0225B85C *param0)
@@ -232,15 +232,15 @@ static void ov22_0225BA00(UnkStruct_ov22_0225B85C *param0)
     ov22_022552D8(&param0->unk_14, 1000);
     ov22_022552EC(&param0->unk_14, 1000);
     ov22_02255300(&param0->unk_14, 1000);
-    CellActor_Delete(param0->unk_1FC);
+    Sprite_Delete(param0->unk_1FC);
 }
 
 static void ov22_0225BA40(UnkStruct_ov22_0225B85C *param0)
 {
-    param0->unk_200 = Window_New(14, 1);
+    param0->unk_200 = Window_New(HEAP_ID_14, 1);
 
     Window_Add(param0->unk_14.unk_40, param0->unk_200, 3, 0, 18, 32, 6, 5, 1);
-    Font_LoadTextPalette(0, 5 * 32, 14);
+    Font_LoadTextPalette(0, 5 * 32, HEAP_ID_14);
     Bg_SetPriority(3, 0);
     Bg_SetPriority(0, 2);
     Bg_SetPriority(1, 1);
@@ -276,19 +276,17 @@ static void ov22_0225BB00(UnkStruct_ov22_0225B85C *param0)
     StringTemplate *v5;
     Strbuf *v6;
     Strbuf *v7;
-    MessageLoader *v8;
-
-    v8 = MessageLoader_Init(0, 26, 385, 13);
+    MessageLoader *v8 = MessageLoader_Init(0, 26, 385, HEAP_ID_13);
     GF_ASSERT(v8);
-    v5 = StringTemplate_Default(13);
+    v5 = StringTemplate_Default(HEAP_ID_13);
 
-    CellActor_SetAnim(param0->unk_1FC, 5);
+    Sprite_SetAnim(param0->unk_1FC, 5);
     v0.x = 48 << FX32_SHIFT;
     v0.y = 144 << FX32_SHIFT;
     v0.z = 0;
-    CellActor_SetPosition(param0->unk_1FC, &v0);
+    Sprite_SetPosition(param0->unk_1FC, &v0);
 
-    v7 = Strbuf_Init(12, 13);
+    v7 = Strbuf_Init(12, HEAP_ID_13);
     sub_0202A1A0(param0->unk_00, v7);
 
     v3 = Font_CalcStrbufWidth(FONT_SYSTEM, v7, 0);
@@ -301,7 +299,7 @@ static void ov22_0225BB00(UnkStruct_ov22_0225B85C *param0)
     v4 = sub_0202A1F4(param0->unk_00);
     StringTemplate_SetCustomMessageWord(v5, 0, v4);
 
-    v7 = Strbuf_Init(200, 13);
+    v7 = Strbuf_Init(200, HEAP_ID_13);
     v6 = MessageLoader_GetNewStrbuf(v8, 45);
     StringTemplate_Format(v5, v7, v6);
 
@@ -329,11 +327,11 @@ static void ov22_0225BC18(UnkStruct_ov22_0225B85C *param0)
     int v8, v9;
     int v10;
 
-    CellActor_SetAnim(param0->unk_1FC, param0->unk_08);
+    Sprite_SetAnim(param0->unk_1FC, param0->unk_08);
 
     v0 = sub_0202A5D0(param0->unk_04);
-    v1 = StringTemplate_Default(13);
-    v2 = Strbuf_Init(200, 13);
+    v1 = StringTemplate_Default(HEAP_ID_13);
+    v2 = Strbuf_Init(200, HEAP_ID_13);
 
     StringTemplate_SetContestTypeName(v1, 0, sub_020958B8(param0->unk_08));
     StringTemplate_SetContestRankName(v1, 1, sub_02095888(v0));
@@ -342,13 +340,13 @@ static void ov22_0225BC18(UnkStruct_ov22_0225B85C *param0)
     sub_0202A524(param0->unk_04, v2);
     StringTemplate_SetStrbuf(v1, 3, v2, v4, 1, GAME_LANGUAGE);
 
-    v5 = Pokemon_New(13);
+    v5 = Pokemon_New(HEAP_ID_13);
     sub_0202A560(param0->unk_04, v5);
     v6 = Pokemon_GetBoxPokemon(v5);
     StringTemplate_SetNickname(v1, 4, v6);
     Heap_FreeToHeap(v5);
 
-    v7 = MessageLoader_Init(0, 26, 385, 13);
+    v7 = MessageLoader_Init(0, 26, 385, HEAP_ID_13);
     GF_ASSERT(v7);
 
     v3 = MessageLoader_GetNewStrbuf(v7, 43);

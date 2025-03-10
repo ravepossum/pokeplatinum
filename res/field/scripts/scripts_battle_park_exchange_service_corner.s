@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/battle_park_exchange_service_corner.h"
 
     .data
 
@@ -24,7 +25,7 @@ _0030:
     FacePlayer
     Message 15
     ScrCmd_035
-    ScrCmd_2D8 0
+    PokeMartFrontier MART_FRONTIER_ID_EXCHANGE_SERVICE_CORNER_UP
     ReleaseAll
     End
 
@@ -34,7 +35,7 @@ _0044:
     FacePlayer
     Message 15
     ScrCmd_035
-    ScrCmd_2D8 1
+    PokeMartFrontier MART_FRONTIER_ID_EXCHANGE_SERVICE_CORNER_DOWN
     ReleaseAll
     End
 

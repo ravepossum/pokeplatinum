@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/snowpoint_city_west_house.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _0033
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -30,8 +31,8 @@ _0033:
     FacePlayer
     GoToIfSet 244, _00DC
     Message 2
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0060
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0060
     GoTo _00D1
 
 _0060:
@@ -40,17 +41,17 @@ _0060:
     WaitFadeScreen
     ScrCmd_2A5
     ScrCmd_193 0x800C
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x800C, 0xFF, _00D1
-    ScrCmd_226 2
+    StartNpcTrade NPC_TRADE_GASPAR_HAUNTER
     SetVar 0x8004, 0x800C
     ScrCmd_198 0x8004, 0x8005
-    ScrCmd_228 0x800C
+    GetNpcTradeRequestedSpecies 0x800C
     GoToIfNe 0x8005, 0x800C, _00C4
     ScrCmd_229 0x8004
-    ScrCmd_22A
+    FinishNpcTrade
     SetFlag 244
     Message 3
     WaitABXPadPress
@@ -59,7 +60,7 @@ _0060:
     End
 
 _00C4:
-    ScrCmd_22A
+    FinishNpcTrade
     Message 4
     WaitABXPadPress
     CloseMessage

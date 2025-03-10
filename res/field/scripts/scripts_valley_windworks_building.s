@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/valley_windworks_building.h"
 
     .data
 
@@ -10,7 +11,7 @@
     ScriptEntry _03A7
     ScriptEntry _03D2
     ScriptEntry _03DA
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0022:
     SetFlag 0x9C3
@@ -18,10 +19,10 @@ _0022:
     End
 
 _0035:
-    ScrCmd_186 5, 21, 5
+    SetObjectEventPos 5, 21, 5
     ScrCmd_189 5, 2
     ScrCmd_188 5, 16
-    ScrCmd_186 2, 18, 4
+    SetObjectEventPos 2, 18, 4
     ScrCmd_189 2, 1
     ScrCmd_188 2, 15
     End
@@ -33,27 +34,27 @@ _005F:
     Message 0
     CloseMessage
     ApplyMovement 0, _0098
-    ApplyMovement 0xFF, _00A0
+    ApplyMovement LOCALID_PLAYER, _00A0
     WaitMovement
-    ScrCmd_065 0
+    RemoveObject 0
     SetVar 0x40CF, 1
     ReleaseAll
     End
 
     .balign 4, 0
 _0090:
-    MoveAction_04B
+    MoveAction_075
     EndMovement
 
     .balign 4, 0
 _0098:
-    MoveAction_012 9
+    MoveAction_018 9
     EndMovement
 
     .balign 4, 0
 _00A0:
-    MoveAction_03F
-    MoveAction_022
+    MoveAction_063
+    MoveAction_034
     EndMovement
 
 _00AC:
@@ -88,9 +89,9 @@ _00F5:
 _0107:
     Message 2
     CloseMessage
-    StartTrainerBattle trainer_commander_mars_valley_windworks
+    StartTrainerBattle TRAINER_COMMANDER_MARS_VALLEY_WINDWORKS
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _02B9
+    GoToIfEq 0x800C, FALSE, _02B9
     Message 3
     CloseMessage
     ApplyMovement 7, _0374
@@ -106,11 +107,11 @@ _0107:
     CloseMessage
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
-    ScrCmd_065 1
-    ScrCmd_065 7
-    ScrCmd_065 6
-    ScrCmd_065 3
-    ScrCmd_065 4
+    RemoveObject 1
+    RemoveObject 7
+    RemoveObject 6
+    RemoveObject 3
+    RemoveObject 4
     SetFlag 0x1A2
     ClearFlag 0x17F
     SetVar 0x4089, 2
@@ -140,7 +141,7 @@ _01DB:
     SetFlag 0x1F8
     ClearFlag 0x1F9
     ScrCmd_188 5, 16
-    ScrCmd_064 5
+    AddObject 5
     ScrCmd_062 5
     GetPlayerMapPos 0x8004, 0x8005
     GoToIfEq 0x8005, 6, _0218
@@ -194,94 +195,94 @@ _0297:
     End
 
 _02B9:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
     .balign 4, 0
 _02C0:
-    MoveAction_013 4
-    MoveAction_010
-    MoveAction_013 6
-    MoveAction_024
+    MoveAction_019 4
+    MoveAction_016
+    MoveAction_019 6
+    MoveAction_036
     EndMovement
 
     .balign 4, 0
 _02D4:
-    MoveAction_013 4
-    MoveAction_010 2
-    MoveAction_013 6
-    MoveAction_025
+    MoveAction_019 4
+    MoveAction_016 2
+    MoveAction_019 6
+    MoveAction_037
     EndMovement
 
     .balign 4, 0
 _02E8:
-    MoveAction_00D 3
-    MoveAction_00E
+    MoveAction_013 3
+    MoveAction_014
     EndMovement
 
     .balign 4, 0
 _02F4:
-    MoveAction_00D 4
-    MoveAction_00E
+    MoveAction_013 4
+    MoveAction_014
     EndMovement
 
     .balign 4, 0
 _0300:
-    MoveAction_03F 6
-    MoveAction_021
+    MoveAction_063 6
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _030C:
-    MoveAction_03F 6
-    MoveAction_020
+    MoveAction_063 6
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0318:
     MoveAction_003
-    MoveAction_03F 2
+    MoveAction_063 2
     MoveAction_002
-    MoveAction_03F 2
+    MoveAction_063 2
     MoveAction_001
     EndMovement
 
     .balign 4, 0
 _0330:
     MoveAction_003
-    MoveAction_03F 2
+    MoveAction_063 2
     MoveAction_002
-    MoveAction_03F 2
+    MoveAction_063 2
     MoveAction_000
     EndMovement
 
     .balign 4, 0
 _0348:
-    MoveAction_04B
-    MoveAction_00C
-    MoveAction_022
+    MoveAction_075
+    MoveAction_012
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0358:
-    MoveAction_04B
-    MoveAction_022
+    MoveAction_075
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0364:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _036C:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0374:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
 _037C:

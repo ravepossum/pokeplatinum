@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/canalave_city_gym.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _0016
     ScriptEntry _0126
     ScriptEntry _015A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     ScrCmd_173
@@ -18,12 +19,12 @@ _0016:
     FacePlayer
     CheckBadgeAcquired BADGE_ID_MINE, 0x800C
     GoToIfEq 0x800C, 1, _0107
-    ScrCmd_1CD 9, 35, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_GYM_WAS_TOO_TOUGH, 35, 0, 0, 0
     Message 0
     CloseMessage
-    StartTrainerBattle trainer_leader_byron
+    StartTrainerBattle TRAINER_LEADER_BYRON
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _0120
+    GoToIfEq 0x800C, FALSE, _0120
     Message 1
     BufferPlayerName 0
     Message 2
@@ -31,14 +32,14 @@ _0016:
     WaitSound
     GiveBadge BADGE_ID_MINE
     ScrCmd_260 23
-    SetTrainerFlag trainer_black_belt_david
-    SetTrainerFlag trainer_worker_jackson
-    SetTrainerFlag trainer_worker_gary
-    SetTrainerFlag trainer_ace_trainer_cesar
-    SetTrainerFlag trainer_ace_trainer_breanna
-    SetTrainerFlag trainer_black_belt_ricky
-    SetTrainerFlag trainer_worker_gerardo
-    ScrCmd_1CD 10, 35, trainer_leader_byron, 0, 0
+    SetTrainerFlag TRAINER_BLACK_BELT_DAVID
+    SetTrainerFlag TRAINER_WORKER_JACKSON
+    SetTrainerFlag TRAINER_WORKER_GARY
+    SetTrainerFlag TRAINER_ACE_TRAINER_CESAR
+    SetTrainerFlag TRAINER_ACE_TRAINER_BREANNA
+    SetTrainerFlag TRAINER_BLACK_BELT_RICKY
+    SetTrainerFlag TRAINER_WORKER_GERARDO
+    CreateJournalEvent LOCATION_EVENT_BEAT_GYM_LEADER, 35, TRAINER_LEADER_BYRON, 0, 0
     ClearFlag 0x1B2
     ClearFlag 0x2CC
     ClearFlag 0x1B8
@@ -80,7 +81,7 @@ _0107:
     End
 
 _0120:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 

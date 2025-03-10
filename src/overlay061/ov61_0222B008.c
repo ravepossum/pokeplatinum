@@ -4,8 +4,8 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "struct_decls/pc_boxes_decl.h"
 #include "struct_decls/struct_02029C68_decl.h"
-#include "struct_decls/struct_020797DC_decl.h"
 #include "struct_defs/struct_02030A80.h"
 
 #include "overlay004/ov4_021D0D80.h"
@@ -26,7 +26,6 @@
 #include "overlay062/struct_ov62_0223D518_sub1_sub1.h"
 #include "overlay062/struct_ov62_02241130.h"
 
-#include "core_sys.h"
 #include "gds.h"
 #include "heap.h"
 #include "message.h"
@@ -34,6 +33,7 @@
 #include "save_player.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "unk_0202F1D4.h"
 #include "unk_020366A0.h"
 
@@ -49,7 +49,7 @@ static int ov61_0222BBE8(UnkStruct_ov62_022349A8 *param0);
 static void ov61_0222BB54(UnkStruct_ov62_022349A8 *param0, Strbuf *param1);
 static void ov61_0222BB60(UnkStruct_ov62_022349A8 *param0, int param1, int param2);
 static int ov61_0222B960(UnkStruct_ov62_022349A8 *param0);
-static void *ov61_0222BBF0(int param0);
+static void *ov61_0222BBF0(int heapID);
 static void ov61_0222BC40(void);
 static BOOL ov61_0222B920(void *param0, void *param1);
 static BOOL ov61_0222B924(void *param0, void *param1);
@@ -155,7 +155,7 @@ static int ov61_0222B168(UnkStruct_ov62_022349A8 *param0, UnkStruct_ov61_0222B13
 
 static int ov61_0222B190(UnkStruct_ov62_022349A8 *param0, UnkStruct_ov61_0222B138 *param1)
 {
-    if ((gCoreSys.pressedKeys & PAD_BUTTON_A) || (gCoreSys.pressedKeys & PAD_BUTTON_B)) {
+    if ((gSystem.pressedKeys & PAD_BUTTON_A) || (gSystem.pressedKeys & PAD_BUTTON_B)) {
         ov61_0222BB54(param0, NULL);
         return 1;
     }
@@ -778,14 +778,14 @@ static int ov61_0222BBE8(UnkStruct_ov62_022349A8 *param0)
 
 static OSHeapHandle Unk_ov61_0222E760;
 
-static void *ov61_0222BBF0(int param0)
+static void *ov61_0222BBF0(int heapID)
 {
     void *v0;
     void *v1;
     void *v2;
     int v3 = 0x2000;
 
-    v0 = Heap_AllocFromHeap(param0, v3);
+    v0 = Heap_AllocFromHeap(heapID, v3);
     v2 = v0;
     v1 = (void *)((u32)v0 + v3);
     v0 = OS_InitAlloc(OS_ARENA_MAIN, v0, v1, 1);

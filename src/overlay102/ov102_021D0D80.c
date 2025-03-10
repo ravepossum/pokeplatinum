@@ -7,7 +7,6 @@
 #include "struct_defs/struct_02099F80.h"
 
 #include "bg_window.h"
-#include "core_sys.h"
 #include "font.h"
 #include "graphics.h"
 #include "gx_layers.h"
@@ -18,13 +17,13 @@
 #include "savedata.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "trainer_info.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
 
 typedef struct {
-    int unk_00;
+    int heapID;
     int unk_04;
     SaveData *unk_08;
     TrainerInfo *unk_0C;
@@ -54,13 +53,13 @@ static void ov102_021D1420(UnkStruct_ov102_021D0F8C *param0);
 int ov102_021D0D80(OverlayManager *param0, int *param1)
 {
     UnkStruct_ov102_021D0F8C *v0;
-    int v1 = 84;
+    int heapID = HEAP_ID_84;
 
-    Heap_Create(3, v1, 0x20000);
+    Heap_Create(HEAP_ID_APPLICATION, heapID, 0x20000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov102_021D0F8C), v1);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov102_021D0F8C), heapID);
     memset(v0, 0, sizeof(UnkStruct_ov102_021D0F8C));
-    v0->unk_00 = v1;
+    v0->heapID = heapID;
 
     {
         UnkStruct_0203E53C *v2 = (UnkStruct_0203E53C *)OverlayManager_Args(param0);
@@ -72,7 +71,7 @@ int ov102_021D0D80(OverlayManager *param0, int *param1)
 
     sub_0200F344(0, 0x0);
     sub_0200F344(1, 0x0);
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     SetHBlankCallback(NULL, NULL);
     GXLayers_DisableEngineALayers();
     GXLayers_DisableEngineBLayers();
@@ -85,7 +84,7 @@ int ov102_021D0D80(OverlayManager *param0, int *param1)
     ov102_021D0F8C(v0);
     ov102_021D1174(v0);
 
-    SetMainCallback(ov102_021D0F80, (void *)v0);
+    SetVBlankCallback(ov102_021D0F80, (void *)v0);
     GXLayers_TurnBothDispOn();
 
     return 1;
@@ -114,7 +113,7 @@ int ov102_021D0E2C(OverlayManager *param0, int *param1)
         ;
         Bg_ToggleLayer(7, 1);
         ;
-        StartScreenTransition(0, 1, 1, 0x0, 6, 1, v0->unk_00);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, v0->heapID);
         *param1 = 1;
         break;
     case 1:
@@ -141,8 +140,8 @@ int ov102_021D0E2C(OverlayManager *param0, int *param1)
         }
         break;
     case 4:
-        if (((gCoreSys.pressedKeys & PAD_BUTTON_A) == PAD_BUTTON_A) || ((gCoreSys.pressedKeys & PAD_BUTTON_B) == PAD_BUTTON_B) || (gCoreSys.touchPressed)) {
-            StartScreenTransition(0, 0, 0, 0x0, 6, 1, v0->unk_00);
+        if (((gSystem.pressedKeys & PAD_BUTTON_A) == PAD_BUTTON_A) || ((gSystem.pressedKeys & PAD_BUTTON_B) == PAD_BUTTON_B) || (gSystem.touchPressed)) {
+            StartScreenTransition(0, 0, 0, 0x0, 6, 1, v0->heapID);
             *param1 = 5;
         }
         break;
@@ -159,14 +158,14 @@ int ov102_021D0E2C(OverlayManager *param0, int *param1)
 int ov102_021D0F50(OverlayManager *param0, int *param1)
 {
     UnkStruct_ov102_021D0F8C *v0 = OverlayManager_Data(param0);
-    int v1 = v0->unk_00;
+    int heapID = v0->heapID;
 
     ov102_021D1204(v0);
     ov102_021D10F8(v0);
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     OverlayManager_FreeData(param0);
-    Heap_Destroy(v1);
+    Heap_Destroy(heapID);
 
     return 1;
 }
@@ -199,7 +198,7 @@ static void ov102_021D0F8C(UnkStruct_ov102_021D0F8C *param0)
     }
 
     {
-        param0->unk_10 = BgConfig_New(param0->unk_00);
+        param0->unk_10 = BgConfig_New(param0->heapID);
     }
 
     {
@@ -311,8 +310,8 @@ static void ov102_021D1174(UnkStruct_ov102_021D0F8C *param0)
 
     Text_ResetAllPrinters();
 
-    param0->unk_34 = MessageLoader_Init(1, 26, 1, param0->unk_00);
-    param0->unk_38 = StringTemplate_Default(param0->unk_00);
+    param0->unk_34 = MessageLoader_Init(1, 26, 1, param0->heapID);
+    param0->unk_38 = StringTemplate_Default(param0->heapID);
 
     v0.bgLayer = 0;
 
@@ -368,36 +367,36 @@ static void ov102_021D1274(UnkStruct_ov102_021D0F8C *param0)
         v5 = 5;
     }
 
-    Graphics_LoadTilemapToBgLayer(132, v0, param0->unk_10, 3, 0, 0, 0, param0->unk_00);
-    Graphics_LoadTilesToBgLayer(132, v1, param0->unk_10, 3, 0, 0, 0, param0->unk_00);
-    Graphics_LoadPalette(132, v2, 0, 0 * (2 * 16), (2 * 16), param0->unk_00);
-    Graphics_LoadTilemapToBgLayer(132, v0, param0->unk_10, 7, 0, 0, 0, param0->unk_00);
-    Graphics_LoadTilesToBgLayer(132, v1, param0->unk_10, 7, 0, 0, 0, param0->unk_00);
-    Graphics_LoadPalette(132, v2, 4, 0 * (2 * 16), (2 * 16), param0->unk_00);
+    Graphics_LoadTilemapToBgLayer(132, v0, param0->unk_10, 3, 0, 0, 0, param0->heapID);
+    Graphics_LoadTilesToBgLayer(132, v1, param0->unk_10, 3, 0, 0, 0, param0->heapID);
+    Graphics_LoadPalette(132, v2, 0, 0 * (2 * 16), (2 * 16), param0->heapID);
+    Graphics_LoadTilemapToBgLayer(132, v0, param0->unk_10, 7, 0, 0, 0, param0->heapID);
+    Graphics_LoadTilesToBgLayer(132, v1, param0->unk_10, 7, 0, 0, 0, param0->heapID);
+    Graphics_LoadPalette(132, v2, 4, 0 * (2 * 16), (2 * 16), param0->heapID);
 
-    Graphics_LoadTilemapToBgLayer(132, v3, param0->unk_10, 1, 0, 0, 0, param0->unk_00);
+    Graphics_LoadTilemapToBgLayer(132, v3, param0->unk_10, 1, 0, 0, 0, param0->heapID);
     Bg_ChangeTilemapRectPalette(param0->unk_10, 1, 0, 0, 32, 24, 1);
     Bg_CopyTilemapBufferToVRAM(param0->unk_10, 1);
-    Graphics_LoadTilesToBgLayer(132, v4, param0->unk_10, 1, 0, 0, 0, param0->unk_00);
-    Graphics_LoadPalette(132, v5, 0, 1 * (2 * 16), (2 * 16), param0->unk_00);
-    Graphics_LoadTilemapToBgLayer(132, v3, param0->unk_10, 5, 0, 0, 0, param0->unk_00);
+    Graphics_LoadTilesToBgLayer(132, v4, param0->unk_10, 1, 0, 0, 0, param0->heapID);
+    Graphics_LoadPalette(132, v5, 0, 1 * (2 * 16), (2 * 16), param0->heapID);
+    Graphics_LoadTilemapToBgLayer(132, v3, param0->unk_10, 5, 0, 0, 0, param0->heapID);
     Bg_ChangeTilemapRectPalette(param0->unk_10, 5, 0, 0, 32, 24, 1);
     Bg_CopyTilemapBufferToVRAM(param0->unk_10, 5);
-    Graphics_LoadTilesToBgLayer(132, v4, param0->unk_10, 5, 0, 0, 0, param0->unk_00);
-    Graphics_LoadPalette(132, v5, 4, 1 * (2 * 16), (2 * 16), param0->unk_00);
+    Graphics_LoadTilesToBgLayer(132, v4, param0->unk_10, 5, 0, 0, 0, param0->heapID);
+    Graphics_LoadPalette(132, v5, 4, 1 * (2 * 16), (2 * 16), param0->heapID);
 
-    Bg_ClearTilesRange(0, 32, 0, param0->unk_00);
-    Bg_ClearTilesRange(4, 32, 0, param0->unk_00);
-    Font_LoadTextPalette(0, 2 * (2 * 16), param0->unk_00);
-    Font_LoadTextPalette(4, 2 * (2 * 16), param0->unk_00);
+    Bg_ClearTilesRange(0, 32, 0, param0->heapID);
+    Bg_ClearTilesRange(4, 32, 0, param0->heapID);
+    Font_LoadTextPalette(0, 2 * (2 * 16), param0->heapID);
+    Font_LoadTextPalette(4, 2 * (2 * 16), param0->heapID);
 }
 
 static void ov102_021D1420(UnkStruct_ov102_021D0F8C *param0)
 {
-    Strbuf *v0 = Strbuf_Init(0x200, param0->unk_00);
+    Strbuf *v0 = Strbuf_Init(0x200, param0->heapID);
 
     {
-        Strbuf *v1 = Strbuf_Init(0x200, param0->unk_00);
+        Strbuf *v1 = Strbuf_Init(0x200, param0->heapID);
 
         MessageLoader_GetStrbuf(param0->unk_34, 0, v1);
         StringTemplate_SetPlayerName(param0->unk_38, 0, param0->unk_0C);

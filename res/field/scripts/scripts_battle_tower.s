@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/battle_tower.h"
 
     .data
 
@@ -26,7 +27,7 @@
     ScriptEntry _0062
     ScriptEntry _00F5
     ScriptEntry _13E0
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0062:
     CallIfEq 0x40D8, 1, _00F1
@@ -297,7 +298,7 @@ _04BE:
     WaitFadeScreen
     CloseMessage
     ScrCmd_1DD 30, 0, 0
-    ScrCmd_0A1
+    ReturnToField
     ScrCmd_1DD 31, 0, 0x800C
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
@@ -403,13 +404,13 @@ _06A0:
 
 _06AE:
     ApplyMovement 0x4002, _1248
-    ApplyMovement 0xFF, _1260
+    ApplyMovement LOCALID_PLAYER, _1260
     WaitMovement
     ScrCmd_168 0, 0, 0x4003, 2, 77
     ScrCmd_16B 77
     ScrCmd_169 77
     ApplyMovement 0x4002, _1254
-    ApplyMovement 0xFF, _126C
+    ApplyMovement LOCALID_PLAYER, _126C
     WaitMovement
     ScrCmd_16C 77
     ScrCmd_169 77
@@ -445,7 +446,7 @@ _0734:
 
 _0746:
     IncrementGameRecord RECORD_UNK_058
-    ScrCmd_1CD 36, 0, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_BATTLE_TOWER, 0, 0, 0, 0
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     Warp MAP_HEADER_BATTLE_TOWER_ELEVATOR, 0, 3, 6, 0
@@ -561,8 +562,8 @@ _08FF:
 
 _0922:
     Message 61
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0967
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0967
     Call _049C
     GoToIfEq 0x800C, 0, _0784
     Call _096F
@@ -587,7 +588,7 @@ _097F:
     ScrCmd_0B3 0x4000
     ScrCmd_1DD 16, 0x4001, 0x4000
     SetVar 0x4001, 0x4000
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     SetVar 0x800C, 0x4001
@@ -609,11 +610,11 @@ _09B3:
 
 _09FB:
     Message 47
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _05EC
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _05EC
     Message 48
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _09FB
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _09FB
     SetVar 0x40D8, 2
     ScrCmd_1DD 39, 0, 0
     ScrCmd_1DC
@@ -653,7 +654,7 @@ _0AB5:
     End
 
 _0AC3:
-    ApplyMovement 0xFF, _1278
+    ApplyMovement LOCALID_PLAYER, _1278
     WaitMovement
     Return
 
@@ -689,8 +690,8 @@ _0B2B:
 
 _0B50:
     Message 26
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0B80
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0B80
     GoTo _0B6C
     End
 
@@ -755,8 +756,8 @@ _0C70:
 
 _0CB4:
     Message 112
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0C70
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0C70
     CloseMessage
     ScrCmd_0F2 16, 0, 0, 0x800C
     GoToIfEq 0x800C, 1, _0CF6
@@ -775,8 +776,8 @@ _0CFE:
 
 _0D08:
     Message 112
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0C70
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0C70
     CloseMessage
     ScrCmd_0F3 16, 0, 0, 0x800C
     GoToIfEq 0x800C, 1, _0D4A
@@ -1082,8 +1083,8 @@ _1205:
     Message 56
     Call _0734
     Message 57
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0784
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0784
     Call _096F
     GoToIfNe 0x800C, 0, _0784
     Message 60
@@ -1096,26 +1097,26 @@ _1205:
 
     .balign 4, 0
 _1248:
-    MoveAction_03E
-    MoveAction_00C 2
+    MoveAction_062
+    MoveAction_012 2
     EndMovement
 
     .balign 4, 0
 _1254:
-    MoveAction_00C
-    MoveAction_045
+    MoveAction_012
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _1260:
-    MoveAction_03E
-    MoveAction_00C 2
+    MoveAction_062
+    MoveAction_012 2
     EndMovement
 
     .balign 4, 0
 _126C:
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
@@ -1168,7 +1169,7 @@ _1304:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_1D9 0x8000, 0x8001
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     ReleaseAll
@@ -1252,7 +1253,7 @@ _13AF:
     LockAll
     FacePlayer
     WaitFanfare SEQ_SE_CONFIRM
-    ScrCmd_04C 25, 0
+    PlayCry SPECIES_PIKACHU
     Message 81
     ScrCmd_04D
     WaitABXPadPress
@@ -1282,14 +1283,14 @@ _140A:
     CloseMessage
     ScrCmd_191
     ScrCmd_193 0x800C
-    ScrCmd_0A1
+    ReturnToField
     SetVar 0x8000, 0x800C
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x8000, 0xFF, _1549
     ScrCmd_198 0x8000, 0x8004
     GoToIfEq 0x8004, 0, _149C
-    ScrCmd_2EE 0x8000, 0x8001, 0x8002, 0x8003
+    JudgeStats 0x8000, 0x8001, 0x8002, 0x8003
     GoToIfLe 0x8001, 90, _14E9
     GoToIfLe 0x8001, 120, _14F4
     GoToIfLe 0x8001, 150, _14FF

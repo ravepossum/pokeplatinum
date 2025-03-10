@@ -11,22 +11,22 @@
 #include "overlay021/struct_ov21_021D4CB8.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
+#include "char_transfer.h"
 #include "font.h"
 #include "heap.h"
 #include "message.h"
+#include "sprite.h"
 #include "strbuf.h"
 #include "text.h"
 #include "unk_02012744.h"
-#include "unk_0201E86C.h"
 
 typedef struct UnkStruct_ov21_021D4C0C_t {
     UnkStruct_02012744 *unk_00;
-    CellActorCollection *unk_04;
+    SpriteList *unk_04;
     BgConfig *unk_08;
     UnkStruct_ov21_021D4CA0 *unk_0C;
     int unk_10;
-    int unk_14;
+    int heapId;
 } UnkStruct_ov21_021D4C0C;
 
 static BOOL ov21_021D4EA4(UnkStruct_ov21_021D4CA0 *param0);
@@ -34,15 +34,13 @@ static UnkStruct_ov21_021D4CA0 *ov21_021D4EB4(UnkStruct_ov21_021D4C0C *param0);
 
 UnkStruct_ov21_021D4C0C *ov21_021D4C0C(const UnkStruct_ov21_021D1FA4 *param0)
 {
-    UnkStruct_ov21_021D4C0C *v0;
-
-    v0 = Heap_AllocFromHeap(param0->unk_0C, sizeof(UnkStruct_ov21_021D4C0C));
+    UnkStruct_ov21_021D4C0C *v0 = Heap_AllocFromHeap(param0->heapId, sizeof(UnkStruct_ov21_021D4C0C));
 
     GF_ASSERT(v0);
     memset(v0, 0, sizeof(UnkStruct_ov21_021D4C0C));
 
-    v0->unk_00 = sub_02012744(param0->unk_08, param0->unk_0C);
-    v0->unk_0C = Heap_AllocFromHeap(param0->unk_0C, sizeof(UnkStruct_ov21_021D4CA0) * param0->unk_08);
+    v0->unk_00 = sub_02012744(param0->unk_08, param0->heapId);
+    v0->unk_0C = Heap_AllocFromHeap(param0->heapId, sizeof(UnkStruct_ov21_021D4CA0) * param0->unk_08);
 
     GF_ASSERT(v0->unk_0C);
     memset(v0->unk_0C, 0, sizeof(UnkStruct_ov21_021D4CA0) * param0->unk_08);
@@ -50,7 +48,7 @@ UnkStruct_ov21_021D4C0C *ov21_021D4C0C(const UnkStruct_ov21_021D1FA4 *param0)
     v0->unk_10 = param0->unk_08;
     v0->unk_04 = param0->unk_00;
     v0->unk_08 = param0->unk_04;
-    v0->unk_14 = param0->unk_0C;
+    v0->heapId = param0->heapId;
 
     return v0;
 }
@@ -70,28 +68,24 @@ void ov21_021D4C6C(UnkStruct_ov21_021D4C0C *param0)
 
 UnkStruct_ov21_021D4CA0 *ov21_021D4CA0(const UnkStruct_ov21_021D4CB8 *param0)
 {
-    int v0;
-
-    v0 = sub_02012898(param0->unk_04, param0->unk_20, param0->heapID);
+    int v0 = sub_02012898(param0->unk_04, param0->unk_20, param0->heapID);
     return ov21_021D4CB8(param0, v0);
 }
 
 UnkStruct_ov21_021D4CA0 *ov21_021D4CB8(const UnkStruct_ov21_021D4CB8 *param0, int param1)
 {
     UnkStruct_020127E8 v0;
-    UnkStruct_ov21_021D4CA0 *v1;
-
-    v1 = ov21_021D4EB4(param0->unk_00);
+    UnkStruct_ov21_021D4CA0 *v1 = ov21_021D4EB4(param0->unk_00);
 
     GF_ASSERT(v1);
-    sub_0201ED94(param1, 1, param0->unk_20, &v1->unk_04);
+    CharTransfer_AllocRange(param1, 1, param0->unk_20, &v1->unk_04);
 
     v0.unk_00 = param0->unk_00->unk_00;
     v0.unk_04 = param0->unk_04;
     v0.unk_08 = param0->unk_00->unk_04;
     v0.unk_0C = param0->unk_08;
     v0.unk_10 = param0->unk_0C;
-    v0.unk_14 = v1->unk_04.unk_04;
+    v0.unk_14 = v1->unk_04.offset;
     v0.unk_18 = param0->unk_10;
     v0.unk_1C = param0->unk_14;
     v0.unk_20 = param0->unk_18;
@@ -107,7 +101,7 @@ UnkStruct_ov21_021D4CA0 *ov21_021D4CB8(const UnkStruct_ov21_021D4CB8 *param0, in
 void ov21_021D4D1C(UnkStruct_ov21_021D4CA0 *param0)
 {
     sub_02012870(param0->unk_00);
-    sub_0201EE28(&param0->unk_04);
+    CharTransfer_ClearRange(&param0->unk_04);
 
     memset(param0, 0, sizeof(UnkStruct_ov21_021D4CA0));
 }
@@ -125,9 +119,7 @@ void ov21_021D4D3C(UnkStruct_ov21_021D4C0C *param0)
 
 Window *ov21_021D4D6C(UnkStruct_ov21_021D4C0C *param0, int param1, int param2)
 {
-    Window *v0;
-
-    v0 = Window_New(param0->unk_14, 1);
+    Window *v0 = Window_New(param0->heapId, 1);
 
     Window_Init(v0);
     Window_AddToTopLeftCorner(param0->unk_08, v0, param1, param2, 0, 0);
@@ -140,23 +132,23 @@ void ov21_021D4DA0(Window *param0)
     Windows_Delete(param0, 1);
 }
 
-u32 ov21_021D4DAC(UnkStruct_ov21_021D4C0C *param0, Window *param1, u32 param2, u32 param3, int param4, int param5)
+u32 Pokedex_DisplayMessage(UnkStruct_ov21_021D4C0C *param0, Window *window, u32 bankID, u32 entryID, int xOffset, int yOffset)
 {
-    MessageLoader *v0;
-    Strbuf *v1;
-    u32 v2;
+    MessageLoader *messageLoader;
+    Strbuf *strbuf;
+    u32 strWidth;
 
-    v0 = MessageLoader_Init(0, 26, param2, param0->unk_14);
-    GF_ASSERT(v0);
+    messageLoader = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, bankID, param0->heapId);
+    GF_ASSERT(messageLoader);
 
-    v1 = MessageLoader_GetNewStrbuf(v0, param3);
-    Text_AddPrinterWithParamsAndColor(param1, FONT_SUBSCREEN, v1, param4, param5, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(3, 2, 1), NULL);
-    v2 = Font_CalcStrbufWidth(FONT_SUBSCREEN, v1, 0);
+    strbuf = MessageLoader_GetNewStrbuf(messageLoader, entryID);
+    Text_AddPrinterWithParamsAndColor(window, FONT_SUBSCREEN, strbuf, xOffset, yOffset, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(3, 2, 1), NULL);
+    strWidth = Font_CalcStrbufWidth(FONT_SUBSCREEN, strbuf, 0);
 
-    Strbuf_Free(v1);
-    MessageLoader_Free(v0);
+    Strbuf_Free(strbuf);
+    MessageLoader_Free(messageLoader);
 
-    return v2;
+    return strWidth;
 }
 
 void ov21_021D4E10(UnkStruct_ov21_021D4C0C *param0, Window *param1, u32 param2, u32 param3)
@@ -166,7 +158,7 @@ void ov21_021D4E10(UnkStruct_ov21_021D4C0C *param0, Window *param1, u32 param2, 
     int v2;
     int v3;
 
-    v0 = MessageLoader_Init(0, 26, param2, param0->unk_14);
+    v0 = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, param2, param0->heapId);
     GF_ASSERT(v0);
 
     v1 = MessageLoader_GetNewStrbuf(v0, param3);

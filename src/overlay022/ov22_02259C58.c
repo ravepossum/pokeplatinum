@@ -16,20 +16,20 @@
 #include "overlay022/struct_ov22_0225A154.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
+#include "char_transfer.h"
 #include "error_handling.h"
 #include "font.h"
 #include "message.h"
+#include "pltt_transfer.h"
+#include "sprite.h"
 #include "sprite_resource.h"
+#include "sprite_transfer.h"
+#include "sprite_util.h"
 #include "strbuf.h"
 #include "text.h"
 #include "touch_screen.h"
 #include "unk_02005474.h"
-#include "unk_020093B4.h"
-#include "unk_0200A328.h"
 #include "unk_02012744.h"
-#include "unk_0201E86C.h"
-#include "unk_0201F834.h"
 #include "unk_02023FCC.h"
 
 static void ov22_02259D94(UnkStruct_ov22_02259C58 *param0, void *param1);
@@ -52,7 +52,7 @@ void ov22_02259C58(UnkStruct_ov22_02259C58 *param0, UnkStruct_ov22_02259C58_1 *p
     GF_ASSERT(param0);
     GF_ASSERT(param1);
 
-    param0->unk_00 = CellActorCollection_AddEx(param1->unk_00);
+    param0->unk_00 = SpriteList_AddAffine(param1->unk_00);
     GF_ASSERT(param0->unk_00);
 
     param0->unk_04 = param1->unk_0C;
@@ -73,7 +73,7 @@ void ov22_02259C9C(UnkStruct_ov22_0225A154 *param0, UnkStruct_ov22_02259C9C *par
 
     v0.unk_00 = param1->unk_14;
     v0.unk_04 = param1->unk_10;
-    v0.unk_08 = param1->unk_00.unk_00->collection;
+    v0.unk_08 = param1->unk_00.unk_00->list;
     v0.unk_0C = param1->unk_18;
     v0.unk_10 = param0->unk_00.unk_00;
     v0.unk_14 = param1->unk_24;
@@ -89,7 +89,7 @@ void ov22_02259C9C(UnkStruct_ov22_0225A154 *param0, UnkStruct_ov22_02259C9C *par
 
 void ov22_02259CE8(UnkStruct_ov22_02259C58 *param0)
 {
-    CellActor_Delete(param0->unk_00);
+    Sprite_Delete(param0->unk_00);
     memset(param0, 0, sizeof(UnkStruct_ov22_02259C58));
 }
 
@@ -147,24 +147,24 @@ static void ov22_02259D94(UnkStruct_ov22_02259C58 *param0, void *param1)
 
 void ov22_02259D98(UnkStruct_ov22_02259C58 *param0)
 {
-    SpriteActor_SetAnimFrame(param0->unk_00, 2);
+    Sprite_SetAnimFrame(param0->unk_00, 2);
 }
 
 void ov22_02259DA4(UnkStruct_ov22_02259C58 *param0)
 {
-    SpriteActor_SetAnimFrame(param0->unk_00, 0);
+    Sprite_SetAnimFrame(param0->unk_00, 0);
 }
 
 void ov22_02259DB0(UnkStruct_ov22_02259C58 *param0)
 {
-    SpriteActor_SetAnimFrame(param0->unk_00, 1);
+    Sprite_SetAnimFrame(param0->unk_00, 1);
 }
 
 void ov22_02259DBC(UnkStruct_ov22_02259D2C *param0, UnkStruct_ov22_0225A0E4 *param1)
 {
     Window *v0;
 
-    param0->unk_64 = sub_02012744(1, 13);
+    param0->unk_64 = sub_02012744(1, HEAP_ID_13);
 
     ov22_0225A218(param1);
 
@@ -180,7 +180,7 @@ void ov22_02259DBC(UnkStruct_ov22_02259D2C *param0, UnkStruct_ov22_0225A0E4 *par
     ov22_0225A0E4(&param0->unk_00[3], 3, param1, 136, 144, 40, 42);
     ov22_0225A200(param0->unk_6C, 3, 136, 144 + 12, 40, 42 - 8);
 
-    Font_InitManager(FONT_SUBSCREEN, 14);
+    Font_InitManager(FONT_SUBSCREEN, HEAP_ID_14);
 
     v0 = ov22_0225A348(param1, 26, 385, 0, 72 / 8, 42 / 8);
 
@@ -195,7 +195,7 @@ void ov22_02259DBC(UnkStruct_ov22_02259D2C *param0, UnkStruct_ov22_0225A0E4 *par
     ov22_0225A2A8(param1);
     ov22_02259D98(&param0->unk_00[2]);
 
-    param0->unk_68 = sub_02023FCC(param0->unk_6C, 5, ov22_0225A02C, param0, 13);
+    param0->unk_68 = sub_02023FCC(param0->unk_6C, 5, ov22_0225A02C, param0, HEAP_ID_13);
 }
 
 void ov22_02259F24(UnkStruct_ov22_02259D2C *param0, UnkStruct_ov22_0225A0E4 *param1)
@@ -205,17 +205,17 @@ void ov22_02259F24(UnkStruct_ov22_02259D2C *param0, UnkStruct_ov22_0225A0E4 *par
     for (v0 = 0; v0 < 5; v0++) {
         ov22_022552EC(param1, v0);
         ov22_02255300(param1, v0);
-        sub_0201EB50(v0);
+        CharTransfer_ResetTask(v0);
     }
 
-    sub_0201F9F0(0);
-    sub_0201F9F0(1);
+    PlttTransfer_ResetTask(0);
+    PlttTransfer_ResetTask(1);
 
     for (v0 = 0; v0 < 4; v0++) {
         ov22_02259CE8(&param0->unk_00[v0]);
     }
 
-    sub_0201EE28(&param0->unk_40.unk_14);
+    CharTransfer_ClearRange(&param0->unk_40.unk_14);
     ov22_02259D00(&param0->unk_40);
     sub_020127BC(param0->unk_64);
     sub_02024034(param0->unk_68);
@@ -297,12 +297,12 @@ static void ov22_0225A02C(u32 param0, u32 param1, void *param2)
 static void ov22_0225A0E4(UnkStruct_ov22_02259C58 *param0, int param1, UnkStruct_ov22_0225A0E4 *param2, int param3, int param4, int param5, int param6)
 {
     UnkStruct_ov22_02259C58_1 v0;
-    CellActorResourceData v1;
-    CellActorInitParamsEx v2;
+    SpriteResourcesHeader v1;
+    AffineSpriteListTemplate v2;
 
-    sub_020093B4(&v1, param1, 0, param1, param1, 0xFFFFFFFF, 0xFFFFFFFF, 0, 0, param2->unk_48[0], param2->unk_48[1], param2->unk_48[2], param2->unk_48[3], NULL, NULL);
+    SpriteResourcesHeader_Init(&v1, param1, 0, param1, param1, 0xFFFFFFFF, 0xFFFFFFFF, 0, 0, param2->unk_48[0], param2->unk_48[1], param2->unk_48[2], param2->unk_48[3], NULL, NULL);
 
-    v2.collection = param2->unk_44;
+    v2.list = param2->unk_44;
     v2.resourceData = &v1;
     v2.position.x = param3 << 12;
     v2.position.y = param4 << 12;
@@ -322,13 +322,13 @@ static void ov22_0225A0E4(UnkStruct_ov22_02259C58 *param0, int param1, UnkStruct
 static void ov22_0225A154(UnkStruct_ov22_0225A154 *param0, int param1, UnkStruct_ov22_0225A0E4 *param2, const UnkStruct_02012744 *param3, const Window *param4, int param5, int param6, int param7, int param8)
 {
     UnkStruct_ov22_02259C9C v0;
-    CellActorResourceData v1;
-    CellActorInitParamsEx v2;
+    SpriteResourcesHeader v1;
+    AffineSpriteListTemplate v2;
     SpriteResource *v3;
 
-    sub_020093B4(&v1, param1, 0, param1, param1, 0xFFFFFFFF, 0xFFFFFFFF, 0, 0, param2->unk_48[0], param2->unk_48[1], param2->unk_48[2], param2->unk_48[3], NULL, NULL);
+    SpriteResourcesHeader_Init(&v1, param1, 0, param1, param1, 0xFFFFFFFF, 0xFFFFFFFF, 0, 0, param2->unk_48[0], param2->unk_48[1], param2->unk_48[2], param2->unk_48[3], NULL, NULL);
 
-    v2.collection = param2->unk_44;
+    v2.list = param2->unk_44;
     v2.resourceData = &v1;
     v2.position.x = param5 << 12;
     v2.position.y = param6 << 12;
@@ -347,11 +347,11 @@ static void ov22_0225A154(UnkStruct_ov22_0225A154 *param0, int param1, UnkStruct
     v0.unk_20 = 19;
 
     v3 = SpriteResourceCollection_Find(param2->unk_48[1], 1);
-    v0.unk_18 = sub_0200A72C(v3, NULL);
+    v0.unk_18 = SpriteTransfer_GetPaletteProxy(v3, NULL);
 
-    GF_ASSERT(sub_0201ED94(sub_02012898(param4, NNS_G2D_VRAM_TYPE_2DMAIN, 13), 1, NNS_G2D_VRAM_TYPE_2DMAIN, &param0->unk_14));
+    GF_ASSERT(CharTransfer_AllocRange(sub_02012898(param4, NNS_G2D_VRAM_TYPE_2DMAIN, 13), 1, NNS_G2D_VRAM_TYPE_2DMAIN, &param0->unk_14));
 
-    v0.unk_24 = param0->unk_14.unk_04;
+    v0.unk_24 = param0->unk_14.offset;
 
     ov22_02259C9C(param0, &v0);
 }
@@ -431,11 +431,11 @@ static Window *ov22_0225A348(UnkStruct_ov22_0225A0E4 *param0, u32 param1, u32 pa
     Strbuf *v1;
     Window *v2;
 
-    v0 = MessageLoader_Init(0, param1, param2, 13);
+    v0 = MessageLoader_Init(0, param1, param2, HEAP_ID_13);
     GF_ASSERT(v0);
     v1 = MessageLoader_GetNewStrbuf(v0, param3);
 
-    v2 = Window_New(14, 1);
+    v2 = Window_New(HEAP_ID_14, 1);
     Window_Init(v2);
     Window_AddToTopLeftCorner(param0->unk_40, v2, param4, param5, 0, 0);
 
@@ -460,11 +460,11 @@ static void ov22_0225A3DC(UnkStruct_ov22_02259C58 *param0, int param1, int param
     const VecFx32 *v0;
     VecFx32 v1;
 
-    v0 = CellActor_GetPosition(param0->unk_00);
+    v0 = Sprite_GetPosition(param0->unk_00);
     v1 = *v0;
     v1.x += param1 << FX32_SHIFT;
     v1.y += param2 << FX32_SHIFT;
-    CellActor_SetPosition(param0->unk_00, &v1);
+    Sprite_SetPosition(param0->unk_00, &v1);
 }
 
 static void ov22_0225A418(UnkStruct_ov22_0225A154 *param0, int param1, int param2)

@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/pal_park_lobby.h"
 
     .data
 
@@ -15,7 +16,7 @@
     ScriptEntry _057C
     ScriptEntry _02D8
     ScriptEntry _0662
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0036:
     ClearFlag 0x995
@@ -24,7 +25,7 @@ _0036:
     End
 
 _004D:
-    ScrCmd_186 7, 8, 9
+    SetObjectEventPos 7, 8, 9
     ScrCmd_189 7, 2
     End
 
@@ -44,7 +45,7 @@ _007E:
     LockAll
     FacePlayer
     GetPlayerGender 0x800C
-    GoToIfEq 0x800C, 0, _009D
+    GoToIfEq 0x800C, GENDER_MALE, _009D
     GoTo _00D2
 
 _009D:
@@ -52,9 +53,9 @@ _009D:
     SetFlag 211
     BufferPlayerName 0
     Message 21
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0107
-    GoToIfEq 0x800C, 1, _01CB
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0107
+    GoToIfEq 0x800C, MENU_NO, _01CB
     End
 
 _00D2:
@@ -62,9 +63,9 @@ _00D2:
     SetFlag 211
     BufferPlayerName 0
     Message 22
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0107
-    GoToIfEq 0x800C, 1, _01CB
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0107
+    GoToIfEq 0x800C, MENU_NO, _01CB
     End
 
 _0107:
@@ -97,8 +98,8 @@ _012B:
 
 _0172:
     Message 28
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _01CB
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _01CB
 _0186:
     SetVar 0x800C, 0
     ScrCmd_252 0x800C
@@ -107,7 +108,7 @@ _0186:
     ScrCmd_254 0x800C
     GoToIfEq 0x800C, 0, _0299
     GetPlayerGender 0x800C
-    GoToIfEq 0x800C, 0, _0231
+    GoToIfEq 0x800C, GENDER_MALE, _0231
     GoTo _0245
 
 _01CB:
@@ -155,7 +156,7 @@ _0245:
 _0259:
     ApplyMovement 7, _02B8
     WaitMovement
-    ApplyMovement 0xFF, _02CC
+    ApplyMovement LOCALID_PLAYER, _02CC
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
     FadeScreen 6, 1, 0, 0
@@ -186,22 +187,22 @@ _02AD:
 
     .balign 4, 0
 _02B8:
-    MoveAction_024
-    MoveAction_00C 2
-    MoveAction_00F
-    MoveAction_026
+    MoveAction_036
+    MoveAction_012 2
+    MoveAction_015
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
 _02CC:
-    MoveAction_00C 5
-    MoveAction_045
+    MoveAction_012 5
+    MoveAction_069
     EndMovement
 
 _02D8:
     LockAll
     SetVar 0x40F3, 0
-    ApplyMovement 0xFF, _03E4
+    ApplyMovement LOCALID_PLAYER, _03E4
     WaitMovement
     ApplyMovement 7, _03D8
     WaitMovement
@@ -211,18 +212,18 @@ _02D8:
 _02F8:
     LockAll
     SetVar 0x40F3, 0
-    ApplyMovement 0xFF, _03EC
+    ApplyMovement LOCALID_PLAYER, _03EC
     WaitMovement
-    ScrCmd_256 0, 0x800C
+    CalcCatchingShowPoints CATCHING_SHOW_CATCHING_POINTS, 0x800C
     BufferNumber 0, 0x800C
-    ScrCmd_256 1, 0x800C
+    CalcCatchingShowPoints CATCHING_SHOW_TIME_POINTS, 0x800C
     BufferNumber 1, 0x800C
-    ScrCmd_256 2, 0x800C
+    CalcCatchingShowPoints CATCHING_SHOW_TYPE_POINTS, 0x800C
     BufferNumber 2, 0x800C
-    ScrCmd_256 3, 0x800C
+    CalcCatchingShowPoints CATCHING_SHOW_TOTAL_POINTS, 0x800C
     BufferNumber 3, 0x800C
     Message 38
-    ScrCmd_256 3, 0x800C
+    CalcCatchingShowPoints CATCHING_SHOW_TOTAL_POINTS, 0x800C
     GoToIfGt 0x800C, 0x40E0, _035B
     Message 40
     Call _07BE
@@ -231,16 +232,16 @@ _02F8:
 _035B:
     Message 39
     Call _07BE
-    ScrCmd_256 3, 0x40E0
+    CalcCatchingShowPoints CATCHING_SHOW_TOTAL_POINTS, 0x40E0
     GoTo _0370
 
 _0370:
     Message 41
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _03AB
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _03AB
     Message 46
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _039E
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _039E
     GoTo _0370
 
 _039E:
@@ -258,7 +259,7 @@ _03AB:
     GoTo _03BD
 
 _03BD:
-    ApplyMovement 0xFF, _03F8
+    ApplyMovement LOCALID_PLAYER, _03F8
     WaitMovement
     ApplyMovement 7, _03D8
     WaitMovement
@@ -267,24 +268,24 @@ _03BD:
 
     .balign 4, 0
 _03D8:
-    MoveAction_00E
-    MoveAction_00D 2
+    MoveAction_014
+    MoveAction_013 2
     EndMovement
 
     .balign 4, 0
 _03E4:
-    MoveAction_00D 5
+    MoveAction_013 5
     EndMovement
 
     .balign 4, 0
 _03EC:
-    MoveAction_00D 2
-    MoveAction_027
+    MoveAction_013 2
+    MoveAction_039
     EndMovement
 
     .balign 4, 0
 _03F8:
-    MoveAction_00D 4
+    MoveAction_013 4
     EndMovement
 
 _0400:
@@ -377,7 +378,7 @@ _04B4:
     WaitMovement
     GetPlayerGender 0x4000
     BufferPlayerName 0
-    GoToIfEq 0x4000, 0, _04E4
+    GoToIfEq 0x4000, GENDER_MALE, _04E4
     GoTo _04ED
 
 _04E4:
@@ -399,12 +400,12 @@ _04F6:
     Message 4
     CloseMessage
     WaitTime 15, 0x800C
-    ApplyMovement 0xFF, _0570
+    ApplyMovement LOCALID_PLAYER, _0570
     WaitMovement
     ApplyMovement 1, _0564
     WaitMovement
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ScrCmd_065 1
+    RemoveObject 1
     WaitFanfare SEQ_SE_DP_KAIDAN2
     SetVar 0x40C6, 1
     ReleaseAll
@@ -412,27 +413,27 @@ _04F6:
 
     .balign 4, 0
 _0548:
-    MoveAction_04B
-    MoveAction_03F
-    MoveAction_00D 3
+    MoveAction_075
+    MoveAction_063
+    MoveAction_013 3
     EndMovement
 
     .balign 4, 0
 _0558:
-    MoveAction_04B
-    MoveAction_03F
+    MoveAction_075
+    MoveAction_063
     EndMovement
 
     .balign 4, 0
 _0564:
-    MoveAction_00D
-    MoveAction_021
+    MoveAction_013
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0570:
-    MoveAction_00F
-    MoveAction_022
+    MoveAction_015
+    MoveAction_034
     EndMovement
 
 _057C:
@@ -441,11 +442,11 @@ _057C:
     FacePlayer
     GoToIfEq 0x400A, 1, _062C
     GoToIfEq 0x400A, 2, _063C
-    ScrCmd_134 21, 0x800C
+    CheckPoketchAppRegistered POKETCH_APPID_COLORCHANGER, 0x800C
     GoToIfEq 0x800C, 1, _0657
     Message 5
     Message 6
-    ScrCmd_134 20, 0x800C
+    CheckPoketchAppRegistered POKETCH_APPID_KITCHENTIMER, 0x800C
     GoToIfEq 0x800C, 1, _05FB
     Message 10
     ScrCmd_1C0 0x800C, 143
@@ -507,7 +508,7 @@ _0662:
     LockAll
     FacePlayer
     GoToIfEq 0x4009, 1, _06CF
-    ScrCmd_26E 0x800C
+    GetGBACartridgeVersion 0x800C
     GoToIfEq 0x800C, 4, _06DA
     GoToIfEq 0x800C, 5, _0706
     GoToIfEq 0x800C, 1, _0732
@@ -587,7 +588,7 @@ _07AE:
     End
 
 _07BE:
-    ScrCmd_256 3, 0x800C
+    CalcCatchingShowPoints CATCHING_SHOW_TOTAL_POINTS, 0x800C
     CallIfLt 0x800C, 0xBB8, _07FA
     CallIfLt 0x800C, 0xCE4, _0870
     CallIfLt 0x800C, 0xDAC, _08BF
@@ -595,7 +596,7 @@ _07BE:
     Return
 
 _07FA:
-    ScrCmd_1B7 0x8006, 8
+    GetRandom 0x8006, 8
     CallIfEq 0x8006, 0, _09B6
     CallIfEq 0x8006, 1, _09BE
     CallIfEq 0x8006, 2, _09C6
@@ -608,7 +609,7 @@ _07FA:
     Return
 
 _0870:
-    ScrCmd_1B7 0x8006, 5
+    GetRandom 0x8006, 5
     CallIfEq 0x8006, 0, _09F6
     CallIfEq 0x8006, 1, _09FE
     CallIfEq 0x8006, 2, _0A06
@@ -618,7 +619,7 @@ _0870:
     Return
 
 _08BF:
-    ScrCmd_1B7 0x8006, 7
+    GetRandom 0x8006, 7
     CallIfEq 0x8006, 0, _0A1E
     CallIfEq 0x8006, 1, _0A26
     CallIfEq 0x8006, 2, _0A2E
@@ -630,7 +631,7 @@ _08BF:
     Return
 
 _0928:
-    ScrCmd_1B7 0x8006, 6
+    GetRandom 0x8006, 6
     CallIfEq 0x8006, 0, _0A56
     CallIfEq 0x8006, 1, _0A5E
     CallIfEq 0x8006, 2, _0A66

@@ -5,8 +5,8 @@
 #include "struct_defs/struct_0203F478.h"
 
 #include "field/field_system_decl.h"
+#include "overlay005/field_menu.h"
 #include "overlay005/save_info_window.h"
-#include "overlay005/struct_ov5_021DC1A4_decl.h"
 #include "overlay101/struct_ov101_021D5D90_decl.h"
 
 #include "bg_window.h"
@@ -83,10 +83,14 @@ enum ScriptContextType {
     NUM_SCRIPT_CONTEXTS
 };
 
-#define SCRIPT_ID_OFFSET_SINGLE_BATTLES 3000
-#define SCRIPT_ID_OFFSET_DOUBLE_BATTLES 5000
-#define SCRIPT_ID_OFFSET_HIDDEN_ITEMS   8000
-#define SCRIPT_ID_OFFSET_SAFARI_ZONE    8800
+#define SCRIPT_ID(chunk, id)                    ((SCRIPT_ID_OFFSET_##chunk) + id)
+#define SCRIPT_ID_OFFSET_COMMON_SCRIPTS         2000
+#define SCRIPT_ID_OFFSET_SINGLE_BATTLES         3000
+#define SCRIPT_ID_OFFSET_DOUBLE_BATTLES         5000
+#define SCRIPT_ID_OFFSET_HIDDEN_ITEMS           8000
+#define SCRIPT_ID_OFFSET_SAFARI_ZONE            8800
+#define SCRIPT_ID_OFFSET_INIT_NEW_GAME          9600
+#define SCRIPT_ID_POKEMON_CENTER_DAILY_TRAINERS 10400
 
 #define FLAG_OFFSET_HIDDEN_ITEMS     730
 #define FLAG_OFFSET_TRAINER_DEFEATED 1360
@@ -115,7 +119,7 @@ typedef struct ScriptManager {
     u8 numActiveContexts;
     u16 scriptID;
     BOOL battleResult;
-    UnkStruct_ov5_021DC1A4 *unk_10; // appears to be used for multichoice windows
+    FieldMenuManager *fieldMenuMan; // used for multichoice windows
     Window window;
     Menu *ctrlUI;
     int playerDir;
@@ -166,7 +170,7 @@ u16 Script_GetHiddenItemFlag(u16 scriptID);
 u16 Script_GetHiddenItemScript(u16 scriptID);
 void FieldSystem_ClearDailyHiddenItemFlags(FieldSystem *fieldSystem);
 u8 Script_GetHiddenItemRange(u16 scriptID);
-UnkStruct_0203F478 *sub_0203F478(FieldSystem *fieldSystem, int param1);
+UnkStruct_0203F478 *sub_0203F478(FieldSystem *fieldSystem, int heapID);
 void FieldSystem_InitNewGameState(FieldSystem *fieldSystem);
 void FieldSystem_RunScript(FieldSystem *fieldSystem, u16 scriptID);
 BOOL sub_0203F5C0(FieldSystem *fieldSystem, u8 param1);

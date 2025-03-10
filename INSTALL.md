@@ -1,64 +1,29 @@
 # Installation Instructions
 
-<!--toc:start-->
-- [Installation Instructions](#installation-instructions)
-  - [0. Preliminaries](#0-preliminaries)
-  - [1. Setting Up Your Development Environment](#1-setting-up-your-development-environment)
-    - [Windows with MSYS2](#windows-with-msys2)
-    - [Windows Subsystem for Linux](#windows-subsystem-for-linux)
-      - [New Installs](#new-installs)
-      - [Existing Installs](#existing-installs)
-      - [Install Build Dependencies](#install-build-dependencies)
-    - [MacOS](#macos)
-    - [Linux](#linux)
-      - [Ubuntu (and other Debian derivatives)](#ubuntu-and-other-debian-derivatives)
-      - [Arch Linux (and derivatives)](#arch-linux-and-derivatives)
-      - [Fedora (and derivatives)](#fedora-and-derivatives)
-    - [Docker](#docker)
-  - [2. Downloading the Repository](#2-downloading-the-repository)
-  - [3. Specifying a Compiler License](#3-specifying-a-compiler-license)
-    - [Windows (including WSL 1)](#windows-including-wsl-1)
-    - [Unix Systems](#unix-systems)
-  - [4. Building the Repository](#4-building-the-repository)
-  - [5. Debugger Support](#5-debugger-support)
-  - [Troubleshooting FAQ](#troubleshooting-faq)
-    - [My Build is Failing After Merging from Main](#my-build-is-failing-after-merging-from-main)
-<!--toc:end-->
-
 This document details the steps necessary to build a copy of Pokémon Platinum
 (EN-US) using this repository.
 
-## 0. Preliminaries
+## Table of Contents
+
+- [1. Setting Up Your Development Environment](#1-setting-up-your-development-environment)
+  - [Windows Subsystem for Linux](#windows-subsystem-for-linux)
+    - [New Installs](#new-installs)
+    - [Existing Installs](#existing-installs)
+    - [Install Build Dependencies](#install-build-dependencies)
+  - [Windows with MSYS2](#windows-with-msys2)
+  - [MacOS](#macos)
+  - [Linux](#linux)
+    - [Ubuntu (and other Debian derivatives)](#ubuntu-and-other-debian-derivatives)
+    - [Arch Linux (and derivatives)](#arch-linux-and-derivatives)
+    - [Fedora (and derivatives)](#fedora-and-derivatives)
+  - [Docker](#docker)
+- [2. Downloading the Repository](#2-downloading-the-repository)
+- [3. Building the Repository](#3-building-the-repository)
+- [4. Debugger Support](#4-debugger-support)
+- [Troubleshooting FAQ](#troubleshooting-faq)
+  - [My Build is Failing After Merging from Main](#my-build-is-failing-after-merging-from-main)
 
 ## 1. Setting Up Your Development Environment
-
-### Windows with MSYS2
-
-1. Download the MSYS2 installer from [the official website](https://www.msys2.org/)
-and install it on your system.
-
-2. Once the installation is complete, a terminal should automatically pop up.
-To update your package registry, enter the following command:
-
-    ```bash
-    pacman -Syu
-    ```
-
-    Press 'Y' when prompted to confirm the update. This process may take a few
-minutes. Once completed, the terminal will automatically close.
-
-3. Re-open an MSYS terminal (the pink icon) from your Start Menu, then enter
-the following commands to install necessary build dependencies:
-
-    ```bash
-    echo 'export PATH=${PATH}:/mingw64/bin' >> ~/.bashrc
-    source ~/.bashrc
-    pacman -S git meson gcc flex bison mingw-w64-x86_64-arm-none-eabi-{binutils,gcc}
-    ```
-
-    Press 'Y' when prompted to confirm the installation.
-
-4. [Download the repository](#2-downloading-the-repository).
 
 ### Windows Subsystem for Linux
 
@@ -175,6 +140,42 @@ with the path reported by `pip` above:
 
 3. [Download the repository](#2-downloading-the-repository).
 
+### Windows with MSYS2
+
+> [!CAUTION]
+> `MSYS2 is known to currently produce a non-matching ROM; proceed at your own
+> risk, and heavily prefer to build using Windows Subsystem for Linux, if at all
+> possible.
+
+If you are unable to run Windows Subsystem for Linux due to performance reasons
+or lacking virtualization requirements, then MSYS2 may be an option for you.
+
+1. Download the MSYS2 installer from [the official website](https://www.msys2.org/)
+and install it on your system.
+
+2. Once the installation is complete, a terminal should automatically pop up.
+To update your package registry, enter the following command:
+
+    ```bash
+    pacman -Syu
+    ```
+
+    Press 'Y' when prompted to confirm the update. This process may take a few
+minutes. Once completed, the terminal will automatically close.
+
+3. Re-open an MSYS terminal (the pink icon) from your Start Menu, then enter
+the following commands to install necessary build dependencies:
+
+    ```bash
+    echo 'export PATH=${PATH}:/mingw64/bin' >> ~/.bashrc
+    source ~/.bashrc
+    pacman -S git meson gcc flex bison base-devel mingw-w64-x86_64-arm-none-eabi-{binutils,gcc}
+    ```
+
+    Press 'Y' when prompted to confirm the installation.
+
+4. [Download the repository](#2-downloading-the-repository).
+
 ### MacOS
 
 1. Apple bundles a number of the requisite utilities into Xcode Command Line Tools;
@@ -209,9 +210,9 @@ GNU `coreutils` installed to run the build scripts:
 > Precise packages to be installed will vary by Linux distribution and
 > package registry. A handful of common distributions are listed below for
 > convenience.
->
+
 > [!IMPORTANT]
-> This project requires `meson` version `1.3.0` or higher. If the version of
+> This project requires `meson` version `1.5.0` or higher. If the version of
 > `meson` provided by your package manager is out of date, then follow
 > [these instructions](https://mesonbuild.com/Getting-meson.html) to get the
 > most recent version.
@@ -228,7 +229,7 @@ the repository](#2-downloading-the-repository).
     sudo mkdir -pm755 /etc/apt/keyrings
     sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
     sudo apt update
-    sudo apt install --install-recommends winehq-stable
+    sudo apt install --install-recommends wine-stable
     ```
 
 2. Install the following packages via `apt`:
@@ -260,6 +261,11 @@ sudo yum install git flex bison gcc make arm-none-eabi-bintuils-cs arm-none-eabi
 ```
 
 ### Docker
+
+> [!CAUTION]
+> The Docker build method is currently unmaintained and unsupported. Proceed at
+> your own risk, and know that you may not receive much support from repository
+> maintainers.
 
 A `Dockerfile` is provided with the repository should you choose to build the
 project as a container. If you do not have `docker` installed on your machine
@@ -295,40 +301,7 @@ git clone https://github.com/pret/pokeplatinum
 cd pokeplatinum
 ```
 
-## 3. Specifying a Compiler License
-
-Before building the repository, some final setup is required for the compiler.
-Create an environment variable called `LM_LICENSE_FILE` with its value as the
-path to which you cloned the repository, plus `/tools/cw/license.dat`. For
-example, if you cloned your repository to `C:\Users\myuser\Desktop\pokeplatinum`,
-then the value would be `C:\Users\myuser\Desktop\pokeplatinum\tools\cw\license.dat`.
-
-### Windows (including WSL 1)
-
-1. Search for "environment variables" in the Start menu. Click the option which
-says "Edit the system environment variables".
-
-2. In the window that opens, click the button that says "Environment Variables..."
-in the lower right corner.
-
-3. In the window that opens, click "New..." in the lower right corner.
-
-4. Input the environment variable name and value as above, then click "OK".
-
-5. Restart your computer.
-
-### Unix Systems
-
-Export the environment variable as above to your terminal profile:
-
-```bash
-echo 'export LM_LICENSE_FILE="/path/to/pokeplatinum/tools/cw/license.dat"' >> ~/.bashrc
-source ~/.bashrc
-```
-
-Users of MacOS should replace `~/.bashrc` above with `~/.zshrc`.
-
-## 4. Building the Repository
+## 3. Building the Repository
 
 To build the ROM, run:
 
@@ -344,7 +317,7 @@ If you need further assistance, feel free to ask a question in the `#pokeplatinu
 channel of the `pret` Discord (see `README.md` for contact information) or [open
 an issue](https://github.com/pret/pokeplatinum/issues/new).
 
-## 5. Debugger Support
+## 4. Debugger Support
 
 This step is optional, but useful. `pokeplatinum` ships with support for GDB
 debugging and a target to build a debug-enabled ROM:
@@ -374,3 +347,33 @@ make update
 ```
 
 And then try rebuilding.
+
+### Meson Replies With `ERROR: Unknown compiler(s)`
+
+Example error message:
+
+```
+meson.build:1:0: ERROR: Unknown compiler(s): [['/mnt/c/pokeplatinum/tools/cw/mwrap', 'mwccarm']]
+```
+
+Meson provides some basic logging for its configuration process in
+`build/meson-logs/meson-log.txt`. In that file, you should see some entries that
+begin with `Detecting compiler via: ...`, which will give some insight into the
+root of the error. For example:
+
+```
+Detecting compiler via: `/mnt/c/pokeplatinum/tools/cw/mwrap mwccarm --version` -> 1
+stderr:
+wine: '/home/<USER>/.wine' is a 64-bit installation, it cannot be used with a 32-bit wineserver.
+-----------
+
+meson.build:1:0: ERROR: Unknown compiler(s): [['/mnt/c/pokeplatinum/tools/cw/mwrap', 'mwccarm']]
+```
+
+In this instance, the user has installed 64-bit `wine`. Ensure that you have
+installed 32-bit `wine`, then rebuild _after_ removing the prefix directory
+using the following command:
+
+```
+rm -rf ~/.wine
+```

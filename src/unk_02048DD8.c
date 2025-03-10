@@ -3,11 +3,10 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/trainer_score_events.h"
 
 #include "struct_decls/struct_0202440C_decl.h"
 #include "struct_decls/struct_0202A750_decl.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/struct_0202E7D8.h"
 #include "struct_defs/struct_0202E7E4.h"
 #include "struct_defs/struct_0202E7F0.h"
@@ -29,7 +28,7 @@
 #include "message.h"
 #include "party.h"
 #include "pokemon.h"
-#include "poketch_data.h"
+#include "poketch.h"
 #include "script_manager.h"
 #include "strbuf.h"
 #include "string_template.h"
@@ -255,7 +254,7 @@ static BOOL sub_020491F4(FieldSystem *fieldSystem, int param1)
 
 static void sub_0204922C(StringTemplate *param0, int param1, const u16 *param2, int param3, int param4, int param5)
 {
-    Strbuf *v0 = Strbuf_Init(64, 4);
+    Strbuf *v0 = Strbuf_Init(64, HEAP_ID_FIELD);
 
     Strbuf_CopyChars(v0, param2);
     StringTemplate_SetStrbuf(param0, param1, v0, param3, param5, param4);
@@ -272,9 +271,7 @@ static void sub_02049268(FieldSystem *fieldSystem, StringTemplate *param1)
 
 static void sub_02049288(FieldSystem *fieldSystem, StringTemplate *param1)
 {
-    int v0;
-
-    v0 = PoketchSystem_CurrentAppID(fieldSystem->unk_04->poketchSys);
+    int v0 = PoketchSystem_CurrentAppID(fieldSystem->unk_04->poketchSys);
     StringTemplate_SetPoketchAppName(param1, 0, v0);
 }
 
@@ -304,7 +301,7 @@ static void sub_02049308(FieldSystem *fieldSystem, StringTemplate *param1)
     TVBroadcast *v1 = SaveData_TVBroadcast(fieldSystem->saveData);
     UnkStruct_0202E81C *v2 = sub_0202E81C(v1);
 
-    v0 = Strbuf_Init(64, 4);
+    v0 = Strbuf_Init(64, HEAP_ID_FIELD);
 
     Strbuf_CopyChars(v0, v2->unk_06);
     StringTemplate_SetStrbuf(param1, 0, v0, v2->unk_02, 1, GAME_LANGUAGE);
@@ -319,8 +316,8 @@ static BOOL sub_02049348(FieldSystem *fieldSystem)
 
 static BOOL sub_02049358(FieldSystem *fieldSystem)
 {
-    PoketchData *poketchData = SaveData_PoketchData(fieldSystem->saveData);
-    return PoketchData_IsEnabled(poketchData);
+    Poketch *poketch = SaveData_PoketchData(fieldSystem->saveData);
+    return Poketch_IsEnabled(poketch);
 }
 
 static BOOL sub_02049368(FieldSystem *fieldSystem)

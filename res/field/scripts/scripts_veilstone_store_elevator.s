@@ -1,9 +1,10 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/veilstone_store_elevator.h"
 
     .data
 
     ScriptEntry _0006
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0006:
     PlayFanfare SEQ_SE_CONFIRM
@@ -216,5 +217,5 @@ _03F6:
 
     .balign 4, 0
 _0410:
-    MoveAction_021
+    MoveAction_033
     EndMovement

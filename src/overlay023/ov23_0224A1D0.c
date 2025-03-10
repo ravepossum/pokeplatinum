@@ -4,7 +4,7 @@
 #include <nnsys/g3d/glbstate.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/trainer_score_events.h"
 
 #include "struct_decls/struct_0202855C_decl.h"
 #include "struct_defs/struct_02057B48.h"
@@ -35,11 +35,11 @@
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "system_flags.h"
+#include "system_vars.h"
 #include "trainer_info.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
 #include "unk_0202854C.h"
-#include "unk_0206AFE0.h"
 #include "unk_0206CCB0.h"
 #include "unk_020711EC.h"
 #include "vars_flags.h"
@@ -228,8 +228,8 @@ void ov23_0224A410(int param0, int param1, void *param2, void *param3)
 
         if (commPlayerMan->unk_5A[v1->unk_02] == 0) {
             sub_020294F4(SaveData_SecretBaseRecord(FieldSystem_GetSaveData(commPlayerMan->fieldSystem)), v1->unk_02);
-            sub_0206B364(v2, sub_0206B354(v2) + 1);
-            sub_0206B384(v2, sub_0206B374(v2) + 1);
+            SystemVars_SetSpiritombCounter(v2, SystemVars_GetSpiritombCounter(v2) + 1);
+            SystemVars_SetUndergroundTalkCounter(v2, SystemVars_GetUndergroundTalkCounter(v2) + 1);
 
             commPlayerMan->unk_5A[v1->unk_02]++;
         }
@@ -311,7 +311,7 @@ static void ov23_0224A5CC(SysTask *param0, void *param1)
 static void ov23_0224A620(int param0)
 {
     CommPlayerManager *commPlayerMan = CommPlayerMan_Get();
-    UnkStruct_ov23_0224A5CC *v1 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov23_0224A5CC));
+    UnkStruct_ov23_0224A5CC *v1 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov23_0224A5CC));
 
     v1->unk_00 = 0;
     v1->unk_04 = param0;
@@ -532,7 +532,7 @@ void ov23_0224AAB0(void)
         CommSys_SendDataFixedSize(91, commPlayerMan->unk_290[CommSys_CurNetId()]);
     } else {
         TrainerInfo *v0 = TrainerInfo_New(15);
-        Strbuf *v1 = Strbuf_Init(20, 15);
+        Strbuf *v1 = Strbuf_Init(20, HEAP_ID_COMMUNICATION);
 
         GF_ASSERT(v0);
         GF_ASSERT(v1);
@@ -724,7 +724,7 @@ void ov23_0224ADB0(int param0, int param1, int param2, int param3)
     CommPlayerLocation *v1 = &v0->playerLocationServer[param0];
 
     v1->x = param1 + MapObject_GetDxFromDir(param3);
-    v1->z = param2 + MapObject_GetDyFromDir(param3);
+    v1->z = param2 + MapObject_GetDzFromDir(param3);
     v1->dir = param3;
 }
 

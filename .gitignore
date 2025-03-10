@@ -17,6 +17,9 @@
 /subprojects/constgen/
 /subprojects/SDATTool/
 /subprojects/knarc/
+/subprojects/narc/
+/subprojects/metang/
+/subprojects/rapidjson-*/
 
 # CLion folders
 .idea/

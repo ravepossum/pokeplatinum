@@ -1,9 +1,10 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/solaceon_ruins_room_2.h"
 
     .data
 
     ScriptEntry _0006
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0006:
     PlayFanfare SEQ_SE_CONFIRM
@@ -28,9 +29,9 @@ _004F:
     ApplyMovement 0, _00D4
     WaitMovement
     Message 2
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _007C
-    GoToIfEq 0x800C, 1, _00B8
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _007C
+    GoToIfEq 0x800C, MENU_NO, _00B8
     End
 
 _007C:
@@ -68,5 +69,5 @@ _00C7:
 
     .balign 4, 0
 _00D4:
-    MoveAction_04B
+    MoveAction_075
     EndMovement

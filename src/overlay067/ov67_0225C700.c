@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/trainer_score_events.h"
 
 #include "struct_defs/struct_02099F80.h"
 
@@ -17,7 +17,6 @@
 #include "overlay066/struct_ov66_02231300.h"
 
 #include "bg_window.h"
-#include "core_sys.h"
 #include "font.h"
 #include "game_options.h"
 #include "game_records.h"
@@ -35,10 +34,10 @@
 #include "savedata.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "unk_020041CC.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
 #include "unk_020366A0.h"
 #include "unk_020393C8.h"
 
@@ -169,9 +168,9 @@ int ov67_0225C700(OverlayManager *param0, int *param1)
     UnkStruct_ov67_0225D154 *v0;
     UnkStruct_ov66_02231024 *v1;
 
-    Heap_Create(3, 112, 0x20000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_112, 0x20000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov67_0225D154), 112);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov67_0225D154), HEAP_ID_112);
     memset(v0, 0, sizeof(UnkStruct_ov67_0225D154));
     v1 = OverlayManager_Args(param0);
 
@@ -186,7 +185,7 @@ int ov67_0225C700(OverlayManager *param0, int *param1)
     ov67_0225D188(&v0->unk_10, v0->unk_0C, 1, 674, 5, 1, 22, 2, (((((1 + (18 + 12)) + 9) + (27 * 4)) + (23 * 16)) + (6 * 4)), v0->unk_00, 112);
     ov67_0225D37C(&v0->unk_10, 21);
 
-    SetMainCallback(ov67_0225CE28, v0);
+    SetVBlankCallback(ov67_0225CE28, v0);
     DisableHBlank();
 
     return 1;
@@ -202,7 +201,7 @@ int ov67_0225C820(OverlayManager *param0, int *param1)
 
     switch (*param1) {
     case 0:
-        StartScreenTransition(0, 1, 1, 0xffff, 6, 1, 112);
+        StartScreenTransition(0, 1, 1, 0xffff, 6, 1, HEAP_ID_112);
         (*param1)++;
         break;
     case 1:
@@ -301,7 +300,7 @@ int ov67_0225C820(OverlayManager *param0, int *param1)
         (*param1)++;
     } break;
     case 10:
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             int v8;
             int v9;
 
@@ -361,7 +360,7 @@ int ov67_0225C820(OverlayManager *param0, int *param1)
         }
         break;
     case 7:
-        StartScreenTransition(0, 0, 0, 0x0, 6, 1, 112);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_112);
         (*param1)++;
         break;
     case 8:
@@ -381,11 +380,9 @@ int ov67_0225C820(OverlayManager *param0, int *param1)
 
 int ov67_0225CB1C(OverlayManager *param0, int *param1)
 {
-    UnkStruct_ov67_0225D154 *v0;
+    UnkStruct_ov67_0225D154 *v0 = OverlayManager_Data(param0);
 
-    v0 = OverlayManager_Data(param0);
-
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
 
     inline_ov61_0222C160(&v0->unk_D4);
@@ -399,7 +396,7 @@ int ov67_0225CB1C(OverlayManager *param0, int *param1)
     inline_ov96_0223BDEC(&v0->unk_D4, 0);
 
     Heap_FreeToHeap(v0);
-    Heap_Destroy(112);
+    Heap_Destroy(HEAP_ID_112);
 
     return 1;
 }
@@ -409,9 +406,9 @@ int ov67_0225CB8C(OverlayManager *param0, int *param1)
     UnkStruct_ov67_0225D154 *v0;
     UnkStruct_ov66_02231300 *v1;
 
-    Heap_Create(3, 112, 0x20000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_112, 0x20000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov67_0225D154), 112);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov67_0225D154), HEAP_ID_112);
     memset(v0, 0, sizeof(UnkStruct_ov67_0225D154));
 
     v1 = OverlayManager_Args(param0);
@@ -424,7 +421,7 @@ int ov67_0225CB8C(OverlayManager *param0, int *param1)
     ov67_0225D37C(&v0->unk_10, 21);
 
     sub_02039734();
-    SetMainCallback(ov67_0225CE28, v0);
+    SetVBlankCallback(ov67_0225CE28, v0);
     DisableHBlank();
 
     return 1;
@@ -440,7 +437,7 @@ int ov67_0225CC6C(OverlayManager *param0, int *param1)
 
     switch (*param1) {
     case 0:
-        StartScreenTransition(0, 1, 1, 0xffff, 6, 1, 112);
+        StartScreenTransition(0, 1, 1, 0xffff, 6, 1, HEAP_ID_112);
         (*param1)++;
         break;
     case 1:
@@ -500,7 +497,7 @@ int ov67_0225CC6C(OverlayManager *param0, int *param1)
         }
         break;
     case 9:
-        StartScreenTransition(0, 0, 0, 0x0, 6, 1, 112);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_112);
         (*param1)++;
         break;
     case 10:
@@ -518,11 +515,9 @@ int ov67_0225CC6C(OverlayManager *param0, int *param1)
 
 int ov67_0225CDC0(OverlayManager *param0, int *param1)
 {
-    UnkStruct_ov67_0225D154 *v0;
+    UnkStruct_ov67_0225D154 *v0 = OverlayManager_Data(param0);
 
-    v0 = OverlayManager_Data(param0);
-
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
 
     inline_ov61_0222C160(&v0->unk_D4);
@@ -535,7 +530,7 @@ int ov67_0225CDC0(OverlayManager *param0, int *param1)
     inline_ov96_0223BDEC(&v0->unk_D4, 0);
 
     Heap_FreeToHeap(v0);
-    Heap_Destroy(112);
+    Heap_Destroy(HEAP_ID_112);
 
     return 1;
 }

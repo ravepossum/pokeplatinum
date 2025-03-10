@@ -3,6 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/species.h"
+
 #include "overlay101/const_ov101_021D94D8.h"
 #include "overlay101/const_ov101_021D94F0.h"
 #include "overlay101/const_ov101_021D9508.h"
@@ -33,12 +35,12 @@
 #include "overlay101/struct_ov101_021D9AE4.h"
 
 #include "bg_window.h"
-#include "core_sys.h"
 #include "enums.h"
 #include "heap.h"
 #include "math.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "unk_02005474.h"
 #include "unk_020711EC.h"
 
@@ -377,7 +379,7 @@ static int ov101_021D1C9C(UnkStruct_ov101_021D13C8 *param0)
 
 static int ov101_021D1CBC(UnkStruct_ov101_021D13C8 *param0)
 {
-    u32 v0 = gCoreSys.pressedKeys;
+    u32 v0 = gSystem.pressedKeys;
 
     if ((param0->unk_7C[0] == 1) && (v0 & PAD_BUTTON_Y)) {
         param0->unk_7C[0] = 2;
@@ -814,7 +816,7 @@ static int ov101_021D22D0(UnkStruct_ov101_021D13C8 *param0)
 
 static int ov101_021D22F0(UnkStruct_ov101_021D13C8 *param0)
 {
-    u32 v0 = gCoreSys.pressedKeys;
+    u32 v0 = gSystem.pressedKeys;
 
     if ((param0->unk_7C[0] == 1) && (v0 & PAD_BUTTON_Y)) {
         param0->unk_7C[0] = 2;
@@ -1181,7 +1183,7 @@ static int ov101_021D2828(UnkStruct_ov101_021D13C8 *param0)
 
 static int ov101_021D2850(UnkStruct_ov101_021D13C8 *param0)
 {
-    u32 v0 = gCoreSys.pressedKeys;
+    u32 v0 = gSystem.pressedKeys;
 
     if ((param0->unk_7C[0] == 1) && (v0 & PAD_BUTTON_Y)) {
         param0->unk_7C[0] = 2;
@@ -1346,7 +1348,7 @@ static int ov101_021D2A78(UnkStruct_ov101_021D13C8 *param0)
         return 0;
     }
 
-    sub_02005844(35, 0);
+    sub_02005844(SPECIES_CLEFAIRY, 0);
     param0->unk_00 = 42;
     return 0;
 }
@@ -2476,9 +2478,7 @@ static int ov101_021D394C(UnkStruct_ov101_021D2D88 *param0, UnkStruct_ov101_021D
 
 static int ov101_021D3AF0(UnkStruct_ov101_021D13C8 *param0, int param1)
 {
-    u32 v0;
-
-    v0 = ov101_021D55D4(param0, 0, 1 - param1);
+    u32 v0 = ov101_021D55D4(param0, 0, 1 - param1);
 
     if (v0 == 3) {
         return 1;
@@ -3144,7 +3144,7 @@ static void ov101_021D4614(SysTask *param0, void *param1)
 
         v0 = 0x3;
 
-        if (gCoreSys.heldKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_BUTTON_X | PAD_BUTTON_Y)) {
+        if (gSystem.heldKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_BUTTON_X | PAD_BUTTON_Y)) {
             v0 = 0x1;
         }
 
@@ -3439,7 +3439,7 @@ static int ov101_021D4A30(UnkStruct_ov101_021D4764 *param0)
     if (param0->unk_10 >= 48) {
         param0->unk_10 = 0;
         param0->unk_04++;
-        sub_02005844(35, 0);
+        sub_02005844(SPECIES_CLEFAIRY, 0);
         ov101_021D679C(param0->unk_30, UnkEnum_ov101_021D679C_04);
     }
 
@@ -4383,7 +4383,7 @@ UnkEnum_ov101_021D9688 ov101_021D55D4(UnkStruct_ov101_021D13C8 *param0, UnkEnum_
 
 static int ov101_021D55F8(u32 param0)
 {
-    u32 v0 = gCoreSys.pressedKeys & param0;
+    u32 v0 = gSystem.pressedKeys & param0;
 
     if (v0 == param0) {
         return 2;
@@ -4427,11 +4427,9 @@ static UnkEnum_ov101_021D9688 ov101_021D5618(u32 param0)
 
 static UnkEnum_ov101_021D9688 ov101_021D5660(UnkStruct_ov101_021D13C8 *param0)
 {
-    u32 v0, v1, v2;
-
-    v0 = ov101_021D55D4(param0, 0, 1);
-    v1 = ov101_021D55D4(param0, 1, 1);
-    v2 = ov101_021D55D4(param0, 2, 1);
+    u32 v0 = ov101_021D55D4(param0, 0, 1);
+    u32 v1 = ov101_021D55D4(param0, 1, 1);
+    u32 v2 = ov101_021D55D4(param0, 2, 1);
 
     if ((v0 == 3) || ((v0 == v1) && (v0 == v2))) {
         return v0;
@@ -4442,11 +4440,9 @@ static UnkEnum_ov101_021D9688 ov101_021D5660(UnkStruct_ov101_021D13C8 *param0)
 
 static UnkEnum_ov101_021D9688 ov101_021D5698(UnkStruct_ov101_021D13C8 *param0)
 {
-    u32 v0, v1, v2;
-
-    v0 = ov101_021D55D4(param0, 0, 2);
-    v1 = ov101_021D55D4(param0, 1, 2);
-    v2 = ov101_021D55D4(param0, 2, 2);
+    u32 v0 = ov101_021D55D4(param0, 0, 2);
+    u32 v1 = ov101_021D55D4(param0, 1, 2);
+    u32 v2 = ov101_021D55D4(param0, 2, 2);
 
     if ((v0 == 3) || ((v0 == v1) && (v0 == v2))) {
         return v0;
@@ -4457,11 +4453,9 @@ static UnkEnum_ov101_021D9688 ov101_021D5698(UnkStruct_ov101_021D13C8 *param0)
 
 static UnkEnum_ov101_021D9688 ov101_021D56D0(UnkStruct_ov101_021D13C8 *param0)
 {
-    u32 v0, v1, v2;
-
-    v0 = ov101_021D55D4(param0, 0, 3);
-    v1 = ov101_021D55D4(param0, 1, 3);
-    v2 = ov101_021D55D4(param0, 2, 3);
+    u32 v0 = ov101_021D55D4(param0, 0, 3);
+    u32 v1 = ov101_021D55D4(param0, 1, 3);
+    u32 v2 = ov101_021D55D4(param0, 2, 3);
 
     if ((v0 == 3) || ((v0 == v1) && (v0 == v2))) {
         return v0;
@@ -4472,11 +4466,9 @@ static UnkEnum_ov101_021D9688 ov101_021D56D0(UnkStruct_ov101_021D13C8 *param0)
 
 static UnkEnum_ov101_021D9688 ov101_021D5708(UnkStruct_ov101_021D13C8 *param0)
 {
-    u32 v0, v1, v2;
-
-    v0 = ov101_021D55D4(param0, 0, 1);
-    v1 = ov101_021D55D4(param0, 1, 2);
-    v2 = ov101_021D55D4(param0, 2, 3);
+    u32 v0 = ov101_021D55D4(param0, 0, 1);
+    u32 v1 = ov101_021D55D4(param0, 1, 2);
+    u32 v2 = ov101_021D55D4(param0, 2, 3);
 
     if ((v0 == 3) || ((v0 == v1) && (v0 == v2))) {
         return v0;
@@ -4487,11 +4479,9 @@ static UnkEnum_ov101_021D9688 ov101_021D5708(UnkStruct_ov101_021D13C8 *param0)
 
 static UnkEnum_ov101_021D9688 ov101_021D5740(UnkStruct_ov101_021D13C8 *param0)
 {
-    u32 v0, v1, v2;
-
-    v0 = ov101_021D55D4(param0, 0, 3);
-    v1 = ov101_021D55D4(param0, 1, 2);
-    v2 = ov101_021D55D4(param0, 2, 1);
+    u32 v0 = ov101_021D55D4(param0, 0, 3);
+    u32 v1 = ov101_021D55D4(param0, 1, 2);
+    u32 v2 = ov101_021D55D4(param0, 2, 1);
 
     if ((v0 == 3) || ((v0 == v1) && (v0 == v2))) {
         return v0;

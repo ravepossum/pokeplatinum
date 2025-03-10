@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/resort_area.h"
 
     .data
 
@@ -17,7 +18,7 @@
     ScriptEntry _055C
     ScriptEntry _003E
     ScriptEntry _05BC
-    .short 0xFD13
+    ScriptEntryEnd
 
 _003E:
     SetFlag 0x2AA
@@ -108,19 +109,11 @@ _0130:
     End
 
 _0143:
-    ScrCmd_036 25, 0, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowMapSign 25
     End
 
 _015A:
-    ScrCmd_036 26, 2, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowLandmarkSign 26
     End
 
 _0171:
@@ -140,8 +133,8 @@ _0184:
     CallIfEq 0x8005, 0x1D9, _0272
     CallIfEq 0x8005, 0x1DA, _0274
     Message 6
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _02BC
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _02BC
     ScrCmd_30C
     Message 7
     CloseMessage
@@ -156,12 +149,12 @@ _0184:
     ScrCmd_16B 77
     ScrCmd_169 77
     ApplyMovement 13, _0390
-    ApplyMovement 0xFF, _03C0
+    ApplyMovement LOCALID_PLAYER, _03C0
     WaitMovement
     ScrCmd_16C 77
     ScrCmd_169 77
     ScrCmd_16A 77
-    ScrCmd_065 13
+    RemoveObject 13
     SetVar 0x40C8, 1
     SetVar 0x404E, 0xFF
     FadeScreen 6, 1, 0, 0
@@ -186,19 +179,19 @@ _0274:
 
 _0280:
     ApplyMovement 13, _0358
-    ApplyMovement 0xFF, _039C
+    ApplyMovement LOCALID_PLAYER, _039C
     WaitMovement
     Return
 
 _0294:
     ApplyMovement 13, _0368
-    ApplyMovement 0xFF, _03A8
+    ApplyMovement LOCALID_PLAYER, _03A8
     WaitMovement
     Return
 
 _02A8:
     ApplyMovement 13, _0378
-    ApplyMovement 0xFF, _03B4
+    ApplyMovement LOCALID_PLAYER, _03B4
     WaitMovement
     Return
 
@@ -214,104 +207,104 @@ _02BC:
 
 _02F2:
     ApplyMovement 13, _0340
-    ApplyMovement 0xFF, _03CC
+    ApplyMovement LOCALID_PLAYER, _03CC
     WaitMovement
     Return
 
 _0306:
-    ApplyMovement 0xFF, _03CC
+    ApplyMovement LOCALID_PLAYER, _03CC
     WaitMovement
     Return
 
 _0312:
     ApplyMovement 13, _034C
-    ApplyMovement 0xFF, _03CC
+    ApplyMovement LOCALID_PLAYER, _03CC
     WaitMovement
     Return
 
     .balign 4, 0
 _0328:
-    MoveAction_00C
-    MoveAction_022
+    MoveAction_012
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0334:
-    MoveAction_00D
-    MoveAction_022
+    MoveAction_013
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0340:
-    MoveAction_00D
-    MoveAction_022
+    MoveAction_013
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _034C:
-    MoveAction_00C
-    MoveAction_022
+    MoveAction_012
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0358:
-    MoveAction_00F 6
-    MoveAction_00C 2
-    MoveAction_021
+    MoveAction_015 6
+    MoveAction_012 2
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0368:
-    MoveAction_00F 6
-    MoveAction_00C 3
-    MoveAction_021
+    MoveAction_015 6
+    MoveAction_012 3
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0378:
-    MoveAction_00F 6
-    MoveAction_00C 4
-    MoveAction_021
+    MoveAction_015 6
+    MoveAction_012 4
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _0388:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _0390:
-    MoveAction_00C
-    MoveAction_045
+    MoveAction_012
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _039C:
-    MoveAction_00F 7
-    MoveAction_00C
+    MoveAction_015 7
+    MoveAction_012
     EndMovement
 
     .balign 4, 0
 _03A8:
-    MoveAction_00F 7
-    MoveAction_00C 2
+    MoveAction_015 7
+    MoveAction_012 2
     EndMovement
 
     .balign 4, 0
 _03B4:
-    MoveAction_00F 7
-    MoveAction_00C 3
+    MoveAction_015 7
+    MoveAction_012 3
     EndMovement
 
     .balign 4, 0
 _03C0:
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _03CC:
-    MoveAction_00E
+    MoveAction_014
     EndMovement
 
 _03D4:
@@ -319,8 +312,8 @@ _03D4:
     LockAll
     FacePlayer
     Message 10
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0429
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0429
     Message 11
     CloseMessage
     SetFlag 0x2AA
@@ -349,8 +342,8 @@ _043C:
     LockAll
     FacePlayer
     Message 13
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0491
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0491
     Message 14
     CloseMessage
     SetFlag 0x2AD
@@ -373,8 +366,8 @@ _049C:
     LockAll
     FacePlayer
     Message 16
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _04F1
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _04F1
     Message 17
     CloseMessage
     SetFlag 0x2AF
@@ -397,8 +390,8 @@ _04FC:
     LockAll
     FacePlayer
     Message 19
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0551
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0551
     Message 20
     CloseMessage
     SetFlag 0x2B2
@@ -421,8 +414,8 @@ _055C:
     LockAll
     FacePlayer
     Message 22
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _05B1
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _05B1
     Message 23
     CloseMessage
     SetFlag 0x2B5
@@ -441,11 +434,7 @@ _05B1:
     End
 
 _05BC:
-    ScrCmd_036 27, 2, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowLandmarkSign 27
     End
 
     .byte 0

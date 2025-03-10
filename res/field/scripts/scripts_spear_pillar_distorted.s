@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/spear_pillar_distorted.h"
 
     .data
 
@@ -10,18 +11,18 @@
     ScriptEntry _01F3
     ScriptEntry _0206
     ScriptEntry _0217
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0022:
     LockAll
     ClearFlag 0x2BA
-    ScrCmd_064 1
+    AddObject 1
     ScrCmd_1B2 1
-    ScrCmd_186 0, 32, 34
+    SetObjectEventPos 0, 32, 34
     ScrCmd_189 0, 0
     ScrCmd_188 0, 14
     ClearFlag 0x1CD
-    ScrCmd_064 0
+    AddObject 0
     ScrCmd_066 30, 30
     ApplyMovement 241, _016C
     WaitMovement
@@ -37,11 +38,11 @@ _0022:
 _0088:
     ScrCmd_20D 6, 0x800C
     GoToIfEq 0x800C, 0, _0088
-    ScrCmd_065 1
+    RemoveObject 1
     ApplyMovement 241, _0178
     WaitMovement
     ScrCmd_067
-    ApplyMovement 0xFF, _013C
+    ApplyMovement LOCALID_PLAYER, _013C
     ApplyMovement 0, _014C
     WaitMovement
     Message 4
@@ -55,9 +56,9 @@ _0088:
 
 _00DA:
     Message 6
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00FD
-    GoToIfEq 0x800C, 1, _0130
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00FD
+    GoToIfEq 0x800C, MENU_NO, _0130
     End
 
 _00FD:
@@ -66,7 +67,7 @@ _00FD:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_320
-    ScrCmd_0A1
+    ReturnToField
     ScrCmd_328 1
     Warp MAP_HEADER_DISTORTION_WORLD_1F, 0, 55, 40, 1
     FadeScreen 6, 1, 1, 0
@@ -82,38 +83,38 @@ _0130:
 
     .balign 4, 0
 _013C:
-    MoveAction_023
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _0144:
-    MoveAction_00C 4
+    MoveAction_012 4
     EndMovement
 
     .balign 4, 0
 _014C:
-    MoveAction_022
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0154:
-    MoveAction_023
-    MoveAction_03F 2
-    MoveAction_021
-    MoveAction_03F
-    MoveAction_020
+    MoveAction_035
+    MoveAction_063 2
+    MoveAction_033
+    MoveAction_063
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _016C:
-    MoveAction_00F
-    MoveAction_00C 5
+    MoveAction_015
+    MoveAction_012 5
     EndMovement
 
     .balign 4, 0
 _0178:
-    MoveAction_00D 5
-    MoveAction_00E
+    MoveAction_013 5
+    MoveAction_014
     EndMovement
 
 _0184:
@@ -121,9 +122,9 @@ _0184:
     LockAll
     FacePlayer
     Message 6
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00FD
-    GoToIfEq 0x800C, 1, _01AF
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00FD
+    GoToIfEq 0x800C, MENU_NO, _01AF
     End
 
 _01AF:

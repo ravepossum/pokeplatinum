@@ -23,17 +23,16 @@
 
 #include "communication_information.h"
 #include "communication_system.h"
-#include "core_sys.h"
 #include "graphics.h"
 #include "heap.h"
 #include "narc.h"
 #include "overlay_manager.h"
+#include "system.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
-#include "unk_0201DBEC.h"
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_020393C8.h"
+#include "vram_transfer.h"
 
 typedef struct UnkStruct_ov115_0226095C_t {
     UnkStruct_ov114_0225D678 *unk_00;
@@ -70,9 +69,9 @@ int ov115_02260440(OverlayManager *param0, int *param1)
     UnkStruct_ov115_02260440 *v1 = OverlayManager_Args(param0);
     BOOL v2;
 
-    Heap_Create(3, 99, 0x60000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_99, 0x60000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov115_0226095C), 99);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov115_0226095C), HEAP_ID_99);
     memset(v0, 0, sizeof(UnkStruct_ov115_0226095C));
 
     ov114_0225C700(&v0->unk_08, v1->unk_39, v1->unk_34, v1->unk_38, &v1->unk_00);
@@ -117,7 +116,7 @@ int ov115_0226048C(OverlayManager *param0, int *param1)
     switch (*param1) {
     case 0:
 
-        v0->unk_00 = ov114_0225C814(&v0->unk_08, 99);
+        v0->unk_00 = ov114_0225C814(&v0->unk_08, HEAP_ID_99);
 
         (*param1)++;
         break;
@@ -131,11 +130,11 @@ int ov115_0226048C(OverlayManager *param0, int *param1)
         }
         break;
     case 2:
-        if (gCoreSys.heldKeys & PAD_BUTTON_A) {
+        if (gSystem.heldKeys & PAD_BUTTON_A) {
             break;
         }
 
-        SetMainCallback(ov115_02260A50, v0);
+        SetVBlankCallback(ov115_02260A50, v0);
         DisableHBlank();
 
         v0->unk_38 = 0;
@@ -143,7 +142,7 @@ int ov115_0226048C(OverlayManager *param0, int *param1)
         v0->unk_40 = 0;
         memset(v0->unk_84, 0, sizeof(u8) * 4);
 
-        VRAMTransferManager_New(32, 99);
+        VramTransfer_New(32, 99);
         ov115_02265A24(v0);
 
         v0->unk_80 = 1;
@@ -155,15 +154,15 @@ int ov115_0226048C(OverlayManager *param0, int *param1)
         v0->unk_46 = ov114_0225C76C(&v0->unk_08, v0->unk_44);
 
         if (v0->unk_44 == 0) {
-            v0->unk_30 = ov115_02260BBC(99, (30 * 40), v0->unk_74, &v0->unk_48);
+            v0->unk_30 = ov115_02260BBC(HEAP_ID_99, (30 * 40), v0->unk_74, &v0->unk_48);
             v0->unk_7C = 1;
         }
 
-        v0->unk_34 = ov115_02260CEC(99, (30 * 40), v0->unk_74, v0->unk_46, &v0->unk_48);
+        v0->unk_34 = ov115_02260CEC(HEAP_ID_99, (30 * 40), v0->unk_74, v0->unk_46, &v0->unk_48);
         sub_02039734();
 
         if (v1->unk_38) {
-            ov4_021D1E74(99);
+            ov4_021D1E74(HEAP_ID_99);
         }
 
         {
@@ -199,7 +198,7 @@ int ov115_0226048C(OverlayManager *param0, int *param1)
             break;
         }
 
-        StartScreenTransition(0, 27, 27, 0xffff, 6, 1, 99);
+        StartScreenTransition(0, 27, 27, 0xffff, 6, 1, HEAP_ID_99);
         (*param1)++;
         break;
     case 4:
@@ -303,7 +302,7 @@ int ov115_0226048C(OverlayManager *param0, int *param1)
         }
         break;
     case 11:
-        StartScreenTransition(0, 26, 26, 0xffff, 6, 1, 99);
+        StartScreenTransition(0, 26, 26, 0xffff, 6, 1, HEAP_ID_99);
         ov115_02260F70(v0->unk_34, 1);
         (*param1)++;
         break;
@@ -331,9 +330,9 @@ int ov115_0226048C(OverlayManager *param0, int *param1)
 
         ov115_02260D78(v0->unk_34);
         v0->unk_34 = NULL;
-        SetMainCallback(NULL, NULL);
+        SetVBlankCallback(NULL, NULL);
         DisableHBlank();
-        VRAMTransferManager_Destroy();
+        VramTransfer_Free();
         (*param1)++;
         break;
     case 14: {
@@ -342,7 +341,7 @@ int ov115_0226048C(OverlayManager *param0, int *param1)
         ov114_0225C9A8(&v0->unk_18, v0->unk_08.unk_08);
         v9 = v0->unk_18.unk_10[v0->unk_46];
     }
-        v0->unk_04 = ov114_0225C8E0(&v0->unk_08, &v0->unk_18, 99);
+        v0->unk_04 = ov114_0225C8E0(&v0->unk_08, &v0->unk_18, HEAP_ID_99);
         (*param1)++;
         break;
     case 15: {
@@ -379,7 +378,7 @@ int ov115_022608E4(OverlayManager *param0, int *param1)
         ov115_02260B30(v0);
 
         OverlayManager_FreeData(param0);
-        Heap_Destroy(99);
+        Heap_Destroy(HEAP_ID_99);
         CommMan_SetErrorHandling(0, 1);
 
         if (v2 == 1) {
@@ -413,9 +412,7 @@ void ov115_02260964(UnkStruct_ov115_0226095C *param0)
 
 void ov115_0226096C(UnkStruct_ov115_0226095C *param0, const UnkStruct_ov115_02265AD0 *param1, u32 param2)
 {
-    u32 v0;
-
-    v0 = ov114_0225C76C(&param0->unk_08, param2);
+    u32 v0 = ov114_0225C76C(&param0->unk_08, param2);
     ov115_02260C6C(param0->unk_30, param1, v0);
 }
 
@@ -426,9 +423,7 @@ void ov115_02260988(UnkStruct_ov115_0226095C *param0, const UnkStruct_ov115_0226
 
 void ov115_02260994(UnkStruct_ov115_0226095C *param0, u32 param1, u32 param2)
 {
-    u32 v0;
-
-    v0 = ov114_0225C76C(&param0->unk_08, param2);
+    u32 v0 = ov114_0225C76C(&param0->unk_08, param2);
 
     if (param0->unk_30 != NULL) {
         ov115_02260C7C(param0->unk_30, param1, v0);
@@ -547,7 +542,7 @@ static void ov115_02260B30(UnkStruct_ov115_0226095C *param0)
 
 static void ov115_02260B44(UnkStruct_ov115_0226095C *param0, UnkStruct_ov115_02260440 *param1)
 {
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
 
     if (param0->unk_00 != NULL) {
@@ -561,7 +556,7 @@ static void ov115_02260B44(UnkStruct_ov115_0226095C *param0, UnkStruct_ov115_022
         }
 
         ov115_02260D78(param0->unk_34);
-        VRAMTransferManager_Destroy();
+        VramTransfer_Free();
     }
 
     if (param1->unk_38) {

@@ -7,7 +7,7 @@
 
 #include "constants/communication/comm_packets.h"
 #include "constants/heap.h"
-#include "consts/game_records.h"
+#include "generated/trainer_score_events.h"
 
 #include "struct_decls/struct_0202855C_decl.h"
 #include "struct_decls/struct_020298B0_decl.h"
@@ -29,7 +29,6 @@
 
 #include "communication_information.h"
 #include "communication_system.h"
-#include "core_sys.h"
 #include "field_system.h"
 #include "game_records.h"
 #include "heap.h"
@@ -40,6 +39,7 @@
 #include "player_avatar.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "trainer_info.h"
 #include "unk_0202854C.h"
 #include "unk_020366A0.h"
@@ -412,7 +412,7 @@ static void CommPlayer_Add(u8 netId)
         GF_ASSERT(playerAvatar != NULL);
         sCommPlayerManager->playerAvatar[netId] = playerAvatar;
 
-        MapObject_SetId(Player_MapObject(playerAvatar), 0xff + netId + 1);
+        MapObject_SetLocalID(Player_MapObject(playerAvatar), 0xff + netId + 1);
 
         if (sCommPlayerManager->isUnderground) {
             UndergroundMan_SetReturnLog(netId);
@@ -473,7 +473,7 @@ static void CommPlayer_SendMoveSpeed()
 {
     u8 moveSpeed = 2;
 
-    if (PAD_BUTTON_B & gCoreSys.heldKeys) {
+    if (PAD_BUTTON_B & gSystem.heldKeys) {
         moveSpeed = 1;
     }
 
@@ -1129,7 +1129,7 @@ static BOOL CommPlayer_MoveBlow(int netId, int param1)
     x = CommPlayer_GetXServer(netId);
     z = CommPlayer_GetZServer(netId);
     x += MapObject_GetDxFromDir(sCommPlayerManager->unk_112[netId]);
-    z += MapObject_GetDyFromDir(sCommPlayerManager->unk_112[netId]);
+    z += MapObject_GetDzFromDir(sCommPlayerManager->unk_112[netId]);
 
     if (sCommPlayerManager->unk_10A[netId] != 0) {
         if (CommPlayer_CheckCollision(x, z, netId)) {
@@ -1318,7 +1318,7 @@ int sub_02058DC0(int netId)
         return 0xffff;
     }
 
-    return sCommPlayerManager->playerLocation[netId].z + MapObject_GetDyFromDir(sCommPlayerManager->playerLocation[netId].dir);
+    return sCommPlayerManager->playerLocation[netId].z + MapObject_GetDzFromDir(sCommPlayerManager->playerLocation[netId].dir);
 }
 
 int CommPlayer_GetXServer(int netId)
@@ -1380,7 +1380,7 @@ int CommPlayer_AddZServer(int netId)
         return 0xffff;
     }
 
-    return sCommPlayerManager->playerLocationServer[netId].z + MapObject_GetDyFromDir(sCommPlayerManager->playerLocationServer[netId].dir);
+    return sCommPlayerManager->playerLocationServer[netId].z + MapObject_GetDzFromDir(sCommPlayerManager->playerLocationServer[netId].dir);
 }
 
 int CommPlayer_Dir(int netId)
@@ -1591,7 +1591,7 @@ BOOL sub_0205928C(void)
 
         dir = CommPlayer_GetOppositeDir(playerLocation->dir);
         playerLocation->x += MapObject_GetDxFromDir(dir);
-        playerLocation->z += MapObject_GetDyFromDir(dir);
+        playerLocation->z += MapObject_GetDzFromDir(dir);
         playerLocation->moveSpeed = 2;
 
         sCommPlayerManager->movementChanged[netId] = 1;
@@ -1771,7 +1771,7 @@ void CommPlayerMan_ForcePos(void)
 
         MapObject_SetX(obj, x);
         MapObject_SetZ(obj, z);
-        MapObject_SetPosDir(obj, x, 0, z, dir);
+        MapObject_SetPosDirFromCoords(obj, x, 0, z, dir);
     }
 }
 

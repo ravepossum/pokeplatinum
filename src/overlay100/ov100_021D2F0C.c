@@ -3,9 +3,6 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_0200C6E4_decl.h"
-#include "struct_decls/struct_0200C704_decl.h"
-
 #include "overlay100/ov100_021D46C8.h"
 #include "overlay100/ov100_021D4E04.h"
 #include "overlay100/struct_ov100_021D3084.h"
@@ -22,6 +19,7 @@
 #include "heap.h"
 #include "narc.h"
 #include "palette.h"
+#include "sprite_system.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "text.h"
@@ -58,8 +56,8 @@ static void ov100_021D2F64(UnkStruct_ov100_021D3084 *param0)
 {
     NARC *v0 = param0->unk_1D28->unk_00;
     BgConfig *v1 = param0->unk_1D28->unk_0C;
-    SpriteRenderer *v2 = param0->unk_1D28->unk_04;
-    SpriteGfxHandler *v3 = param0->unk_1D28->unk_08;
+    SpriteSystem *v2 = param0->unk_1D28->unk_04;
+    SpriteManager *v3 = param0->unk_1D28->unk_08;
     PaletteData *v4 = param0->unk_1D28->unk_10;
 
     ov100_021D4AC8(&param0->unk_0C.unk_934[0], 84, param0->unk_1D28->unk_00);
@@ -86,8 +84,8 @@ static void ov100_021D3084(UnkStruct_ov100_021D3084 *param0)
 {
     NARC *v0 = param0->unk_1D28->unk_00;
     BgConfig *v1 = param0->unk_1D28->unk_0C;
-    SpriteRenderer *v2 = param0->unk_1D28->unk_04;
-    SpriteGfxHandler *v3 = param0->unk_1D28->unk_08;
+    SpriteSystem *v2 = param0->unk_1D28->unk_04;
+    SpriteManager *v3 = param0->unk_1D28->unk_08;
     PaletteData *v4 = param0->unk_1D28->unk_10;
 
     ov100_021D4AC8(&param0->unk_0C.unk_04, 46, param0->unk_1D28->unk_00);
@@ -245,7 +243,7 @@ static void ov100_021D3558(UnkStruct_ov100_021D3084 *param0)
 
 void *ov100_021D3620(UnkStruct_ov100_021D4DD8 *param0)
 {
-    UnkStruct_ov100_021D3084 *v0 = Heap_AllocFromHeap(111, sizeof(UnkStruct_ov100_021D3084));
+    UnkStruct_ov100_021D3084 *v0 = Heap_AllocFromHeap(HEAP_ID_111, sizeof(UnkStruct_ov100_021D3084));
 
     memset(v0, 0, sizeof(UnkStruct_ov100_021D3084));
 
@@ -375,7 +373,7 @@ static void ov100_021D37F4(SysTask *param0, void *param1)
         break;
     case 1:
         if ((++v0->unk_04) >= NELEMS(v1)) {
-            Sound_PlayPokemonCry(0, v0->unk_08, v0->unk_0C, 80, 111, 0);
+            Sound_PlayPokemonCry(POKECRY_NORMAL, v0->unk_08, v0->unk_0C, 80, HEAP_ID_111, 0);
             v0->unk_00++;
         } else {
             Easy3DObject_SetScale(&v0->unk_10->unk_00, FX32_CONST(v1[v0->unk_04]), FX32_CONST(1.00f), FX32_CONST(1.00f));
@@ -648,7 +646,7 @@ BOOL ov100_021D39E4(void *param0)
             Easy3DObject_SetScale(&v0->unk_0C.unk_934[0].unk_00, v0->unk_0C.unk_934[0].unk_150, FX32_CONST(1.0), v0->unk_0C.unk_934[0].unk_150);
             Easy3DObject_SetScale(&v0->unk_0C.unk_934[1].unk_00, v0->unk_0C.unk_934[1].unk_150, FX32_CONST(1.0), v0->unk_0C.unk_934[1].unk_150);
         } else {
-            StartScreenTransition(0, 0, 0, 0x0, 6, 1, 111);
+            StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_111);
             v0->unk_00++;
         }
         break;

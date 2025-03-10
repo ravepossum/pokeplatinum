@@ -5,7 +5,6 @@
 
 #include "struct_decls/struct_0203041C_decl.h"
 #include "struct_decls/struct_020305B8_decl.h"
-#include "struct_decls/struct_party_decl.h"
 
 #include "overlay104/ov104_0223A7F4.h"
 #include "overlay104/ov104_0223B6F4.h"
@@ -100,9 +99,7 @@ BOOL ov104_0222ED00(UnkStruct_ov104_0223B5C0 *param0)
     int v0, v1;
     TrainerInfo *v2;
     u16 *v3;
-    int v4, v5;
-
-    v5 = 44;
+    int v4, v5 = 44;
     v3 = param0->unk_72C;
     v1 = 0;
     v2 = SaveData_GetTrainerInfo(param0->unk_6FC);
@@ -144,9 +141,7 @@ BOOL ov104_0222ED44(UnkStruct_ov104_0223B5C0 *param0)
     Pokemon *v1;
     int v2, v3;
     u16 *v4;
-    int v5, v6;
-
-    v6 = 44;
+    int v5, v6 = 44;
     v4 = param0->unk_72C;
     v3 = 0;
 
@@ -195,9 +190,7 @@ BOOL ov104_0222EDA8(UnkStruct_ov104_0223B5C0 *param0)
 {
     int v0, v1;
     u16 *v2;
-    int v3, v4;
-
-    v4 = 44;
+    int v3, v4 = 44;
     v2 = param0->unk_72C;
     v1 = 0;
 
@@ -245,9 +238,7 @@ void ov104_0222EDDC(int param0, int param1, void *param2, void *param3)
 BOOL ov104_0222EE14(UnkStruct_ov104_0223B5C0 *param0, u8 param1)
 {
     u16 *v0;
-    int v1, v2;
-
-    v2 = 44;
+    int v1, v2 = 44;
     v0 = param0->unk_72C;
 
     v0[0] = param1;
@@ -332,9 +323,7 @@ BOOL ov104_0222EEF8(UnkStruct_ov104_0223ADA0 *param0)
     int v0, v1;
     TrainerInfo *v2;
     u16 *v3;
-    int v4, v5;
-
-    v5 = 60;
+    int v4, v5 = 60;
     v3 = param0->unk_504;
     v1 = 0;
     v2 = SaveData_GetTrainerInfo(param0->unk_4F8);
@@ -382,9 +371,7 @@ BOOL ov104_0222EF64(UnkStruct_ov104_0223ADA0 *param0)
 {
     int v0, v1;
     u16 *v2;
-    int v3, v4;
-
-    v4 = 60;
+    int v3, v4 = 60;
     v2 = param0->unk_504;
     v1 = 0;
 
@@ -433,9 +420,7 @@ BOOL ov104_0222EFCC(UnkStruct_ov104_0223ADA0 *param0)
 {
     int v0, v1;
     u16 *v2;
-    int v3, v4;
-
-    v4 = 60;
+    int v3, v4 = 60;
     v2 = param0->unk_504;
     v1 = 0;
 
@@ -511,9 +496,7 @@ BOOL ov104_0222F0B4(UnkStruct_ov104_0223ADA0 *param0)
 {
     int v0, v1;
     u16 *v2;
-    int v3, v4;
-
-    v4 = 60;
+    int v3, v4 = 60;
     v2 = param0->unk_504;
     v1 = 0;
 
@@ -587,9 +570,7 @@ void ov104_0222F124(int param0, int param1, void *param2, void *param3)
 BOOL ov104_0222F1A0(UnkStruct_ov104_0223ADA0 *param0, u8 param1)
 {
     u16 *v0;
-    int v1, v2;
-
-    v2 = 60;
+    int v1, v2 = 60;
     v0 = param0->unk_504;
 
     v0[0] = param1;
@@ -622,9 +603,7 @@ void ov104_0222F1C4(int param0, int param1, void *param2, void *param3)
 BOOL ov104_0222F1EC(UnkStruct_ov104_0223ADA0 *param0, u8 param1)
 {
     u16 *v0;
-    int v1, v2;
-
-    v2 = 60;
+    int v1, v2 = 60;
     v0 = param0->unk_504;
 
     v0[0] = param1;
@@ -746,9 +725,7 @@ void ov104_0222F31C(int param0, int param1, void *param2, void *param3)
 BOOL ov104_0222F3B8(UnkStruct_ov104_0223BA10 *param0)
 {
     int v0, v1, v2, v3;
-    UnkStruct_0203041C *v4;
-
-    v4 = sub_0203041C(param0->unk_04);
+    UnkStruct_0203041C *v4 = sub_0203041C(param0->unk_04);
     v3 = 40;
     v1 = 0;
 
@@ -1008,9 +985,7 @@ void ov104_0222F650(int param0, int param1, void *param2, void *param3)
 
 BOOL ov104_0222F6C8(UnkStruct_ov104_0223BA10 *param0, u16 param1)
 {
-    int v0, v1;
-
-    v1 = 40;
+    int v0, v1 = 40;
     param0->unk_3C0[0] = param1;
 
     if (CommSys_SendData(46, param0->unk_3C0, v1) == 1) {
@@ -1041,9 +1016,7 @@ void ov104_0222F6E8(int param0, int param1, void *param2, void *param3)
 
 BOOL ov104_0222F710(UnkStruct_ov104_0223BA10 *param0, u16 param1)
 {
-    int v0, v1;
-
-    v1 = 40;
+    int v0, v1 = 40;
     param0->unk_3C0[0] = param1;
 
     if (CommSys_SendData(47, param0->unk_3C0, v1) == 1) {
@@ -1114,7 +1087,7 @@ void ov104_0222F7BC(int param0, int param1, void *param2, void *param3)
 
     v0 = ov104_0223B7A8(v5->unk_10, 0);
     v3 = Pokemon_StructSize();
-    v4 = Pokemon_New(11);
+    v4 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v1 = 0; v1 < v0; v1++) {
         MI_CpuCopy8(&v6[v3 * v1], v4, v3);
@@ -1142,9 +1115,7 @@ u8 *ov104_0222F84C(int param0, void *param1, int param2)
 BOOL ov104_0222F86C(UnkStruct_ov104_0223BFFC *param0)
 {
     int v0, v1, v2, v3;
-    UnkStruct_020305B8 *v4;
-
-    v4 = sub_020305B8(param0->unk_04);
+    UnkStruct_020305B8 *v4 = sub_020305B8(param0->unk_04);
     v3 = 40;
     v1 = 0;
 
@@ -1307,9 +1278,7 @@ void ov104_0222F9C0(int param0, int param1, void *param2, void *param3)
 
 BOOL ov104_0222FA38(UnkStruct_ov104_0223BFFC *param0, u16 param1)
 {
-    int v0, v1;
-
-    v1 = 40;
+    int v0, v1 = 40;
     param0->unk_424[0] = param1;
 
     if (CommSys_SendData(68, param0->unk_424, v1) == 1) {
@@ -1340,9 +1309,7 @@ void ov104_0222FA5C(int param0, int param1, void *param2, void *param3)
 
 BOOL ov104_0222FA84(UnkStruct_ov104_0223BFFC *param0, u16 param1)
 {
-    int v0, v1;
-
-    v1 = 40;
+    int v0, v1 = 40;
     param0->unk_424[0] = param1;
 
     if (CommSys_SendData(69, param0->unk_424, v1) == 1) {
@@ -1413,7 +1380,7 @@ void ov104_0222FB34(int param0, int param1, void *param2, void *param3)
 
     v0 = ov104_0223BD70(v5->unk_10, 0);
     v3 = Pokemon_StructSize();
-    v4 = Pokemon_New(11);
+    v4 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v1 = 0; v1 < v0; v1++) {
         MI_CpuCopy8(&v6[v3 * v1], v4, v3);

@@ -1,16 +1,15 @@
 #ifndef POKEPLATINUM_STRUCT_OV10_0221F800_H
 #define POKEPLATINUM_STRUCT_OV10_0221F800_H
 
-#include "struct_decls/struct_party_decl.h"
-
 #include "field_battle_data_transfer.h"
+#include "party.h"
 #include "strbuf.h"
 
 typedef struct {
     FieldBattleDTO *unk_00;
     Party *unk_04[4];
     Strbuf *unk_14[4];
-    u32 unk_24;
+    u32 heapId;
     u8 unk_28;
     u8 unk_29;
     u8 unk_2A;

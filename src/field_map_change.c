@@ -5,14 +5,14 @@
 
 #include "constants/field/map_load.h"
 #include "constants/overworld_weather.h"
-#include "consts/map.h"
+#include "generated/map_headers.h"
 
 #include "struct_decls/struct_0203A790_decl.h"
 #include "struct_defs/map_load_mode.h"
 #include "struct_defs/struct_0205EC34.h"
 
 #include "field/field_system.h"
-#include "overlay005/ov5_021DD6FC.h"
+#include "overlay005/map_name_popup.h"
 #include "overlay005/ov5_021E135C.h"
 #include "overlay005/save_info_window.h"
 #include "overlay005/struct_ov5_021D432C_decl.h"
@@ -23,8 +23,9 @@
 #include "overlay023/ov23_0224B05C.h"
 
 #include "bg_window.h"
+#include "brightness_controller.h"
 #include "communication_system.h"
-#include "core_sys.h"
+#include "field_message.h"
 #include "field_overworld_state.h"
 #include "field_system.h"
 #include "field_task.h"
@@ -36,6 +37,7 @@
 #include "location.h"
 #include "map_header.h"
 #include "map_header_data.h"
+#include "map_matrix.h"
 #include "map_object.h"
 #include "menu.h"
 #include "message.h"
@@ -48,15 +50,15 @@
 #include "script_manager.h"
 #include "strbuf.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "system_flags.h"
+#include "system_vars.h"
 #include "trainer_info.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
-#include "unk_0200A9DC.h"
 #include "unk_0200F174.h"
 #include "unk_02027F50.h"
 #include "unk_0202854C.h"
-#include "unk_02039C80.h"
 #include "unk_0203A7D8.h"
 #include "unk_0203A944.h"
 #include "unk_0203D1B8.h"
@@ -67,8 +69,6 @@
 #include "unk_0205B33C.h"
 #include "unk_0205C22C.h"
 #include "unk_0205CA94.h"
-#include "unk_0205D8CC.h"
-#include "unk_0206AFE0.h"
 #include "unk_02070428.h"
 #include "vars_flags.h"
 
@@ -156,11 +156,11 @@ static void sub_02053E5C(FieldTask *task);
 static BOOL sub_0205444C(FieldTask *task, int param1);
 
 static const MapLoadMode sMapLoadMode[] = {
-    { 0x1, 0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0xC4000 },
-    { 0x2, 0x1, 0x1, 0x1, 0x1, 0x0, 0x10, 0xC4000 },
-    { 0x3, 0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0xC4000 },
-    { 0x4, 0x1, 0x1, 0x0, 0x1, 0x1, 0x1, 0xC4000 },
-    { 0x1, 0x1, 0x1, 0x0, 0x1, 0x1, 0x1, 0xA0000 }
+    { 0x1, FALSE, 0x0, 0x0, 0x0, 0x1, 0x0, 0xC4000 },
+    { 0x2, TRUE, 0x1, 0x1, 0x1, 0x0, 0x10, 0xC4000 },
+    { 0x3, FALSE, 0x0, 0x0, 0x0, 0x1, 0x0, 0xC4000 },
+    { 0x4, TRUE, 0x1, 0x0, 0x1, 0x1, 0x1, 0xC4000 },
+    { 0x1, TRUE, 0x1, 0x0, 0x1, 0x1, 0x1, 0xA0000 }
 };
 
 static const WindowTemplate Unk_020EC3A0 = {
@@ -231,7 +231,7 @@ static void FieldMapChange_SetNewLocation(FieldSystem *fieldSystem, const Locati
 void FieldMapChange_Set3DDisplay(FieldSystem *fieldSystem)
 {
     GF_ASSERT(fieldSystem->mapLoadType < MAP_LOAD_TYPE_MAX);
-    gCoreSys.unk_65 = fieldSystem->mapLoadMode->unk_00_12;
+    gSystem.whichScreenIs3D = fieldSystem->mapLoadMode->unk_00_12;
 }
 
 void FieldMapChange_UpdateGameData(FieldSystem *fieldSystem, BOOL noWarp)
@@ -248,7 +248,7 @@ void FieldMapChange_UpdateGameData(FieldSystem *fieldSystem, BOOL noWarp)
         FieldSystem_InitFlagsOnMapChange(fieldSystem);
     }
 
-    VsSeeker_Reset(SaveData_GetVarsFlags(fieldSystem->saveData));
+    SystemVars_ResetVsSeeker(SaveData_GetVarsFlags(fieldSystem->saveData));
 
     if (!noWarp) {
         sub_020559DC(fieldSystem);
@@ -287,8 +287,8 @@ void FieldMapChange_UpdateGameData(FieldSystem *fieldSystem, BOOL noWarp)
 
     sub_0203F5C0(fieldSystem, 2);
 
-    fieldSystem->unk_78.unk_00 = 0;
-    fieldSystem->unk_78.unk_02 = 0;
+    fieldSystem->wildBattleMetadata.encounterAttempts = 0;
+    fieldSystem->wildBattleMetadata.wildMonDefeated = 0;
 }
 
 void FieldMapChange_UpdateGameDataDistortionWorld(FieldSystem *fieldSystem, BOOL param1)
@@ -305,7 +305,7 @@ void FieldMapChange_UpdateGameDataDistortionWorld(FieldSystem *fieldSystem, BOOL
         FieldSystem_InitFlagsOnMapChange(fieldSystem);
     }
 
-    VsSeeker_Reset(SaveData_GetVarsFlags(fieldSystem->saveData));
+    SystemVars_ResetVsSeeker(SaveData_GetVarsFlags(fieldSystem->saveData));
 
     if (!param1) {
         sub_020559DC(fieldSystem);
@@ -323,8 +323,8 @@ void FieldMapChange_UpdateGameDataDistortionWorld(FieldSystem *fieldSystem, BOOL
         }
     }
 
-    fieldSystem->unk_78.unk_00 = 0;
-    fieldSystem->unk_78.unk_02 = 0;
+    fieldSystem->wildBattleMetadata.encounterAttempts = 0;
+    fieldSystem->wildBattleMetadata.wildMonDefeated = 0;
 }
 
 static void FieldMapChange_CreateObjects(FieldSystem *fieldSystem)
@@ -370,20 +370,20 @@ static void FieldMapChange_InitTerrainCollisionManager(FieldSystem *fieldSystem)
 {
     sub_020530C8(fieldSystem);
     GF_ASSERT(fieldSystem->terrainCollisionMan == NULL);
-    sub_02039DC0(fieldSystem->location->mapId, fieldSystem->unk_2C);
+    MapMatrix_Load(fieldSystem->location->mapId, fieldSystem->mapMatrix);
 
-    if (VarFlags_HiddenLocationsUnlocked(SaveData_GetVarsFlags(fieldSystem->saveData), HL_SEABREAKPATH)) {
-        sub_02039FE0(fieldSystem->unk_2C); // reveal Seabreak Path if Oak's Letter has been used
+    if (SystemVars_CheckHiddenLocation(SaveData_GetVarsFlags(fieldSystem->saveData), HIDDEN_LOCATION_SEABREAK_PATH)) {
+        MapMatrix_RevealSeabreakPath(fieldSystem->mapMatrix); // reveal Seabreak Path if Oak's Letter has been used
     }
 
-    if (!VarFlags_HiddenLocationsUnlocked(SaveData_GetVarsFlags(fieldSystem->saveData), HL_SPRINGPATH)) {
-        sub_02039F8C(fieldSystem->unk_2C);
+    if (!SystemVars_CheckHiddenLocation(SaveData_GetVarsFlags(fieldSystem->saveData), HIDDEN_LOCATION_SPRING_PATH)) {
+        MapMatrix_RevealSpringPath(fieldSystem->mapMatrix);
     }
 
     GF_ASSERT(fieldSystem->mapLoadType < MAP_LOAD_TYPE_MAX);
 
     fieldSystem->mapLoadMode = &sMapLoadMode[fieldSystem->mapLoadType];
-    fieldSystem->unk_60 = fieldSystem->mapLoadMode->unk_00_4;
+    fieldSystem->skipMapAttributes = fieldSystem->mapLoadMode->skipMapAttributes;
     fieldSystem->bottomScreen = fieldSystem->mapLoadMode->fieldBottomScreen;
 
     sub_02054F44(&fieldSystem->terrainCollisionMan, fieldSystem->mapLoadMode->unk_00_8);
@@ -409,19 +409,19 @@ static void FieldMapChange_RemoveTerrainCollisionManager(FieldSystem *fieldSyste
 
 void sub_02053494(FieldSystem *fieldSystem)
 {
-    if (fieldSystem->journal != NULL) {
-        void *v0 = sub_0202BC58(fieldSystem->location->mapId, 11);
-        Journal_SaveData(fieldSystem->journal, v0, 0);
+    if (fieldSystem->journalEntry != NULL) {
+        void *v0 = JournalEntry_CreateTitle(fieldSystem->location->mapId, 11);
+        JournalEntry_SaveData(fieldSystem->journalEntry, v0, JOURNAL_TITLE);
     }
 }
 
 static void sub_020534BC(FieldSystem *fieldSystem)
 {
-    if (fieldSystem->journal != NULL) {
+    if (fieldSystem->journalEntry != NULL) {
         FieldOverworldState *owState = SaveData_GetFieldOverworldState(fieldSystem->saveData);
         Location *location = FieldOverworldState_GetSpecialLocation(owState);
-        void *v2 = sub_0202BC58(location->mapId, 11);
-        Journal_SaveData(fieldSystem->journal, v2, 0);
+        void *v2 = JournalEntry_CreateTitle(location->mapId, 11);
+        JournalEntry_SaveData(fieldSystem->journalEntry, v2, JOURNAL_TITLE);
     }
 }
 
@@ -497,7 +497,7 @@ static BOOL FieldTask_LoadSavedGameMap(FieldTask *task)
             break;
         }
     case 1:
-        fieldSystem->journal = Journal_GetSavedPage(SaveData_GetJournal(fieldSystem->saveData), CheckJournalAcquired(varsFlags));
+        fieldSystem->journalEntry = Journal_GetSavedPage(SaveData_GetJournal(fieldSystem->saveData), CheckJournalAcquired(varsFlags));
 
         if (SystemFlag_CheckCommunicationClubAccessible(varsFlags)) {
             FieldOverworldState *fieldState = SaveData_GetFieldOverworldState(fieldSystem->saveData);
@@ -556,7 +556,7 @@ static BOOL FieldTask_LoadMapFromError(FieldTask *task)
         sub_0200F344(0, 0x0);
         sub_0200F344(1, 0x0);
         SaveData_LoadAndUpdateUnderground(fieldSystem->saveData);
-        fieldSystem->journal = Journal_GetSavedPage(SaveData_GetJournal(fieldSystem->saveData), CheckJournalAcquired(varsFlags));
+        fieldSystem->journalEntry = Journal_GetSavedPage(SaveData_GetJournal(fieldSystem->saveData), CheckJournalAcquired(varsFlags));
         (*state)++;
         break;
     case 1:
@@ -1142,7 +1142,7 @@ BOOL FieldTask_MapChangeToUnderground(FieldTask *task)
 
     switch (mapChangeUndergroundData->state) {
     case 0:
-        MessageLoader *msgLoader = MessageLoader_Init(1, 26, 221, 11);
+        MessageLoader *msgLoader = MessageLoader_Init(1, 26, 221, HEAP_ID_FIELDMAP);
 
         mapChangeUndergroundData->unk_34 = MessageLoader_GetNewStrbuf(msgLoader, 124);
         MessageLoader_Free(msgLoader);
@@ -1155,7 +1155,7 @@ BOOL FieldTask_MapChangeToUnderground(FieldTask *task)
     case 1:
         if (FieldMessage_FinishedPrinting(mapChangeUndergroundData->unk_38) == 1) {
             Strbuf_Free(mapChangeUndergroundData->unk_34);
-            LoadStandardWindowGraphics(fieldSystem->bgConfig, 3, 1024 - (18 + 12) - 9, 11, 0, 11);
+            LoadStandardWindowGraphics(fieldSystem->bgConfig, 3, 1024 - (18 + 12) - 9, 11, 0, HEAP_ID_FIELDMAP);
             mapChangeUndergroundData->unk_3C = Menu_MakeYesNoChoice(fieldSystem->bgConfig, &Unk_020EC3A0, 1024 - (18 + 12) - 9, 11, 11);
             mapChangeUndergroundData->state = 2;
         }
@@ -1238,12 +1238,12 @@ BOOL FieldTask_MapChangeToUnderground(FieldTask *task)
         if (sub_0205444C(task, 1)) {
             ov23_02249A2C();
             fieldSystem->unk_6C = ov23_02249404(fieldSystem);
-            sub_0200AAE0(30, 0, -16, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ, 2);
+            BrightnessController_StartTransition(30, 0, -16, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ, BRIGHTNESS_SUB_SCREEN);
             mapChangeUndergroundData->state++;
         }
         break;
     case 12:
-        if (sub_0200AC1C(2)) {
+        if (BrightnessController_IsTransitionComplete(BRIGHTNESS_SUB_SCREEN)) {
             ov23_0224DBF4(1);
             Heap_FreeToHeap(mapChangeUndergroundData);
             return 1;
@@ -1265,11 +1265,11 @@ BOOL FieldTask_MapChangeFromUnderground(FieldTask *task)
         ov23_0224DBF4(0);
         ov23_02249A5C();
         ov23_0224942C(fieldSystem->unk_6C);
-        sub_0200AAE0(30, -16, 0, GX_BLEND_PLANEMASK_BG0, 2);
+        BrightnessController_StartTransition(30, -16, 0, GX_BLEND_PLANEMASK_BG0, BRIGHTNESS_SUB_SCREEN);
         mapChangeUndergroundData->state++;
         break;
     case 1:
-        if (sub_0200AC1C(2)) {
+        if (BrightnessController_IsTransitionComplete(BRIGHTNESS_SUB_SCREEN)) {
             if ((fieldSystem->unk_6C == NULL) && !CommSys_IsInitialized()) {
                 sub_0200564C(0, 30);
                 mapChangeUndergroundData->state++;

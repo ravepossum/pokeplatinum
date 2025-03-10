@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/eterna_city_east_house.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _0021
     ScriptEntry _0034
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     PlayFanfare SEQ_SE_CONFIRM
@@ -32,11 +33,11 @@ _0034:
     LockAll
     FacePlayer
     Message 2
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _006F
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _006F
     Message 3
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _006F
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _006F
     Message 4
     GoTo _007A
     End

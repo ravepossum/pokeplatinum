@@ -54,9 +54,7 @@ static const UnkStruct_ov101_021D86B0 Unk_ov5_02200360;
 
 void *ov5_021F1CC8(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_021F1CF8 *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_021F1CF8)), 0, 0);
+    UnkStruct_021F1CF8 *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_021F1CF8)), 0, 0);
     v0->unk_00 = param0;
 
     ov5_021F1CF8(v0);
@@ -189,11 +187,11 @@ static UnkStruct_ov101_021D5D90 *ov5_021F1ECC(const MapObject *param0, int param
     VecFx32 v0;
     UnkStruct_ov101_021D5D90 *v1;
     UnkStruct_021F1FB8 v2;
-    int v3 = MapObject_XPosPrev(param0);
-    int v4 = MapObject_ZPosPrev(param0);
-    fx32 v5 = sub_02063074(param0);
-    int v6 = MapObject_Dir(param0);
-    int v7 = sub_02062990(param0);
+    int v3 = MapObject_GetXPrev(param0);
+    int v4 = MapObject_GetZPrev(param0);
+    fx32 v5 = MapObject_GetPosY(param0);
+    int v6 = MapObject_GetFacingDir(param0);
+    int v7 = MapObject_GetPrevFacingDir(param0);
     int v8 = sub_02062758(param0, 2);
     UnkStruct_ov5_021DF47C *v9 = ov5_021DF578(param0);
     UnkStruct_021F1CF8 *v10 = ov5_021DF55C(v9, 11);
@@ -259,9 +257,7 @@ static void ov5_021F1FE0(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
 static void ov5_021F1FE4(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
-    UnkStruct_021F1FE4 *v0;
-
-    v0 = param1;
+    UnkStruct_021F1FE4 *v0 = param1;
 
     switch (v0->unk_00) {
     case 0:

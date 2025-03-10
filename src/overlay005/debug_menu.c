@@ -5,11 +5,11 @@
 #include "constants/map_object.h"
 #include "constants/narc.h"
 #include "constants/pokemon.h"
-#include "consts/items.h"
-#include "consts/moves.h"
-#include "consts/pokemon.h"
-#include "consts/sdat.h"
-#include "consts/species.h"
+#include "generated/items.h"
+#include "generated/moves.h"
+#include "generated/sdat.h"
+#include "generated/species.h"
+#include "generated/text_banks.h"
 
 #include "struct_defs/struct_0203D8AC.h"
 #include "struct_defs/struct_02090800.h"
@@ -17,10 +17,8 @@
 #include "field/field_system.h"
 #include "overlay005/debug_mon_menu.h"
 #include "overlay006/ov6_02243258.h"
-#include "text/pl_msg.naix"
 
 #include "camera.h"
-#include "core_sys.h"
 #include "field_map_change.h"
 #include "field_system.h"
 #include "message.h"
@@ -29,6 +27,7 @@
 #include "render_window.h"
 #include "strbuf.h"
 #include "sys_task.h"
+#include "system.h"
 #include "text.h"
 #include "unk_0200F174.h"
 #include "unk_0203A7D8.h"
@@ -94,7 +93,7 @@ static const ListMenuTemplate DebugMenu_List_Header = {
     .pagerMode = PAGER_MODE_LEFT_RIGHT_PAD,
     .fontID = FONT_SYSTEM,
     .cursorType = 0,
-    .tmp = NULL,
+    .parent = NULL,
 };
 
 static const DebugMenuItem DebugMenu_ItemList[] = {
@@ -111,7 +110,7 @@ static const DebugMenuItem DebugMenu_ItemList[] = {
 
 void DebugMenu_Init(FieldSystem *sys)
 {
-    DebugMenu *menu = DebugMenu_CreateMultichoice(sys, message_bank_unk_0328, DebugMenu_ItemList, NELEMS(DebugMenu_ItemList), NULL);
+    DebugMenu *menu = DebugMenu_CreateMultichoice(sys, TEXT_BANK_UNK_0328, DebugMenu_ItemList, NELEMS(DebugMenu_ItemList), NULL);
     menu->callback = NULL;
     FieldSystem_PauseProcessing();
 }

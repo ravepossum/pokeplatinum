@@ -6,7 +6,6 @@
 #include "constants/heap.h"
 
 #include "struct_decls/struct_02029894_decl.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/struct_0205964C.h"
 #include "struct_defs/struct_02072014.h"
 
@@ -177,7 +176,7 @@ void FieldCommMan_EnterBattleRoom(FieldSystem *fieldSystem)
 
         for (netJd = 0; netJd < CommSys_ConnectedCount(); netJd++) {
             if (sFieldCommMan->trainerCard[netJd] == NULL) {
-                sFieldCommMan->trainerCard[netJd] = Heap_AllocFromHeap(0, sizeof(TrainerCard));
+                sFieldCommMan->trainerCard[netJd] = Heap_AllocFromHeap(HEAP_ID_SYSTEM, sizeof(TrainerCard));
             }
         }
 
@@ -311,7 +310,7 @@ static void sub_020599E4(void)
     }
 
     if (CommTiming_IsSyncState(92)) {
-        StartScreenTransition(0, 1, 1, 0x0, 6, 1, 4);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_FIELD);
         sub_0200F32C(0);
         sub_0200F32C(1);
         CommPlayerMan_Restart();
@@ -387,7 +386,7 @@ static void sub_02059B10(void)
         u8 v0 = 1;
         CommSys_SendDataFixedSize(94, &v0);
 
-        StartScreenTransition(0, 1, 1, 0x0, 6, 1, 4);
+        StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_FIELD);
         sub_0200F32C(0);
         sub_0200F32C(1);
         FieldCommMan_SetTask(sub_02059CD8, 0);
@@ -435,8 +434,8 @@ static void sub_02059BF4(void)
 static void sub_02059C2C(BOOL param0, const Party *party)
 {
     if (party) {
-        sFieldCommMan->party = Party_New(11);
-        Party_cpy(party, sFieldCommMan->party);
+        sFieldCommMan->party = Party_New(HEAP_ID_FIELDMAP);
+        Party_Copy(party, sFieldCommMan->party);
     }
 
     if (param0) {

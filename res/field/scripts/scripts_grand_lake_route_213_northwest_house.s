@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/grand_lake_route_213_northwest_house.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _0068
     ScriptEntry _013A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     PlayFanfare SEQ_SE_CONFIRM
@@ -41,7 +42,7 @@ _0068:
     GoToIfSet 0x161, _012F
     SetFlag 0x161
     Message 2
-    ScrCmd_1B7 0x800C, 10
+    GetRandom 0x800C, 10
     GoToIfEq 0x800C, 0, _0103
     GoToIfEq 0x800C, 1, _0103
     GoToIfEq 0x800C, 2, _0103

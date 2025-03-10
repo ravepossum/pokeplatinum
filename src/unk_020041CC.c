@@ -58,7 +58,6 @@ void sub_02004D40(u32 param0, int param1);
 BOOL sub_02004CB4(UnkStruct_02004CB4 *param0, u32 param1);
 void sub_02004CF4(u32 param0);
 BOOL sub_02004D04(u32 param0);
-BOOL sub_02004D78(u16 param0, int param1, int param2, u32 param3, int param4);
 void sub_02004E84(u32 param0);
 static void sub_02004E64(u8 *param0, u32 param1);
 BOOL sub_02004EC0(void);
@@ -776,9 +775,7 @@ int sub_02004B34(NNSSndHandle *param0)
 
 const NNSSndArcBankInfo *sub_02004B3C(int param0)
 {
-    const NNSSndArcBankInfo *v0;
-
-    v0 = NNS_SndArcGetBankInfo(sub_02004B48(param0));
+    const NNSSndArcBankInfo *v0 = NNS_SndArcGetBankInfo(sub_02004B48(param0));
 
     if (v0 == NULL) {
         (void)0;
@@ -789,9 +786,7 @@ const NNSSndArcBankInfo *sub_02004B3C(int param0)
 
 u16 sub_02004B48(int param0)
 {
-    const NNSSndSeqParam *v0;
-
-    v0 = NNS_SndArcGetSeqParam(param0);
+    const NNSSndSeqParam *v0 = NNS_SndArcGetSeqParam(param0);
 
     if (v0 == NULL) {
         return 0;
@@ -945,9 +940,7 @@ void sub_02004C4C(u32 param0)
 
 BOOL sub_02004CB4(UnkStruct_02004CB4 *param0, u32 param1)
 {
-    int v0;
-
-    v0 = NNS_SndWaveOutStart(*param0->unk_00, param0->unk_04, param0->unk_08, param0->unk_0C, param0->unk_10, param0->unk_14, param0->unk_18, param0->unk_1C, param0->unk_20, param0->unk_24);
+    int v0 = NNS_SndWaveOutStart(*param0->unk_00, param0->unk_04, param0->unk_08, param0->unk_0C, param0->unk_10, param0->unk_14, param0->unk_18, param0->unk_1C, param0->unk_20, param0->unk_24);
 
     if (v0 == 0) {
         sub_02004C4C(param1);
@@ -998,7 +991,7 @@ void sub_02004D40(u32 param0, int param1)
     return;
 }
 
-BOOL sub_02004D78(u16 param0, int param1, int param2, u32 param3, int param4)
+BOOL sub_02004D78(u16 param0, int param1, int param2, u32 param3, int heapID)
 {
     u8 *v0;
     const NNSSndArcWaveArcInfo *v1;
@@ -1026,7 +1019,7 @@ BOOL sub_02004D78(u16 param0, int param1, int param2, u32 param3, int param4)
     }
 
     if (param3 == 14) {
-        *v6 = Heap_AllocFromHeap(param4, v2);
+        *v6 = Heap_AllocFromHeap(heapID, v2);
 
         if (*v6 == NULL) {
             GF_ASSERT(FALSE);
@@ -1161,9 +1154,9 @@ void sub_02004F4C(int param0)
     return;
 }
 
-void sub_02004F68(int param0, u16 param1, int param2)
+void sub_02004F68(int param0, u16 param1, int pitch)
 {
-    NNS_SndPlayerSetTrackPitch(sub_020040CC(param0), param1, param2);
+    NNS_SndPlayerSetTrackPitch(sub_020040CC(param0), param1, pitch);
     return;
 }
 

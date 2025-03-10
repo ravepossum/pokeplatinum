@@ -31,18 +31,18 @@
 #include "pokemon.h"
 #include "save_player.h"
 #include "savedata.h"
+#include "system.h"
 #include "unk_020041CC.h"
 #include "unk_0200762C.h"
 #include "unk_0200F174.h"
 #include "unk_02015F84.h"
-#include "unk_02017728.h"
-#include "unk_0201DBEC.h"
 #include "unk_0201E3D8.h"
 #include "unk_02023FCC.h"
 #include "unk_02024220.h"
 #include "unk_02028124.h"
 #include "unk_0202C9F4.h"
 #include "unk_0206CCB0.h"
+#include "vram_transfer.h"
 
 #include "constdata/const_020F1E88.h"
 #include "constdata/const_020F64C0.h"
@@ -80,18 +80,18 @@ static int sub_02097B18(OverlayManager *param0, int *param1)
     UnkStruct_ov76_0223DE00 *v0;
     UnkStruct_02097F18 *v1;
 
-    Heap_Create(3, 53, 0x80000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_53, 0x80000);
     ov76_0223EB20(53);
     ov76_0223D3A0();
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov76_0223DE00), 53);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov76_0223DE00), HEAP_ID_53);
     memset(v0, 0, sizeof(UnkStruct_ov76_0223DE00));
 
     v0->unk_D4.unk_15C = ov76_0223BE6C();
     v1 = OverlayManager_Args(param0);
     v0->unk_00 = v1;
-    v0->unk_42C = NARC_ctor(NARC_INDEX_POKETOOL__POKE_EDIT__PL_POKE_DATA, 53);
-    v0->unk_428 = Pokemon_New(53);
+    v0->unk_42C = NARC_ctor(NARC_INDEX_POKETOOL__POKE_EDIT__PL_POKE_DATA, HEAP_ID_53);
+    v0->unk_428 = Pokemon_New(HEAP_ID_53);
     v0->unk_D4.unk_00 = 0xFF;
     v0->unk_418.unk_00 = 0;
 
@@ -141,20 +141,20 @@ static int sub_02097B18(OverlayManager *param0, int *param1)
         }
     }
 
-    v0->unk_D4.unk_10 = BgConfig_New(53);
-    VRAMTransferManager_New(64, 53);
-    v0->unk_D4.unk_14 = PaletteData_New(53);
+    v0->unk_D4.unk_10 = BgConfig_New(HEAP_ID_53);
+    VramTransfer_New(64, 53);
+    v0->unk_D4.unk_14 = PaletteData_New(HEAP_ID_53);
     PaletteData_SetAutoTransparent(v0->unk_D4.unk_14, 1);
-    PaletteData_AllocBuffer(v0->unk_D4.unk_14, 0, 0x200, 53);
-    PaletteData_AllocBuffer(v0->unk_D4.unk_14, 1, 0x200, 53);
-    PaletteData_AllocBuffer(v0->unk_D4.unk_14, 2, 0x200, 53);
-    PaletteData_AllocBuffer(v0->unk_D4.unk_14, 3, 0x200, 53);
+    PaletteData_AllocBuffer(v0->unk_D4.unk_14, 0, 0x200, HEAP_ID_53);
+    PaletteData_AllocBuffer(v0->unk_D4.unk_14, 1, 0x200, HEAP_ID_53);
+    PaletteData_AllocBuffer(v0->unk_D4.unk_14, 2, 0x200, HEAP_ID_53);
+    PaletteData_AllocBuffer(v0->unk_D4.unk_14, 3, 0x200, HEAP_ID_53);
 
     ov76_0223EB64(v0->unk_D4.unk_10);
     ov76_0223BF10();
 
-    v0->unk_D4.unk_D0 = sub_0200762C(53);
-    v0->unk_D4.unk_188 = sub_02015F84(53, 1, 0);
+    v0->unk_D4.unk_D0 = sub_0200762C(HEAP_ID_53);
+    v0->unk_D4.unk_188 = sub_02015F84(HEAP_ID_53, 1, 0);
 
     {
         int v7;
@@ -178,7 +178,7 @@ static int sub_02097B18(OverlayManager *param0, int *param1)
     }
 
     ov76_0223DCC0(v0);
-    SetMainCallback(ov76_0223ECB0, v0);
+    SetVBlankCallback(ov76_0223ECB0, v0);
     ov76_0223B8A8(v0);
     sub_02004550(59, 0, 0);
 
@@ -187,9 +187,7 @@ static int sub_02097B18(OverlayManager *param0, int *param1)
 
 static int sub_02097D30(OverlayManager *param0, int *param1)
 {
-    UnkStruct_ov76_0223DE00 *v0;
-
-    v0 = OverlayManager_Data(param0);
+    UnkStruct_ov76_0223DE00 *v0 = OverlayManager_Data(param0);
 
     switch (*param1) {
     case 0:
@@ -220,9 +218,7 @@ static int sub_02097D30(OverlayManager *param0, int *param1)
 
 static int sub_02097D88(OverlayManager *param0, int *param1)
 {
-    UnkStruct_ov76_0223DE00 *v0;
-
-    v0 = OverlayManager_Data(param0);
+    UnkStruct_ov76_0223DE00 *v0 = OverlayManager_Data(param0);
 
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG0, 0);
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG1, 0);
@@ -253,7 +249,7 @@ static int sub_02097D88(OverlayManager *param0, int *param1)
     sub_02015FB8(v0->unk_D4.unk_188);
     ov76_0223B8C4(v0);
     ov76_0223C424(&v0->unk_D4);
-    VRAMTransferManager_Destroy();
+    VramTransfer_Free();
     sub_020242C4(v0->unk_D4.unk_15C);
     ov76_0223EB54(53);
     NARC_dtor(v0->unk_42C);
@@ -269,7 +265,7 @@ static int sub_02097D88(OverlayManager *param0, int *param1)
         }
     }
 
-    Heap_Destroy(53);
+    Heap_Destroy(HEAP_ID_53);
     Overlay_UnloadByID(FS_OVERLAY_ID(overlay11));
     Overlay_UnloadByID(FS_OVERLAY_ID(overlay12));
 
@@ -422,11 +418,11 @@ void sub_020980DC(FieldTask *param0, SaveData *param1)
 
     memset(v0, 0, sizeof(UnkStruct_02097F38));
     v0->unk_10 = param1;
-    v0->unk_08 = Heap_AllocFromHeap(11, sizeof(UnkStruct_02097F18));
+    v0->unk_08 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_02097F18));
     memset(v0->unk_08, 0, sizeof(UnkStruct_02097F18));
     v0->unk_08->unk_24 = SaveData_Options(param1);
     v0->unk_08->unk_28 = param1;
-    v0->unk_0C = Heap_AllocFromHeap(11, sizeof(PartyManagementData));
+    v0->unk_0C = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(PartyManagementData));
     memset(v0->unk_0C, 0, sizeof(PartyManagementData));
 
     FieldTask_InitCall(param0, sub_02097F38, v0);

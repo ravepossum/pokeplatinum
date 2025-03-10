@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/pokemon_day_care.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _0021
     ScriptEntry _005C
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     CallIfSet 254, _001B
@@ -19,7 +20,7 @@ _0021:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_134 8, 0x800C
+    CheckPoketchAppRegistered POKETCH_APPID_DAYCARECHECKER, 0x800C
     GoToIfEq 0x800C, 1, _0051
     Message 0
     SetVar 0x8004, 8

@@ -4,13 +4,13 @@
 #include <string.h>
 
 #include "constants/battle.h"
-#include "consts/map.h"
+#include "generated/map_headers.h"
+#include "generated/text_banks.h"
 
 #include "data/field/hidden_items.h"
 #include "field/field_system.h"
 #include "field/scripts/scr_seq.naix"
 
-#include "field_menu.h"
 #include "field_task.h"
 #include "heap.h"
 #include "map_header.h"
@@ -20,6 +20,7 @@
 #include "message.h"
 #include "narc.h"
 #include "player_avatar.h"
+#include "start_menu.h"
 #include "strbuf.h"
 #include "trainer_data.h"
 #include "vars_flags.h"
@@ -94,8 +95,8 @@ static BOOL FieldTask_RunScript(FieldTask *taskManager)
         scriptManager->ctx[SCRIPT_CONTEXT_MAIN] = ScriptContext_CreateAndStart(fieldSystem, scriptManager->scriptID);
         scriptManager->numActiveContexts = 1;
         scriptManager->strTemplate = StringTemplate_New(8, 64, 11);
-        scriptManager->msgBuf = Strbuf_Init(1024, 11);
-        scriptManager->tmpBuf = Strbuf_Init(1024, 11);
+        scriptManager->msgBuf = Strbuf_Init(1024, HEAP_ID_FIELDMAP);
+        scriptManager->tmpBuf = Strbuf_Init(1024, HEAP_ID_FIELDMAP);
         scriptManager->state++;
     case 1:
         for (i = 0; i < NUM_SCRIPT_CONTEXTS; i++) {
@@ -134,7 +135,7 @@ static BOOL FieldTask_RunScript(FieldTask *taskManager)
 
 static ScriptManager *ScriptManager_New()
 {
-    ScriptManager *scriptManager = Heap_AllocFromHeap(11, sizeof(ScriptManager));
+    ScriptManager *scriptManager = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(ScriptManager));
 
     GF_ASSERT(scriptManager != NULL);
 
@@ -160,7 +161,7 @@ static void sub_0203EA68(FieldSystem *fieldSystem, ScriptManager *scriptManager,
     scriptManager->saveType = saveType;
 
     if (object != NULL) {
-        *targetID = MapObject_Id(object);
+        *targetID = MapObject_GetLocalID(object);
     }
 
     if (scriptID >= SCRIPT_ID_OFFSET_HIDDEN_ITEMS && scriptID <= SCRIPT_ID_OFFSET_SAFARI_ZONE - 1) {
@@ -170,7 +171,7 @@ static void sub_0203EA68(FieldSystem *fieldSystem, ScriptManager *scriptManager,
 
 ScriptContext *ScriptContext_CreateAndStart(FieldSystem *fieldSystem, u16 scriptID)
 {
-    ScriptContext *ctx = Heap_AllocFromHeap(11, sizeof(ScriptContext));
+    ScriptContext *ctx = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(ScriptContext));
 
     GF_ASSERT(ctx != NULL);
 
@@ -195,100 +196,100 @@ static u16 ScriptContext_LoadAndOffsetID(FieldSystem *fieldSystem, ScriptContext
     u16 retScriptID = scriptID;
 
     if (retScriptID >= 10490) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0499, 541);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0499, TEXT_BANK_UNK_0541);
         retScriptID -= 10490;
     } else if (retScriptID >= 10450) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0500, 16);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0500, TEXT_BANK_UNK_0016);
         retScriptID -= 10450;
-    } else if (retScriptID >= 10400) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0400, 203);
-        retScriptID -= 10400;
+    } else if (retScriptID >= SCRIPT_ID_POKEMON_CENTER_DAILY_TRAINERS) {
+        ScriptContext_Load(fieldSystem, ctx, scripts_pokemon_center_daily_trainers, TEXT_BANK_POKEMON_CENTER_DAILY_TRAINERS);
+        retScriptID -= SCRIPT_ID_POKEMON_CENTER_DAILY_TRAINERS;
     } else if (retScriptID >= 10300) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_1051, 552);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_1051, TEXT_BANK_UNK_0552);
         retScriptID -= 10300;
     } else if (retScriptID >= 10200) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0407, 379);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0407, TEXT_BANK_UNK_0379);
         retScriptID -= 10200;
     } else if (retScriptID >= 10150) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_1116, 621);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_1116, TEXT_BANK_UNK_0621);
         retScriptID -= 10150;
     } else if (retScriptID >= 10100) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_1115, 622);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_1115, TEXT_BANK_UNK_0622);
         retScriptID -= 10100;
     } else if (retScriptID >= 10000) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0409, 381);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0409, TEXT_BANK_UNK_0381);
         retScriptID -= 10000;
     } else if (retScriptID >= 9950) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0411, 383);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0411, TEXT_BANK_UNK_0383);
         retScriptID -= 9950;
     } else if (retScriptID >= 9900) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0397, 213);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0397, TEXT_BANK_COMMON_STRINGS);
         retScriptID -= 9900;
     } else if (retScriptID >= 9800) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0212, 217);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0212, TEXT_BANK_UNK_0217);
         retScriptID -= 9800;
     } else if (retScriptID >= 9700) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0422, 429);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0422, TEXT_BANK_UNK_0429);
         retScriptID -= 9700;
-    } else if (retScriptID >= 9600) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0412, 213);
-        retScriptID -= 9600;
+    } else if (retScriptID >= SCRIPT_ID_OFFSET_INIT_NEW_GAME) {
+        ScriptContext_Load(fieldSystem, ctx, scripts_init_new_game, TEXT_BANK_COMMON_STRINGS);
+        retScriptID -= SCRIPT_ID_OFFSET_INIT_NEW_GAME;
     } else if (retScriptID >= 9500) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0501, 547);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0501, TEXT_BANK_UNK_0547);
         retScriptID -= 9500;
     } else if (retScriptID >= 9400) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0426, 432);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0426, TEXT_BANK_UNK_0432);
         retScriptID -= 9400;
     } else if (retScriptID >= 9300) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0406, 374);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0406, TEXT_BANK_UNK_0374);
         retScriptID -= 9300;
     } else if (retScriptID >= 9200) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0423, 430);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0423, TEXT_BANK_UNK_0430);
         retScriptID -= 9200;
     } else if (retScriptID >= 9100) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0000, 11);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0000, TEXT_BANK_UNK_0011);
         retScriptID -= 9100;
     } else if (retScriptID >= 9000) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0213, 221);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0213, TEXT_BANK_UNK_0221);
         retScriptID -= 9000;
     } else if (retScriptID >= 8970) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0425, 7);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0425, TEXT_BANK_UNK_0007);
         retScriptID -= 8970;
     } else if (retScriptID >= 8950) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0498, 539);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0498, TEXT_BANK_UNK_0539);
         retScriptID -= 8950;
     } else if (retScriptID >= 8900) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0424, 431);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0424, TEXT_BANK_UNK_0431);
         retScriptID -= 8900;
     } else if (retScriptID >= SCRIPT_ID_OFFSET_SAFARI_ZONE) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0497, 538);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0497, TEXT_BANK_UNK_0538);
         retScriptID -= SCRIPT_ID_OFFSET_SAFARI_ZONE;
     } else if (retScriptID >= SCRIPT_ID_OFFSET_HIDDEN_ITEMS) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0408, 380);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0408, TEXT_BANK_UNK_0380);
         retScriptID -= SCRIPT_ID_OFFSET_HIDDEN_ITEMS;
     } else if (retScriptID >= 7000) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0404, 369);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0404, TEXT_BANK_UNK_0369);
         retScriptID -= 7000;
     } else if (retScriptID >= SCRIPT_ID_OFFSET_DOUBLE_BATTLES) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_1114, 213);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_1114, TEXT_BANK_COMMON_STRINGS);
         retScriptID -= SCRIPT_ID_OFFSET_DOUBLE_BATTLES;
     } else if (retScriptID >= SCRIPT_ID_OFFSET_SINGLE_BATTLES) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_1114, 213);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_1114, TEXT_BANK_COMMON_STRINGS);
         retScriptID -= SCRIPT_ID_OFFSET_SINGLE_BATTLES;
     } else if (retScriptID >= 2800) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0413, 397);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0413, TEXT_BANK_UNK_0397);
         retScriptID -= 2800;
     } else if (retScriptID >= 2500) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0001, 17);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0001, TEXT_BANK_UNK_0017);
         retScriptID -= 2500;
-    } else if (retScriptID >= 2000) {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0211, 213);
-        retScriptID -= 2000;
+    } else if (retScriptID >= SCRIPT_ID_OFFSET_COMMON_SCRIPTS) {
+        ScriptContext_Load(fieldSystem, ctx, scripts_common, TEXT_BANK_COMMON_STRINGS);
+        retScriptID -= SCRIPT_ID_OFFSET_COMMON_SCRIPTS;
     } else if (retScriptID >= 1) {
         ScriptContext_LoadFromCurrentMap(fieldSystem, ctx);
         retScriptID -= 1;
     } else {
-        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0402, 355);
+        ScriptContext_Load(fieldSystem, ctx, scripts_unk_0402, TEXT_BANK_UNK_0355);
         retScriptID = 0;
     }
 
@@ -299,14 +300,14 @@ static void ScriptContext_Load(FieldSystem *fieldSystem, ScriptContext *ctx, int
 {
     u8 *scripts = NARC_AllocAndReadWholeMemberByIndexPair(NARC_INDEX_FIELDDATA__SCRIPT__SCR_SEQ, scriptFile, 11);
     ctx->scripts = scripts;
-    ctx->loader = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, textBank, 11);
+    ctx->loader = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, textBank, HEAP_ID_FIELDMAP);
 }
 
 static void ScriptContext_LoadFromCurrentMap(FieldSystem *fieldSystem, ScriptContext *ctx)
 {
     u8 *scripts = ScriptContext_LoadScripts(fieldSystem->location->mapId);
     ctx->scripts = scripts;
-    ctx->loader = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, MapHeaderToMsgArchive(fieldSystem->location->mapId), 11);
+    ctx->loader = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, MapHeaderToMsgArchive(fieldSystem->location->mapId), HEAP_ID_FIELDMAP);
 }
 
 void *ScriptManager_GetMemberPtr(ScriptManager *scriptManager, u32 member)
@@ -315,7 +316,7 @@ void *ScriptManager_GetMemberPtr(ScriptManager *scriptManager, u32 member)
 
     switch (member) {
     case 0:
-        return &scriptManager->unk_10;
+        return &scriptManager->fieldMenuMan;
     case SCRIPT_MANAGER_WINDOW:
         return &scriptManager->window;
     case SCRIPT_MANAGER_UI_CONTROL:
@@ -445,7 +446,7 @@ void sub_0203F0C0(FieldSystem *fieldSystem)
 {
     ScriptManager *scriptManager = FieldTask_GetEnv(fieldSystem->task);
 
-    if (sub_0203A9C8(fieldSystem) == 1) {
+    if (sub_0203A9C8(fieldSystem) == TRUE) {
         scriptManager->function = sub_0203AB00;
     }
 }
@@ -552,7 +553,7 @@ int Script_GetTrainerBattlerIndex(u16 scriptID)
 
 BOOL Script_IsTrainerDoubleBattle(u16 trainerID)
 {
-    return TrainerData_LoadParam(trainerID, TRDATA_BATTLE_TYPE) != BATTLE_TYPE_SINGLES;
+    return Trainer_LoadParam(trainerID, TRDATA_BATTLE_TYPE) != BATTLE_TYPE_SINGLES;
 }
 
 BOOL Script_IsTrainerDefeated(FieldSystem *fieldSystem, u16 trainerID)
@@ -666,7 +667,7 @@ static BOOL ScriptManager_SetHiddenItem(ScriptManager *scriptManager, u16 script
     return TRUE;
 }
 
-UnkStruct_0203F478 *sub_0203F478(FieldSystem *fieldSystem, int param1)
+UnkStruct_0203F478 *sub_0203F478(FieldSystem *fieldSystem, int heapID)
 {
     UnkStruct_0203F478 *v0;
     const BgEvent *v1;
@@ -676,7 +677,7 @@ UnkStruct_0203F478 *sub_0203F478(FieldSystem *fieldSystem, int param1)
     v6 = 0;
     v5 = MapHeaderData_GetNumBgEvents(fieldSystem);
     v5++;
-    v0 = Heap_AllocFromHeap(param1, sizeof(UnkStruct_0203F478) * v5);
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_0203F478) * v5);
 
     if (v5 == 1) {
         v0[0].unk_04 = 0xff;
@@ -731,7 +732,7 @@ UnkStruct_0203F478 *sub_0203F478(FieldSystem *fieldSystem, int param1)
 
 void FieldSystem_InitNewGameState(FieldSystem *fieldSystem)
 {
-    FieldSystem_RunScript(fieldSystem, 9600);
+    FieldSystem_RunScript(fieldSystem, SCRIPT_ID(INIT_NEW_GAME, 0));
 }
 
 void FieldSystem_RunScript(FieldSystem *fieldSystem, u16 scriptID)
@@ -793,9 +794,7 @@ static u16 sub_0203F610(const u8 *param0, u8 param1)
 static u16 sub_0203F638(FieldSystem *fieldSystem, const u8 *param1, u8 param2)
 {
     u16 v0, v1;
-    u32 v2;
-
-    v2 = 0;
+    u32 v2 = 0;
 
     while (TRUE) {
         if (*param1 == 0) {

@@ -3,8 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/sprite_decl.h"
 #include "struct_defs/poke_animation_settings.h"
+#include "struct_defs/pokemon_sprite.h"
 
 #include "heap.h"
 #include "narc.h"
@@ -38,7 +38,7 @@ typedef struct UnkStruct_02016DAC_t {
 } UnkStruct_02016DAC;
 
 typedef struct UnkStruct_02016E64_t {
-    Sprite *unk_00;
+    PokemonSprite *unk_00;
     SysTask *unk_04;
     void *unk_08;
     u32 *unk_0C;
@@ -173,15 +173,13 @@ static const UnkStruct_020E5598 Unk_020E5598[] = {
     { sub_02016F9C, 0x4, 0x0 }
 };
 
-PokemonAnimationSys *sub_02015F84(const int param0, const int param1, const u8 param2)
+PokemonAnimationSys *sub_02015F84(const int heapID, const int param1, const u8 param2)
 {
-    PokemonAnimationSys *v0;
-
-    v0 = Heap_AllocFromHeap(param0, sizeof(PokemonAnimationSys));
+    PokemonAnimationSys *v0 = Heap_AllocFromHeap(heapID, sizeof(PokemonAnimationSys));
     v0->reverse = param2;
     v0->animation = param1;
-    v0->heapID = param0;
-    v0->pokeAnimation = Heap_AllocFromHeap(param0, sizeof(UnkStruct_02016E64) * param1);
+    v0->heapID = heapID;
+    v0->pokeAnimation = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_02016E64) * param1);
 
     MI_CpuClear8(v0->pokeAnimation, sizeof(UnkStruct_02016E64) * param1);
 
@@ -194,7 +192,7 @@ void sub_02015FB8(PokemonAnimationSys *param0)
     Heap_FreeToHeap(param0);
 }
 
-void PokeAnimation_Init(PokemonAnimationSys *param0, Sprite *param1, const PokeAnimationSettings *param2, const u8 param3)
+void PokeAnimation_Init(PokemonAnimationSys *param0, PokemonSprite *param1, const PokeAnimationSettings *param2, const u8 param3)
 {
     u8 v0 = param3;
     int v1 = param2->animation;
@@ -371,9 +369,7 @@ static int sub_02016280(u32 *param0, u8 param1, u8 param2)
 
 static int sub_02016294(u32 *param0, u8 param1)
 {
-    int v0;
-
-    v0 = sub_02016280(param0, 0, param1);
+    int v0 = sub_02016280(param0, 0, param1);
     return v0;
 }
 
@@ -515,9 +511,7 @@ static void sub_02016454(UnkStruct_02016E64 *param0, u8 *param1, int *param2, in
 
 static u8 sub_020164FC(const int *param0, const int *param1)
 {
-    int v0;
-
-    v0 = (*param0) - (*param1);
+    int v0 = (*param0) - (*param1);
 
     if (v0 < 0) {
         return 15;
@@ -530,9 +524,7 @@ static u8 sub_020164FC(const int *param0, const int *param1)
 
 static void sub_02016514(UnkStruct_02016E64 *param0)
 {
-    int v0;
-
-    v0 = (-param0->unk_74) / 8;
+    int v0 = (-param0->unk_74) / 8;
     sub_02008274(param0->unk_00, 1, v0);
 }
 
@@ -1037,9 +1029,7 @@ static void sub_02016C84(const u8 param0, UnkStruct_02016DAC *param1, UnkStruct_
 static void sub_02016D04(UnkStruct_02016E64 *param0, const int param1)
 {
     u8 v0;
-    UnkStruct_02016DAC *v1;
-
-    v1 = sub_020162AC(param0, param1);
+    UnkStruct_02016DAC *v1 = sub_020162AC(param0, param1);
 
     sub_0201630C(param0, &v1->unk_2C);
     sub_0201630C(param0, &v1->unk_2D);
@@ -1065,9 +1055,7 @@ static void sub_02016D04(UnkStruct_02016E64 *param0, const int param1)
 static void sub_02016DAC(UnkStruct_02016DAC *param0, UnkStruct_02016E64 *param1)
 {
     u16 v0;
-    int *v1;
-
-    v1 = param0->unk_04;
+    int *v1 = param0->unk_04;
     v0 = (v1[3] * (v1[6] + 1)) + v1[4];
 
     switch (v1[0]) {
@@ -1099,9 +1087,7 @@ static void sub_02016DAC(UnkStruct_02016DAC *param0, UnkStruct_02016E64 *param1)
 static void sub_02016E64(UnkStruct_02016DAC *param0, UnkStruct_02016E64 *param1)
 {
     u16 v0;
-    int *v1;
-
-    v1 = param0->unk_04;
+    int *v1 = param0->unk_04;
     v0 = ((v1[3] * (v1[6] + 1)) / v1[5]) + v1[4];
 
     switch (v1[0]) {
@@ -1133,9 +1119,7 @@ static void sub_02016E64(UnkStruct_02016DAC *param0, UnkStruct_02016E64 *param1)
 static void sub_02016F24(UnkStruct_02016DAC *param0, UnkStruct_02016E64 *param1)
 {
     int v0;
-    int *v1;
-
-    v1 = param0->unk_04;
+    int *v1 = param0->unk_04;
     v0 = v1[1] + (v1[2] * v1[4]);
 
     (*param0->unk_24) += v0;
@@ -1152,9 +1136,7 @@ static void sub_02016F24(UnkStruct_02016DAC *param0, UnkStruct_02016E64 *param1)
 static void sub_02016F60(UnkStruct_02016DAC *param0, UnkStruct_02016E64 *param1)
 {
     int v0;
-    int *v1;
-
-    v1 = param0->unk_04;
+    int *v1 = param0->unk_04;
     v0 = ((v1[3] + 1) * v1[1]) / v1[2];
 
     (*param0->unk_24) = v0;
@@ -1171,9 +1153,7 @@ static void sub_02016F60(UnkStruct_02016DAC *param0, UnkStruct_02016E64 *param1)
 static void sub_02016F9C(UnkStruct_02016DAC *param0, UnkStruct_02016E64 *param1)
 {
     int v0;
-    int *v1;
-
-    v1 = param0->unk_04;
+    int *v1 = param0->unk_04;
     v0 = v1[1] + (v1[2] * v1[4]);
 
     (*param0->unk_24) += v0;

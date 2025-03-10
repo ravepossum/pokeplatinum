@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/eterna_city_underground_man_house.h"
 
     .data
 
@@ -8,7 +9,7 @@
     ScriptEntry _0674
     ScriptEntry _0685
     ScriptEntry _0747
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -24,15 +25,15 @@ _001A:
     SetFlag 121
     ClearFlag 0x111
     Message 1
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _009C
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _009C
     SetFlag 0x113
     GoTo _0164
 
 _007E:
     Message 2
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _009C
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _009C
     SetFlag 0x113
     GoTo _0164
 
@@ -258,9 +259,9 @@ _0347:
     End
 
 _037F:
-    ScrCmd_0DE 0x800C
-    GoToIfEq 0x800C, 0x186, _03A3
-    GoToIfEq 0x800C, 0x183, _03B5
+    GetPlayerStarterSpecies 0x800C
+    GoToIfEq 0x800C, SPECIES_CHIMCHAR, _03A3
+    GoToIfEq 0x800C, SPECIES_TURTWIG, _03B5
     GoTo _03C7
 
 _03A3:
@@ -408,7 +409,7 @@ _05E4:
     MoveAction_008
     MoveAction_009 2
     MoveAction_008
-    MoveAction_026
+    MoveAction_038
     EndMovement
 
     .balign 4, 0
@@ -416,23 +417,23 @@ _05F8:
     MoveAction_008
     MoveAction_009 2
     MoveAction_008
-    MoveAction_027
+    MoveAction_039
     EndMovement
 
     .balign 4, 0
 _060C:
-    MoveAction_00A
-    MoveAction_00B 2
-    MoveAction_00A
-    MoveAction_024
+    MoveAction_010
+    MoveAction_011 2
+    MoveAction_010
+    MoveAction_036
     EndMovement
 
     .balign 4, 0
 _0620:
-    MoveAction_00A
-    MoveAction_00B 2
-    MoveAction_00A
-    MoveAction_025
+    MoveAction_010
+    MoveAction_011 2
+    MoveAction_010
+    MoveAction_037
     EndMovement
 
 _0634:

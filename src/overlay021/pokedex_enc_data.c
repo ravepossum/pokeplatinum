@@ -3,10 +3,10 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "cell_actor.h"
 #include "graphics.h"
 #include "heap.h"
 #include "narc.h"
+#include "sprite.h"
 
 enum PokedexEncFileIndex {
     PEFI_DUNGEONMORNING = 4,
@@ -21,7 +21,7 @@ enum PokedexEncFileIndex {
     PEFI_FIELDSPECIALNATDEX = (4 + MAX_SPECIES * 9),
 };
 
-void PokedexEncData_PopulateEncounterLocations(EncounterLocations *encounterLocations, int species, int encounterCategory, int heapID)
+void PokedexEncData_PopulateEncounterLocations(EncounterLocations *encounterLocations, int species, int encounterCategory, enum HeapId heapID)
 {
     int fileIndex;
     u32 fileSize;
@@ -74,7 +74,7 @@ void PokedexEncData_FreeEncounterLocations(EncounterLocations *encounterLocation
     encounterLocations->numLocations = 0;
 }
 
-DungeonCoordinates *PokedexEncData_GetDungeonCoordinates(int heapID, int *numDungeons)
+DungeonCoordinates *PokedexEncData_GetDungeonCoordinates(enum HeapId heapID, int *numDungeons)
 {
     u32 fileSize;
 
@@ -87,7 +87,7 @@ DungeonCoordinates *PokedexEncData_GetDungeonCoordinates(int heapID, int *numDun
     return dungeonCoordinatesArray;
 }
 
-FieldCoordinates *PokedexEncData_GetFieldCoordinates(int heapID, int *numFields)
+FieldCoordinates *PokedexEncData_GetFieldCoordinates(enum HeapId heapID, int *numFields)
 {
     u32 fileSize;
 
@@ -136,7 +136,7 @@ u32 PokedexEncData_LocateVisibleFields(u8 *pokedexFieldMap, int mapHeight, int m
     return numVisibleFields;
 }
 
-void PokedexEncData_LocateDungeonOnMap(CellActor *cellActor, int xOffset, int yOffset, int xScale, int yScale, const DungeonCoordinates *dungeonCoordinates, int animID, int coronetAnimID)
+void PokedexEncData_LocateDungeonOnMap(Sprite *cellActor, int xOffset, int yOffset, int xScale, int yScale, const DungeonCoordinates *dungeonCoordinates, int animID, int coronetAnimID)
 {
     VecFx32 position;
 
@@ -145,16 +145,16 @@ void PokedexEncData_LocateDungeonOnMap(CellActor *cellActor, int xOffset, int yO
     position.x <<= FX32_SHIFT;
     position.y <<= FX32_SHIFT;
 
-    CellActor_SetPosition(cellActor, &position);
+    Sprite_SetPosition(cellActor, &position);
 
     if (dungeonCoordinates->isMtCoronet) {
-        CellActor_SetAnim(cellActor, coronetAnimID);
+        Sprite_SetAnim(cellActor, coronetAnimID);
     } else {
-        CellActor_SetAnim(cellActor, animID);
+        Sprite_SetAnim(cellActor, animID);
     }
 }
 
-int PokedexEncData_LocateVisibleDungeons(CellActor **cellActorArray, int initialNumVisibleDungeons, int maxNumDungeons, int xOffset, int yOffset, int xScale, int yScale, const DungeonCoordinates *dungeonCoordinatesArray, const EncounterLocations *encounterLocations, int animID, int coronetAnimID, const u8 *invisibleDungeons, u32 numInvisibleDungeons, u32 *cellActorsModified)
+int PokedexEncData_LocateVisibleDungeons(Sprite **cellActorArray, int initialNumVisibleDungeons, int maxNumDungeons, int xOffset, int yOffset, int xScale, int yScale, const DungeonCoordinates *dungeonCoordinatesArray, const EncounterLocations *encounterLocations, int animID, int coronetAnimID, const u8 *invisibleDungeons, u32 numInvisibleDungeons, u32 *cellActorsModified)
 {
     int locationIndex, skipIndex;
     int numVisibleDungeons = initialNumVisibleDungeons;

@@ -3,7 +3,6 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/struct_02072014.h"
 #include "struct_defs/struct_02098C44.h"
 
@@ -18,8 +17,9 @@
 #include "comm_player_manager.h"
 #include "communication_information.h"
 #include "communication_system.h"
-#include "core_sys.h"
+#include "dexmode_checker.h"
 #include "field_comm_manager.h"
+#include "field_message.h"
 #include "field_system.h"
 #include "field_task.h"
 #include "heap.h"
@@ -33,6 +33,7 @@
 #include "savedata.h"
 #include "strbuf.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "trainer_info.h"
 #include "unk_02005474.h"
@@ -42,9 +43,7 @@
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_0203D1B8.h"
-#include "unk_0205D8CC.h"
 #include "unk_020655F4.h"
-#include "unk_0207A274.h"
 
 #include "constdata/const_020F1E88.h"
 #include "constdata/const_020F410C.h"
@@ -130,13 +129,13 @@ static void sub_0205A0D8(UnkStruct_0205A0D8 *param0, FieldSystem *fieldSystem, P
     MI_CpuClear8(v0, sizeof(PokemonSummary));
     PokemonSummaryScreen_SetPlayerProfile(v0, SaveData_GetTrainerInfo(fieldSystem->saveData));
 
-    v0->dexMode = sub_0207A274(v1);
+    v0->dexMode = SaveData_GetDexMode(v1);
     v0->showContest = PokemonSummaryScreen_ShowContestData(v1);
     v0->options = SaveData_Options(v1);
     v0->monData = param2;
-    v0->dataType = 1;
-    v0->pos = param3;
-    v0->max = (u8)Party_GetCurrentCount(v0->monData);
+    v0->dataType = SUMMARY_DATA_PARTY_MON;
+    v0->monIndex = param3;
+    v0->monMax = Party_GetCurrentCount(v0->monData);
     v0->move = 0;
     v0->mode = param4;
     v0->specialRibbons = sub_0202D79C(v1);
@@ -147,10 +146,10 @@ static void sub_0205A0D8(UnkStruct_0205A0D8 *param0, FieldSystem *fieldSystem, P
     param0->unk_00 = v0;
 }
 
-static void sub_0205A164(UnkStruct_0205A0D8 *param0, int param1)
+static void sub_0205A164(UnkStruct_0205A0D8 *param0, int heapID)
 {
     int v0;
-    PartyManagementData *v1 = Heap_AllocFromHeap(param1, sizeof(PartyManagementData));
+    PartyManagementData *v1 = Heap_AllocFromHeap(heapID, sizeof(PartyManagementData));
 
     MI_CpuClear8(v1, sizeof(PartyManagementData));
 
@@ -217,7 +216,7 @@ static BOOL sub_0205A2B0(UnkStruct_0205A0D8 *param0, FieldSystem *fieldSystem)
         return 0;
     }
 
-    param0->unk_3C = param0->unk_00->pos;
+    param0->unk_3C = param0->unk_00->monIndex;
     Heap_FreeToHeap(param0->unk_00);
     param0->unk_00 = NULL;
 
@@ -280,7 +279,7 @@ static BOOL sub_0205A324(FieldTask *param0)
             v0->unk_34 = 7;
             MapObjectMan_StopAllMovement(v0->fieldSystem->mapObjMan);
             v0->unk_08(1, v0->unk_50);
-        } else if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        } else if (gSystem.pressedKeys & PAD_BUTTON_B) {
             v0->unk_34 = 4;
             CommTiming_StartSync(92);
             v0->unk_43 = 5;
@@ -356,7 +355,7 @@ static BOOL sub_0205A324(FieldTask *param0)
         break;
     case 15:
         sub_0205AAA0(v0, 0);
-        sub_0205A164(v0, 11);
+        sub_0205A164(v0, HEAP_ID_FIELDMAP);
         v0->unk_34 = 16;
         break;
     case 16:
@@ -621,7 +620,7 @@ static int sub_0205AA50(UnkStruct_0205A0D8 *param0, const Strbuf *param1)
         FieldMessage_AddWindow(param0->fieldSystem->bgConfig, v0, 3);
         FieldMessage_DrawWindow(v0, SaveData_Options(param0->fieldSystem->saveData));
     } else {
-        sub_0205D988(v0);
+        FieldMessage_ClearWindow(v0);
     }
 
     return FieldMessage_Print(v0, (Strbuf *)param1, SaveData_Options(param0->fieldSystem->saveData), 1);
@@ -665,10 +664,10 @@ void sub_0205AB10(FieldSystem *fieldSystem, UnkFuncPtr_0205AB10 *param1)
     v0->unk_43 = 5;
     v0->fieldSystem = fieldSystem;
     v0->unk_08 = param1;
-    v0->unk_28 = StringTemplate_Default(11);
-    v0->unk_2C = MessageLoader_Init(0, 26, 11, 11);
-    v0->unk_0C = Strbuf_Init((100 * 2), 11);
-    v0->unk_10 = Strbuf_Init((100 * 2), 11);
+    v0->unk_28 = StringTemplate_Default(HEAP_ID_FIELDMAP);
+    v0->unk_2C = MessageLoader_Init(0, 26, 11, HEAP_ID_FIELDMAP);
+    v0->unk_0C = Strbuf_Init((100 * 2), HEAP_ID_FIELDMAP);
+    v0->unk_10 = Strbuf_Init((100 * 2), HEAP_ID_FIELDMAP);
 
     Window_Init(&v0->unk_14);
     Window_Init(&v0->unk_54);
@@ -689,7 +688,7 @@ void sub_0205AB10(FieldSystem *fieldSystem, UnkFuncPtr_0205AB10 *param1)
 
         v0->unk_4C = Heap_AllocFromHeapAtEnd(11, v2);
         v0->unk_48 = Heap_AllocFromHeapAtEnd(11, v2);
-        v0->unk_50 = Party_New(11);
+        v0->unk_50 = Party_New(HEAP_ID_FIELDMAP);
 
         Party_InitWithCapacity(v0->unk_50, 3);
 
@@ -797,9 +796,7 @@ static BOOL sub_0205AD10(UnkStruct_0205A0D8 *param0)
 
 static BOOL sub_0205AD20(UnkStruct_0205A0D8 *param0)
 {
-    UnkStruct_0205AD20 *v0;
-
-    v0 = (UnkStruct_0205AD20 *)((u8 *)(param0->unk_48) + (Pokemon_GetStructSize() * 3));
+    UnkStruct_0205AD20 *v0 = (UnkStruct_0205AD20 *)((u8 *)(param0->unk_48) + (Pokemon_GetStructSize() * 3));
     return v0->unk_00;
 }
 
@@ -869,11 +866,11 @@ static void sub_0205ADF8(UnkStruct_0205A0D8 *param0, int param1)
         int v1, v2, v3;
         MessageLoader *v4;
 
-        v4 = MessageLoader_Init(1, 26, 412, 4);
+        v4 = MessageLoader_Init(1, 26, 412, HEAP_ID_FIELD);
         v3 = Pokemon_GetStructSize();
 
         Window_Add(param0->fieldSystem->bgConfig, v0, 3, 21, 9, 10, 8, 13, 10);
-        LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 1, 11, 0, 4);
+        LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 1, 11, 0, HEAP_ID_FIELD);
         Window_FillTilemap(v0, 15);
 
         for (v1 = 0; v1 < 3; v1++) {
@@ -905,7 +902,7 @@ static void sub_0205AF18(UnkStruct_0205A0D8 *param0, int param1)
         int v1;
 
         Window_Add(param0->fieldSystem->bgConfig, v0, 3, 20, 11, 11, 6, 13, 90);
-        LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 1, 11, 0, 4);
+        LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 1, 11, 0, HEAP_ID_FIELD);
         Window_FillTilemap(v0, 15);
 
         for (v1 = 0; v1 < 3; v1++) {
@@ -926,17 +923,17 @@ static void sub_0205AF18(UnkStruct_0205A0D8 *param0, int param1)
 static int sub_0205AFE4(UnkStruct_0205A0D8 *param0)
 {
     do {
-        if (gCoreSys.pressedKeys & PAD_KEY_UP) {
+        if (gSystem.pressedKeys & PAD_KEY_UP) {
             param0->unk_81 = ((param0->unk_81 == 0) ? (param0->unk_80 - 1) : (param0->unk_81 - 1));
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_KEY_DOWN) {
+        if (gSystem.pressedKeys & PAD_KEY_DOWN) {
             param0->unk_81 = (param0->unk_81 == (param0->unk_80 - 1)) ? 0 : (param0->unk_81 + 1);
             break;
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             Sound_PlayEffect(1500);
 
             if (param0->unk_81 < (param0->unk_80 - 1)) {
@@ -946,7 +943,7 @@ static int sub_0205AFE4(UnkStruct_0205A0D8 *param0)
             }
         }
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+        if (gSystem.pressedKeys & PAD_BUTTON_B) {
             Sound_PlayEffect(1500);
             return 2;
         }
@@ -1010,10 +1007,10 @@ static BOOL sub_0205B140(FieldTask *param0)
 
     switch (v1->unk_28) {
     case 0:
-        v1->unk_18 = StringTemplate_Default(4);
-        v1->unk_1C = MessageLoader_Init(0, 26, 11, 4);
-        v1->unk_00 = Strbuf_Init((100 * 2), 4);
-        v1->unk_04 = Strbuf_Init((100 * 2), 4);
+        v1->unk_18 = StringTemplate_Default(HEAP_ID_FIELD);
+        v1->unk_1C = MessageLoader_Init(0, 26, 11, HEAP_ID_FIELD);
+        v1->unk_00 = Strbuf_Init((100 * 2), HEAP_ID_FIELD);
+        v1->unk_04 = Strbuf_Init((100 * 2), HEAP_ID_FIELD);
 
         MessageLoader_GetStrbuf(v1->unk_1C, 2 + v2->unk_03, v1->unk_00);
         StringTemplate_SetPlayerName(v1->unk_18, 0, CommInfo_TrainerInfo(v1->unk_24));
@@ -1026,7 +1023,7 @@ static BOOL sub_0205B140(FieldTask *param0)
         break;
     case 1:
         if (FieldMessage_FinishedPrinting(v1->unk_20)) {
-            if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+            if (gSystem.pressedKeys & PAD_BUTTON_A) {
                 MessageLoader_Free(v1->unk_1C);
                 StringTemplate_Free(v1->unk_18);
                 Strbuf_Free(v1->unk_00);

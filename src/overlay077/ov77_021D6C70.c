@@ -3,10 +3,10 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/sprite_decl.h"
 #include "struct_decls/struct_02007768_decl.h"
 #include "struct_decls/struct_02014014_decl.h"
 #include "struct_defs/archived_sprite.h"
+#include "struct_defs/pokemon_sprite.h"
 
 #include "camera.h"
 #include "heap.h"
@@ -19,7 +19,7 @@
 
 typedef struct UnkStruct_ov77_021D6CFC_t {
     UnkStruct_02007768 *unk_00;
-    Sprite *unk_04[3];
+    PokemonSprite *unk_04[3];
     BOOL unk_10;
     void *unk_14;
     UnkStruct_02014014 *unk_18;
@@ -140,7 +140,7 @@ void ov77_021D6CFC(UnkStruct_ov77_021D6CFC *param0)
         }
     }
 
-    param0->unk_00 = sub_0200762C(76);
+    param0->unk_00 = sub_0200762C(HEAP_ID_76);
 
     for (v0 = 0; v0 < 3; v0++) {
         BuildArchivedPokemonSprite(&v1, v5[v0], 0, 2, 0, NULL, NULL);
@@ -152,8 +152,8 @@ void ov77_021D6CFC(UnkStruct_ov77_021D6CFC *param0)
 
     sub_02014000();
 
-    param0->unk_14 = Heap_AllocFromHeap(76, 0x4800);
-    param0->unk_18 = sub_02014014(ov77_021D6C70, ov77_021D6C94, param0->unk_14, 0x4800, 1, 76);
+    param0->unk_14 = Heap_AllocFromHeap(HEAP_ID_76, 0x4800);
+    param0->unk_18 = sub_02014014(ov77_021D6C70, ov77_021D6C94, param0->unk_14, 0x4800, 1, HEAP_ID_76);
     camera = sub_02014784(param0->unk_18);
 
     Camera_SetClipping((FX32_ONE), (FX32_ONE * 900), camera);
@@ -252,7 +252,7 @@ BOOL ov77_021D6E78(UnkStruct_ov77_021D6CFC *param0, const u8 param1, const int p
 
 static BOOL ov77_021D7004(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 {
-    Sprite *v0 = param0->unk_04[param1];
+    PokemonSprite *v0 = param0->unk_04[param1];
 
     sub_02008274(v0, 0, 6);
     sub_02008274(v0, 1, -16);
@@ -273,7 +273,7 @@ static BOOL ov77_021D7004(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 
 static BOOL ov77_021D7074(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 {
-    Sprite *v0 = param0->unk_04[param1];
+    PokemonSprite *v0 = param0->unk_04[param1];
 
     sub_02008274(v0, 0, -3);
     sub_02008274(v0, 1, -18);
@@ -291,7 +291,7 @@ static BOOL ov77_021D7074(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 
 static BOOL ov77_021D70CC(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 {
-    Sprite *v0 = param0->unk_04[param1];
+    PokemonSprite *v0 = param0->unk_04[param1];
 
     sub_02008274(v0, 0, -16);
     sub_02008274(v0, 1, -16);
@@ -312,7 +312,7 @@ static BOOL ov77_021D70CC(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 
 static BOOL ov77_021D713C(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 {
-    Sprite *v0 = param0->unk_04[param1];
+    PokemonSprite *v0 = param0->unk_04[param1];
 
     sub_02008274(v0, 0, -6);
     sub_02008274(v0, 1, -16);
@@ -330,7 +330,7 @@ static BOOL ov77_021D713C(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 
 static BOOL ov77_021D7194(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 {
-    Sprite *v0 = param0->unk_04[param1];
+    PokemonSprite *v0 = param0->unk_04[param1];
 
     sub_02008274(v0, 0, 8);
     sub_02008274(v0, 1, -16);
@@ -351,7 +351,7 @@ static BOOL ov77_021D7194(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 
 static BOOL ov77_021D7204(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 {
-    Sprite *v0 = param0->unk_04[param1];
+    PokemonSprite *v0 = param0->unk_04[param1];
 
     sub_02008274(v0, 0, 6);
     sub_02008274(v0, 1, -20);
@@ -369,16 +369,14 @@ static BOOL ov77_021D7204(UnkStruct_ov77_021D6CFC *param0, const u8 param1)
 
 static void ov77_021D725C(void)
 {
-    int v0;
-
-    v0 = sub_0201469C();
+    int v0 = sub_0201469C();
 
     sub_020146C0();
 }
 
 static void ov77_021D7268(SPLEmitter *param0)
 {
-    Sprite *v0 = sub_02014764();
+    PokemonSprite *v0 = sub_02014764();
     VecFx32 v1 = { 0, 0, 0 };
 
     v1.x = 172 * (sub_020080C0(v0, 0) - 128);

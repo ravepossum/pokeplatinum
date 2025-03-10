@@ -11,8 +11,8 @@
 #include "functypes/funcptr_020EC57C.h"
 #include "overlay005/fieldmap.h"
 #include "overlay005/hblank_system.h"
+#include "overlay005/map_name_popup.h"
 #include "overlay005/ov5_021D431C.h"
-#include "overlay005/ov5_021DD6FC.h"
 #include "overlay005/struct_ov5_021D432C_decl.h"
 #include "overlay005/struct_ov5_021D4E00_decl.h"
 
@@ -49,7 +49,7 @@ typedef struct {
     u16 unk_10;
     int unk_14;
     int unk_18;
-    int unk_1C;
+    int heapID;
 } UnkStruct_02056B30;
 
 static BOOL sub_02056B70(FieldTask *taskMan);
@@ -98,9 +98,9 @@ static const UnkFuncPtr_020EC57C Unk_020EC57C[7] = {
     NULL
 };
 
-void sub_02056B30(FieldTask *taskMan, int param1, int param2, int param3, u16 param4, int param5, int param6, int param7)
+void sub_02056B30(FieldTask *taskMan, int param1, int param2, int param3, u16 param4, int param5, int param6, int heapID)
 {
-    UnkStruct_02056B30 *v0 = Heap_AllocFromHeap(param7, sizeof(UnkStruct_02056B30));
+    UnkStruct_02056B30 *v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_02056B30));
 
     v0->unk_04 = param1;
     v0->unk_08 = param2;
@@ -108,7 +108,7 @@ void sub_02056B30(FieldTask *taskMan, int param1, int param2, int param3, u16 pa
     v0->unk_10 = param4;
     v0->unk_14 = param5;
     v0->unk_18 = param6;
-    v0->unk_1C = param7;
+    v0->heapID = heapID;
     v0->unk_00 = 0;
 
     FieldTask_InitCall(taskMan, sub_02056B70, v0);
@@ -122,7 +122,7 @@ static BOOL sub_02056B70(FieldTask *taskMan)
     switch (v1->unk_00) {
     case 0:
         HBlankSystem_Stop(fieldSystem->unk_04->hBlankSystem);
-        StartScreenTransition(v1->unk_04, v1->unk_08, v1->unk_0C, v1->unk_10, v1->unk_14, v1->unk_18, v1->unk_1C);
+        StartScreenTransition(v1->unk_04, v1->unk_08, v1->unk_0C, v1->unk_10, v1->unk_14, v1->unk_18, v1->heapID);
         v1->unk_00++;
         break;
     case 1:
@@ -169,7 +169,7 @@ void sub_02056C18(FieldSystem *fieldSystem, const int param1, const int param2, 
             v1 = 6;
         } else if (MapHeader_IsOutdoors(param1)) {
             v1 = 5;
-        } else if (sub_0203A288(param1)) {
+        } else if (MapHeader_IsBuilding(param1)) {
             v1 = 6;
         } else {
             GF_ASSERT(0);
@@ -177,15 +177,15 @@ void sub_02056C18(FieldSystem *fieldSystem, const int param1, const int param2, 
     } else if (MapHeader_IsOutdoors(v0)) {
         if (MapHeader_IsCave(param1)) {
             v1 = 4;
-        } else if (sub_0203A288(param1)) {
+        } else if (MapHeader_IsBuilding(param1)) {
             v1 = 6;
         } else {
             GF_ASSERT(0);
         }
-    } else if (sub_0203A288(v0)) {
+    } else if (MapHeader_IsBuilding(v0)) {
         if (MapHeader_IsOutdoors(param1)) {
             v1 = 0;
-        } else if (sub_0203A288(param1)) {
+        } else if (MapHeader_IsBuilding(param1)) {
             v1 = 6;
         } else if (MapHeader_IsCave(param1)) {
             v1 = 0;

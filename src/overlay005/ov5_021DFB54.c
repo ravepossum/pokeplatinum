@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/game_records.h"
 
 #include "struct_decls/struct_020216E0_decl.h"
 #include "struct_decls/struct_0205E884_decl.h"
@@ -19,14 +19,13 @@
 #include "overlay005/ov5_021F2850.h"
 #include "overlay005/ov5_021F8560.h"
 #include "overlay005/struct_ov5_021D1BEC_decl.h"
-#include "overlay006/ov6_02240C9C.h"
 #include "overlay006/ov6_02243258.h"
 #include "overlay006/ov6_02248050.h"
+#include "overlay006/wild_encounters.h"
 #include "overlay009/ov9_02249960.h"
 #include "overlay009/struct_ov9_0224F6EC_decl.h"
 #include "overlay101/struct_ov101_021D5D90_decl.h"
 
-#include "core_sys.h"
 #include "encounter.h"
 #include "field_battle_data_transfer.h"
 #include "field_task.h"
@@ -40,6 +39,7 @@
 #include "pokemon.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "unk_02005474.h"
 #include "unk_020553DC.h"
 #include "unk_0205F180.h"
@@ -293,17 +293,13 @@ static void ov5_021DFCE4(PlayerAvatar *playerAvatar)
 
 static void ov5_021DFCF0(PlayerAvatar *playerAvatar)
 {
-    int v0;
-
-    v0 = Player_MoveStateFromGender(0x11, PlayerAvatar_Gender(playerAvatar));
+    int v0 = Player_MoveStateFromGender(0x11, PlayerAvatar_Gender(playerAvatar));
     PlayerAvatar_Redraw(playerAvatar, v0);
 }
 
 static void ov5_021DFD0C(PlayerAvatar *playerAvatar)
 {
-    int v0;
-
-    v0 = Player_MoveStateFromGender(0x13, PlayerAvatar_Gender(playerAvatar));
+    int v0 = Player_MoveStateFromGender(0x13, PlayerAvatar_Gender(playerAvatar));
     PlayerAvatar_Redraw(playerAvatar, v0);
 }
 
@@ -349,17 +345,13 @@ static void PlayerAvatar_RequestStateSave(PlayerAvatar *playerAvatar)
 
 static void ov5_021DFDA8(PlayerAvatar *playerAvatar)
 {
-    int v0;
-
-    v0 = Player_MoveStateFromGender(0x16, PlayerAvatar_Gender(playerAvatar));
+    int v0 = Player_MoveStateFromGender(0x16, PlayerAvatar_Gender(playerAvatar));
     PlayerAvatar_Redraw(playerAvatar, v0);
 }
 
 static void ov5_021DFDC4(PlayerAvatar *playerAvatar)
 {
-    int v0;
-
-    v0 = Player_MoveStateFromGender(0x17, PlayerAvatar_Gender(playerAvatar));
+    int v0 = Player_MoveStateFromGender(0x17, PlayerAvatar_Gender(playerAvatar));
     PlayerAvatar_Redraw(playerAvatar, v0);
 }
 
@@ -471,7 +463,7 @@ static int ov5_021DFF1C(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, in
         }
 
         {
-            int v1 = sub_02062920(mapObj);
+            int v1 = MapObject_GetGraphicsID(mapObj);
 
             if (v1 != 0x54) {
                 return 0;
@@ -643,12 +635,12 @@ static BOOL ov5_021E0160(FieldTask *taskMan)
     case 2: {
         if (PlayerAvatar_MapDistortionState(v0->playerAvatar) == AVATAR_DISTORTION_STATE_NONE) {
             int v1 = Player_GetXPos(v0->playerAvatar) + MapObject_GetDxFromDir(v0->unk_04);
-            int v2 = Player_GetZPos(v0->playerAvatar) + MapObject_GetDyFromDir(v0->unk_04);
+            int v2 = Player_GetZPos(v0->playerAvatar) + MapObject_GetDzFromDir(v0->unk_04);
             v0->unk_28 = ov5_021F261C(v0->unk_24, v1, v2, v0->unk_04, 0);
         } else {
-            int v3 = MapObject_GetXPos(v0->unk_24);
-            int v4 = (MapObject_GetYPos(v0->unk_24) / 2);
-            int v5 = MapObject_GetZPos(v0->unk_24);
+            int v3 = MapObject_GetX(v0->unk_24);
+            int v4 = (MapObject_GetY(v0->unk_24) / 2);
+            int v5 = MapObject_GetZ(v0->unk_24);
             enum AvatarDistortionState distortionState = PlayerAvatar_MapDistortionState(v0->playerAvatar);
 
             sub_02061674(v0->playerAvatar, v0->unk_04, &v3, &v4, &v5);
@@ -824,7 +816,7 @@ static int ov5_021E04EC(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar, in
 
     {
         MapObject *v0 = Player_MapObject(playerAvatar);
-        u8 v1 = sub_02062BE8(v0);
+        u8 v1 = MapObject_GetCurrTileBehavior(v0);
 
         if ((TileBehavior_IsDeepMud(v1) != 1) && (TileBehavior_IsDeepMudWithGrass(v1) != 1)) {
             return 0;
@@ -872,7 +864,7 @@ static BOOL ov5_021E0560(FieldTask *param0)
         v0->unk_00++;
     case 2: {
         int v2 = PlayerAvatar_GetDir(v0->playerAvatar);
-        u32 v3, v4 = gCoreSys.pressedKeys, v5 = gCoreSys.heldKeys;
+        u32 v3, v4 = gSystem.pressedKeys, v5 = gSystem.heldKeys;
         int v6 = sub_02061308(v0->playerAvatar, v4, v5);
 
         if ((v6 == -1) || (v6 == v2)) {
@@ -883,13 +875,13 @@ static BOOL ov5_021E0560(FieldTask *param0)
         v0->unk_04++;
 
         {
-            u8 v7 = sub_02062BE8(v1);
+            u8 v7 = MapObject_GetCurrTileBehavior(v1);
 
             if (TileBehavior_IsDeepMudWithGrass(v7) == 1) {
                 FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
                 FieldBattleDTO *v9;
 
-                if (ov6_022413E4(fieldSystem, &v9) == 1) {
+                if (WildEncounters_TryMudEncounter(fieldSystem, &v9) == 1) {
                     PlayerAvatar_SetInDeepSwamp(v0->playerAvatar, 1);
                     ov5_021E1134(v0);
                     Encounter_StartVsWild(fieldSystem, param0, v9);
@@ -943,7 +935,7 @@ static int ov5_021E06A8(FieldSystem *fieldSystem, PlayerAvatar *playerAvatar)
         }
 
         {
-            int v2 = sub_02062920(v1);
+            int v2 = MapObject_GetGraphicsID(v1);
 
             if (v2 != 0x76) {
                 return 0;
@@ -1037,7 +1029,7 @@ static int ov5_021E07E4(UnkStruct_ov5_021F9B54 *param0)
 static int ov5_021E07FC(UnkStruct_ov5_021F9B54 *param0)
 {
     int v0 = Player_GetXPos(param0->playerAvatar) + MapObject_GetDxFromDir(param0->unk_04);
-    int v1 = Player_GetZPos(param0->playerAvatar) + MapObject_GetDyFromDir(param0->unk_04);
+    int v1 = Player_GetZPos(param0->playerAvatar) + MapObject_GetDzFromDir(param0->unk_04);
 
     param0->unk_18 = ov5_021F28F4(param0->unk_14, v0, v1, param0->unk_04, 0);
     param0->unk_2C = ov6_0224892C(param0->fieldSystem);
@@ -1089,8 +1081,8 @@ static int ov5_021E08C0(UnkStruct_ov5_021F9B54 *param0)
     }
 
     {
-        int v0 = MapObject_GetMoveDir(param0->unk_14);
-        u8 v1 = sub_02064238(param0->unk_14, v0);
+        int v0 = MapObject_GetMovingDir(param0->unk_14);
+        u8 v1 = MapObject_GetTileBehaviorFromDir(param0->unk_14, v0);
 
         if (ov5_021E0760(v1, v0) == 1) {
             param0->unk_00 = 5;
@@ -1219,8 +1211,8 @@ static int ov5_021E0A68(UnkStruct_ov5_021F9B10 *param0)
     int v0, v1;
     VecFx32 v2, v3;
 
-    v0 = MapObject_GetXPos(param0->unk_3C) + (MapObject_GetDxFromDir(0) << 1);
-    v1 = MapObject_GetZPos(param0->unk_3C) + (MapObject_GetDyFromDir(0) << 1);
+    v0 = MapObject_GetX(param0->unk_3C) + (MapObject_GetDxFromDir(0) << 1);
+    v1 = MapObject_GetZ(param0->unk_3C) + (MapObject_GetDzFromDir(0) << 1);
 
     sub_02064450(v0, v1, &param0->unk_28);
     sub_020644A4(param0->fieldSystem, &param0->unk_28);
@@ -1229,7 +1221,7 @@ static int ov5_021E0A68(UnkStruct_ov5_021F9B10 *param0)
     param0->unk_10 = (((param0->unk_28.y) >> 3) / FX32_ONE);
     param0->unk_14 = v1;
 
-    MapObject_PosVectorOut(param0->unk_3C, &v2);
+    MapObject_GetPosPtr(param0->unk_3C, &v2);
 
     GF_ASSERT(v2.z > param0->unk_28.z);
     GF_ASSERT(v2.y < param0->unk_28.y);
@@ -1251,7 +1243,7 @@ static int ov5_021E0B24(UnkStruct_ov5_021F9B10 *param0)
 {
     VecFx32 v0;
 
-    MapObject_PosVectorOut(param0->unk_3C, &v0);
+    MapObject_GetPosPtr(param0->unk_3C, &v0);
 
     v0.y += param0->unk_1C.y;
 
@@ -1259,7 +1251,7 @@ static int ov5_021E0B24(UnkStruct_ov5_021F9B10 *param0)
         v0.y = param0->unk_28.y;
     }
 
-    MapObject_SetPosVec(param0->unk_3C, &v0);
+    MapObject_SetPos(param0->unk_3C, &v0);
 
     param0->unk_08++;
 
@@ -1275,7 +1267,7 @@ static int ov5_021E0B64(UnkStruct_ov5_021F9B10 *param0)
 {
     VecFx32 v0;
 
-    MapObject_PosVectorOut(param0->unk_3C, &v0);
+    MapObject_GetPosPtr(param0->unk_3C, &v0);
 
     v0.y += param0->unk_1C.y;
 
@@ -1289,7 +1281,7 @@ static int ov5_021E0B64(UnkStruct_ov5_021F9B10 *param0)
         v0.z = param0->unk_28.z;
     }
 
-    MapObject_SetPosVec(param0->unk_3C, &v0);
+    MapObject_SetPos(param0->unk_3C, &v0);
 
     param0->unk_08++;
 
@@ -1303,7 +1295,7 @@ static int ov5_021E0B64(UnkStruct_ov5_021F9B10 *param0)
     MapObject_SetX(param0->unk_3C, param0->unk_0C);
     MapObject_SetY(param0->unk_3C, param0->unk_10);
     MapObject_SetZ(param0->unk_3C, param0->unk_14);
-    sub_02064208(param0->unk_3C);
+    MapObject_UpdateCoords(param0->unk_3C);
 
     ov6_02248608(param0->unk_50);
     return 1;
@@ -1344,8 +1336,8 @@ static int ov5_021E0C34(UnkStruct_ov5_021F9B10 *param0)
     int v0, v1;
     VecFx32 v2, v3;
 
-    v0 = MapObject_GetXPos(param0->unk_3C) + (MapObject_GetDxFromDir(1) << 1);
-    v1 = MapObject_GetZPos(param0->unk_3C) + (MapObject_GetDyFromDir(1) << 1);
+    v0 = MapObject_GetX(param0->unk_3C) + (MapObject_GetDxFromDir(1) << 1);
+    v1 = MapObject_GetZ(param0->unk_3C) + (MapObject_GetDzFromDir(1) << 1);
 
     sub_02064450(v0, v1, &param0->unk_28);
     sub_020644A4(param0->fieldSystem, &param0->unk_28);
@@ -1355,7 +1347,7 @@ static int ov5_021E0C34(UnkStruct_ov5_021F9B10 *param0)
     param0->unk_10 = (((param0->unk_28.y) >> 3) / FX32_ONE);
     param0->unk_14 = v1;
 
-    MapObject_PosVectorOut(param0->unk_3C, &v2);
+    MapObject_GetPosPtr(param0->unk_3C, &v2);
 
     GF_ASSERT(v2.z < param0->unk_28.z);
     GF_ASSERT(v2.y > param0->unk_28.y);
@@ -1377,7 +1369,7 @@ static int ov5_021E0CF4(UnkStruct_ov5_021F9B10 *param0)
 {
     VecFx32 v0;
 
-    MapObject_PosVectorOut(param0->unk_3C, &v0);
+    MapObject_GetPosPtr(param0->unk_3C, &v0);
 
     v0.z += param0->unk_1C.z;
 
@@ -1387,7 +1379,7 @@ static int ov5_021E0CF4(UnkStruct_ov5_021F9B10 *param0)
         param0->unk_18 += param0->unk_1C.z;
     }
 
-    MapObject_SetPosVec(param0->unk_3C, &v0);
+    MapObject_SetPos(param0->unk_3C, &v0);
 
     param0->unk_08++;
 
@@ -1403,7 +1395,7 @@ static int ov5_021E0D40(UnkStruct_ov5_021F9B10 *param0)
 {
     VecFx32 v0;
 
-    MapObject_PosVectorOut(param0->unk_3C, &v0);
+    MapObject_GetPosPtr(param0->unk_3C, &v0);
 
     v0.y += param0->unk_1C.y;
 
@@ -1419,7 +1411,7 @@ static int ov5_021E0D40(UnkStruct_ov5_021F9B10 *param0)
         param0->unk_18 += param0->unk_1C.z;
     }
 
-    MapObject_SetPosVec(param0->unk_3C, &v0);
+    MapObject_SetPos(param0->unk_3C, &v0);
 
     param0->unk_08++;
 
@@ -1433,7 +1425,7 @@ static int ov5_021E0D40(UnkStruct_ov5_021F9B10 *param0)
     MapObject_SetX(param0->unk_3C, param0->unk_0C);
     MapObject_SetY(param0->unk_3C, param0->unk_10);
     MapObject_SetZ(param0->unk_3C, param0->unk_14);
-    sub_02064208(param0->unk_3C);
+    MapObject_UpdateCoords(param0->unk_3C);
 
     ov6_02248608(param0->unk_50);
 
@@ -1572,7 +1564,7 @@ void ov5_021E0E94(PlayerAvatar *playerAvatar)
     }
 
     {
-        int v2 = sub_02062920(v0);
+        int v2 = MapObject_GetGraphicsID(v0);
 
         if ((v2 == 0xc4) || (v2 == 0xc5) || (v2 == 0x10e) || (v2 == 0x10f)) {
             return;
@@ -1605,7 +1597,7 @@ void ov5_021E0EEC(PlayerAvatar *playerAvatar)
     }
 
     {
-        int v2 = sub_02062920(v0);
+        int v2 = MapObject_GetGraphicsID(v0);
 
         if ((v2 != 0xc4) && (v2 != 0xc5) && (v2 != 0x10e) && (v2 != 0x10f) && (v2 != 0x112) && (v2 != 0x113)) {
             return;
@@ -1640,7 +1632,7 @@ static SysTask *ov5_021E0F54(FieldSystem *fieldSystem, u32 param1)
         v4->playerAvatar = playerAvatar;
         v4->unk_04 = v1;
 
-        sub_02062DDC(v3);
+        MapObject_SetPauseMovementOff(v3);
         PlayerAvatar_SetRequestStateBit(playerAvatar, param1);
         PlayerAvatar_RequestChangeState(playerAvatar);
 
@@ -1750,7 +1742,7 @@ static void ov5_021E10C0(void *param0, const UnkStruct_020216E0 *param1)
 static MapObject *ov5_021E10D4(PlayerAvatar *playerAvatar, int param1)
 {
     int v0 = Player_GetXPos(playerAvatar) + MapObject_GetDxFromDir(param1);
-    int v1 = Player_GetZPos(playerAvatar) + MapObject_GetDyFromDir(param1);
+    int v1 = Player_GetZPos(playerAvatar) + MapObject_GetDzFromDir(param1);
     const MapObjectManager *v2 = MapObject_MapObjectManager(Player_MapObject(playerAvatar));
     MapObject *v3 = sub_0206326C(v2, v0, v1, 0);
 
@@ -1769,7 +1761,7 @@ static void *ov5_021E1110(int param0)
 
 static void ov5_021E1134(void *param0)
 {
-    Heap_FreeToHeapExplicit(4, param0);
+    Heap_FreeToHeapExplicit(HEAP_ID_FIELD, param0);
 }
 
 static Pokemon *ov5_021E1140(FieldSystem *fieldSystem, int param1)

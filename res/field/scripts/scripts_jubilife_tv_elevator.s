@@ -1,9 +1,10 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/jubilife_tv_elevator.h"
 
     .data
 
     ScriptEntry _0006
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0006:
     PlayFanfare SEQ_SE_CONFIRM
@@ -149,5 +150,5 @@ _0283:
 
     .balign 4, 0
 _029C:
-    MoveAction_021
+    MoveAction_033
     EndMovement

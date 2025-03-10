@@ -5,7 +5,7 @@
 
 #include "constants/field/map_load.h"
 
-#include "struct_defs/struct_0202D7B0.h"
+#include "struct_defs/special_encounter.h"
 #include "struct_defs/struct_0207CB08.h"
 #include "struct_defs/struct_02099F80.h"
 
@@ -20,7 +20,6 @@
 
 #include "bag.h"
 #include "bg_window.h"
-#include "core_sys.h"
 #include "font.h"
 #include "game_options.h"
 #include "graphics.h"
@@ -36,25 +35,25 @@
 #include "render_text.h"
 #include "render_window.h"
 #include "save_player.h"
+#include "special_encounter.h"
+#include "sprite_system.h"
 #include "strbuf.h"
 #include "string_list.h"
 #include "string_template.h"
+#include "system.h"
 #include "text.h"
 #include "touch_screen.h"
 #include "trainer_info.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
 #include "unk_0200C440.h"
-#include "unk_0200C6E4.h"
 #include "unk_0200F174.h"
-#include "unk_02017728.h"
-#include "unk_0201DBEC.h"
 #include "unk_0201E3D8.h"
-#include "unk_0202D7A8.h"
 #include "unk_020393C8.h"
 #include "unk_020683F4.h"
 #include "unk_0207CB08.h"
 #include "unk_0208C098.h"
+#include "vram_transfer.h"
 
 typedef struct {
     const u8 *unk_00;
@@ -387,7 +386,7 @@ int ov84_0223B5A0(OverlayManager *param0, int *param1)
 {
     UnkStruct_ov84_0223B5A0 *v0;
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
     GXLayers_DisableEngineALayers();
     GXLayers_DisableEngineBLayers();
@@ -397,18 +396,18 @@ int ov84_0223B5A0(OverlayManager *param0, int *param1)
     G2_BlendNone();
     G2S_BlendNone();
 
-    Heap_Create(3, 6, 0x30000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_6, 0x30000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov84_0223B5A0), 6);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov84_0223B5A0), HEAP_ID_6);
     memset(v0, 0, sizeof(UnkStruct_ov84_0223B5A0));
     v0->unk_C4 = OverlayManager_Args(param0);
 
     ov84_0223B9AC(v0);
 
-    v0->unk_00 = BgConfig_New(6);
+    v0->unk_00 = BgConfig_New(HEAP_ID_6);
     v0->unk_425 = TrainerInfo_Gender(v0->unk_CC);
 
-    StartScreenTransition(1, 3, 3, 0x0, 6, 1, 6);
+    StartScreenTransition(1, 3, 3, 0x0, 6, 1, HEAP_ID_6);
     SetAutorepeat(3, 8);
 
     ov84_0223BEAC(v0);
@@ -442,7 +441,7 @@ int ov84_0223B5A0(OverlayManager *param0, int *param1)
         ov84_02240328(v0);
     }
 
-    SetMainCallback(ov84_0223BA14, v0);
+    SetVBlankCallback(ov84_0223BA14, v0);
     sub_02004550(51, 0, 0);
     DrawWifiConnectionIcon();
 
@@ -557,7 +556,7 @@ int ov84_0223B76C(OverlayManager *param0, int *param1)
     ov84_0223D014(v0);
     ov84_02240E5C(v0);
     ov84_02240ABC(v0);
-    sub_0200C7EC(v0->unk_DC);
+    SpriteSystem_DrawSprites(v0->unk_DC);
 
     return 0;
 }
@@ -573,7 +572,7 @@ int ov84_0223B900(OverlayManager *param0, int *param1)
     ov84_0223BBC4(v0->unk_00);
 
     sub_0201E530();
-    VRAMTransferManager_Destroy();
+    VramTransfer_Free();
 
     ov84_0223FB50(v0);
     ov84_0223F238(v0);
@@ -588,8 +587,8 @@ int ov84_0223B900(OverlayManager *param0, int *param1)
     StringTemplate_Free(v0->unk_118);
     NARC_dtor(v0->unk_D4);
     OverlayManager_FreeData(param0);
-    SetMainCallback(NULL, NULL);
-    Heap_Destroy(6);
+    SetVBlankCallback(NULL, NULL);
+    Heap_Destroy(HEAP_ID_6);
     SetAutorepeat(4, 8);
 
     return 1;
@@ -602,22 +601,20 @@ static void ov84_0223B9AC(UnkStruct_ov84_0223B5A0 *param0)
     param0->unk_D0 = SaveData_Options(param0->unk_C4->unk_00);
 }
 
-static UnkStruct_0202D7B0 *ov84_0223B9E4(UnkStruct_ov84_0223B5A0 *param0)
+static SpecialEncounter *ov84_0223B9E4(UnkStruct_ov84_0223B5A0 *param0)
 {
-    return sub_0202D834(param0->unk_C4->unk_00);
+    return SaveData_GetSpecialEncounters(param0->unk_C4->unk_00);
 }
 
-static void ov84_0223B9F4(UnkStruct_ov84_0223B5A0 *param0, u8 param1)
+static void SetRepelSteps(UnkStruct_ov84_0223B5A0 *param0, u8 stepCount)
 {
-    u8 *v0;
-
-    v0 = sub_0202D9CC(ov84_0223B9E4(param0));
-    *v0 = param1;
+    u8 *repelSteps = SpecialEncounter_GetRepelSteps(ov84_0223B9E4(param0));
+    *repelSteps = stepCount;
 }
 
-static void ov84_0223BA04(UnkStruct_ov84_0223B5A0 *param0, u8 param1)
+static void SetBlackWhiteFluteActive(UnkStruct_ov84_0223B5A0 *param0, u8 param1)
 {
-    sub_0202D9EC(ov84_0223B9E4(param0), param1);
+    SpecialEncounter_SetFluteFactor(ov84_0223B9E4(param0), param1);
 }
 
 static void ov84_0223BA14(void *param0)
@@ -625,8 +622,8 @@ static void ov84_0223BA14(void *param0)
     UnkStruct_ov84_0223B5A0 *v0 = param0;
 
     Bg_RunScheduledUpdates(v0->unk_00);
-    sub_0201DCAC();
-    OAMManager_ApplyAndResetBuffers();
+    VramTransfer_Process();
+    SpriteSystem_TransferOam();
     OS_SetIrqCheckFlag(OS_IE_V_BLANK);
 }
 
@@ -792,8 +789,8 @@ static void ov84_0223BA5C(BgConfig *param0)
         Bg_ScheduleAffineRotationCenter(param0, 7, 12, 80);
     }
 
-    Bg_ClearTilesRange(0, 32, 0, 6);
-    Bg_ClearTilesRange(4, 32, 0, 6);
+    Bg_ClearTilesRange(0, 32, 0, HEAP_ID_6);
+    Bg_ClearTilesRange(4, 32, 0, HEAP_ID_6);
 }
 
 static void ov84_0223BBC4(BgConfig *param0)
@@ -807,38 +804,38 @@ static void ov84_0223BBC4(BgConfig *param0)
     Bg_FreeTilemapBuffer(param0, 2);
     Bg_FreeTilemapBuffer(param0, 1);
     Bg_FreeTilemapBuffer(param0, 0);
-    Heap_FreeToHeapExplicit(6, param0);
+    Heap_FreeToHeapExplicit(HEAP_ID_6, param0);
 }
 
 static void ov84_0223BC1C(UnkStruct_ov84_0223B5A0 *param0)
 {
-    param0->unk_D4 = NARC_ctor(NARC_INDEX_GRAPHIC__PL_BAG_GRA, 6);
+    param0->unk_D4 = NARC_ctor(NARC_INDEX_GRAPHIC__PL_BAG_GRA, HEAP_ID_6);
 
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_D4, 11, param0->unk_00, 1, 0, 0, 0, 6);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_D4, 14, param0->unk_00, 1, 0, 0, 0, 6);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_D4, 13, param0->unk_00, 3, 0, 0, 0, 6);
-    Graphics_LoadPaletteFromOpenNARC(param0->unk_D4, 12, 0, 0, 0, 6);
-    Graphics_LoadPaletteFromOpenNARC(param0->unk_D4, 22, 0, 16 * 13 * 2, 32, 6);
-    Font_LoadScreenIndicatorsPalette(0, 11 * 32, 6);
-    LoadStandardWindowGraphics(param0->unk_00, 0, 1024 - 9, 14, 0, 6);
-    LoadMessageBoxGraphics(param0->unk_00, 0, 1024 - 9 - (18 + 12), 12, Options_Frame(param0->unk_D0), 6);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_D4, 15, param0->unk_00, 5, 0, 0, 0, 6);
-    Graphics_LoadPaletteFromOpenNARC(param0->unk_D4, 16, 4, 0, 0, 6);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_D4, 17, param0->unk_00, 5, 0, 0, 0, 6);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_D4, 32, param0->unk_00, 7, 0, 0, 0, 6);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_D4, 33, param0->unk_00, 7, 0, 0, 0, 6);
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_D4, 19, param0->unk_00, 4, 0, 0, 0, 6);
-    Graphics_LoadPaletteFromOpenNARC(param0->unk_D4, 18, 4, 16 * 2 * 2, 0x20 * 2, 6);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_D4, 11, param0->unk_00, 1, 0, 0, 0, HEAP_ID_6);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_D4, 14, param0->unk_00, 1, 0, 0, 0, HEAP_ID_6);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_D4, 13, param0->unk_00, 3, 0, 0, 0, HEAP_ID_6);
+    Graphics_LoadPaletteFromOpenNARC(param0->unk_D4, 12, 0, 0, 0, HEAP_ID_6);
+    Graphics_LoadPaletteFromOpenNARC(param0->unk_D4, 22, 0, 16 * 13 * 2, 32, HEAP_ID_6);
+    Font_LoadScreenIndicatorsPalette(0, 11 * 32, HEAP_ID_6);
+    LoadStandardWindowGraphics(param0->unk_00, 0, 1024 - 9, 14, 0, HEAP_ID_6);
+    LoadMessageBoxGraphics(param0->unk_00, 0, 1024 - 9 - (18 + 12), 12, Options_Frame(param0->unk_D0), HEAP_ID_6);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_D4, 15, param0->unk_00, 5, 0, 0, 0, HEAP_ID_6);
+    Graphics_LoadPaletteFromOpenNARC(param0->unk_D4, 16, 4, 0, 0, HEAP_ID_6);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_D4, 17, param0->unk_00, 5, 0, 0, 0, HEAP_ID_6);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_D4, 32, param0->unk_00, 7, 0, 0, 0, HEAP_ID_6);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_D4, 33, param0->unk_00, 7, 0, 0, 0, HEAP_ID_6);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_D4, 19, param0->unk_00, 4, 0, 0, 0, HEAP_ID_6);
+    Graphics_LoadPaletteFromOpenNARC(param0->unk_D4, 18, 4, 16 * 2 * 2, 0x20 * 2, HEAP_ID_6);
 }
 
 static void ov84_0223BDB4(UnkStruct_ov84_0223B5A0 *param0)
 {
-    param0->unk_114 = MessageLoader_Init(0, 26, 7, 6);
-    param0->unk_110 = sub_0200C440(1, 2, 0, 6);
-    param0->unk_118 = StringTemplate_Default(6);
-    param0->unk_11C = MessageLoader_Init(0, 26, 392, 6);
-    param0->unk_120 = MessageLoader_Init(0, 26, 647, 6);
-    param0->unk_3F8 = Strbuf_Init(256, 6);
+    param0->unk_114 = MessageLoader_Init(0, 26, 7, HEAP_ID_6);
+    param0->unk_110 = sub_0200C440(1, 2, 0, HEAP_ID_6);
+    param0->unk_118 = StringTemplate_Default(HEAP_ID_6);
+    param0->unk_11C = MessageLoader_Init(0, 26, 392, HEAP_ID_6);
+    param0->unk_120 = MessageLoader_Init(0, 26, 647, HEAP_ID_6);
+    param0->unk_3F8 = Strbuf_Init(256, HEAP_ID_6);
 }
 
 static void ov84_0223BE24(UnkStruct_ov84_0223B5A0 *param0)
@@ -1003,7 +1000,7 @@ static void ov84_0223C158(UnkStruct_ov84_0223B5A0 *param0)
     u32 v0;
 
     for (v0 = 0; v0 < 165; v0++) {
-        param0->unk_164[v0] = Strbuf_Init(18, 6);
+        param0->unk_164[v0] = Strbuf_Init(18, HEAP_ID_6);
     }
 }
 
@@ -1073,7 +1070,7 @@ static void ov84_0223C224(UnkStruct_ov84_0223B5A0 *param0, u16 param1, u16 param
     v0.choices = param0->unk_160;
     v0.window = &param0->unk_04[0];
     v0.count = param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_09;
-    v0.tmp = (void *)param0;
+    v0.parent = (void *)param0;
 
     if ((param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_08 == 3) || (param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_08 == 4)) {
         v0.textXOffset = (32 + 3);
@@ -1103,9 +1100,9 @@ static void ov84_0223C2AC(ListMenu *param0, u32 param1, u8 param2)
 
         v0->unk_482 = (v0->unk_482 + 1) % 3;
 
-        if ((v0->unk_492 == 0) || (sub_0200D3B8(v0->unk_E0[0]) == 0)) {
-            sub_0200D3CC(v0->unk_E0[0], 0);
-            sub_0200D364(
+        if ((v0->unk_492 == 0) || (ManagedSprite_IsAnimated(v0->unk_E0[0]) == 0)) {
+            ManagedSprite_SetAnimationFrame(v0->unk_E0[0], 0);
+            ManagedSprite_SetAnim(
                 v0->unk_E0[0], 8 + v0->unk_C4->unk_04[v0->unk_C4->unk_64].unk_08);
         }
     }
@@ -1229,7 +1226,7 @@ static u8 ov84_0223C5B8(UnkStruct_ov84_0223B5A0 *param0)
     v0 = &param0->unk_C4->unk_04[param0->unk_C4->unk_64];
     ListMenu_GetListAndCursorPos(param0->unk_15C, &v0->unk_06, &v0->unk_04);
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_SELECT) {
+    if (gSystem.pressedKeys & PAD_BUTTON_SELECT) {
         if (ov84_0223D244(param0) == 1) {
             Sound_PlayEffect(1500);
             return 2;
@@ -1240,7 +1237,7 @@ static u8 ov84_0223C5B8(UnkStruct_ov84_0223B5A0 *param0)
     ListMenu_GetListAndCursorPos(param0->unk_15C, &v2, &v3);
 
     if (v0->unk_04 != v3) {
-        SpriteActor_SetSpritePositionXY(
+        ManagedSprite_SetPositionXY(
             param0->unk_E0[4], 177, 24 + (v3 - 1) * 16);
     }
 
@@ -1272,7 +1269,7 @@ static u8 ov84_0223C5B8(UnkStruct_ov84_0223B5A0 *param0)
         Sound_PlayEffect(1500);
         param0->unk_C4->unk_66 = 0;
         param0->unk_C4->unk_68 = 5;
-        sub_0208C120(1, 6);
+        sub_0208C120(1, HEAP_ID_6);
         return 3;
     default:
         Sound_PlayEffect(1500);
@@ -1292,7 +1289,7 @@ static void ov84_0223C720(UnkStruct_ov84_0223B5A0 *param0)
 
 static u8 ov84_0223C750(UnkStruct_ov84_0223B5A0 *param0)
 {
-    if (gCoreSys.pressedKeysRepeatable & PAD_KEY_LEFT) {
+    if (gSystem.pressedKeysRepeatable & PAD_KEY_LEFT) {
         if (param0->unk_424 == 1) {
             return 0;
         }
@@ -1314,7 +1311,7 @@ static u8 ov84_0223C750(UnkStruct_ov84_0223B5A0 *param0)
 
         return 1;
     }
-    if (gCoreSys.pressedKeysRepeatable & PAD_KEY_RIGHT) {
+    if (gSystem.pressedKeysRepeatable & PAD_KEY_RIGHT) {
         if (param0->unk_424 == 1) {
             return 0;
         }
@@ -1374,8 +1371,8 @@ static void ov84_0223C89C(UnkStruct_ov84_0223B5A0 *param0)
     Window_FillTilemap(&param0->unk_04[1], 0);
     Window_ScheduleCopyToVRAM(&param0->unk_04[0]);
     Window_ScheduleCopyToVRAM(&param0->unk_04[1]);
-    SpriteActor_EnableObject(param0->unk_E0[4], 0);
-    SpriteActor_EnableObject(param0->unk_E0[7], 0);
+    ManagedSprite_SetDrawFlag(param0->unk_E0[4], 0);
+    ManagedSprite_SetDrawFlag(param0->unk_E0[7], 0);
     ov84_0223F3AC(param0, param0->unk_C4->unk_64, 0);
     ov84_0223CF20(param0, param0->unk_C4->unk_64, 0);
 }
@@ -1438,7 +1435,7 @@ static u8 ov84_0223C920(UnkStruct_ov84_0223B5A0 *param0)
             Bg_ScheduleTilemapTransfer(param0->unk_00, 4);
         }
 
-        SpriteActor_EnableObject(param0->unk_E0[7], 1);
+        ManagedSprite_SetDrawFlag(param0->unk_E0[7], 1);
         return 1;
     }
 
@@ -1449,13 +1446,13 @@ static u8 ov84_0223CA5C(UnkStruct_ov84_0223B5A0 *param0)
 {
     UnkStruct_ov84_0223C920 *v0 = &param0->unk_429;
 
-    if (gCoreSys.pressedKeys & PAD_KEY_LEFT) {
+    if (gSystem.pressedKeys & PAD_KEY_LEFT) {
         if (param0->unk_424 == 1) {
             return 1;
         }
 
         Sound_PlayEffect(1738);
-        sub_0200D364(param0->unk_E0[0], param0->unk_C4->unk_04[v0->unk_00].unk_08);
+        ManagedSprite_SetAnim(param0->unk_E0[0], param0->unk_C4->unk_04[v0->unk_00].unk_08);
         ov84_0223CF20(param0, v0->unk_00, 0);
         Bg_ScheduleTilemapTransfer(param0->unk_00, 4);
 
@@ -1482,13 +1479,13 @@ static u8 ov84_0223CA5C(UnkStruct_ov84_0223B5A0 *param0)
         ov84_02240B68(param0);
         return 1;
     }
-    if (gCoreSys.pressedKeys & PAD_KEY_RIGHT) {
+    if (gSystem.pressedKeys & PAD_KEY_RIGHT) {
         if (param0->unk_424 == 1) {
             return 1;
         }
 
         Sound_PlayEffect(1738);
-        sub_0200D364(param0->unk_E0[0], param0->unk_C4->unk_04[v0->unk_00].unk_08);
+        ManagedSprite_SetAnim(param0->unk_E0[0], param0->unk_C4->unk_04[v0->unk_00].unk_08);
         ov84_0223CF20(param0, v0->unk_00, 0);
         Bg_ScheduleTilemapTransfer(param0->unk_00, 4);
 
@@ -1540,15 +1537,15 @@ static u8 ov84_0223CBD8(UnkStruct_ov84_0223B5A0 *param0)
 
             param0->unk_C4->unk_64 = v0->unk_00;
 
-            sub_0200D364(param0->unk_E0[0], param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_08);
+            ManagedSprite_SetAnim(param0->unk_E0[0], param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_08);
             ov84_0223F438(param0);
             ov84_0223F3AC(param0, param0->unk_C4->unk_64, 1);
             ov84_0223BFBC(param0);
             ov84_0223C194(&param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_06, &param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_04, param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_09);
             ov84_0223C1D0(&param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_06, &param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_04, param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_09, 9);
             ov84_0223C224(param0, param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_06, param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_04);
-            SpriteActor_SetSpritePositionXY(param0->unk_E0[4], 177, 24 + (param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_04 - 1) * 16);
-            SpriteActor_EnableObject(param0->unk_E0[4], 1);
+            ManagedSprite_SetPositionXY(param0->unk_E0[4], 177, 24 + (param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_04 - 1) * 16);
+            ManagedSprite_SetDrawFlag(param0->unk_E0[4], 1);
 
             v0->unk_02++;
             return 1;
@@ -1593,12 +1590,12 @@ static u8 ov84_0223CD40(UnkStruct_ov84_0223B5A0 *param0)
 
 static int ov84_0223CDB0(UnkStruct_ov84_0223B5A0 *param0)
 {
-    int v0 = sub_02022664(Unk_ov84_022410C8[param0->unk_424].unk_04);
+    int v0 = TouchScreen_CheckRectanglePressed(Unk_ov84_022410C8[param0->unk_424].unk_04);
 
     if (v0 != 0xffffffff) {
         u16 v1 = 0xfffe;
 
-        if (Bg_DoesPixelAtXYMatchVal(param0->unk_00, 4, gCoreSys.touchX, gCoreSys.touchY, &v1) == 0) {
+        if (Bg_DoesPixelAtXYMatchVal(param0->unk_00, 4, gSystem.touchX, gSystem.touchY, &v1) == 0) {
             return 0xffffffff;
         }
     }
@@ -1608,12 +1605,12 @@ static int ov84_0223CDB0(UnkStruct_ov84_0223B5A0 *param0)
 
 static int ov84_0223CE08(UnkStruct_ov84_0223B5A0 *param0)
 {
-    int v0 = sub_02022644(Unk_ov84_022410C8[param0->unk_424].unk_04);
+    int v0 = TouchScreen_CheckRectangleHeld(Unk_ov84_022410C8[param0->unk_424].unk_04);
 
     if (v0 != 0xffffffff) {
         u16 v1 = 0xfffe;
 
-        if (Bg_DoesPixelAtXYMatchVal(param0->unk_00, 4, gCoreSys.touchX, gCoreSys.touchY, &v1) == 0) {
+        if (Bg_DoesPixelAtXYMatchVal(param0->unk_00, 4, gSystem.touchX, gSystem.touchY, &v1) == 0) {
             return 0xffffffff;
         }
     }
@@ -1760,25 +1757,25 @@ static void ov84_0223D0FC(UnkStruct_ov84_0223B5A0 *param0)
         switch (param0->unk_480) {
         case 0:
         case 1:
-            SpriteActor_GetSpritePositionXY(param0->unk_E0[2], &v0, &v1);
+            ManagedSprite_GetPositionXY(param0->unk_E0[2], &v0, &v1);
 
             v0 -= 1;
-            SpriteActor_SetSpritePositionXY(param0->unk_E0[2], v0, v1);
-            SpriteActor_GetSpritePositionXY(param0->unk_E0[3], &v0, &v1);
+            ManagedSprite_SetPositionXY(param0->unk_E0[2], v0, v1);
+            ManagedSprite_GetPositionXY(param0->unk_E0[3], &v0, &v1);
 
             v0 += 1;
-            SpriteActor_SetSpritePositionXY(param0->unk_E0[3], v0, v1);
+            ManagedSprite_SetPositionXY(param0->unk_E0[3], v0, v1);
             break;
         case 2:
         case 3:
-            SpriteActor_GetSpritePositionXY(param0->unk_E0[2], &v0, &v1);
+            ManagedSprite_GetPositionXY(param0->unk_E0[2], &v0, &v1);
 
             v0 += 1;
-            SpriteActor_SetSpritePositionXY(param0->unk_E0[2], v0, v1);
-            SpriteActor_GetSpritePositionXY(param0->unk_E0[3], &v0, &v1);
+            ManagedSprite_SetPositionXY(param0->unk_E0[2], v0, v1);
+            ManagedSprite_GetPositionXY(param0->unk_E0[3], &v0, &v1);
 
             v0 -= 1;
-            SpriteActor_SetSpritePositionXY(param0->unk_E0[3], v0, v1);
+            ManagedSprite_SetPositionXY(param0->unk_E0[3], v0, v1);
             break;
         }
 
@@ -1790,12 +1787,12 @@ static void ov84_0223D0FC(UnkStruct_ov84_0223B5A0 *param0)
 
 static BOOL ov84_0223D1F4(UnkStruct_ov84_0223B5A0 *param0)
 {
-    int v0 = sub_02022664(Unk_ov84_02240E98);
+    int v0 = TouchScreen_CheckRectanglePressed(Unk_ov84_02240E98);
 
     if (v0 != 0xffffffff) {
         u16 v1 = 0xfffe;
 
-        if (Bg_DoesPixelAtXYMatchVal(param0->unk_00, 4, gCoreSys.touchX, gCoreSys.touchY, &v1) == 0) {
+        if (Bg_DoesPixelAtXYMatchVal(param0->unk_00, 4, gSystem.touchX, gSystem.touchY, &v1) == 0) {
             return 0;
         }
 
@@ -1858,7 +1855,7 @@ static u8 ov84_0223D2F8(UnkStruct_ov84_0223B5A0 *param0)
         return 1;
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_SELECT) {
+    if (gSystem.pressedKeys & PAD_BUTTON_SELECT) {
         Sound_PlayEffect(1500);
         ov84_0223D42C(param0);
         return 1;
@@ -1868,7 +1865,7 @@ static u8 ov84_0223D2F8(UnkStruct_ov84_0223B5A0 *param0)
     ListMenu_GetListAndCursorPos(param0->unk_15C, &v2, &v3);
 
     if (v0->unk_04 != v3) {
-        SpriteActor_SetSpritePositionXY(param0->unk_E0[5], 177, 24 + (v3 - 1) * 16 - 8);
+        ManagedSprite_SetPositionXY(param0->unk_E0[5], 177, 24 + (v3 - 1) * 16 - 8);
     }
 
     v0->unk_06 = v2;
@@ -1887,7 +1884,7 @@ static u8 ov84_0223D2F8(UnkStruct_ov84_0223B5A0 *param0)
     case 0xfffffffe:
         Sound_PlayEffect(1500);
 
-        if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+        if (gSystem.pressedKeys & PAD_BUTTON_A) {
             ov84_0223D42C(param0);
         } else {
             ov84_0223D484(param0);
@@ -1941,22 +1938,22 @@ static void ov84_0223D4E8(UnkStruct_ov84_0223B5A0 *param0)
     UnkStruct_ov84_0223BE5C *v0 = &param0->unk_C4->unk_04[param0->unk_C4->unk_64];
 
     if (param0->unk_47A == 0) {
-        SpriteActor_SetSpritePositionXY(param0->unk_E0[4], 177, 24 + (v0->unk_04 - 1) * 16);
-        SpriteActor_EnableObject(param0->unk_E0[4], 1);
-        SpriteActor_EnableObject(param0->unk_E0[5], 0);
+        ManagedSprite_SetPositionXY(param0->unk_E0[4], 177, 24 + (v0->unk_04 - 1) * 16);
+        ManagedSprite_SetDrawFlag(param0->unk_E0[4], 1);
+        ManagedSprite_SetDrawFlag(param0->unk_E0[5], 0);
 
         if (param0->unk_424 != 1) {
-            SpriteActor_EnableObject(param0->unk_E0[2], 1);
-            SpriteActor_EnableObject(param0->unk_E0[3], 1);
+            ManagedSprite_SetDrawFlag(param0->unk_E0[2], 1);
+            ManagedSprite_SetDrawFlag(param0->unk_E0[3], 1);
         }
     } else {
-        SpriteActor_SetSpritePositionXY(param0->unk_E0[5], 177, 24 + (v0->unk_04 - 1) * 16 - 8);
-        SpriteActor_EnableObject(param0->unk_E0[4], 0);
-        SpriteActor_EnableObject(param0->unk_E0[5], 1);
+        ManagedSprite_SetPositionXY(param0->unk_E0[5], 177, 24 + (v0->unk_04 - 1) * 16 - 8);
+        ManagedSprite_SetDrawFlag(param0->unk_E0[4], 0);
+        ManagedSprite_SetDrawFlag(param0->unk_E0[5], 1);
 
         if (param0->unk_424 != 1) {
-            SpriteActor_EnableObject(param0->unk_E0[2], 0);
-            SpriteActor_EnableObject(param0->unk_E0[3], 0);
+            ManagedSprite_SetDrawFlag(param0->unk_E0[2], 0);
+            ManagedSprite_SetDrawFlag(param0->unk_E0[3], 0);
         }
     }
 }
@@ -2080,10 +2077,10 @@ static void ov84_0223D7E8(UnkStruct_ov84_0223B5A0 *param0, u8 param1)
 {
     if (param1 == 0) {
         Bg_LoadToTilemapRect(param0->unk_00, 1, Unk_ov84_02241064, 0, 18, 5, 5);
-        SpriteActor_EnableObject(param0->unk_E0[7], 1);
+        ManagedSprite_SetDrawFlag(param0->unk_E0[7], 1);
     } else {
         Bg_LoadToTilemapRect(param0->unk_00, 1, Unk_ov84_02241096, 0, 18, 5, 5);
-        SpriteActor_EnableObject(param0->unk_E0[7], 0);
+        ManagedSprite_SetDrawFlag(param0->unk_E0[7], 0);
     }
 
     Bg_ScheduleTilemapTransfer(param0->unk_00, 1);
@@ -2123,7 +2120,7 @@ static int ov84_0223D858(UnkStruct_ov84_0223B5A0 *param0)
 static int ov84_0223D8EC(UnkStruct_ov84_0223B5A0 *param0)
 {
     if (Text_IsPrinterActive(param0->unk_426) == 0) {
-        if ((gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gCoreSys.touchPressed) {
+        if ((gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gSystem.touchPressed) {
             Window_EraseMessageBox(&param0->unk_04[6], 0);
             Window_ScheduleCopyToVRAM(&param0->unk_04[1]);
             ov84_02240B34(param0, 1);
@@ -2162,7 +2159,7 @@ static int ov84_0223D94C(UnkStruct_ov84_0223B5A0 *param0)
         return 13;
     }
 
-    sub_0208C120(1, 6);
+    sub_0208C120(1, HEAP_ID_6);
     param0->unk_C4->unk_68 = 0;
 
     return 24;
@@ -2199,7 +2196,7 @@ static int ov84_0223DA14(UnkStruct_ov84_0223B5A0 *param0)
             break;
         }
 
-        if ((gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gCoreSys.touchPressed) {
+        if ((gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gSystem.touchPressed) {
             Strbuf *v1 = MessageLoader_GetNewStrbuf(param0->unk_114, 60);
 
             Window_FillTilemap(&param0->unk_04[6], 15);
@@ -2234,7 +2231,7 @@ static int ov84_0223DA14(UnkStruct_ov84_0223B5A0 *param0)
 
         switch (v2) {
         case 0:
-            sub_0208C120(1, 6);
+            sub_0208C120(1, HEAP_ID_6);
             ov84_0223D7E8(param0, 0);
             param0->unk_C4->unk_68 = 0;
             return 24;
@@ -2267,15 +2264,15 @@ static BOOL ov84_0223DBF4(UnkStruct_ov84_0223B5A0 *param0, u16 param1)
     StringTemplate_SetPlayerName(param0->unk_118, 0, param0->unk_CC);
     StringTemplate_SetItemName(param0->unk_118, 1, param1);
 
-    if (param1 == 68) {
+    if (param1 == ITEM_BLACK_FLUTE) {
         v0 = MessageLoader_GetNewStrbuf(param0->unk_114, 64);
-        ov84_0223BA04(param0, 1);
+        SetBlackWhiteFluteActive(param0, FLUTE_FACTOR_USED_BLACK);
         param0->unk_488 = 0;
-    } else if (param1 == 69) {
+    } else if (param1 == ITEM_WHITE_FLUTE) {
         v0 = MessageLoader_GetNewStrbuf(param0->unk_114, 63);
-        ov84_0223BA04(param0, 2);
+        SetBlackWhiteFluteActive(param0, FLUTE_FACTOR_USED_WHITE);
         param0->unk_488 = 0;
-    } else if ((param1 == 77) || (param1 == 76) || (param1 == 79)) {
+    } else if ((param1 == ITEM_MAX_REPEL) || (param1 == ITEM_SUPER_REPEL) || (param1 == ITEM_REPEL)) {
         v0 = ov84_0223DC9C(param0, param1);
     } else {
         return 0;
@@ -2288,16 +2285,17 @@ static BOOL ov84_0223DBF4(UnkStruct_ov84_0223B5A0 *param0, u16 param1)
 
 static Strbuf *ov84_0223DC9C(UnkStruct_ov84_0223B5A0 *param0, u16 param1)
 {
-    s32 v0;
+    s32 stepCount;
     u8 *v1;
 
-    if (sub_0202D9D8(ov84_0223B9E4(param0)) == 0) {
+    // Repel is still active, show "effects still lingered" message
+    if (SpecialEncounter_RepelStepsEmpty(ov84_0223B9E4(param0)) == 0) {
         param0->unk_488 = 0;
         return MessageLoader_GetNewStrbuf(param0->unk_114, 62);
     }
 
-    v0 = Item_LoadParam(param1, 2, 6);
-    ov84_0223B9F4(param0, (u8)v0);
+    stepCount = Item_LoadParam(param1, 2, 6);
+    SetRepelSteps(param0, (u8)stepCount);
     param0->unk_488 = 1;
     Sound_PlayEffect(1536);
 
@@ -2330,7 +2328,7 @@ static int ov84_0223DDD0(UnkStruct_ov84_0223B5A0 *param0)
             break;
         }
 
-        if ((gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gCoreSys.touchPressed) {
+        if ((gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gSystem.touchPressed) {
             Window_EraseMessageBox(&param0->unk_04[6], 0);
             param0->unk_483 = 2;
         }
@@ -2353,7 +2351,7 @@ static int ov84_0223DDD0(UnkStruct_ov84_0223B5A0 *param0)
 static int ov84_0223DE78(UnkStruct_ov84_0223B5A0 *param0)
 {
     ov84_0223FD84(param0);
-    sub_0208C120(1, 6);
+    sub_0208C120(1, HEAP_ID_6);
     param0->unk_C4->unk_68 = 1;
 
     return 24;
@@ -2362,7 +2360,7 @@ static int ov84_0223DE78(UnkStruct_ov84_0223B5A0 *param0)
 static int ov84_0223DE98(UnkStruct_ov84_0223B5A0 *param0)
 {
     ov84_0223FD84(param0);
-    sub_0208C120(1, 6);
+    sub_0208C120(1, HEAP_ID_6);
     param0->unk_C4->unk_68 = 3;
 
     return 24;
@@ -2412,13 +2410,13 @@ static int ov84_0223DF0C(UnkStruct_ov84_0223B5A0 *param0)
         Sound_PlayEffect(1592);
         return 7;
     }
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (gSystem.pressedKeys & PAD_BUTTON_A) {
         ov84_0223FFF0(param0);
         ov84_02240D3C(param0, 0);
         Sound_PlayEffect(1500);
         return 8;
     }
-    if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    if (gSystem.pressedKeys & PAD_BUTTON_B) {
         ov84_0223FFC0(param0);
         ov84_02240D3C(param0, 0);
         ov84_02240B34(param0, 1);
@@ -2507,7 +2505,7 @@ static int ov84_0223E158(UnkStruct_ov84_0223B5A0 *param0)
 static int ov84_0223E18C(UnkStruct_ov84_0223B5A0 *param0)
 {
     if (Text_IsPrinterActive(param0->unk_426) == 0) {
-        if ((gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gCoreSys.touchPressed) {
+        if ((gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gSystem.touchPressed) {
             param0->unk_479 = 0;
             Window_EraseMessageBox(&param0->unk_04[6], 0);
             Window_ScheduleCopyToVRAM(&param0->unk_04[1]);
@@ -2545,7 +2543,7 @@ static int ov84_0223E220(UnkStruct_ov84_0223B5A0 *param0)
 static int ov84_0223E254(UnkStruct_ov84_0223B5A0 *param0)
 {
     ov84_0223FD84(param0);
-    sub_0208C120(1, 6);
+    sub_0208C120(1, HEAP_ID_6);
     ov84_0223D7E8(param0, 0);
     param0->unk_C4->unk_68 = 2;
 
@@ -2589,7 +2587,7 @@ static int ov84_0223E27C(UnkStruct_ov84_0223B5A0 *param0)
             }
 
             param0->unk_C4->unk_68 = 4;
-            sub_0208C120(1, 6);
+            sub_0208C120(1, HEAP_ID_6);
 
             return 24;
         } else if (v0 == 3) {
@@ -2603,7 +2601,7 @@ static int ov84_0223E27C(UnkStruct_ov84_0223B5A0 *param0)
 static int ov84_0223E36C(UnkStruct_ov84_0223B5A0 *param0)
 {
     if (Text_IsPrinterActive(param0->unk_426) == 0) {
-        if ((gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gCoreSys.touchPressed) {
+        if ((gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gSystem.touchPressed) {
             Window_EraseMessageBox(&param0->unk_04[6], 0);
             Window_ScheduleCopyToVRAM(&param0->unk_04[1]);
             ov84_02240B34(param0, 1);
@@ -2731,7 +2729,7 @@ static int ov84_0223E5C4(UnkStruct_ov84_0223B5A0 *param0)
         Sound_PlayEffect(1592);
         return 18;
     }
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (gSystem.pressedKeys & PAD_BUTTON_A) {
         Strbuf *v1;
 
         ov84_02240D3C(param0, 0);
@@ -2748,7 +2746,7 @@ static int ov84_0223E5C4(UnkStruct_ov84_0223B5A0 *param0)
 
         return 19;
     }
-    if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    if (gSystem.pressedKeys & PAD_BUTTON_B) {
         param0->unk_48C = 0;
 
         ov84_02240D3C(param0, 0);
@@ -2858,7 +2856,7 @@ static int ov84_0223E920(UnkStruct_ov84_0223B5A0 *param0)
 static int ov84_0223E9B0(UnkStruct_ov84_0223B5A0 *param0)
 {
     if (Text_IsPrinterActive(param0->unk_426) == 0) {
-        if ((gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gCoreSys.touchPressed) {
+        if ((gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) || gSystem.touchPressed) {
             param0->unk_479 = 0;
             param0->unk_48C = 0;
 
@@ -2906,7 +2904,7 @@ static int ov84_0223EA18(UnkStruct_ov84_0223B5A0 *param0)
             }
 
             param0->unk_C4->unk_68 = 0;
-            sub_0208C120(1, 6);
+            sub_0208C120(1, HEAP_ID_6);
             return 24;
         } else if (v0 == 3) {
             param0->unk_C4->unk_68 = 5;
@@ -2960,15 +2958,15 @@ static BOOL ov84_0223EB84(UnkStruct_ov84_0223B5A0 *param0, u16 param1)
         param0->unk_492 = 1;
         param0->unk_498 = 0;
         param0->unk_494 = 0;
-        param0->unk_49E = gCoreSys.touchX;
-        param0->unk_4A0 = gCoreSys.touchY;
+        param0->unk_49E = gSystem.touchX;
+        param0->unk_4A0 = gSystem.touchY;
     }
 
     if (param0->unk_492 == 1) {
         if (ov84_0223EB6C() == 1) {
             s32 v0, v1;
 
-            v0 = CalcDotProduct2D(128 - param0->unk_49E, 80 - param0->unk_4A0, 128 - gCoreSys.touchX, 80 - gCoreSys.touchY, 80);
+            v0 = CalcDotProduct2D(128 - param0->unk_49E, 80 - param0->unk_4A0, 128 - gSystem.touchX, 80 - gSystem.touchY, 80);
             v1 = CalcRadialAngle(80, v0 * 2);
             v1 = ((v1 << 8) / 182) >> 8;
             param0->unk_49A += v1;
@@ -3004,8 +3002,8 @@ static BOOL ov84_0223EB84(UnkStruct_ov84_0223B5A0 *param0, u16 param1)
                     }
                 }
             }
-            param0->unk_49E = gCoreSys.touchX;
-            param0->unk_4A0 = gCoreSys.touchY;
+            param0->unk_49E = gSystem.touchX;
+            param0->unk_4A0 = gSystem.touchY;
         } else {
             param0->unk_492 = 0;
             param0->unk_498 = 0;
@@ -3044,10 +3042,8 @@ static BOOL ov84_0223ED14(UnkStruct_ov84_0223B5A0 *param0)
 
 static BOOL ov84_0223ED64(UnkStruct_ov84_0223B5A0 *param0, u16 param1)
 {
-    u16 v0, v1;
-
-    v0 = param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_06;
-    v1 = param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_04;
+    u16 v0 = param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_06;
+    u16 v1 = param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_04;
 
     ListMenu_TestInput(param0->unk_15C, NULL, v0, v1, 1, param1, &v0, &v1);
 
@@ -3055,7 +3051,7 @@ static BOOL ov84_0223ED64(UnkStruct_ov84_0223B5A0 *param0, u16 param1)
         return 0;
     }
 
-    SpriteActor_SetSpritePositionXY(param0->unk_E0[4], 177, 24 + (v1 - 1) * 16);
+    ManagedSprite_SetPositionXY(param0->unk_E0[4], 177, 24 + (v1 - 1) * 16);
 
     param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_06 = v0;
     param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_04 = v1;
@@ -3090,10 +3086,8 @@ static BOOL ov84_0223EE30(UnkStruct_ov84_0223B5A0 *param0)
 
 static BOOL ov84_0223EE80(UnkStruct_ov84_0223B5A0 *param0, u16 param1)
 {
-    u16 v0, v1;
-
-    v0 = param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_06;
-    v1 = param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_04;
+    u16 v0 = param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_06;
+    u16 v1 = param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_04;
 
     ListMenu_TestInput(param0->unk_15C, NULL, v0, v1, 1, param1, &v0, &v1);
 
@@ -3101,7 +3095,7 @@ static BOOL ov84_0223EE80(UnkStruct_ov84_0223B5A0 *param0, u16 param1)
         return 0;
     }
 
-    SpriteActor_SetSpritePositionXY(param0->unk_E0[5], 177, 24 + (v1 - 1) * 16 - 8);
+    ManagedSprite_SetPositionXY(param0->unk_E0[5], 177, 24 + (v1 - 1) * 16 - 8);
 
     param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_06 = v0;
     param0->unk_C4->unk_04[param0->unk_C4->unk_64].unk_04 = v1;

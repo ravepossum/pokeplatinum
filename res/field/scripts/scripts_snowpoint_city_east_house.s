@@ -1,10 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "generated/tutor_locations.h"
+#include "res/text/bank/snowpoint_city_east_house.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _0085
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -14,8 +16,8 @@ _000A:
     ScrCmd_27F 0x800C
     GoToIfEq 0x800C, 1, _007A
     Message 0
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _006F
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _006F
     ScrCmd_27D 0x800C, 0
     GoToIfEq 0x800C, -1, _007A
     SetFlag 0xAAD
@@ -51,9 +53,9 @@ _0085:
     LockAll
     FacePlayer
     Message 7
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00B0
-    GoToIfEq 0x800C, 1, _0296
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00B0
+    GoToIfEq 0x800C, MENU_NO, _0296
     End
 
 _00B0:
@@ -63,20 +65,20 @@ _00B0:
     WaitFadeScreen
     ScrCmd_191
     ScrCmd_193 0x8000
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x8000, 0xFF, _0296
     ScrCmd_198 0x8000, 0x8001
     GoToIfEq 0x8001, 0, _028B
-    ScrCmd_2E5 0x8000, 2, 0x800C
+    CheckHasLearnableTutorMoves 0x8000, TUTOR_LOCATION_SNOWPOINT_CITY, 0x800C
     GoToIfEq 0x800C, 0, _02A1
     BufferPartyMonNickname 0, 0x8000
     Message 12
-    ScrCmd_2E6 0x8000, 2, 0x800C
+    ShowMoveTutorMoveSelectionMenu 0x8000, TUTOR_LOCATION_SNOWPOINT_CITY, 0x800C
     SetVar 0x8003, 0x800C
     GoToIfEq 0x8003, -2, _0296
-    ScrCmd_2EA 0x8003, 0x800C
+    CheckCanAffordMove 0x8003, 0x800C
     GoToIfEq 0x800C, 0, _02AC
     ScrCmd_1C8 0x800C, 0x8000
     SetVar 0x8002, 0x800C
@@ -88,22 +90,22 @@ _0161:
     BufferPartyMonNickname 0, 0x8000
     BufferMoveName 1, 0x8003
     Message 16
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _021B
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _021B
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     CloseMessage
     ScrCmd_2E7 0x8000, 0x8003
     ScrCmd_2E8 0x8002
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x8002, 4, _021B
     ScrCmd_1CA 0x800C, 0x8000, 0x8002
     BufferMoveName 1, 0x800C
     Message 19
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _021B
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _021B
     BufferPartyMonNickname 0, 0x8000
     ScrCmd_1CA 0x800C, 0x8000, 0x8002
     BufferMoveName 1, 0x800C
@@ -125,8 +127,8 @@ _021B:
     BufferPartyMonNickname 0, 0x8000
     BufferMoveName 1, 0x8003
     Message 17
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0241
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0241
     GoTo _0161
     End
 
@@ -148,8 +150,8 @@ _0256:
     End
 
 _0277:
-    ScrCmd_2EB 0x8003
-    ScrCmd_2E9 0x8000, 0x8002, 0x8003
+    PayShardsCost 0x8003
+    ResetMoveSlot 0x8000, 0x8002, 0x8003
     GoTo _0296
     End
 

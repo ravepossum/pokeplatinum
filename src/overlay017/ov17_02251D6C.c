@@ -24,6 +24,7 @@
 #include "overlay017/struct_ov17_022539E4.h"
 
 #include "bg_window.h"
+#include "brightness_controller.h"
 #include "heap.h"
 #include "pokemon.h"
 #include "render_window.h"
@@ -31,7 +32,6 @@
 #include "sys_task_manager.h"
 #include "unk_02005474.h"
 #include "unk_0200762C.h"
-#include "unk_0200A9DC.h"
 #include "unk_0200F174.h"
 
 static int ov17_02251DAC(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3);
@@ -119,9 +119,7 @@ void ov17_02251D6C(UnkStruct_ov17_0224FCA0 *param0)
 static int ov17_02251DAC(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    int v1;
-
-    v1 = ov17_0224F1F8(param0, 0xff, param2, NULL, 0);
+    int v1 = ov17_0224F1F8(param0, 0xff, param2, NULL, 0);
     return v1;
 }
 
@@ -140,9 +138,7 @@ static void ov17_02251DD0(UnkStruct_ov17_0224F30C *param0, void *param1, const U
 static int ov17_02251DD4(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    int v1;
-
-    v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub1));
+    int v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub1));
     return v1;
 }
 
@@ -164,18 +160,14 @@ static void ov17_02251DE8(UnkStruct_ov17_0224F30C *param0, void *param1, const U
 static int ov17_02251E54(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    int v1;
-
-    v1 = ov17_0224F1F8(param0, 0xff, param2, NULL, 0);
+    int v1 = ov17_0224F1F8(param0, 0xff, param2, NULL, 0);
     return v1;
 }
 
 static void ov17_02251E68(UnkStruct_ov17_0224F30C *param0, void *param1, const UnkStruct_ov17_02243C80 *param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    UnkStruct_ov17_02251EAC *v1;
-
-    v1 = Heap_AllocFromHeap(24, sizeof(UnkStruct_ov17_02251EAC));
+    UnkStruct_ov17_02251EAC *v1 = Heap_AllocFromHeap(HEAP_ID_24, sizeof(UnkStruct_ov17_02251EAC));
     MI_CpuClear8(v1, sizeof(UnkStruct_ov17_02251EAC));
 
     v1->unk_00 = v0;
@@ -265,18 +257,14 @@ static void ov17_02251EAC(SysTask *param0, void *param1)
 static int ov17_02252008(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    int v1;
-
-    v1 = ov17_0224F1F8(param0, 0xff, param2, NULL, 0);
+    int v1 = ov17_0224F1F8(param0, 0xff, param2, NULL, 0);
     return v1;
 }
 
 static void ov17_0225201C(UnkStruct_ov17_0224F30C *param0, void *param1, const UnkStruct_ov17_02243C80 *param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    UnkStruct_ov17_0225201C *v1;
-
-    v1 = Heap_AllocFromHeap(24, sizeof(UnkStruct_ov17_0225201C));
+    UnkStruct_ov17_0225201C *v1 = Heap_AllocFromHeap(HEAP_ID_24, sizeof(UnkStruct_ov17_0225201C));
     MI_CpuClear8(v1, sizeof(UnkStruct_ov17_0225201C));
 
     v1->unk_00 = v0;
@@ -372,9 +360,7 @@ static void ov17_02252060(SysTask *param0, void *param1)
 static int ov17_022521E4(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    int v1;
-
-    v1 = ov17_0224F1F8(param0, 0xff, param2, NULL, 0);
+    int v1 = ov17_0224F1F8(param0, 0xff, param2, NULL, 0);
     return v1;
 }
 
@@ -389,9 +375,7 @@ static void ov17_022521F8(UnkStruct_ov17_0224F30C *param0, void *param1, const U
 static int ov17_02252210(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    int v1;
-
-    v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub2));
+    int v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub2));
     return v1;
 }
 
@@ -399,9 +383,7 @@ static void ov17_02252224(UnkStruct_ov17_0224F30C *param0, void *param1, const U
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
     UnkStruct_ov17_0224FCA0_sub2 *v1 = param3;
-    UnkStruct_ov17_0225228C *v2;
-
-    v2 = Heap_AllocFromHeap(24, sizeof(UnkStruct_ov17_0225228C));
+    UnkStruct_ov17_0225228C *v2 = Heap_AllocFromHeap(HEAP_ID_24, sizeof(UnkStruct_ov17_0225228C));
     MI_CpuClear8(v2, sizeof(UnkStruct_ov17_0225228C));
 
     v2->unk_00 = v0;
@@ -462,9 +444,7 @@ static void ov17_0225228C(SysTask *param0, void *param1)
 static int ov17_02252344(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    int v1;
-
-    v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub1));
+    int v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub1));
     return v1;
 }
 
@@ -475,7 +455,7 @@ static void ov17_02252358(UnkStruct_ov17_0224F30C *param0, void *param1, const U
 
     v0->unk_39A = *((UnkStruct_ov17_0224FCA0_sub1 *)param3);
 
-    v1 = Heap_AllocFromHeap(24, sizeof(UnkStruct_ov17_022523AC));
+    v1 = Heap_AllocFromHeap(HEAP_ID_24, sizeof(UnkStruct_ov17_022523AC));
     MI_CpuClear8(v1, sizeof(UnkStruct_ov17_022523AC));
 
     v1->unk_00 = v0;
@@ -500,7 +480,7 @@ static void ov17_022523AC(SysTask *param0, void *param1)
         }
         break;
     case 2:
-        StartScreenTransition(0, 0, 0, 0x0, 6, 1, 24);
+        StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_24);
         sub_020055D0(1135, 30);
         v0->unk_10++;
         break;
@@ -536,7 +516,7 @@ static void ov17_022523AC(SysTask *param0, void *param1)
         break;
     case 5:
         if (Sound_CheckFade() == 0) {
-            StartScreenTransition(0, 1, 1, 0x0, 6, 1, 24);
+            StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_24);
             v0->unk_10++;
         }
         break;
@@ -557,9 +537,7 @@ static void ov17_022523AC(SysTask *param0, void *param1)
 static int ov17_02252514(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    int v1;
-
-    v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub2));
+    int v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub2));
     return v1;
 }
 
@@ -570,7 +548,7 @@ static void ov17_02252528(UnkStruct_ov17_0224F30C *param0, void *param1, const U
     UnkStruct_ov17_02252580 *v2;
     int v3;
 
-    v2 = Heap_AllocFromHeap(24, sizeof(UnkStruct_ov17_02252580));
+    v2 = Heap_AllocFromHeap(HEAP_ID_24, sizeof(UnkStruct_ov17_02252580));
     MI_CpuClear8(v2, sizeof(UnkStruct_ov17_02252580));
 
     v2->unk_00 = v0;
@@ -624,9 +602,7 @@ static void ov17_02252580(SysTask *param0, void *param1)
 static int ov17_0225260C(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    int v1;
-
-    v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub2));
+    int v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub2));
     return v1;
 }
 
@@ -634,9 +610,7 @@ static void ov17_02252620(UnkStruct_ov17_0224F30C *param0, void *param1, const U
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
     UnkStruct_ov17_0224FCA0_sub2 *v1 = param3;
-    UnkStruct_ov17_0225266C *v2;
-
-    v2 = Heap_AllocFromHeap(24, sizeof(UnkStruct_ov17_0225266C));
+    UnkStruct_ov17_0225266C *v2 = Heap_AllocFromHeap(HEAP_ID_24, sizeof(UnkStruct_ov17_0225266C));
     MI_CpuClear8(v2, sizeof(UnkStruct_ov17_0225266C));
 
     v2->unk_00 = v0;
@@ -706,9 +680,7 @@ static void ov17_0225266C(SysTask *param0, void *param1)
 static int ov17_02252798(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    int v1;
-
-    v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub2));
+    int v1 = ov17_0224F1F8(param0, 0xff, param2, param3, sizeof(UnkStruct_ov17_0224FCA0_sub2));
     return v1;
 }
 
@@ -719,7 +691,7 @@ static void ov17_022527AC(UnkStruct_ov17_0224F30C *param0, void *param1, const U
     UnkStruct_ov17_02252858 *v2;
     int v3;
 
-    v2 = Heap_AllocFromHeap(24, sizeof(UnkStruct_ov17_02252858));
+    v2 = Heap_AllocFromHeap(HEAP_ID_24, sizeof(UnkStruct_ov17_02252858));
     MI_CpuClear8(v2, sizeof(UnkStruct_ov17_02252858));
 
     v2->unk_00 = v0;
@@ -826,18 +798,14 @@ static void ov17_02252858(SysTask *param0, void *param1)
 static int ov17_02252970(UnkStruct_ov17_0224F30C *param0, void *param1, int param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    int v1;
-
-    v1 = ov17_0224F1F8(param0, 0xff, param2, NULL, 0);
+    int v1 = ov17_0224F1F8(param0, 0xff, param2, NULL, 0);
     return v1;
 }
 
 static void ov17_02252984(UnkStruct_ov17_0224F30C *param0, void *param1, const UnkStruct_ov17_02243C80 *param2, void *param3)
 {
     UnkStruct_ov17_0224FCA0 *v0 = param1;
-    UnkStruct_ov17_022529C8 *v1;
-
-    v1 = Heap_AllocFromHeap(24, sizeof(UnkStruct_ov17_022529C8));
+    UnkStruct_ov17_022529C8 *v1 = Heap_AllocFromHeap(HEAP_ID_24, sizeof(UnkStruct_ov17_022529C8));
     MI_CpuClear8(v1, sizeof(UnkStruct_ov17_022529C8));
 
     v1->unk_00 = v0;
@@ -853,12 +821,12 @@ static void ov17_022529C8(SysTask *param0, void *param1)
 
     switch (v0->unk_10) {
     case 0:
-        sub_0200AAE0(90, 16, 0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), 3);
+        BrightnessController_StartTransition(90, 16, 0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), BRIGHTNESS_BOTH_SCREENS);
         sub_020055D0(1182, 90);
         v0->unk_10++;
         break;
     case 1:
-        if ((sub_0200AC1C(3) == 1) && (Sound_CheckFade() == 0)) {
+        if ((BrightnessController_IsTransitionComplete(BRIGHTNESS_BOTH_SCREENS) == TRUE) && (Sound_CheckFade() == 0)) {
             ov17_02251020(v0->unk_00);
             GX_SetMasterBrightness(16);
             GXS_SetMasterBrightness(16);

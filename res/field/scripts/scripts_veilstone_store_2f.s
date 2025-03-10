@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/veilstone_store_2f.h"
 
     .data
 
@@ -10,14 +11,14 @@
     ScriptEntry _0198
     ScriptEntry _01AE
     ScriptEntry _01C4
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0022:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_27E 0x800C
-    GoToIfEq 0x800C, 1, _0063
+    CheckIsDepartmentStoreRegular 0x800C
+    GoToIfEq 0x800C, TRUE, _0063
     Message 0
     ScrCmd_040 1, 1, 0, 1, 0x800C
     ScrCmd_042 229, 1
@@ -34,7 +35,7 @@ _0063:
     ScrCmd_042 228, 1
     ScrCmd_043
     GoToIfNe 0x800C, 0, _00BB
-    ScrCmd_1B7 0x800C, 4
+    GetRandom 0x800C, 4
     GoToIfEq 0x800C, 0, _00C6
     GoToIfEq 0x800C, 1, _00D1
     GoToIfEq 0x800C, 2, _00DC
@@ -109,11 +110,11 @@ _012B:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_134 10, 0x800C
+    CheckPoketchAppRegistered POKETCH_APPID_COUNTER, 0x800C
     GoToIfEq 0x800C, 1, _016F
     Message 10
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _017A
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _017A
     Message 11
     SetVar 0x8004, 10
     CallCommonScript 0x7D9
@@ -162,7 +163,7 @@ _0198:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_148 10
+    PokeMartSpecialties MART_SPECIALTIES_ID_VEILSTONE_2F_UP
     ReleaseAll
     End
 
@@ -172,7 +173,7 @@ _01AE:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_148 11
+    PokeMartSpecialties MART_SPECIALTIES_ID_VEILSTONE_2F_MID
     ReleaseAll
     End
 

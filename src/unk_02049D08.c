@@ -3,14 +3,14 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/game_records.h"
+#include "generated/trainer_score_events.h"
 
 #include "struct_decls/struct_020298B0_decl.h"
 #include "struct_decls/struct_0202D060_decl.h"
 #include "struct_decls/struct_0202D750_decl.h"
 #include "struct_decls/struct_0202D764_decl.h"
 #include "struct_decls/struct_0203068C_decl.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/struct_0204AFC4.h"
 #include "struct_defs/struct_02098C44.h"
 
@@ -32,12 +32,12 @@
 #include "save_player.h"
 #include "savedata.h"
 #include "system_flags.h"
+#include "system_vars.h"
 #include "trainer_info.h"
 #include "unk_0202D05C.h"
 #include "unk_0203061C.h"
 #include "unk_0204AEE8.h"
 #include "unk_0205DFC4.h"
-#include "unk_0206AFE0.h"
 #include "unk_0206B9D8.h"
 #include "unk_0206CCB0.h"
 #include "vars_flags.h"
@@ -305,9 +305,7 @@ u16 sub_0204A064(SaveData *param0)
 
 u16 sub_0204A100(SaveData *param0)
 {
-    UnkStruct_0202D764 *v0;
-
-    v0 = sub_0202D764(param0);
+    UnkStruct_0202D764 *v0 = sub_0202D764(param0);
     return (u16)sub_0202D5E8(v0);
 }
 
@@ -325,7 +323,7 @@ UnkStruct_0204AFC4 *sub_0204A124(SaveData *param0, u16 param1, u16 param2)
     UnkStruct_0203068C *v4;
     GameRecords *v5;
 
-    v3 = Heap_AllocFromHeap(11, sizeof(UnkStruct_0204AFC4));
+    v3 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_0204AFC4));
     MI_CpuClear8(v3, sizeof(UnkStruct_0204AFC4));
 
     v3->unk_04 = 11;
@@ -378,7 +376,7 @@ UnkStruct_0204AFC4 *sub_0204A124(SaveData *param0, u16 param1, u16 param2)
         v5 = SaveData_GetGameRecordsPtr(param0);
 
         if (v3->unk_0F == 6) {
-            v2 = sub_0206B6FC(SaveData_GetVarsFlags(param0));
+            v2 = SystemVars_GetWiFiFrontierCleared(SaveData_GetVarsFlags(param0));
         } else {
             v2 = sub_0202D414(v3->unk_74, 8 + v3->unk_0F, 0);
         }
@@ -652,11 +650,11 @@ void sub_0204A660(UnkStruct_0204AFC4 *param0, SaveData *param1)
     sub_0204A5EC(param0, param1, 0, v0);
 }
 
-void sub_0204A7A4(UnkStruct_0204AFC4 *param0, SaveData *param1, Journal *param2)
+void sub_0204A7A4(UnkStruct_0204AFC4 *param0, SaveData *param1, JournalEntry *journalEntry)
 {
     u32 v0 = 0;
     int v1;
-    void *v2;
+    void *journalEntryOnlineEvent;
     u16 v3, v4, v5;
     GameRecords *v6;
     UnkStruct_0203068C *v7;
@@ -702,9 +700,9 @@ void sub_0204A7A4(UnkStruct_0204AFC4 *param0, SaveData *param1, Journal *param2)
     sub_0204ACC8(param0);
     sub_0204A5EC(param0, param1, 1, v0);
 
-    if (param0->unk_0F == 4) {
-        v2 = sub_0202C238(param0->unk_04);
-        Journal_SaveData(param2, v2, 4);
+    if (param0->unk_0F == HEAP_ID_FIELD) {
+        journalEntryOnlineEvent = JournalEntry_CreateEventBattleRoom(param0->unk_04);
+        JournalEntry_SaveData(journalEntry, journalEntryOnlineEvent, JOURNAL_ONLINE_EVENT);
     }
 }
 

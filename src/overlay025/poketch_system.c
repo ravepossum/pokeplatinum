@@ -3,7 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/sdat.h"
+#include "generated/genders.h"
+#include "generated/sdat.h"
 
 #include "field/field_system_decl.h"
 #include "overlay025/ov25_02254560.h"
@@ -15,9 +16,9 @@
 #include "field_system.h"
 #include "field_task.h"
 #include "game_overlay.h"
-#include "gender.h"
 #include "heap.h"
 #include "inlines.h"
+#include "poketch_memory.h"
 #include "save_player.h"
 #include "savedata.h"
 #include "sys_task.h"
@@ -25,9 +26,8 @@
 #include "trainer_info.h"
 #include "unk_02005474.h"
 #include "unk_0201E3D8.h"
-#include "unk_02099D44.h"
 
-FS_EXTERN_OVERLAY(overlay26);
+FS_EXTERN_OVERLAY(poketch_digital_watch);
 FS_EXTERN_OVERLAY(overlay27);
 FS_EXTERN_OVERLAY(overlay28);
 FS_EXTERN_OVERLAY(overlay29);
@@ -85,7 +85,7 @@ static const struct {
     int appID;
     FSOverlayID overlayID;
 } sAppOverlayIDs[] = {
-    { POKETCH_APPID_DIGITALWATCH, FS_OVERLAY_ID(overlay26) },
+    { POKETCH_APPID_DIGITALWATCH, FS_OVERLAY_ID(poketch_digital_watch) },
     { POKETCH_APPID_UNUSED_STOPWATCH, FS_OVERLAY_ID(overlay27) },
     { POKETCH_APPID_CALCULATOR, FS_OVERLAY_ID(overlay28) },
     { POKETCH_APPID_MEMOPAD, FS_OVERLAY_ID(overlay29) },
@@ -129,7 +129,7 @@ void PoketchSystem_Create(FieldSystem *fieldSystem, PoketchSystem **poketchSys, 
 
         new_system->fieldSystem = fieldSystem;
         new_system->saveData = saveData;
-        new_system->poketchData = SaveData_PoketchData(saveData);
+        new_system->poketch = SaveData_PoketchData(saveData);
         new_system->bgl = bgl;
         new_system->oamManager = oamManager;
 
@@ -166,13 +166,13 @@ void PoketchSystem_SendEvent(PoketchSystem *poketchSys, enum PoketchEventID even
         poketchSys->playerMoving = TRUE;
         break;
     case POKETCH_EVENT_PEDOMETER: {
-        u32 step_count = PoketchData_StepCount(poketchSys->poketchData);
+        u32 step_count = Poketch_StepCount(poketchSys->poketch);
 
         if (++step_count > POKETCH_PEDOMETER_MAX) {
             step_count = 0;
         }
 
-        PoketchData_SetStepCount(poketchSys->poketchData, step_count);
+        Poketch_SetStepCount(poketchSys->poketch, step_count);
         poketchSys->pedometerUpdated = TRUE;
     } break;
     case POKETCH_EVENT_SAVE:
@@ -278,7 +278,7 @@ static void PoketchEvent_InitApp(PoketchSystem *poketchSys)
         break;
     case 1:
         if (ov25_022547F4(poketchSys->unk_1C, 0)) {
-            u32 app_ID = PoketchData_CurrentAppID(poketchSys->poketchData);
+            u32 app_ID = Poketch_CurrentAppID(poketchSys->poketch);
 
             PoketchSystem_LoadApp(poketchSys, app_ID);
             PoketchSystem_InitApp(poketchSys, app_ID);
@@ -304,7 +304,7 @@ static void PoketchEvent_UpdateApp(PoketchSystem *poketchSys)
 {
     switch (poketchSys->subState) {
     case 0:
-        if (ov25_0225450C(poketchSys)) {
+        if (PoketechSystem_IsRunningTask(poketchSys)) {
             return;
         }
 
@@ -325,9 +325,9 @@ static void PoketchEvent_UpdateApp(PoketchSystem *poketchSys)
 
         if (ov25_02254800(poketchSys->unk_1C)) {
             if (poketchSys->buttonDir == BUTTON_UP) {
-                poketchSys->unk_20.unk_00 = PoketchData_DecrementAppID(poketchSys->poketchData);
+                poketchSys->unk_20.unk_00 = Poketch_DecrementAppID(poketchSys->poketch);
             } else {
-                poketchSys->unk_20.unk_00 = PoketchData_IncrementAppID(poketchSys->poketchData);
+                poketchSys->unk_20.unk_00 = Poketch_IncrementAppID(poketchSys->poketch);
             }
 
             if (poketchSys->skipApp) {
@@ -360,16 +360,16 @@ static void PoketchEvent_UpdateApp(PoketchSystem *poketchSys)
     case 3:
         if (PoketchSystem_IsAppShutdown(poketchSys)) {
             PoketchSystem_UnloadApp(poketchSys);
-            sub_02099D44();
+            PoketchMemory_ResetActiveAppID();
             PoketchSystem_SetState(poketchSys, POKETCH_SYSTEM_CHANGE_APP);
         }
         break;
     case 4:
         if (poketchSys->buttonState == BUTTON_MANAGER_STATE_TAP || poketchSys->buttonState == BUTTON_MANAGER_STATE_TIMER0) {
             if (poketchSys->buttonDir == BUTTON_UP) {
-                poketchSys->unk_20.unk_00 = PoketchData_DecrementAppID(poketchSys->poketchData);
+                poketchSys->unk_20.unk_00 = Poketch_DecrementAppID(poketchSys->poketch);
             } else {
-                poketchSys->unk_20.unk_00 = PoketchData_IncrementAppID(poketchSys->poketchData);
+                poketchSys->unk_20.unk_00 = Poketch_IncrementAppID(poketchSys->poketch);
             }
 
             poketchSys->appSkipTimer = 30;
@@ -395,7 +395,7 @@ static void PoketchEvent_OnAppChange(PoketchSystem *poketchSys)
         u32 v0;
 
         poketchSys->unk_06 = 1;
-        v0 = PoketchData_CurrentAppID(poketchSys->poketchData);
+        v0 = Poketch_CurrentAppID(poketchSys->poketch);
 
         PoketchSystem_LoadApp(poketchSys, v0);
         PoketchSystem_InitApp(poketchSys, v0);
@@ -573,7 +573,7 @@ static void PoketchSystem_OnButtonEvent(u32 buttonID, u32 buttonEvent, u32 touch
 {
     PoketchSystem *poketchSys = (PoketchSystem *)system;
 
-    if (ov25_0225450C(poketchSys) == FALSE) {
+    if (PoketechSystem_IsRunningTask(poketchSys) == FALSE) {
         switch (touchEvent) {
         case BUTTON_TOUCH_RELEASED:
             poketchSys->touchingScreen = TRUE;
@@ -587,7 +587,7 @@ static void PoketchSystem_OnButtonEvent(u32 buttonID, u32 buttonEvent, u32 touch
     }
 
     if (buttonID == POKETCH_SYSTEM_MAIN_BUTTON_SCREEN) {
-        if (ov25_0225450C(poketchSys) && touchEvent == BUTTON_TOUCH_RELEASED) {
+        if (PoketechSystem_IsRunningTask(poketchSys) && touchEvent == BUTTON_TOUCH_RELEASED) {
             Sound_PlayEffect(SEQ_SE_DP_BEEP);
         }
     } else {
@@ -598,7 +598,7 @@ static void PoketchSystem_OnButtonEvent(u32 buttonID, u32 buttonEvent, u32 touch
             v1 = (buttonID == POKETCH_SYSTEM_MAIN_BUTTON_UP) ? 8 : 11;
             break;
         case BUTTON_TOUCH_RELEASED:
-            if (ov25_0225450C(poketchSys) || poketchSys->unk_06) {
+            if (PoketechSystem_IsRunningTask(poketchSys) || poketchSys->unk_06) {
                 v1 = (buttonID == POKETCH_SYSTEM_MAIN_BUTTON_UP) ? 6 : 9;
                 buttonEvent = 0;
             } else {
@@ -665,17 +665,17 @@ void PoketchSystem_PlaySoundEffect(u32 soundID)
 {
     PoketchSystem *poketchSys = PoketchSystem_GetFromFieldSystem();
 
-    if ((poketchSys->appChanging == FALSE) && (ov25_0225450C(poketchSys) == FALSE)) {
+    if ((poketchSys->appChanging == FALSE) && (PoketechSystem_IsRunningTask(poketchSys) == FALSE)) {
         Sound_PlayEffect(soundID);
     }
 }
 
-void ov25_02254444(u32 param0, u32 param1)
+void PoketchSystem_PlayCry(u32 species, u32 form)
 {
     PoketchSystem *poketchSys = PoketchSystem_GetFromFieldSystem();
 
-    if (poketchSys->appChanging == FALSE && ov25_0225450C(poketchSys) == 0) {
-        sub_02005844(param0, param1);
+    if (poketchSys->appChanging == FALSE && PoketechSystem_IsRunningTask(poketchSys) == 0) {
+        sub_02005844(species, form);
     }
 }
 
@@ -693,7 +693,7 @@ BOOL PoketchSystem_GetDisplayHeldCoords(u32 *x, u32 *y)
     PoketchSystem *poketchSys = PoketchSystem_GetFromFieldSystem();
 
     if (!poketchSys->appChanging
-        && !ov25_0225450C(poketchSys)
+        && !PoketechSystem_IsRunningTask(poketchSys)
         && TouchScreen_GetHoldState(x, y)) {
         return PoketchSystem_InsideScreenBounds(*x, *y);
     }
@@ -706,7 +706,7 @@ BOOL PoketchSystem_GetDisplayTappedCoords(u32 *x, u32 *y)
     PoketchSystem *poketchSys = PoketchSystem_GetFromFieldSystem();
 
     if (!poketchSys->appChanging
-        && !ov25_0225450C(poketchSys)
+        && !PoketechSystem_IsRunningTask(poketchSys)
         && TouchScreen_GetTapState(x, y)) {
         return PoketchSystem_InsideScreenBounds(*x, *y);
     }
@@ -714,14 +714,14 @@ BOOL PoketchSystem_GetDisplayTappedCoords(u32 *x, u32 *y)
     return FALSE;
 }
 
-BOOL ov25_0225450C(const PoketchSystem *poketchSys)
+BOOL PoketechSystem_IsRunningTask(const PoketchSystem *poketchSys)
 {
     return FieldSystem_IsRunningTask(poketchSys->fieldSystem);
 }
 
-void ov25_02254518(const PoketchSystem *poketchSys, PoketchButtonManager *buttonManager)
+void PoketechSystem_UpdateButtonManager(const PoketchSystem *poketchSys, PoketchButtonManager *buttonManager)
 {
-    if (ov25_0225450C(poketchSys) == 0 && poketchSys->appChanging == FALSE) {
+    if (PoketechSystem_IsRunningTask(poketchSys) == FALSE && poketchSys->appChanging == FALSE) {
         PoketchButtonManager_Update(buttonManager);
     }
 }
@@ -741,9 +741,9 @@ FieldSystem *PoketchSystem_GetFieldSystem(const PoketchSystem *poketchSys)
     return poketchSys->fieldSystem;
 }
 
-PoketchData *PoketchSystem_GetPoketchData(const PoketchSystem *poketchSys)
+Poketch *PoketchSystem_GetPoketchData(const PoketchSystem *poketchSys)
 {
-    return poketchSys->poketchData;
+    return poketchSys->poketch;
 }
 
 SaveData *PoketchSystem_GetSaveData(const PoketchSystem *poketchSys)

@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/celestic_town_northwest_house.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _002B
     ScriptEntry _0041
     ScriptEntry _0057
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     PlayFanfare SEQ_SE_CONFIRM
@@ -15,7 +16,7 @@ _0012:
     Message 0
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_147 1
+    PokeMartCommon
     ReleaseAll
     End
 
@@ -25,7 +26,7 @@ _002B:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_147 1
+    PokeMartCommon
     ReleaseAll
     End
 
@@ -35,7 +36,7 @@ _0041:
     FacePlayer
     CallCommonScript 0x7E3
     ScrCmd_035
-    ScrCmd_148 14
+    PokeMartSpecialties MART_SPECIALTIES_ID_CELESTIC
     ReleaseAll
     End
 

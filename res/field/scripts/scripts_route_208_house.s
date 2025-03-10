@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_208_house.h"
 
     .data
 
@@ -7,7 +8,7 @@
     ScriptEntry _007C
     ScriptEntry _0108
     ScriptEntry _02D5
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0016:
     SetFlag 0x9E7
@@ -19,7 +20,7 @@ _001C:
     FacePlayer
     GoToIfSet 0xAA0, _0067
     Message 0
-    ScrCmd_1B7 0x8004, 26
+    GetRandom 0x8004, 26
     AddVar 0x8004, 149
     SetVar 0x8005, 1
     ScrCmd_07D 0x8004, 0x8005, 0x800C
@@ -48,12 +49,12 @@ _007C:
     LockAll
     FacePlayer
     GoToIfEq 0x4000, 1, _00ED
-    ScrCmd_134 7, 0x800C
+    CheckPoketchAppRegistered POKETCH_APPID_BERRYSEARCHER, 0x800C
     GoToIfEq 0x800C, 1, _00FD
     Message 2
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _00C7
-    GoToIfEq 0x800C, 1, _00E2
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _00C7
+    GoToIfEq 0x800C, MENU_NO, _00E2
     End
 
 _00C7:

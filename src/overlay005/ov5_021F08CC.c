@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/game_records.h"
 
 #include "struct_decls/struct_0205E884_decl.h"
 #include "struct_decls/struct_02061AB4_decl.h"
@@ -11,13 +11,13 @@
 #include "field/field_system.h"
 #include "overlay005/ov5_021DFB54.h"
 #include "overlay005/ov5_021F5A10.h"
-#include "overlay006/ov6_02240C9C.h"
+#include "overlay006/wild_encounters.h"
 #include "overlay101/struct_ov101_021D5D90_decl.h"
 
 #include "bg_window.h"
-#include "core_sys.h"
 #include "encounter.h"
 #include "field_battle_data_transfer.h"
+#include "field_message.h"
 #include "field_task.h"
 #include "game_records.h"
 #include "heap.h"
@@ -33,8 +33,8 @@
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "unk_02005474.h"
-#include "unk_0205D8CC.h"
 #include "unk_020655F4.h"
 #include "unk_0206CCB0.h"
 #include "unk_020711EC.h"
@@ -102,7 +102,7 @@ BOOL ov5_021F08F8(FieldTask *taskMan)
     case 0:
         MapObjectMan_PauseAllMovement(fieldSystem->mapObjMan);
         v1->unk_10 = NULL;
-        v1->unk_08 = ov6_0224106C(fieldSystem, v1->unk_0C, &v1->unk_10);
+        v1->unk_08 = WildEncounters_TryFishingEncounter(fieldSystem, v1->unk_0C, &v1->unk_10);
         v1->unk_14 = ov5_021F09B4(fieldSystem, v1->unk_0C, v1->unk_08);
         v1->unk_00++;
         break;
@@ -192,7 +192,7 @@ static void ov5_021F0A04(SysTask *task, void *param1)
 static int ov5_021F0A30(UnkStruct_ov5_021F0D6C *param0, PlayerAvatar *playerAvatar, MapObject *param2)
 {
     ov5_021F0D6C(param0);
-    sub_02062DDC(param2);
+    MapObject_SetPauseMovementOff(param2);
     param0->unk_0C = 1;
 
     return 1;
@@ -483,7 +483,7 @@ static void *ov5_021F0D1C(u32 param0)
 
 static int ov5_021F0D40(void)
 {
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (gSystem.pressedKeys & PAD_BUTTON_A) {
         return 1;
     }
 
@@ -492,7 +492,7 @@ static int ov5_021F0D40(void)
 
 static int ov5_021F0D54(void)
 {
-    if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+    if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
         return 1;
     }
 
@@ -501,9 +501,9 @@ static int ov5_021F0D54(void)
 
 static void ov5_021F0D6C(UnkStruct_ov5_021F0D6C *param0)
 {
-    param0->unk_48 = MessageLoader_Init(1, 26, 213, 4);
-    param0->unk_2C = Strbuf_Init(0x400, 4);
-    param0->unk_30 = Strbuf_Init(0x400, 4);
+    param0->unk_48 = MessageLoader_Init(1, 26, 213, HEAP_ID_FIELD);
+    param0->unk_2C = Strbuf_Init(0x400, HEAP_ID_FIELD);
+    param0->unk_30 = Strbuf_Init(0x400, HEAP_ID_FIELD);
     param0->unk_34 = StringTemplate_New(8, 64, 4);
 }
 

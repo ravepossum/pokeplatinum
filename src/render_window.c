@@ -4,20 +4,17 @@
 #include <string.h>
 
 #include "constants/narc.h"
+#include "generated/signpost_types.h"
 
 #include "struct_defs/archived_sprite.h"
-#include "struct_defs/sprite_template.h"
-#include "struct_defs/struct_0200D0F4.h"
 #include "struct_defs/struct_02013610.h"
 
 #include "graphics/signposts/field_board.naix"
 #include "graphics/windows/pl_winframe.naix"
 #include "overlay005/ov5_021D2F14.h"
 #include "overlay005/struct_ov5_021D30A8.h"
-#include "overlay104/struct_ov104_02241308.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
@@ -25,13 +22,14 @@
 #include "palette.h"
 #include "pokemon.h"
 #include "render_text.h"
+#include "sprite.h"
 #include "sprite_resource.h"
+#include "sprite_system.h"
+#include "sprite_transfer.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "unk_0200679C.h"
 #include "unk_0200762C.h"
-#include "unk_0200A328.h"
-#include "unk_0200C6E4.h"
 #include "unk_020131EC.h"
 
 #define SIGNPOST_CONTENT_WIDTH_TILES  6
@@ -81,7 +79,7 @@ typedef struct WaitDial {
 
 typedef struct PokemonPreview {
     UnkStruct_ov5_021D30A8 unk_00;
-    CellActorData *cellActorData;
+    ManagedSprite *managedSprite;
     BgConfig *bgConfig;
     u8 bgLayer;
     u8 x;
@@ -126,7 +124,7 @@ static const SpriteTemplate sPokemonPreviewSpriteTemplate = {
         NULL,
     },
     .bgPriority = 0,
-    .transferToVRAM = FALSE,
+    .vramTransfer = FALSE,
 };
 
 void LoadStandardWindowTiles(BgConfig *bgConfig, u8 bgLayer, u16 offset, u8 standardWindowType, u32 heapID)
@@ -472,7 +470,7 @@ void LoadSignpostContentGraphics(BgConfig *bgConfig, u8 bgLayer, u16 baseTile, u
         palette * PALETTE_SIZE_BYTES);
     Heap_FreeToHeapExplicit(heapID, signpostNclr);
 
-    if (signpostType == SIGNPOST_CITY_MAP || signpostType == SIGNPOST_ROUTE_MAP) {
+    if (signpostType == SIGNPOST_TYPE_MAP || signpostType == SIGNPOST_TYPE_ARROW) {
         LoadSignpostContentTiles(bgConfig,
             bgLayer,
             baseTile + SIGNPOST_SIZE,
@@ -484,7 +482,7 @@ void LoadSignpostContentGraphics(BgConfig *bgConfig, u8 bgLayer, u16 baseTile, u
 
 static void LoadSignpostContentTiles(BgConfig *bgConfig, u8 bgLayer, u16 offset, u8 signpostType, u16 narcMemberIdx, u32 heapID)
 {
-    if (signpostType == SIGNPOST_CITY_MAP) {
+    if (signpostType == SIGNPOST_TYPE_MAP) {
         narcMemberIdx += city_map_empty_NCGR;
     } else {
         narcMemberIdx += route_map_00_NCGR;
@@ -543,7 +541,7 @@ void Window_DrawSignpost(Window *window, u8 skipTransfer, u16 baseTile, u8 palet
 {
     u8 bgLayer = Window_GetBgLayer(window);
 
-    if (signpostType == SIGNPOST_CITY_MAP || signpostType == SIGNPOST_ROUTE_MAP) {
+    if (signpostType == SIGNPOST_TYPE_MAP || signpostType == SIGNPOST_TYPE_ARROW) {
         DrawSignpostFrame(window->bgConfig,
             bgLayer,
             Window_GetXPos(window),
@@ -575,7 +573,7 @@ void Window_EraseSignpost(Window *window, u8 signpostType, u8 skipTransfer)
 {
     u8 bgLayer = Window_GetBgLayer(window);
 
-    if (signpostType == SIGNPOST_CITY_MAP || signpostType == SIGNPOST_ROUTE_MAP) {
+    if (signpostType == SIGNPOST_TYPE_MAP || signpostType == SIGNPOST_TYPE_ARROW) {
         Bg_FillTilemapRect(window->bgConfig,
             bgLayer,
             0,
@@ -775,25 +773,25 @@ static void SysTask_HandlePokemonPreview(SysTask *task, void *data)
     switch (preview->state) {
     case 1:
         ErasePokemonPreviewWindow(preview);
-        sub_0200D0F4(preview->cellActorData);
+        Sprite_DeleteAndFreeResources(preview->managedSprite);
         ov5_021D375C(&preview->unk_00);
         SysTask_FinishAndFreeParam(task);
         return;
 
     case 2:
         preview->state = 3;
-        CellActor_SetAnim(preview->cellActorData->unk_00, 1);
+        Sprite_SetAnim(preview->managedSprite->sprite, 1);
         break;
 
     case 3:
-        if (CellActor_GetAnimFrame(preview->cellActorData->unk_00) == 6) {
+        if (Sprite_GetAnimFrame(preview->managedSprite->sprite) == 6) {
             preview->state = 0;
         }
         break;
     }
 
-    CellActor_UpdateAnim(preview->cellActorData->unk_00, FX32_ONE);
-    CellActorCollection_Update(preview->unk_00.unk_00);
+    Sprite_UpdateAnim(preview->managedSprite->sprite, FX32_ONE);
+    SpriteList_Update(preview->unk_00.unk_00);
 }
 
 static PokemonPreview *CreatePokemonPreviewTask(BgConfig *bgConfig, u8 bgLayer, u8 x, u8 y, u32 heapID)
@@ -811,7 +809,7 @@ static PokemonPreview *CreatePokemonPreviewTask(BgConfig *bgConfig, u8 bgLayer, 
 
 static void sub_0200ED50(PokemonPreview *preview, u32 heapID)
 {
-    UnkStruct_ov104_02241308 v0 = { 1, 1, 1, 1, 0, 0 };
+    SpriteResourceCapacities v0 = { 1, 1, 1, 1, 0, 0 };
     ov5_021D3190(&preview->unk_00, &v0, 1, heapID);
 }
 
@@ -848,15 +846,15 @@ static void CreatePokemonPreviewSprite(PokemonPreview *preview, u8 x, u8 y)
     template.x = (x + 5) * 8;
     template.y = (y + 5) * 8;
 
-    preview->cellActorData = ov5_021D3584(&preview->unk_00, &template);
+    preview->managedSprite = ov5_021D3584(&preview->unk_00, &template);
 
-    CellActorCollection_Update(preview->unk_00.unk_00);
+    SpriteList_Update(preview->unk_00.unk_00);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, TRUE);
 }
 
 static void LoadAndDrawPokemonPreviewSprite(UnkStruct_ov5_021D30A8 *param0, u16 species, u8 gender)
 {
-    void *buf = sub_0200762C(param0->unk_1C6);
+    void *buf = sub_0200762C(param0->heapId);
 
     ArchivedSprite sprite;
     BuildArchivedPokemonSprite(&sprite, species, gender, FACE_FRONT, FALSE, NULL, NULL);
@@ -866,7 +864,7 @@ static void LoadAndDrawPokemonPreviewSprite(UnkStruct_ov5_021D30A8 *param0, u16 
 
 static void LoadAndDrawPokemonPreviewSpriteFromStruct(UnkStruct_ov5_021D30A8 *param0, Pokemon *mon)
 {
-    void *buf = sub_0200762C(param0->unk_1C6);
+    void *buf = sub_0200762C(param0->heapId);
 
     ArchivedSprite sprite;
     Pokemon_BuildArchivedSprite(&sprite, mon, FACE_FRONT);
@@ -888,18 +886,18 @@ static void DrawPokemonPreviewSprite(UnkStruct_ov5_021D30A8 *param0, ArchivedSpr
     NNSG2dImageProxy *imageProxy;
     const NNSG2dImagePaletteProxy *paletteProxy;
 
-    buf = Heap_AllocFromHeap(param0->unk_1C6, POKEMON_SPRITE_WHOLE_SIZE_BYTES);
+    buf = Heap_AllocFromHeap(param0->heapId, POKEMON_SPRITE_WHOLE_SIZE_BYTES);
 
     // frame 0
     UnkStruct_02013610 v6 = { 0, 0, 10, 10 };
-    sub_020135F0(sprite->archive, sprite->character, param0->unk_1C6, &v6, buf);
+    sub_020135F0(sprite->archive, sprite->character, param0->heapId, &v6, buf);
 
     // frame 1
     UnkStruct_02013610 v7 = { 10, 0, 10, 10 };
-    sub_020135F0(sprite->archive, sprite->character, param0->unk_1C6, &v7, buf + POKEMON_SPRITE_FRAME_SIZE_BYTES);
+    sub_020135F0(sprite->archive, sprite->character, param0->heapId, &v7, buf + POKEMON_SPRITE_FRAME_SIZE_BYTES);
 
-    charResource = SpriteResourceCollection_Find(param0->unk_194[SPRITE_RESOURCE_TILES], POKEMON_PREVIEW_RESOURCE_ID);
-    imageProxy = sub_0200A534(charResource);
+    charResource = SpriteResourceCollection_Find(param0->unk_194[SPRITE_RESOURCE_CHAR], POKEMON_PREVIEW_RESOURCE_ID);
+    imageProxy = SpriteTransfer_GetImageProxy(charResource);
     offset = NNS_G2dGetImageLocation(imageProxy, NNS_G2D_VRAM_TYPE_2DMAIN);
 
     DC_FlushRange(buf, POKEMON_SPRITE_WHOLE_SIZE_BYTES);
@@ -907,9 +905,9 @@ static void DrawPokemonPreviewSprite(UnkStruct_ov5_021D30A8 *param0, ArchivedSpr
 
     Heap_FreeToHeap(buf);
 
-    buf = sub_02013660(sprite->archive, sprite->palette, param0->unk_1C6);
-    plttResource = SpriteResourceCollection_Find(param0->unk_194[SPRITE_RESOURCE_PALETTE], POKEMON_PREVIEW_RESOURCE_ID);
-    paletteProxy = sub_0200A72C(plttResource, imageProxy);
+    buf = sub_02013660(sprite->archive, sprite->palette, param0->heapId);
+    plttResource = SpriteResourceCollection_Find(param0->unk_194[SPRITE_RESOURCE_PLTT], POKEMON_PREVIEW_RESOURCE_ID);
+    paletteProxy = SpriteTransfer_GetPaletteProxy(plttResource, imageProxy);
     offset = NNS_G2dGetImagePaletteLocation(paletteProxy, NNS_G2D_VRAM_TYPE_2DMAIN);
 
     DC_FlushRange(buf, 32);

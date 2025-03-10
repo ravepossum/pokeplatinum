@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/sunyshore_city_pokecenter_1f.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _001E
     ScriptEntry _0031
     ScriptEntry _0062
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     SetVar 0x8007, 0

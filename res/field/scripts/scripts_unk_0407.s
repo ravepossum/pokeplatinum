@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/unk_0379.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _0035
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     ScrCmd_23E 0

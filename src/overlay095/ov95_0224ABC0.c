@@ -122,7 +122,7 @@ static void ov95_0224B3BC(SysTask *param0);
 
 void *ov95_0224ABC0(UnkStruct_ov95_02247628 *param0)
 {
-    UnkStruct_ov95_0224AC64 *v0 = Heap_AllocFromHeap(58, sizeof(UnkStruct_ov95_0224AC64));
+    UnkStruct_ov95_0224AC64 *v0 = Heap_AllocFromHeap(HEAP_ID_58, sizeof(UnkStruct_ov95_0224AC64));
 
     if (v0) {
         int v1;
@@ -208,7 +208,7 @@ static int ov95_0224AC98(UnkStruct_ov95_0224AC64 *param0, int *param1)
 {
     ov95_0224AE1C(param0);
     ov95_0224B084(param0);
-    StartScreenTransition(0, 1, 1, 0x7fff, 8, 1, 58);
+    StartScreenTransition(0, 1, 1, 0x7fff, 8, 1, HEAP_ID_58);
 
     return 1;
 }
@@ -271,7 +271,7 @@ static int ov95_0224AD98(UnkStruct_ov95_0224AC64 *param0, int *param1)
         break;
     case 1:
         if (++(param0->unk_08) > 13) {
-            StartScreenTransition(0, 0, 0, 0x0, 8, 1, 58);
+            StartScreenTransition(0, 0, 0, 0x0, 8, 1, HEAP_ID_58);
             (*param1)++;
         }
         break;
@@ -358,25 +358,25 @@ static void ov95_0224AE1C(UnkStruct_ov95_0224AC64 *param0)
         OS_RestoreInterrupts(v6);
     }
 
-    Graphics_LoadTilesToBgLayer(93, 2, param0->unk_0C, 2, 0, 0, 1, 58);
-    Graphics_LoadTilesToBgLayer(93, 2, param0->unk_0C, 6, 0, 0, 1, 58);
-    Graphics_LoadTilemapToBgLayer(93, 1, param0->unk_0C, 2, 0, 0, 1, 58);
-    Graphics_LoadTilemapToBgLayer(93, 1, param0->unk_0C, 6, 0, 0, 1, 58);
+    Graphics_LoadTilesToBgLayer(93, 2, param0->unk_0C, 2, 0, 0, 1, HEAP_ID_58);
+    Graphics_LoadTilesToBgLayer(93, 2, param0->unk_0C, 6, 0, 0, 1, HEAP_ID_58);
+    Graphics_LoadTilemapToBgLayer(93, 1, param0->unk_0C, 2, 0, 0, 1, HEAP_ID_58);
+    Graphics_LoadTilemapToBgLayer(93, 1, param0->unk_0C, 6, 0, 0, 1, HEAP_ID_58);
 
     v5 = ov95_02247644(param0->unk_00);
 
-    Graphics_LoadPalette(93, 3, 0, 0, 0x20, 58);
-    Graphics_LoadPalette(93, 3, 4, 0, 0x20, 58);
-    Graphics_LoadPaletteWithSrcOffset(93, 3, 0, v4[v5], 0x20, 0x40, 58);
-    Graphics_LoadPaletteWithSrcOffset(93, 3, 4, v4[v5], 0x20, 0x40, 58);
+    Graphics_LoadPalette(93, 3, 0, 0, 0x20, HEAP_ID_58);
+    Graphics_LoadPalette(93, 3, 4, 0, 0x20, HEAP_ID_58);
+    Graphics_LoadPaletteWithSrcOffset(93, 3, 0, v4[v5], 0x20, 0x40, HEAP_ID_58);
+    Graphics_LoadPaletteWithSrcOffset(93, 3, 4, v4[v5], 0x20, 0x40, HEAP_ID_58);
 
-    Graphics_LoadTilesToBgLayer(93, 5, param0->unk_0C, 3, 0, 0, 1, 58);
-    Graphics_LoadTilesToBgLayer(93, 5, param0->unk_0C, 7, 0, 0, 1, 58);
-    Graphics_LoadTilemapToBgLayer(93, 4, param0->unk_0C, 3, 0, 0, 1, 58);
-    Graphics_LoadTilemapToBgLayer(93, 4, param0->unk_0C, 7, 0, 0, 1, 58);
+    Graphics_LoadTilesToBgLayer(93, 5, param0->unk_0C, 3, 0, 0, 1, HEAP_ID_58);
+    Graphics_LoadTilesToBgLayer(93, 5, param0->unk_0C, 7, 0, 0, 1, HEAP_ID_58);
+    Graphics_LoadTilemapToBgLayer(93, 4, param0->unk_0C, 3, 0, 0, 1, HEAP_ID_58);
+    Graphics_LoadTilemapToBgLayer(93, 4, param0->unk_0C, 7, 0, 0, 1, HEAP_ID_58);
 
     {
-        u8 *v7 = Heap_AllocFromHeap(58, 96);
+        u8 *v7 = Heap_AllocFromHeap(HEAP_ID_58, 96);
 
         if (v7) {
             MI_CpuClear32(v7, 96);
@@ -476,7 +476,7 @@ static void ov95_0224B194(UnkStruct_ov95_0224AC64 *param0)
 
 static void ov95_0224B1A8(UnkStruct_ov95_0224AC64 *param0, SysTask **param1)
 {
-    UnkStruct_ov95_0224B1A8 *v0 = Heap_AllocFromHeap(58, sizeof(UnkStruct_ov95_0224B1A8));
+    UnkStruct_ov95_0224B1A8 *v0 = Heap_AllocFromHeap(HEAP_ID_58, sizeof(UnkStruct_ov95_0224B1A8));
 
     if (v0) {
         v0->unk_00 = param0;
@@ -524,7 +524,7 @@ static void ov95_0224B258(SysTask *param0)
 
 static void ov95_0224B274(UnkStruct_ov95_0224AC64 *param0, SysTask **param1)
 {
-    UnkStruct_ov95_0224B274 *v0 = Heap_AllocFromHeap(58, sizeof(UnkStruct_ov95_0224B274));
+    UnkStruct_ov95_0224B274 *v0 = Heap_AllocFromHeap(HEAP_ID_58, sizeof(UnkStruct_ov95_0224B274));
 
     if (v0) {
         v0->unk_00 = param1;
@@ -571,7 +571,7 @@ static void ov95_0224B308(SysTask *param0)
 
 static void ov95_0224B324(UnkStruct_ov95_02247958 *param0, int param1, int param2, int param3, SysTask **param4)
 {
-    UnkStruct_ov95_0224B324 *v0 = Heap_AllocFromHeap(58, sizeof(UnkStruct_ov95_0224B324));
+    UnkStruct_ov95_0224B324 *v0 = Heap_AllocFromHeap(HEAP_ID_58, sizeof(UnkStruct_ov95_0224B324));
 
     if (v0) {
         v0->unk_00 = param4;

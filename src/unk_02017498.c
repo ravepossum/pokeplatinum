@@ -11,8 +11,8 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "overlay_manager.h"
+#include "system.h"
 #include "unk_020041CC.h"
-#include "unk_02017728.h"
 #include "unk_02033200.h"
 #include "unk_020393C8.h"
 #include "unk_0208BA78.h"
@@ -36,7 +36,7 @@ int sub_02017498(OverlayManager *param0, int *param1)
 {
     UnkStruct_02017498 *v0;
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
     GXLayers_DisableEngineALayers();
     GXLayers_DisableEngineBLayers();
@@ -48,9 +48,9 @@ int sub_02017498(OverlayManager *param0, int *param1)
     G2_BlendNone();
     G2S_BlendNone();
 
-    Heap_Create(3, 116, (0x20000 + 0x8000));
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_116, (0x20000 + 0x8000));
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_02017498), 116);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_02017498), HEAP_ID_116);
     MI_CpuClear8(v0, sizeof(UnkStruct_02017498));
     v0->unk_00 = OverlayManager_Args(param0);
 
@@ -137,7 +137,7 @@ int sub_02017658(OverlayManager *param0, int *param1)
     sub_020176B4(v0);
     Heap_FreeToHeap(v0->unk_00);
     OverlayManager_FreeData(param0);
-    Heap_Destroy(116);
+    Heap_Destroy(HEAP_ID_116);
 
     return 1;
 }
@@ -145,7 +145,7 @@ int sub_02017658(OverlayManager *param0, int *param1)
 static void sub_0201767C(UnkStruct_02017498 *param0)
 {
     if (param0->unk_88 == 0) {
-        param0->unk_18 = Heap_AllocFromHeap(116, 0x20000 + 32);
+        param0->unk_18 = Heap_AllocFromHeap(HEAP_ID_116, 0x20000 + 32);
         param0->unk_1C = NNS_FndCreateExpHeap((void *)(((u32)param0->unk_18 + 31) / 32 * 32), 0x20000);
 
         sub_02099550();

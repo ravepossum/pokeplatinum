@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/unk_0429.h"
 
     .data
 
@@ -8,7 +9,7 @@
     ScriptEntry _01A1
     ScriptEntry _020D
     ScriptEntry _0266
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -74,7 +75,7 @@ _00BA:
 
 _00CA:
     BufferRivalName 0
-    ScrCmd_0DC 1
+    BufferRivalStarterSpeciesName 1
     Message 4
     WaitABXPadPress
     GoTo _00ED

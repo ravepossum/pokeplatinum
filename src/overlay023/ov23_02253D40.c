@@ -7,7 +7,6 @@
 #include "overlay023/struct_ov23_02253F60.h"
 
 #include "bg_window.h"
-#include "core_sys.h"
 #include "heap.h"
 #include "list_menu.h"
 #include "message.h"
@@ -16,6 +15,7 @@
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "text.h"
 #include "trainer_info.h"
 
@@ -70,10 +70,10 @@ const ListMenuTemplate *ov23_02253D40(void)
     return &Unk_ov23_022569E0;
 }
 
-UnkStruct_ov23_02253E2C *ov23_02253D48(int param0, int param1, BgConfig *param2, int param3, int param4)
+UnkStruct_ov23_02253E2C *ov23_02253D48(int param0, int heapID, BgConfig *param2, int param3, int param4)
 {
     int v0 = param4;
-    UnkStruct_ov23_02253E2C *v1 = Heap_AllocFromHeap(param1, sizeof(UnkStruct_ov23_02253E2C));
+    UnkStruct_ov23_02253E2C *v1 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov23_02253E2C));
 
     MI_CpuClear8(v1, sizeof(UnkStruct_ov23_02253E2C));
 
@@ -81,12 +81,12 @@ UnkStruct_ov23_02253E2C *ov23_02253D48(int param0, int param1, BgConfig *param2,
         v0 = 230;
     }
 
-    v1->unk_00 = Strbuf_Init(v0, param1);
-    v1->unk_04 = Strbuf_Init(v0, param1);
-    v1->unk_28 = StringTemplate_Default(param1);
+    v1->unk_00 = Strbuf_Init(v0, heapID);
+    v1->unk_04 = Strbuf_Init(v0, heapID);
+    v1->unk_28 = StringTemplate_Default(heapID);
     v1->unk_2C = param0;
-    v1->unk_24 = MessageLoader_Init(1, 26, param0, param1);
-    v1->unk_34 = param1;
+    v1->unk_24 = MessageLoader_Init(1, 26, param0, heapID);
+    v1->unk_34 = heapID;
     v1->unk_18 = param2;
 
     Window_Init(&v1->unk_08);
@@ -143,7 +143,7 @@ static void ov23_02253E40(SysTask *param0, void *param1)
         }
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (gSystem.pressedKeys & PAD_BUTTON_A) {
         ov23_02254044(v0);
     }
 }

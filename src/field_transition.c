@@ -7,7 +7,7 @@
 
 #include "field/field_system.h"
 #include "overlay005/encounter_effect.h"
-#include "overlay005/ov5_021DD6FC.h"
+#include "overlay005/map_name_popup.h"
 
 #include "field_system.h"
 #include "field_task.h"
@@ -118,7 +118,7 @@ void FieldTransition_FadeOut(FieldTask *task)
         return;
     }
 
-    StartScreenTransition(0, 0, 0, 0x0, 6, 1, 4);
+    StartScreenTransition(0, 0, 0, 0x0, 6, 1, HEAP_ID_FIELD);
     FieldTask_InitCall(task, FieldTask_WaitUntilScreenTransitionDone, NULL);
 }
 
@@ -130,7 +130,7 @@ void FieldTransition_FadeIn(FieldTask *task)
         return;
     }
 
-    StartScreenTransition(0, 1, 1, 0x0, 6, 1, 4);
+    StartScreenTransition(0, 1, 1, 0x0, 6, 1, HEAP_ID_FIELD);
     FieldTask_InitCall(task, FieldTask_WaitUntilScreenTransitionDone, NULL);
 }
 

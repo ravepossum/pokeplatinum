@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_228_south_house.h"
 
     .data
 
@@ -7,16 +8,16 @@
     ScriptEntry _0070
     ScriptEntry _0081
     ScriptEntry _0092
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0016:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
     Message 0
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0041
-    GoToIfEq 0x800C, 1, _004C
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0041
+    GoToIfEq 0x800C, MENU_NO, _004C
     End
 
 _0041:

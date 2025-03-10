@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/sunyshore_city_west_house.h"
 
     .data
 
@@ -9,7 +10,7 @@
     ScriptEntry _006A
     ScriptEntry _007D
     ScriptEntry _0090
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001E:
     PlayFanfare SEQ_SE_CONFIRM

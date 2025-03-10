@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/trainer_score_events.h"
 
 #include "struct_decls/struct_02015920_decl.h"
 #include "struct_decls/struct_02029C68_decl.h"
@@ -49,8 +49,7 @@
 #include "overlay022/struct_ov22_0225B388.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
-#include "core_sys.h"
+#include "brightness_controller.h"
 #include "font.h"
 #include "game_options.h"
 #include "game_records.h"
@@ -61,19 +60,19 @@
 #include "pokemon.h"
 #include "render_text.h"
 #include "render_window.h"
+#include "sprite.h"
+#include "sprite_util.h"
 #include "strbuf.h"
 #include "string_template.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "text.h"
 #include "trainer_info.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
 #include "unk_0200679C.h"
-#include "unk_020093B4.h"
-#include "unk_0200A9DC.h"
 #include "unk_0200F174.h"
 #include "unk_02015920.h"
-#include "unk_02017728.h"
 #include "unk_0201E3D8.h"
 #include "unk_020298BC.h"
 #include "unk_020363E8.h"
@@ -196,13 +195,13 @@ int ov22_02255D44(OverlayManager *param0, int *param1)
     u32 v1;
     UnkStruct_0203DA00 *v2;
 
-    Heap_Create(3, 13, 0x20000);
-    Heap_Create(3, 14, 0x40000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_13, 0x20000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_14, 0x40000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov22_02255D44), 13);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov22_02255D44), HEAP_ID_13);
     memset(v0, 0, sizeof(UnkStruct_ov22_02255D44));
 
-    SetMainCallback(ov22_02256940, v0);
+    SetVBlankCallback(ov22_02256940, v0);
     DisableHBlank();
 
     v2 = OverlayManager_Args(param0);
@@ -216,9 +215,9 @@ int ov22_02255D44(OverlayManager *param0, int *param1)
 
     ov22_0225894C(v2->unk_08, &v0->unk_1E8);
     ov22_022566C0(v0);
-    ov22_02259484(&v0->unk_3C0, (700 + 1 + 18), 13);
+    ov22_02259484(&v0->unk_3C0, (700 + 1 + 18), HEAP_ID_13);
 
-    v0->unk_3C8 = ov22_02254DE0(700, 13);
+    v0->unk_3C8 = ov22_02254DE0(700, HEAP_ID_13);
 
     ov22_02256708(v0, v2->unk_00, 10, 0);
     ov22_022567FC(v0);
@@ -227,8 +226,8 @@ int ov22_02255D44(OverlayManager *param0, int *param1)
     ov22_02256BAC(v0, v2->unk_0C);
     ov22_022589E0(&v0->unk_4FC, &v0->unk_458, &v0->unk_3CC, &v0->unk_00, &v0->unk_5C4, 1);
 
-    v0->unk_714 = sub_02015920(13);
-    v0->unk_718 = Window_New(13, 1);
+    v0->unk_714 = sub_02015920(HEAP_ID_13);
+    v0->unk_718 = Window_New(HEAP_ID_13, 1);
     v0->unk_70C = 0;
 
     sub_02004550(53, 0, 0);
@@ -245,8 +244,7 @@ int ov22_02255E50(OverlayManager *param0, int *param1)
     switch (*param1) {
     case 0:
     case 1:
-        StartScreenTransition(
-            1, 5, 5, 0x0, 6, 1, 13);
+        StartScreenTransition(1, 5, 5, 0x0, 6, 1, HEAP_ID_13);
         (*param1) = 2;
         break;
     case 2:
@@ -271,7 +269,7 @@ int ov22_02255E50(OverlayManager *param0, int *param1)
         }
         break;
     case 5:
-        if ((gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) | (gCoreSys.touchPressed)) {
+        if ((gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) | (gSystem.touchPressed)) {
             ov22_0225A628(&v0->unk_5C4, 26, 385, 48);
             RenderControlFlags_SetSpeedUpOnTouch(0);
             (*param1)++;
@@ -341,8 +339,7 @@ int ov22_02255E50(OverlayManager *param0, int *param1)
         }
         break;
     case 11:
-        StartScreenTransition(
-            1, 0, 0, 0x0, 6, 1, 13);
+        StartScreenTransition(1, 0, 0, 0x0, 6, 1, HEAP_ID_13);
         (*param1)++;
         break;
     case 12:
@@ -394,15 +391,15 @@ int ov22_02256098(OverlayManager *param0, int *param1)
     ov22_022594AC(&v0->unk_3C0);
     ov22_022566F4(v0);
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
 
     v1 = sub_0201E530();
     GF_ASSERT(v1 == 1);
 
     OverlayManager_FreeData(param0);
-    Heap_Destroy(13);
-    Heap_Destroy(14);
+    Heap_Destroy(HEAP_ID_13);
+    Heap_Destroy(HEAP_ID_14);
 
     return 1;
 }
@@ -413,13 +410,13 @@ int ov22_02256174(OverlayManager *param0, int *param1)
     u32 v1;
     UnkStruct_02093BBC *v2;
 
-    Heap_Create(3, 13, 0x20000);
-    Heap_Create(3, 14, 0x40000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_13, 0x20000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_14, 0x40000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov22_02255D44), 13);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov22_02255D44), HEAP_ID_13);
     memset(v0, 0, sizeof(UnkStruct_ov22_02255D44));
 
-    SetMainCallback(ov22_02256940, v0);
+    SetVBlankCallback(ov22_02256940, v0);
     DisableHBlank();
 
     v2 = OverlayManager_Args(param0);
@@ -440,14 +437,14 @@ int ov22_02256174(OverlayManager *param0, int *param1)
     ov22_0225894C(v2->unk_18, &v0->unk_1E8);
     ov22_022566C0(v0);
 
-    CellActorCollection_SetActive(v0->unk_00.unk_44, 0);
+    SpriteList_SetActive(v0->unk_00.unk_44, 0);
     sub_02039734();
-    sub_0200966C(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
-    sub_02009704(NNS_G2D_VRAM_TYPE_2DMAIN);
+    ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
+    ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DMAIN);
 
-    ov22_02259484(&v0->unk_3C0, (700 + 1 + 18), 13);
+    ov22_02259484(&v0->unk_3C0, (700 + 1 + 18), HEAP_ID_13);
 
-    v0->unk_3C8 = ov22_02254DE0(700, 13);
+    v0->unk_3C8 = ov22_02254DE0(700, HEAP_ID_13);
     v0->unk_738 = v2->unk_20;
 
     if (v0->unk_734->unk_16 == 0) {
@@ -463,8 +460,8 @@ int ov22_02256174(OverlayManager *param0, int *param1)
     ov22_02256BF4(v0, v0->unk_720, v2->unk_08, v2->unk_1C, v2->unk_20);
     ov22_022589E0(&v0->unk_4FC, &v0->unk_458, &v0->unk_3CC, &v0->unk_00, &v0->unk_5C4, 0);
 
-    v0->unk_714 = sub_02015920(13);
-    v0->unk_718 = Window_New(13, 1);
+    v0->unk_714 = sub_02015920(HEAP_ID_13);
+    v0->unk_718 = Window_New(HEAP_ID_13, 1);
     v0->unk_70C = 0;
 
     sub_020959F4(v0->unk_734->unk_16);
@@ -553,7 +550,7 @@ int ov22_022562EC(OverlayManager *param0, int *param1)
         (*param1)++;
         break;
     case 11:
-        StartScreenTransition(1, 17, 19, 0x0, 6, 1, 13);
+        StartScreenTransition(1, 17, 19, 0x0, 6, 1, HEAP_ID_13);
         (*param1)++;
         break;
     case 12:
@@ -610,7 +607,7 @@ int ov22_022562EC(OverlayManager *param0, int *param1)
             break;
         }
 
-        StartScreenTransition(1, 26, 26, 0x0, 6, 1, 13);
+        StartScreenTransition(1, 26, 26, 0x0, 6, 1, HEAP_ID_13);
         Sound_PlayEffect(1668);
         (*param1)++;
         break;
@@ -655,15 +652,15 @@ int ov22_02256600(OverlayManager *param0, int *param1)
     ov22_022594AC(&v0->unk_3C0);
     ov22_022566F4(v0);
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
 
     v1 = sub_0201E530();
     GF_ASSERT(v1 == 1);
 
     OverlayManager_FreeData(param0);
-    Heap_Destroy(13);
-    Heap_Destroy(14);
+    Heap_Destroy(HEAP_ID_13);
+    Heap_Destroy(HEAP_ID_14);
     sub_02095A24();
     sub_02039794();
 
@@ -722,7 +719,7 @@ static void ov22_02256708(UnkStruct_ov22_02255D44 *param0, Pokemon *param1, int 
     }
 
     ov22_02257B10(&param0->unk_458);
-    ov22_02257C88(&param0->unk_458, 0, 14);
+    ov22_02257C88(&param0->unk_458, 0, HEAP_ID_14);
 }
 
 static void ov22_02256790(UnkStruct_ov22_02255D44 *param0, Pokemon *param1, int param2)
@@ -827,7 +824,7 @@ static void ov22_02256948(UnkStruct_ov22_02255D44 *param0, int param1)
     v0.unk_20 = 1;
     v0.unk_24 = 2;
     v0.unk_28 = 0;
-    v0.unk_2C = 14;
+    v0.heapID = HEAP_ID_14;
 
     ov22_022597BC(&param0->unk_518, &v0);
 }
@@ -886,18 +883,14 @@ static void ov22_02256AE4(UnkStruct_ov22_02259C58 *param0, void *param1)
 static void ov22_02256B04(UnkStruct_ov22_02259C58 *param0, void *param1)
 {
     UnkStruct_ov22_02255D44 *v0 = param1;
-    int v1;
-
-    v1 = ov22_02258414(&v0->unk_3CC);
+    int v1 = ov22_02258414(&v0->unk_3CC);
     ov22_02258258(&v0->unk_3CC, v1, 0);
 }
 
 static void ov22_02256B24(UnkStruct_ov22_02259C58 *param0, void *param1)
 {
     UnkStruct_ov22_02255D44 *v0 = param1;
-    int v1;
-
-    v1 = ov22_02258414(&v0->unk_3CC);
+    int v1 = ov22_02258414(&v0->unk_3CC);
     ov22_02258258(&v0->unk_3CC, v1, 1);
 }
 
@@ -1001,11 +994,11 @@ static void ov22_02256C70(SysTask *param0, void *param1)
         }
         break;
     case 2:
-        sub_0200AAE0(8, -16, 0, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG3, 1);
+        BrightnessController_StartTransition(8, -16, 0, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG3, BRIGHTNESS_MAIN_SCREEN);
         v0->unk_0C++;
         break;
     case 3:
-        v1 = sub_0200AC1C(1);
+        v1 = BrightnessController_IsTransitionComplete(BRIGHTNESS_MAIN_SCREEN);
 
         if (v1) {
             v0->unk_0C++;
@@ -1033,11 +1026,11 @@ static void ov22_02256C70(SysTask *param0, void *param1)
         v0->unk_0C++;
         break;
     case 7:
-        sub_0200AAE0(8, 0, -16, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG3, 1);
+        BrightnessController_StartTransition(8, 0, -16, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG3, BRIGHTNESS_MAIN_SCREEN);
         v0->unk_0C++;
         break;
     case 8:
-        v1 = sub_0200AC1C(1);
+        v1 = BrightnessController_IsTransitionComplete(BRIGHTNESS_MAIN_SCREEN);
 
         if (v1) {
             v0->unk_0C++;
@@ -1073,11 +1066,11 @@ static void ov22_02256DE0(SysTask *param0, void *param1)
 
     switch (v0->unk_0C) {
     case 0:
-        sub_0200AAE0(8, -16, 0, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG3, 1);
+        BrightnessController_StartTransition(8, -16, 0, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG3, BRIGHTNESS_MAIN_SCREEN);
         v0->unk_0C++;
         break;
     case 1:
-        v1 = sub_0200AC1C(1);
+        v1 = BrightnessController_IsTransitionComplete(BRIGHTNESS_MAIN_SCREEN);
 
         if (v1) {
             v0->unk_0C++;
@@ -1107,11 +1100,11 @@ static void ov22_02256DE0(SysTask *param0, void *param1)
         }
         break;
     case 5:
-        sub_0200AAE0(8, 0, -16, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG3, 1);
+        BrightnessController_StartTransition(8, 0, -16, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG3, BRIGHTNESS_MAIN_SCREEN);
         v0->unk_0C++;
         break;
     case 6:
-        v1 = sub_0200AC1C(1);
+        v1 = BrightnessController_IsTransitionComplete(BRIGHTNESS_MAIN_SCREEN);
 
         if (v1) {
             v0->unk_0C++;
@@ -1191,7 +1184,7 @@ static void ov22_02256FD8(UnkStruct_02029C88 *param0, UnkStruct_ov22_02257964 *p
     Strbuf *v4;
     int v5;
 
-    v2 = Heap_AllocFromHeap(13, sizeof(UnkStruct_ov22_02256FD8));
+    v2 = Heap_AllocFromHeap(HEAP_ID_13, sizeof(UnkStruct_ov22_02256FD8));
     ov22_0225764C(v2);
 
     sub_0202A284(param0, param1->unk_2C.unk_4C.unk_0C, &param1->unk_2C.unk_4C);
@@ -1275,7 +1268,7 @@ static void ov22_0225718C(UnkStruct_ov22_02255D44 *param0)
     ov22_022568DC(param0);
 
     sub_0200F344(0, 0x0);
-    CellActorCollection_SetActive(param0->unk_00.unk_44, 1);
+    SpriteList_SetActive(param0->unk_00.unk_44, 1);
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG0, 1);
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG1, 1);
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG2, 1);
@@ -1315,9 +1308,7 @@ static void ov22_02257258(UnkStruct_ov22_02255D44 *param0)
 
 static u32 ov22_02257278(UnkStruct_ov22_02255D44 *param0)
 {
-    u32 v0;
-
-    v0 = sub_020159FC(param0->unk_714);
+    u32 v0 = sub_020159FC(param0->unk_714);
 
     switch (v0) {
     case 0:
@@ -1340,13 +1331,13 @@ static void ov22_022572A0(UnkStruct_ov22_02255D44 *param0, u32 param1, u8 param2
     Strbuf *v1;
     int v2 = Options_Frame(param0->unk_738);
 
-    Font_LoadScreenIndicatorsPalette(0, 7 * 32, 14);
+    Font_LoadScreenIndicatorsPalette(0, 7 * 32, HEAP_ID_14);
     Window_Add(param0->unk_00.unk_40, param0->unk_718, 3, param2, param3, param4, param5, 7, (0 + (29 * 4) + (18 + 12)));
     Window_FillTilemap(param0->unk_718, 15);
-    LoadMessageBoxGraphics(param0->unk_00.unk_40, 3, (0 + (29 * 4)), 8, v2, 14);
+    LoadMessageBoxGraphics(param0->unk_00.unk_40, 3, (0 + (29 * 4)), 8, v2, HEAP_ID_14);
     Window_DrawMessageBoxWithScrollCursor(param0->unk_718, 0, (0 + (29 * 4)), 8);
 
-    v0 = MessageLoader_Init(0, 26, 385, 13);
+    v0 = MessageLoader_Init(0, 26, 385, HEAP_ID_13);
     v1 = MessageLoader_GetNewStrbuf(v0, param1);
 
     Text_AddPrinterWithParamsAndColor(param0->unk_718, FONT_MESSAGE, v1, 0, 0, TEXT_SPEED_INSTANT, TEXT_COLOR(1, 2, 15), NULL);
@@ -1363,9 +1354,9 @@ static void ov22_02257368(UnkStruct_ov22_02255D44 *param0, u32 param1)
 
     Window_FillTilemap(param0->unk_718, 15);
 
-    v0 = MessageLoader_Init(0, 26, 385, 13);
+    v0 = MessageLoader_Init(0, 26, 385, HEAP_ID_13);
     v2 = MessageLoader_GetNewStrbuf(v0, param1);
-    v1 = Strbuf_Init(256, 13);
+    v1 = Strbuf_Init(256, HEAP_ID_13);
 
     StringTemplate_Format(param0->unk_744, v1, v2);
     Text_AddPrinterWithParamsAndColor(param0->unk_718, FONT_MESSAGE, v1, 0, 0, TEXT_SPEED_INSTANT, TEXT_COLOR(1, 2, 15), NULL);
@@ -1386,9 +1377,9 @@ static u32 ov22_022573EC(UnkStruct_ov22_02255D44 *param0, u32 param1)
 
     Window_FillTilemap(param0->unk_718, 15);
 
-    v1 = MessageLoader_Init(0, 26, 385, 13);
+    v1 = MessageLoader_Init(0, 26, 385, HEAP_ID_13);
     v3 = MessageLoader_GetNewStrbuf(v1, param1);
-    param0->unk_740 = Strbuf_Init(256, 13);
+    param0->unk_740 = Strbuf_Init(256, HEAP_ID_13);
 
     StringTemplate_Format(param0->unk_744, param0->unk_740, v3);
 
@@ -1437,7 +1428,7 @@ static void ov22_022574EC(UnkStruct_ov22_02255D44 *param0)
 static void ov22_022574F4(UnkStruct_ov22_02255D44 *param0, u32 param1)
 {
     ov22_022572A0(param0, param1, 2, 19, 27, 4);
-    param0->unk_744 = StringTemplate_Default(13);
+    param0->unk_744 = StringTemplate_Default(HEAP_ID_13);
 }
 
 static u32 ov22_0225751C(UnkStruct_ov22_02255D44 *param0, u32 param1)
@@ -1465,9 +1456,7 @@ static void ov22_02257548(UnkStruct_ov22_02255D44 *param0)
 
 static void ov22_02257564(UnkStruct_ov22_02255D44 *param0)
 {
-    int v0;
-
-    v0 = ov22_02257D00(&param0->unk_458);
+    int v0 = ov22_02257D00(&param0->unk_458);
     ov22_0225A6B8(&param0->unk_5C4, v0);
 }
 
@@ -1520,9 +1509,7 @@ static void ov22_022575B4(UnkStruct_ov22_02255D44 *param0)
 
 static u32 ov22_02257624(UnkStruct_ov22_02255D44 *param0)
 {
-    u32 v0;
-
-    v0 = sub_020159FC(param0->unk_714);
+    u32 v0 = sub_020159FC(param0->unk_714);
 
     switch (v0) {
     case 0:
@@ -1623,9 +1610,7 @@ static BOOL ov22_0225771C(UnkStruct_ov22_02256FD8_sub1 *param0, UnkStruct_ov22_0
 
 static void ov22_02257778(UnkStruct_ov22_02256FD8 *param0, UnkStruct_ov22_02259560 *param1, u32 param2)
 {
-    UnkStruct_ov22_02259560 *v0;
-
-    v0 = param1->unk_08;
+    UnkStruct_ov22_02259560 *v0 = param1->unk_08;
 
     while (v0 != param1) {
         if (v0->unk_04 == 0) {

@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/sunyshore_city_gym_room_3.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _001D
     ScriptEntry _0022
     ScriptEntry _0027
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     SetVar 0x4000, 0
@@ -27,12 +28,12 @@ _0027:
     FacePlayer
     CheckBadgeAcquired BADGE_ID_BEACON, 0x800C
     GoToIfEq 0x800C, 1, _0104
-    ScrCmd_1CD 9, 156, 0, 0, 0
+    CreateJournalEvent LOCATION_EVENT_GYM_WAS_TOO_TOUGH, 156, 0, 0, 0
     Message 0
     CloseMessage
-    StartTrainerBattle trainer_leader_volkner
+    StartTrainerBattle TRAINER_LEADER_VOLKNER
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _011A
+    GoToIfEq 0x800C, FALSE, _011A
     Message 1
     BufferPlayerName 0
     Message 2
@@ -40,17 +41,17 @@ _0027:
     WaitSound
     GiveBadge BADGE_ID_BEACON
     ScrCmd_260 23
-    SetTrainerFlag trainer_ace_trainer_zachery
-    SetTrainerFlag trainer_ace_trainer_destiny
-    SetTrainerFlag trainer_guitarist_jerry
-    SetTrainerFlag trainer_guitarist_preston
-    SetTrainerFlag trainer_guitarist_lonnie
-    SetTrainerFlag trainer_poke_kid_meghan
-    SetTrainerFlag trainer_school_kid_forrest
-    SetTrainerFlag trainer_school_kid_tiera
+    SetTrainerFlag TRAINER_ACE_TRAINER_ZACHERY
+    SetTrainerFlag TRAINER_ACE_TRAINER_DESTINY
+    SetTrainerFlag TRAINER_GUITARIST_JERRY
+    SetTrainerFlag TRAINER_GUITARIST_PRESTON
+    SetTrainerFlag TRAINER_GUITARIST_LONNIE
+    SetTrainerFlag TRAINER_POKE_KID_MEGHAN
+    SetTrainerFlag TRAINER_SCHOOL_KID_FORREST
+    SetTrainerFlag TRAINER_SCHOOL_KID_TIERA
     SetVar 0x407E, 2
-    // BUG: trainer_leader_roark should be trainer_leader_volkner
-    ScrCmd_1CD 10, 156, trainer_leader_roark, 0, 0
+    // BUG: TRAINER_LEADER_ROARK should be TRAINER_LEADER_VOLKNER
+    CreateJournalEvent LOCATION_EVENT_BEAT_GYM_LEADER, 156, TRAINER_LEADER_ROARK, 0, 0
     Message 3
     GoTo _00BC
 
@@ -84,6 +85,6 @@ _0104:
     End
 
 _011A:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End

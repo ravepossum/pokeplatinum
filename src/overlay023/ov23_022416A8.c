@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/game_records.h"
+#include "generated/game_records.h"
 
 #include "struct_decls/struct_020298B0_decl.h"
 
@@ -500,8 +500,8 @@ BOOL ov23_02241D58(Strbuf *param0)
 
     for (v0 = 0; v0 < (7 + 1); v0++) {
         if (Unk_ov23_02257744->unk_468[v0] != 0) {
-            v1 = StringTemplate_Default(4);
-            v2 = Strbuf_Init((50 * 2), 4);
+            v1 = StringTemplate_Default(HEAP_ID_FIELD);
+            v2 = Strbuf_Init((50 * 2), HEAP_ID_FIELD);
 
             StringTemplate_SetUndergroundItemNameWithArticle(v1, 2, Unk_ov23_02257744->unk_468[v0]);
             StringTemplate_CapitalizeArgAtIndex(v1, 2);

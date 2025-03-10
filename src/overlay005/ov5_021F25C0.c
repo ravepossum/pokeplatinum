@@ -13,9 +13,9 @@
 #include "overlay101/struct_ov101_021D5D90_decl.h"
 #include "overlay101/struct_ov101_021D86B0.h"
 
+#include "fx_util.h"
 #include "map_object.h"
 #include "map_object_move.h"
-#include "unk_0201E190.h"
 #include "unk_020711EC.h"
 #include "unk_02073838.h"
 
@@ -52,9 +52,7 @@ static const UnkStruct_ov101_021D86B0 Unk_ov5_02200490;
 
 void *ov5_021F25C0(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_ov5_021F25EC *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F25EC)), 0, 0);
+    UnkStruct_ov5_021F25EC *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F25EC)), 0, 0);
     v0->unk_00 = param0;
 
     ov5_021F25EC(v0);
@@ -99,7 +97,7 @@ UnkStruct_ov101_021D5D90 *ov5_021F261C(MapObject *param0, int param1, int param2
     } else {
         VecFx32 v3 = { 0, (FX32_ONE * 7), (FX32_ONE * 4) };
 
-        MapObject_PosVectorOut(param0, &v1);
+        MapObject_GetPosPtr(param0, &v1);
         sub_020630AC(param0, &v3);
     }
 
@@ -116,7 +114,7 @@ static int ov5_021F26A8(UnkStruct_ov101_021D5D90 *param0, void *param1)
     MapObject *v2 = v1->unk_0C;
 
     v0->unk_24 = *v1;
-    v0->unk_0C = MapObject_Id(v2);
+    v0->unk_0C = MapObject_GetLocalID(v2);
     v0->unk_10 = sub_02062918(v2);
     v0->unk_08 = v1->unk_00;
     v0->unk_18 = sub_020715B4(param0);
@@ -146,7 +144,7 @@ static void ov5_021F2708(UnkStruct_ov101_021D5D90 *param0, void *param1)
     }
 
     v0->unk_00 = 0;
-    v0->unk_04 = MapObject_Dir(v1);
+    v0->unk_04 = MapObject_GetFacingDir(v1);
 
     if (v0->unk_04 == -1) {
         v0->unk_00 = 1;
@@ -184,7 +182,7 @@ static void ov5_021F2708(UnkStruct_ov101_021D5D90 *param0, void *param1)
     {
         VecFx32 v3;
 
-        MapObject_PosVectorOut(v1, &v3);
+        MapObject_GetPosPtr(v1, &v3);
         v3.y += v0->unk_1C - FX32_ONE;
         sub_020715D4(param0, &v3);
     }
@@ -220,7 +218,7 @@ static void ov5_021F27B4(UnkStruct_ov101_021D5D90 *param0, void *param1)
             break;
         }
 
-        sub_0201E2E0(&v2, 0, v1, 0);
+        MTX_Rot33Angles(&v2, 0, v1, 0);
         sub_020715E4(param0, &v3);
         sub_02073BA4(v5, &v3, &v4, &v2);
     }

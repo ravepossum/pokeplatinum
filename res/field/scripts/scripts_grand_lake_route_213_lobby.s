@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/grand_lake_route_213_lobby.h"
 
     .data
 
@@ -6,7 +7,7 @@
     ScriptEntry _0014
     ScriptEntry _004C
     ScriptEntry _005F
-    .short 0xFD13
+    ScriptEntryEnd
 
 _0012:
     End

@@ -12,10 +12,10 @@
 #include "overlay020/ov20_021D5044.h"
 #include "overlay020/struct_ov20_021D2128_decl.h"
 
-#include "core_sys.h"
 #include "heap.h"
 #include "overlay_manager.h"
 #include "strbuf.h"
+#include "system.h"
 #include "touch_screen.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
@@ -126,8 +126,8 @@ int ov20_021D0D80(OverlayManager *param0, int *param1)
     switch (*param1) {
     case 0:
         sub_02004550(62, 0, 0);
-        Heap_Create(3, 34, 32768);
-        Heap_Create(3, 35, 163840);
+        Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_34, 32768);
+        Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_35, 163840);
         v0 = ov20_021D0EC8(param0);
         ov20_021D21A0(v0->unk_14, 0);
         (*param1)++;
@@ -154,9 +154,9 @@ int ov20_021D0DF8(OverlayManager *param0, int *param1)
 {
     UnkStruct_ov20_021D16E8 *v0 = OverlayManager_Data(param0);
 
-    v0->unk_30 = gCoreSys.pressedKeys;
-    v0->unk_32 = gCoreSys.heldKeys;
-    v0->unk_34 = gCoreSys.pressedKeysRepeatable;
+    v0->unk_30 = gSystem.pressedKeys;
+    v0->unk_32 = gSystem.heldKeys;
+    v0->unk_34 = gSystem.pressedKeysRepeatable;
 
     sub_0202404C(v0->unk_40);
 
@@ -216,8 +216,8 @@ int ov20_021D0EA8(OverlayManager *param0, int *param1)
 {
     ov20_021D1014(OverlayManager_Data(param0), param0);
 
-    Heap_Destroy(34);
-    Heap_Destroy(35);
+    Heap_Destroy(HEAP_ID_34);
+    Heap_Destroy(HEAP_ID_35);
 
     return 1;
 }
@@ -231,9 +231,7 @@ static UnkStruct_ov20_021D16E8 *ov20_021D0EC8(OverlayManager *param0)
         { 120, 152, 176, 208 },
         { 0xff, 0, 0, 0 },
     };
-    UnkStruct_ov20_021D16E8 *v1;
-
-    v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov20_021D16E8), 34);
+    UnkStruct_ov20_021D16E8 *v1 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov20_021D16E8), HEAP_ID_34);
 
     v1->unk_00 = OverlayManager_Args(param0);
     v1->unk_04 = sub_02097550(v1->unk_00);
@@ -244,9 +242,9 @@ static UnkStruct_ov20_021D16E8 *ov20_021D0EC8(OverlayManager *param0)
         ov20_021D0F64(&v1->unk_60, &v1->unk_08);
     }
 
-    v1->unk_18 = sub_020998EC(34, v1->unk_00);
+    v1->unk_18 = sub_020998EC(HEAP_ID_34, v1->unk_00);
     v1->unk_14 = ov20_021D2098(v1, v1->unk_18);
-    v1->unk_40 = sub_02023FCC(v0, NELEMS(v0), ov20_021D0E38, v1, 34);
+    v1->unk_40 = sub_02023FCC(v0, NELEMS(v0), ov20_021D0E38, v1, HEAP_ID_34);
     v1->unk_44 = 0;
     v1->unk_48 = 0;
     v1->unk_65 = 0;
@@ -1366,10 +1364,8 @@ BOOL ov20_021D204C(const UnkStruct_ov20_021D16E8 *param0)
 
 BOOL ov20_021D2060(const UnkStruct_ov20_021D16E8 *param0)
 {
-    int v0, v1;
-
-    v0 = ov20_021D18DC(&(param0->unk_54));
-    v1 = ov20_021D18E0(&(param0->unk_54));
+    int v0 = ov20_021D18DC(&(param0->unk_54));
+    int v1 = ov20_021D18E0(&(param0->unk_54));
 
     return v0 < v1;
 }

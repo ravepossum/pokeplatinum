@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/restaurant.h"
 
     .data
 
@@ -23,7 +24,7 @@
     ScriptEntry _1C27
     ScriptEntry _1DD1
     ScriptEntry _1F7B
-    .short 0xFD13
+    ScriptEntryEnd
     End
 
 _0058:
@@ -57,30 +58,30 @@ _00B3:
     SetFlag 0x24A
     SetFlag 0x24B
     SetFlag 0x24C
-    ClearTrainerFlag trainer_artist_ismael
-    ClearTrainerFlag trainer_beauty_harley
-    ClearTrainerFlag trainer_rich_boy_roman
-    ClearTrainerFlag trainer_lady_kylie
-    ClearTrainerFlag trainer_gentleman_leonardo
-    ClearTrainerFlag trainer_socialite_rebecca
-    ClearTrainerFlag trainer_collector_eugene
-    ClearTrainerFlag trainer_aroma_lady_alison
-    ClearTrainerFlag trainer_school_kid_esteban
-    ClearTrainerFlag trainer_pokefan_meredith
-    ClearTrainerFlag trainer_veteran_emanuel
-    ClearTrainerFlag trainer_lass_blythe
-    ClearTrainerFlag trainer_cameraman_darryl
-    ClearTrainerFlag trainer_reporters_valerie
-    ClearTrainerFlag trainer_pi_kendrick
-    ClearTrainerFlag trainer_beauty_gabriella
-    ClearTrainerFlag trainer_scientist_emilio
-    ClearTrainerFlag trainer_breeder_kaylee
+    ClearTrainerFlag TRAINER_ARTIST_ISMAEL
+    ClearTrainerFlag TRAINER_BEAUTY_HARLEY
+    ClearTrainerFlag TRAINER_RICH_BOY_ROMAN
+    ClearTrainerFlag TRAINER_LADY_KYLIE
+    ClearTrainerFlag TRAINER_GENTLEMAN_LEONARDO
+    ClearTrainerFlag TRAINER_SOCIALITE_REBECCA
+    ClearTrainerFlag TRAINER_COLLECTOR_EUGENE
+    ClearTrainerFlag TRAINER_AROMA_LADY_ALISON
+    ClearTrainerFlag TRAINER_SCHOOL_KID_ESTEBAN
+    ClearTrainerFlag TRAINER_POKEFAN_MEREDITH
+    ClearTrainerFlag TRAINER_VETERAN_EMANUEL
+    ClearTrainerFlag TRAINER_LASS_BLYTHE
+    ClearTrainerFlag TRAINER_CAMERAMAN_DARRYL
+    ClearTrainerFlag TRAINER_REPORTER_VALERIE
+    ClearTrainerFlag TRAINER_PI_KENDRICK
+    ClearTrainerFlag TRAINER_BEAUTY_GABRIELLA
+    ClearTrainerFlag TRAINER_SCIENTIST_EMILIO
+    ClearTrainerFlag TRAINER_BREEDER_KAYLEE
     SetVar 0x4104, 0
-    ScrCmd_1B7 0x4001, 1
+    GetRandom 0x4001, 1
     SetVar 0x4000, 5
     SetVar 0x400A, 0x2710
 _0137:
-    ScrCmd_1B8 0x4001, 9
+    GetRandom2 0x4001, 9
     CallIfEq 0x4001, 0, _01D8
     CallIfEq 0x4001, 1, _01F5
     CallIfEq 0x4001, 2, _0212
@@ -100,63 +101,63 @@ _01D2:
 _01D8:
     GoToIfUnset 0x244, _02DD
     ClearFlag 0x244
-    ScrCmd_1B8 0x40FB, 3
+    GetRandom2 0x40FB, 3
     SubVar 0x4000, 1
     Return
 
 _01F5:
     GoToIfUnset 0x245, _02DD
     ClearFlag 0x245
-    ScrCmd_1B8 0x40FC, 3
+    GetRandom2 0x40FC, 3
     SubVar 0x4000, 1
     Return
 
 _0212:
     GoToIfUnset 0x246, _02DD
     ClearFlag 0x246
-    ScrCmd_1B8 0x40FD, 3
+    GetRandom2 0x40FD, 3
     SubVar 0x4000, 1
     Return
 
 _022F:
     GoToIfUnset 0x247, _02DD
     ClearFlag 0x247
-    ScrCmd_1B8 0x40FE, 3
+    GetRandom2 0x40FE, 3
     SubVar 0x4000, 1
     Return
 
 _024C:
     GoToIfUnset 0x248, _02DD
     ClearFlag 0x248
-    ScrCmd_1B8 0x40FF, 3
+    GetRandom2 0x40FF, 3
     SubVar 0x4000, 1
     Return
 
 _0269:
     GoToIfUnset 0x249, _02DD
     ClearFlag 0x249
-    ScrCmd_1B8 0x4100, 3
+    GetRandom2 0x4100, 3
     SubVar 0x4000, 1
     Return
 
 _0286:
     GoToIfUnset 0x24A, _02DD
     ClearFlag 0x24A
-    ScrCmd_1B8 0x4101, 3
+    GetRandom2 0x4101, 3
     SubVar 0x4000, 1
     Return
 
 _02A3:
     GoToIfUnset 0x24B, _02DD
     ClearFlag 0x24B
-    ScrCmd_1B8 0x4102, 3
+    GetRandom2 0x4102, 3
     SubVar 0x4000, 1
     Return
 
 _02C0:
     GoToIfUnset 0x24C, _02DD
     ClearFlag 0x24C
-    ScrCmd_1B8 0x4103, 3
+    GetRandom2 0x4103, 3
     SubVar 0x4000, 1
     Return
 
@@ -165,7 +166,7 @@ _02DD:
 
 _02DF:
     LockAll
-    ApplyMovement 0xFF, _212C
+    ApplyMovement LOCALID_PLAYER, _212C
     WaitMovement
     WaitTime 20, 0x800C
     Message 1
@@ -191,8 +192,8 @@ _031E:
 _0331:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_artist_ismael
-    GoToIfDefeated trainer_artist_ismael, _046C
+    CheckTrainerFlag TRAINER_ARTIST_ISMAEL
+    GoToIfDefeated TRAINER_ARTIST_ISMAEL, _046C
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _04BC
     SetVar 0x8008, 0x40FB
@@ -206,33 +207,33 @@ _038A:
     Message 4
     FacePlayer
     Message 5
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _03E7
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _03E7
     GoTo _0460
 
 _03A9:
     Message 12
     FacePlayer
     Message 13
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _03E7
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _03E7
     GoTo _0460
 
 _03C8:
     Message 20
     FacePlayer
     Message 21
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _03E7
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _03E7
     GoTo _0460
 
 _03E7:
     CloseMessage
-    StartTrainerBattle trainer_artist_ismael, trainer_beauty_harley
+    StartTrainerBattle TRAINER_ARTIST_ISMAEL, TRAINER_BEAUTY_HARLEY
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_artist_ismael
-    SetTrainerFlag trainer_beauty_harley
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_ARTIST_ISMAEL
+    SetTrainerFlag TRAINER_BEAUTY_HARLEY
     Call _04CF
     SetVar 0x8008, 0x40FB
     GoToIfEq 0x8008, 0, _043F
@@ -313,8 +314,8 @@ _04CF:
 _04DB:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_beauty_harley
-    GoToIfDefeated trainer_beauty_harley, _0616
+    CheckTrainerFlag TRAINER_BEAUTY_HARLEY
+    GoToIfDefeated TRAINER_BEAUTY_HARLEY, _0616
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _0666
     SetVar 0x8008, 0x40FB
@@ -328,33 +329,33 @@ _0534:
     Message 8
     FacePlayer
     Message 9
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0591
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0591
     GoTo _060A
 
 _0553:
     Message 16
     FacePlayer
     Message 17
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0591
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0591
     GoTo _060A
 
 _0572:
     Message 24
     FacePlayer
     Message 25
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0591
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0591
     GoTo _060A
 
 _0591:
     CloseMessage
-    StartTrainerBattle trainer_artist_ismael, trainer_beauty_harley
+    StartTrainerBattle TRAINER_ARTIST_ISMAEL, TRAINER_BEAUTY_HARLEY
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_artist_ismael
-    SetTrainerFlag trainer_beauty_harley
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_ARTIST_ISMAEL
+    SetTrainerFlag TRAINER_BEAUTY_HARLEY
     Call _0679
     SetVar 0x8008, 0x40FB
     GoToIfEq 0x8008, 0, _05E9
@@ -435,8 +436,8 @@ _0679:
 _0685:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_rich_boy_roman
-    GoToIfDefeated trainer_rich_boy_roman, _07C0
+    CheckTrainerFlag TRAINER_RICH_BOY_ROMAN
+    GoToIfDefeated TRAINER_RICH_BOY_ROMAN, _07C0
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _0810
     SetVar 0x8008, 0x40FC
@@ -450,33 +451,33 @@ _06DE:
     Message 30
     FacePlayer
     Message 31
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _073B
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _073B
     GoTo _07B4
 
 _06FD:
     Message 38
     FacePlayer
     Message 39
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _073B
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _073B
     GoTo _07B4
 
 _071C:
     Message 46
     FacePlayer
     Message 47
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _073B
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _073B
     GoTo _07B4
 
 _073B:
     CloseMessage
-    StartTrainerBattle trainer_rich_boy_roman, trainer_lady_kylie
+    StartTrainerBattle TRAINER_RICH_BOY_ROMAN, TRAINER_LADY_KYLIE
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_rich_boy_roman
-    SetTrainerFlag trainer_lady_kylie
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_RICH_BOY_ROMAN
+    SetTrainerFlag TRAINER_LADY_KYLIE
     Call _0823
     SetVar 0x8008, 0x40FC
     GoToIfEq 0x8008, 0, _0793
@@ -557,8 +558,8 @@ _0823:
 _082F:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_lady_kylie
-    GoToIfDefeated trainer_lady_kylie, _096A
+    CheckTrainerFlag TRAINER_LADY_KYLIE
+    GoToIfDefeated TRAINER_LADY_KYLIE, _096A
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _09BA
     SetVar 0x8008, 0x40FC
@@ -572,33 +573,33 @@ _0888:
     Message 34
     FacePlayer
     Message 35
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _08E5
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _08E5
     GoTo _095E
 
 _08A7:
     Message 42
     FacePlayer
     Message 43
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _08E5
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _08E5
     GoTo _095E
 
 _08C6:
     Message 50
     FacePlayer
     Message 51
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _08E5
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _08E5
     GoTo _095E
 
 _08E5:
     CloseMessage
-    StartTrainerBattle trainer_rich_boy_roman, trainer_lady_kylie
+    StartTrainerBattle TRAINER_RICH_BOY_ROMAN, TRAINER_LADY_KYLIE
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_rich_boy_roman
-    SetTrainerFlag trainer_lady_kylie
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_RICH_BOY_ROMAN
+    SetTrainerFlag TRAINER_LADY_KYLIE
     Call _09CD
     SetVar 0x8008, 0x40FC
     GoToIfEq 0x8008, 0, _093D
@@ -679,8 +680,8 @@ _09CD:
 _09D9:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_gentleman_leonardo
-    GoToIfDefeated trainer_gentleman_leonardo, _0B14
+    CheckTrainerFlag TRAINER_GENTLEMAN_LEONARDO
+    GoToIfDefeated TRAINER_GENTLEMAN_LEONARDO, _0B14
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _0B64
     SetVar 0x8008, 0x40FD
@@ -694,33 +695,33 @@ _0A32:
     Message 56
     FacePlayer
     Message 57
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0A8F
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0A8F
     GoTo _0B08
 
 _0A51:
     Message 64
     FacePlayer
     Message 65
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0A8F
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0A8F
     GoTo _0B08
 
 _0A70:
     Message 72
     FacePlayer
     Message 73
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0A8F
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0A8F
     GoTo _0B08
 
 _0A8F:
     CloseMessage
-    StartTrainerBattle trainer_gentleman_leonardo, trainer_socialite_rebecca
+    StartTrainerBattle TRAINER_GENTLEMAN_LEONARDO, TRAINER_SOCIALITE_REBECCA
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_gentleman_leonardo
-    SetTrainerFlag trainer_socialite_rebecca
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_GENTLEMAN_LEONARDO
+    SetTrainerFlag TRAINER_SOCIALITE_REBECCA
     Call _0B77
     SetVar 0x8008, 0x40FD
     GoToIfEq 0x8008, 0, _0AE7
@@ -801,8 +802,8 @@ _0B77:
 _0B83:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_socialite_rebecca
-    GoToIfDefeated trainer_socialite_rebecca, _0CBE
+    CheckTrainerFlag TRAINER_SOCIALITE_REBECCA
+    GoToIfDefeated TRAINER_SOCIALITE_REBECCA, _0CBE
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _0D0E
     SetVar 0x8008, 0x40FD
@@ -816,33 +817,33 @@ _0BDC:
     Message 60
     FacePlayer
     Message 61
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0C39
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0C39
     GoTo _0CB2
 
 _0BFB:
     Message 68
     FacePlayer
     Message 69
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0C39
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0C39
     GoTo _0CB2
 
 _0C1A:
     Message 76
     FacePlayer
     Message 77
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0C39
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0C39
     GoTo _0CB2
 
 _0C39:
     CloseMessage
-    StartTrainerBattle trainer_gentleman_leonardo, trainer_socialite_rebecca
+    StartTrainerBattle TRAINER_GENTLEMAN_LEONARDO, TRAINER_SOCIALITE_REBECCA
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_gentleman_leonardo
-    SetTrainerFlag trainer_socialite_rebecca
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_GENTLEMAN_LEONARDO
+    SetTrainerFlag TRAINER_SOCIALITE_REBECCA
     Call _0D21
     SetVar 0x8008, 0x40FD
     GoToIfEq 0x8008, 0, _0C91
@@ -923,8 +924,8 @@ _0D21:
 _0D2D:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_collector_eugene
-    GoToIfDefeated trainer_collector_eugene, _0E68
+    CheckTrainerFlag TRAINER_COLLECTOR_EUGENE
+    GoToIfDefeated TRAINER_COLLECTOR_EUGENE, _0E68
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _0EB8
     SetVar 0x8008, 0x40FE
@@ -938,33 +939,33 @@ _0D86:
     Message 82
     FacePlayer
     Message 83
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0DE3
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0DE3
     GoTo _0E5C
 
 _0DA5:
     Message 90
     FacePlayer
     Message 91
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0DE3
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0DE3
     GoTo _0E5C
 
 _0DC4:
     Message 98
     FacePlayer
     Message 99
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0DE3
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0DE3
     GoTo _0E5C
 
 _0DE3:
     CloseMessage
-    StartTrainerBattle trainer_collector_eugene, trainer_aroma_lady_alison
+    StartTrainerBattle TRAINER_COLLECTOR_EUGENE, TRAINER_AROMA_LADY_ALISON
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_collector_eugene
-    SetTrainerFlag trainer_aroma_lady_alison
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_COLLECTOR_EUGENE
+    SetTrainerFlag TRAINER_AROMA_LADY_ALISON
     Call _0ECB
     SetVar 0x8008, 0x40FE
     GoToIfEq 0x8008, 0, _0E3B
@@ -1045,8 +1046,8 @@ _0ECB:
 _0ED7:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_aroma_lady_alison
-    GoToIfDefeated trainer_aroma_lady_alison, _1012
+    CheckTrainerFlag TRAINER_AROMA_LADY_ALISON
+    GoToIfDefeated TRAINER_AROMA_LADY_ALISON, _1012
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _1062
     SetVar 0x8008, 0x40FE
@@ -1060,33 +1061,33 @@ _0F30:
     Message 86
     FacePlayer
     Message 87
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0F8D
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0F8D
     GoTo _1006
 
 _0F4F:
     Message 94
     FacePlayer
     Message 95
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0F8D
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0F8D
     GoTo _1006
 
 _0F6E:
     Message 102
     FacePlayer
     Message 103
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _0F8D
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _0F8D
     GoTo _1006
 
 _0F8D:
     CloseMessage
-    StartTrainerBattle trainer_collector_eugene, trainer_aroma_lady_alison
+    StartTrainerBattle TRAINER_COLLECTOR_EUGENE, TRAINER_AROMA_LADY_ALISON
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_collector_eugene
-    SetTrainerFlag trainer_aroma_lady_alison
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_COLLECTOR_EUGENE
+    SetTrainerFlag TRAINER_AROMA_LADY_ALISON
     Call _1075
     SetVar 0x8008, 0x40FE
     GoToIfEq 0x8008, 0, _0FE5
@@ -1167,8 +1168,8 @@ _1075:
 _1081:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_school_kid_esteban
-    GoToIfDefeated trainer_school_kid_esteban, _11BC
+    CheckTrainerFlag TRAINER_SCHOOL_KID_ESTEBAN
+    GoToIfDefeated TRAINER_SCHOOL_KID_ESTEBAN, _11BC
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _120C
     SetVar 0x8008, 0x40FF
@@ -1182,33 +1183,33 @@ _10DA:
     Message 108
     FacePlayer
     Message 109
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1137
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1137
     GoTo _11B0
 
 _10F9:
     Message 116
     FacePlayer
     Message 117
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1137
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1137
     GoTo _11B0
 
 _1118:
     Message 124
     FacePlayer
     Message 125
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1137
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1137
     GoTo _11B0
 
 _1137:
     CloseMessage
-    StartTrainerBattle trainer_school_kid_esteban, trainer_pokefan_meredith
+    StartTrainerBattle TRAINER_SCHOOL_KID_ESTEBAN, TRAINER_POKEFAN_MEREDITH
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_school_kid_esteban
-    SetTrainerFlag trainer_pokefan_meredith
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_SCHOOL_KID_ESTEBAN
+    SetTrainerFlag TRAINER_POKEFAN_MEREDITH
     Call _121F
     SetVar 0x8008, 0x40FF
     GoToIfEq 0x8008, 0, _118F
@@ -1289,8 +1290,8 @@ _121F:
 _122B:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_pokefan_meredith
-    GoToIfDefeated trainer_pokefan_meredith, _1366
+    CheckTrainerFlag TRAINER_POKEFAN_MEREDITH
+    GoToIfDefeated TRAINER_POKEFAN_MEREDITH, _1366
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _13B6
     SetVar 0x8008, 0x40FF
@@ -1304,33 +1305,33 @@ _1284:
     Message 112
     FacePlayer
     Message 113
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _12E1
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _12E1
     GoTo _135A
 
 _12A3:
     Message 120
     FacePlayer
     Message 121
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _12E1
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _12E1
     GoTo _135A
 
 _12C2:
     Message 128
     FacePlayer
     Message 129
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _12E1
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _12E1
     GoTo _135A
 
 _12E1:
     CloseMessage
-    StartTrainerBattle trainer_school_kid_esteban, trainer_pokefan_meredith
+    StartTrainerBattle TRAINER_SCHOOL_KID_ESTEBAN, TRAINER_POKEFAN_MEREDITH
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_school_kid_esteban
-    SetTrainerFlag trainer_pokefan_meredith
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_SCHOOL_KID_ESTEBAN
+    SetTrainerFlag TRAINER_POKEFAN_MEREDITH
     Call _13C9
     SetVar 0x8008, 0x40FF
     GoToIfEq 0x8008, 0, _1339
@@ -1411,8 +1412,8 @@ _13C9:
 _13D5:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_veteran_emanuel
-    GoToIfDefeated trainer_veteran_emanuel, _1510
+    CheckTrainerFlag TRAINER_VETERAN_EMANUEL
+    GoToIfDefeated TRAINER_VETERAN_EMANUEL, _1510
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _1560
     SetVar 0x8008, 0x4100
@@ -1426,33 +1427,33 @@ _142E:
     Message 134
     FacePlayer
     Message 135
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _148B
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _148B
     GoTo _1504
 
 _144D:
     Message 142
     FacePlayer
     Message 143
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _148B
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _148B
     GoTo _1504
 
 _146C:
     Message 150
     FacePlayer
     Message 151
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _148B
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _148B
     GoTo _1504
 
 _148B:
     CloseMessage
-    StartTrainerBattle trainer_veteran_emanuel, trainer_lass_blythe
+    StartTrainerBattle TRAINER_VETERAN_EMANUEL, TRAINER_LASS_BLYTHE
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_veteran_emanuel
-    SetTrainerFlag trainer_lass_blythe
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_VETERAN_EMANUEL
+    SetTrainerFlag TRAINER_LASS_BLYTHE
     Call _1573
     SetVar 0x8008, 0x4100
     GoToIfEq 0x8008, 0, _14E3
@@ -1533,8 +1534,8 @@ _1573:
 _157F:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_lass_blythe
-    GoToIfDefeated trainer_lass_blythe, _16BA
+    CheckTrainerFlag TRAINER_LASS_BLYTHE
+    GoToIfDefeated TRAINER_LASS_BLYTHE, _16BA
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _170A
     SetVar 0x8008, 0x4100
@@ -1548,33 +1549,33 @@ _15D8:
     Message 138
     FacePlayer
     Message 139
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1635
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1635
     GoTo _16AE
 
 _15F7:
     Message 146
     FacePlayer
     Message 147
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1635
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1635
     GoTo _16AE
 
 _1616:
     Message 154
     FacePlayer
     Message 155
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1635
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1635
     GoTo _16AE
 
 _1635:
     CloseMessage
-    StartTrainerBattle trainer_veteran_emanuel, trainer_lass_blythe
+    StartTrainerBattle TRAINER_VETERAN_EMANUEL, TRAINER_LASS_BLYTHE
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_veteran_emanuel
-    SetTrainerFlag trainer_lass_blythe
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_VETERAN_EMANUEL
+    SetTrainerFlag TRAINER_LASS_BLYTHE
     Call _171D
     SetVar 0x8008, 0x4100
     GoToIfEq 0x8008, 0, _168D
@@ -1655,8 +1656,8 @@ _171D:
 _1729:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_cameraman_darryl
-    GoToIfDefeated trainer_cameraman_darryl, _1864
+    CheckTrainerFlag TRAINER_CAMERAMAN_DARRYL
+    GoToIfDefeated TRAINER_CAMERAMAN_DARRYL, _1864
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _18B4
     SetVar 0x8008, 0x4101
@@ -1670,33 +1671,33 @@ _1782:
     Message 160
     FacePlayer
     Message 161
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _17DF
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _17DF
     GoTo _1858
 
 _17A1:
     Message 168
     FacePlayer
     Message 169
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _17DF
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _17DF
     GoTo _1858
 
 _17C0:
     Message 176
     FacePlayer
     Message 177
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _17DF
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _17DF
     GoTo _1858
 
 _17DF:
     CloseMessage
-    StartTrainerBattle trainer_cameraman_darryl, trainer_reporters_valerie
+    StartTrainerBattle TRAINER_CAMERAMAN_DARRYL, TRAINER_REPORTER_VALERIE
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_cameraman_darryl
-    SetTrainerFlag trainer_reporters_valerie
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_CAMERAMAN_DARRYL
+    SetTrainerFlag TRAINER_REPORTER_VALERIE
     Call _18C7
     SetVar 0x8008, 0x4101
     GoToIfEq 0x8008, 0, _1837
@@ -1777,8 +1778,8 @@ _18C7:
 _18D3:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_reporters_valerie
-    GoToIfDefeated trainer_reporters_valerie, _1A0E
+    CheckTrainerFlag TRAINER_REPORTER_VALERIE
+    GoToIfDefeated TRAINER_REPORTER_VALERIE, _1A0E
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _1A5E
     SetVar 0x8008, 0x4101
@@ -1792,33 +1793,33 @@ _192C:
     Message 164
     FacePlayer
     Message 165
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1989
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1989
     GoTo _1A02
 
 _194B:
     Message 172
     FacePlayer
     Message 173
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1989
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1989
     GoTo _1A02
 
 _196A:
     Message 180
     FacePlayer
     Message 181
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1989
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1989
     GoTo _1A02
 
 _1989:
     CloseMessage
-    StartTrainerBattle trainer_cameraman_darryl, trainer_reporters_valerie
+    StartTrainerBattle TRAINER_CAMERAMAN_DARRYL, TRAINER_REPORTER_VALERIE
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_cameraman_darryl
-    SetTrainerFlag trainer_reporters_valerie
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_CAMERAMAN_DARRYL
+    SetTrainerFlag TRAINER_REPORTER_VALERIE
     Call _1A71
     SetVar 0x8008, 0x4101
     GoToIfEq 0x8008, 0, _19E1
@@ -1899,8 +1900,8 @@ _1A71:
 _1A7D:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_pi_kendrick
-    GoToIfDefeated trainer_pi_kendrick, _1BB8
+    CheckTrainerFlag TRAINER_PI_KENDRICK
+    GoToIfDefeated TRAINER_PI_KENDRICK, _1BB8
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _1C08
     SetVar 0x8008, 0x4102
@@ -1914,33 +1915,33 @@ _1AD6:
     Message 186
     FacePlayer
     Message 187
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1B33
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1B33
     GoTo _1BAC
 
 _1AF5:
     Message 194
     FacePlayer
     Message 195
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1B33
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1B33
     GoTo _1BAC
 
 _1B14:
     Message 202
     FacePlayer
     Message 203
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1B33
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1B33
     GoTo _1BAC
 
 _1B33:
     CloseMessage
-    StartTrainerBattle trainer_pi_kendrick, trainer_beauty_gabriella
+    StartTrainerBattle TRAINER_PI_KENDRICK, TRAINER_BEAUTY_GABRIELLA
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_pi_kendrick
-    SetTrainerFlag trainer_beauty_gabriella
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_PI_KENDRICK
+    SetTrainerFlag TRAINER_BEAUTY_GABRIELLA
     Call _1C1B
     SetVar 0x8008, 0x4102
     GoToIfEq 0x8008, 0, _1B8B
@@ -2021,8 +2022,8 @@ _1C1B:
 _1C27:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_beauty_gabriella
-    GoToIfDefeated trainer_beauty_gabriella, _1D62
+    CheckTrainerFlag TRAINER_BEAUTY_GABRIELLA
+    GoToIfDefeated TRAINER_BEAUTY_GABRIELLA, _1D62
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _1DB2
     SetVar 0x8008, 0x4102
@@ -2036,33 +2037,33 @@ _1C80:
     Message 190
     FacePlayer
     Message 191
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1CDD
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1CDD
     GoTo _1D56
 
 _1C9F:
     Message 198
     FacePlayer
     Message 199
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1CDD
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1CDD
     GoTo _1D56
 
 _1CBE:
     Message 206
     FacePlayer
     Message 207
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1CDD
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1CDD
     GoTo _1D56
 
 _1CDD:
     CloseMessage
-    StartTrainerBattle trainer_pi_kendrick, trainer_beauty_gabriella
+    StartTrainerBattle TRAINER_PI_KENDRICK, TRAINER_BEAUTY_GABRIELLA
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_pi_kendrick
-    SetTrainerFlag trainer_beauty_gabriella
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_PI_KENDRICK
+    SetTrainerFlag TRAINER_BEAUTY_GABRIELLA
     Call _1DC5
     SetVar 0x8008, 0x4102
     GoToIfEq 0x8008, 0, _1D35
@@ -2143,8 +2144,8 @@ _1DC5:
 _1DD1:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_scientist_emilio
-    GoToIfDefeated trainer_scientist_emilio, _1F0C
+    CheckTrainerFlag TRAINER_SCIENTIST_EMILIO
+    GoToIfDefeated TRAINER_SCIENTIST_EMILIO, _1F0C
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _1F5C
     SetVar 0x8008, 0x4103
@@ -2158,33 +2159,33 @@ _1E2A:
     Message 212
     FacePlayer
     Message 213
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1E87
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1E87
     GoTo _1F00
 
 _1E49:
     Message 220
     FacePlayer
     Message 221
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1E87
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1E87
     GoTo _1F00
 
 _1E68:
     Message 228
     FacePlayer
     Message 229
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _1E87
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _1E87
     GoTo _1F00
 
 _1E87:
     CloseMessage
-    StartTrainerBattle trainer_scientist_emilio, trainer_breeder_kaylee
+    StartTrainerBattle TRAINER_SCIENTIST_EMILIO, TRAINER_BREEDER_KAYLEE
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_scientist_emilio
-    SetTrainerFlag trainer_breeder_kaylee
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_SCIENTIST_EMILIO
+    SetTrainerFlag TRAINER_BREEDER_KAYLEE
     Call _1F6F
     SetVar 0x8008, 0x4103
     GoToIfEq 0x8008, 0, _1EDF
@@ -2265,8 +2266,8 @@ _1F6F:
 _1F7B:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckTrainerFlag trainer_breeder_kaylee
-    GoToIfDefeated trainer_breeder_kaylee, _20B6
+    CheckTrainerFlag TRAINER_BREEDER_KAYLEE
+    GoToIfDefeated TRAINER_BREEDER_KAYLEE, _20B6
     CountAliveMonsExcept 0x800C, 6
     GoToIfEq 0x800C, 1, _2106
     SetVar 0x8008, 0x4103
@@ -2280,33 +2281,33 @@ _1FD4:
     Message 216
     FacePlayer
     Message 217
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _2031
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _2031
     GoTo _20AA
 
 _1FF3:
     Message 224
     FacePlayer
     Message 225
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _2031
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _2031
     GoTo _20AA
 
 _2012:
     Message 232
     FacePlayer
     Message 233
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 0, _2031
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_YES, _2031
     GoTo _20AA
 
 _2031:
     CloseMessage
-    StartTrainerBattle trainer_scientist_emilio, trainer_breeder_kaylee
+    StartTrainerBattle TRAINER_SCIENTIST_EMILIO, TRAINER_BREEDER_KAYLEE
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _2125
-    SetTrainerFlag trainer_scientist_emilio
-    SetTrainerFlag trainer_breeder_kaylee
+    GoToIfEq 0x800C, FALSE, _2125
+    SetTrainerFlag TRAINER_SCIENTIST_EMILIO
+    SetTrainerFlag TRAINER_BREEDER_KAYLEE
     Call _2119
     SetVar 0x8008, 0x4103
     GoToIfEq 0x8008, 0, _2089
@@ -2385,7 +2386,7 @@ _2119:
     Return
 
 _2125:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 

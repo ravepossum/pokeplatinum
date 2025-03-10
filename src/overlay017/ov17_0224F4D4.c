@@ -12,9 +12,6 @@
 #include "overlay017/ov17_02251D6C.h"
 #include "overlay017/struct_ov17_0224FCA0.h"
 #include "overlay017/struct_ov17_0224FECC.h"
-#include "overlay104/struct_ov104_022412F4.h"
-#include "overlay104/struct_ov104_02241308.h"
-#include "overlay104/struct_ov104_0224133C.h"
 
 #include "bg_window.h"
 #include "font.h"
@@ -25,25 +22,25 @@
 #include "message.h"
 #include "overlay_manager.h"
 #include "palette.h"
+#include "sprite_system.h"
+#include "sprite_util.h"
 #include "strbuf.h"
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "unk_020041CC.h"
 #include "unk_02005474.h"
 #include "unk_0200762C.h"
-#include "unk_020093B4.h"
-#include "unk_0200C6E4.h"
 #include "unk_0200F174.h"
 #include "unk_02012744.h"
 #include "unk_02014000.h"
-#include "unk_02017728.h"
-#include "unk_0201DBEC.h"
 #include "unk_0201E3D8.h"
 #include "unk_020366A0.h"
 #include "unk_020393C8.h"
 #include "unk_020933F8.h"
 #include "unk_02094EDC.h"
+#include "vram_transfer.h"
 
 FS_EXTERN_OVERLAY(overlay11);
 FS_EXTERN_OVERLAY(overlay12);
@@ -91,7 +88,7 @@ static int (*const Unk_ov17_02254B54[])(UnkStruct_ov17_0224FCA0 *, UnkStruct_ov1
     ov17_022506AC
 };
 
-static const UnkStruct_ov104_0224133C Unk_ov17_02254B0C = {
+static const RenderOamTemplate Unk_ov17_02254B0C = {
     0x0,
     0x80,
     0x0,
@@ -102,7 +99,7 @@ static const UnkStruct_ov104_0224133C Unk_ov17_02254B0C = {
     0x20
 };
 
-static const UnkStruct_ov104_022412F4 Unk_ov17_02254AC4 = {
+static const CharTransferTemplateWithModes Unk_ov17_02254AC4 = {
     0x60,
     0x10000,
     0x4000,
@@ -110,7 +107,7 @@ static const UnkStruct_ov104_022412F4 Unk_ov17_02254AC4 = {
     GX_OBJVRAMMODE_CHAR_1D_32K
 };
 
-static const UnkStruct_ov104_02241308 Unk_ov17_02254AD8 = {
+static const SpriteResourceCapacities Unk_ov17_02254AD8 = {
     0x60,
     0x20,
     0x40,
@@ -134,7 +131,7 @@ int ov17_0224F4D4(OverlayManager *param0, int *param1)
 {
     UnkStruct_ov17_0224FCA0 *v0;
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
     GXLayers_DisableEngineALayers();
     GXLayers_DisableEngineBLayers();
@@ -146,12 +143,12 @@ int ov17_0224F4D4(OverlayManager *param0, int *param1)
     G2_BlendNone();
     G2S_BlendNone();
 
-    Heap_Create(3, 24, 0x70000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_24, 0x70000);
 
-    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov17_0224FCA0), 24);
+    v0 = OverlayManager_NewData(param0, sizeof(UnkStruct_ov17_0224FCA0), HEAP_ID_24);
     MI_CpuClear8(v0, sizeof(UnkStruct_ov17_0224FCA0));
 
-    v0->unk_0C = ov17_0223F140(24);
+    v0->unk_0C = ov17_0223F140(HEAP_ID_24);
     v0->unk_00 = OverlayManager_Args(param0);
     v0->unk_00->unk_150 = v0;
     v0->unk_00->unk_154 = 3;
@@ -160,42 +157,42 @@ int ov17_0224F4D4(OverlayManager *param0, int *param1)
     ov17_0224FE1C(v0);
 
     v0->unk_127B = 0;
-    v0->unk_10.unk_C0 = PaletteData_New(24);
+    v0->unk_10.unk_C0 = PaletteData_New(HEAP_ID_24);
 
     PaletteData_SetAutoTransparent(v0->unk_10.unk_C0, 1);
-    PaletteData_AllocBuffer(v0->unk_10.unk_C0, 0, 0x200, 24);
-    PaletteData_AllocBuffer(v0->unk_10.unk_C0, 1, 0x200, 24);
-    PaletteData_AllocBuffer(v0->unk_10.unk_C0, 2, (((16 - 2) * 16) * sizeof(u16)), 24);
-    PaletteData_AllocBuffer(v0->unk_10.unk_C0, 3, 0x200, 24);
+    PaletteData_AllocBuffer(v0->unk_10.unk_C0, 0, 0x200, HEAP_ID_24);
+    PaletteData_AllocBuffer(v0->unk_10.unk_C0, 1, 0x200, HEAP_ID_24);
+    PaletteData_AllocBuffer(v0->unk_10.unk_C0, 2, (((16 - 2) * 16) * sizeof(u16)), HEAP_ID_24);
+    PaletteData_AllocBuffer(v0->unk_10.unk_C0, 3, 0x200, HEAP_ID_24);
 
-    v0->unk_10.unk_20 = BgConfig_New(24);
+    v0->unk_10.unk_20 = BgConfig_New(HEAP_ID_24);
 
-    VRAMTransferManager_New(64, 24);
+    VramTransfer_New(64, HEAP_ID_24);
     SetAutorepeat(4, 8);
 
     ov17_0224FB34(v0->unk_10.unk_20);
 
     sub_0201E3D8();
     sub_0201E450(4);
-    Font_InitManager(FONT_SUBSCREEN, 24);
+    Font_InitManager(FONT_SUBSCREEN, HEAP_ID_24);
 
-    v0->unk_10.unk_18 = sub_0200C6E4(24);
+    v0->unk_10.unk_18 = SpriteSystem_Alloc(HEAP_ID_24);
 
-    sub_0200C73C(v0->unk_10.unk_18, &Unk_ov17_02254B0C, &Unk_ov17_02254AC4, (16 + 16));
-    sub_0200966C(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_64K);
-    sub_02009704(NNS_G2D_VRAM_TYPE_2DMAIN);
+    SpriteSystem_Init(v0->unk_10.unk_18, &Unk_ov17_02254B0C, &Unk_ov17_02254AC4, (16 + 16));
+    ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_64K);
+    ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DMAIN);
 
-    v0->unk_10.unk_1C = sub_0200C704(v0->unk_10.unk_18);
-    sub_0200C7C0(v0->unk_10.unk_18, v0->unk_10.unk_1C, (64 + 64));
-    sub_0200CB30(v0->unk_10.unk_18, v0->unk_10.unk_1C, &Unk_ov17_02254AD8);
-    v0->unk_10.unk_04 = sub_0200762C(24);
+    v0->unk_10.unk_1C = SpriteManager_New(v0->unk_10.unk_18);
+    SpriteSystem_InitSprites(v0->unk_10.unk_18, v0->unk_10.unk_1C, (64 + 64));
+    SpriteSystem_InitManagerWithCapacities(v0->unk_10.unk_18, v0->unk_10.unk_1C, &Unk_ov17_02254AD8);
+    v0->unk_10.unk_04 = sub_0200762C(HEAP_ID_24);
 
     ov17_0224FDDC();
 
-    v0->unk_10.unk_B4 = MessageLoader_Init(0, 26, 218, 24);
-    v0->unk_10.unk_B8 = StringTemplate_Default(24);
-    v0->unk_10.unk_BC = Strbuf_Init((2 * 160), 24);
-    v0->unk_10.unk_C4 = sub_02012744(10, 24);
+    v0->unk_10.unk_B4 = MessageLoader_Init(0, 26, 218, HEAP_ID_24);
+    v0->unk_10.unk_B8 = StringTemplate_Default(HEAP_ID_24);
+    v0->unk_10.unk_BC = Strbuf_Init((2 * 160), HEAP_ID_24);
+    v0->unk_10.unk_C4 = sub_02012744(10, HEAP_ID_24);
 
     ov17_0224FE60(v0);
     ov17_0224FE70(v0);
@@ -205,7 +202,7 @@ int ov17_0224F4D4(OverlayManager *param0, int *param1)
     ov17_02250744(v0);
 
     sub_02039734();
-    StartScreenTransition(1, 33, 33, 0x0, 6, 1, 24);
+    StartScreenTransition(1, 33, 33, 0x0, 6, 1, HEAP_ID_24);
 
     v0->unk_04 = SysTask_Start(ov17_0224FAFC, v0, 80000);
     v0->unk_850 = 1;
@@ -215,7 +212,7 @@ int ov17_0224F4D4(OverlayManager *param0, int *param1)
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
     sub_02004550(6, 1135, 1);
     sub_020959F4(v0->unk_00->unk_155);
-    SetMainCallback(ov17_0224FA24, v0);
+    SetVBlankCallback(ov17_0224FA24, v0);
 
     v0->unk_08 = SysTask_ExecuteOnVBlank(ov17_0224FAE4, v0, 10);
     Sound_PlayEffect(1765);
@@ -234,7 +231,7 @@ int ov17_0224F754(OverlayManager *param0, int *param1)
     case 0:
         if (IsScreenTransitionDone() == 1) {
             SetHBlankCallback(ov17_0224FAAC, v0);
-            v0->unk_848 = ov17_0223F70C(24, v0->unk_10.unk_C0, Unk_ov17_02254AB4, NELEMS(Unk_ov17_02254AB4), 0xff, (50000 + 5000));
+            v0->unk_848 = ov17_0223F70C(HEAP_ID_24, v0->unk_10.unk_C0, Unk_ov17_02254AB4, NELEMS(Unk_ov17_02254AB4), 0xff, (50000 + 5000));
             *param1 = 1;
         }
         break;
@@ -298,9 +295,9 @@ int ov17_0224F86C(OverlayManager *param0, int *param1)
     Bg_FreeTilemapBuffer(v0->unk_10.unk_20, 3);
     Bg_ToggleLayer(4, 0);
     Bg_FreeTilemapBuffer(v0->unk_10.unk_20, 4);
-    sub_0200D0B0(v0->unk_10.unk_18, v0->unk_10.unk_1C);
-    sub_0200C8D4(v0->unk_10.unk_18);
-    VRAMTransferManager_Destroy();
+    SpriteSystem_FreeResourcesAndManager(v0->unk_10.unk_18, v0->unk_10.unk_1C);
+    SpriteSystem_Free(v0->unk_10.unk_18);
+    VramTransfer_Free();
 
     ov17_022507C4(&v0->unk_10);
 
@@ -330,9 +327,9 @@ int ov17_0224F86C(OverlayManager *param0, int *param1)
     GX_SetVisibleWnd(GX_WNDMASK_NONE);
     GXS_SetVisibleWnd(GX_WNDMASK_NONE);
 
-    SetMainCallback(NULL, NULL);
+    SetVBlankCallback(NULL, NULL);
     DisableHBlank();
-    Heap_Destroy(24);
+    Heap_Destroy(HEAP_ID_24);
     sub_02095A24();
 
     MI_CpuFill16((void *)HW_BG_PLTT, 0x7fff, 0x200);
@@ -359,8 +356,8 @@ static void ov17_0224FA24(void *param0)
     }
 
     sub_02008A94(v0->unk_10.unk_04);
-    sub_0201DCAC();
-    OAMManager_ApplyAndResetBuffers();
+    VramTransfer_Process();
+    SpriteSystem_TransferOam();
     PaletteData_CommitFadedBuffers(v0->unk_10.unk_C0);
     Bg_RunScheduledUpdates(v0->unk_10.unk_20);
 
@@ -399,8 +396,8 @@ static void ov17_0224FAFC(SysTask *param0, void *param1)
     if (v0->unk_850 == 1) {
         sub_02007768(v0->unk_10.unk_04);
         ov11_0221F8F0();
-        sub_0200C7EC(v0->unk_10.unk_1C);
-        sub_0200C808();
+        SpriteSystem_DrawSprites(v0->unk_10.unk_1C);
+        SpriteSystem_UpdateTransfer();
         G3_SwapBuffers(GX_SORTMODE_MANUAL, GX_BUFFERMODE_Z);
     }
 
@@ -612,8 +609,8 @@ static void ov17_0224FE68(UnkStruct_ov17_0224FCA0 *param0)
 
 static void ov17_0224FE70(UnkStruct_ov17_0224FCA0 *param0)
 {
-    Graphics_LoadTilesToBgLayer(45, 19, param0->unk_10.unk_20, 4, 0, 0, 1, 24);
-    Graphics_LoadTilemapToBgLayer(45, 20, param0->unk_10.unk_20, 4, 0, 0, 1, 24);
+    Graphics_LoadTilesToBgLayer(45, 19, param0->unk_10.unk_20, 4, 0, 0, 1, HEAP_ID_24);
+    Graphics_LoadTilemapToBgLayer(45, 20, param0->unk_10.unk_20, 4, 0, 0, 1, HEAP_ID_24);
     PaletteData_LoadBufferFromFileStart(param0->unk_10.unk_C0, 45, 34, 24, 1, 0, 0);
 }
 

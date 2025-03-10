@@ -5,7 +5,7 @@
     ScriptEntry _000E
     ScriptEntry _0010
     ScriptEntry _0025
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     End
@@ -21,7 +21,7 @@ _001F:
 _0025:
     LockAll
     Call _008E
-    ScrCmd_1B7 0x800C, 4
+    GetRandom 0x800C, 4
     SetVar 0x8008, 0x800C
     GoToIfEq 0x8008, 1, _00F0
     GoToIfEq 0x8008, 2, _010A
@@ -44,7 +44,7 @@ _008E:
     ApplyMovement 0, _0140
     WaitMovement
     ScrCmd_1B1 0xFF
-    ApplyMovement 0xFF, _014C
+    ApplyMovement LOCALID_PLAYER, _014C
     WaitMovement
     ScrCmd_16C 77
     ScrCmd_169 77
@@ -74,28 +74,28 @@ _008E:
 
 _00D6:
     ApplyMovement 0, _0178
-    ApplyMovement 0xFF, _0188
+    ApplyMovement LOCALID_PLAYER, _0188
     WaitMovement
     GoTo _0066
     End
 
 _00F0:
     ApplyMovement 0, _019C
-    ApplyMovement 0xFF, _01AC
+    ApplyMovement LOCALID_PLAYER, _01AC
     WaitMovement
     GoTo _0066
     End
 
 _010A:
     ApplyMovement 0, _01C0
-    ApplyMovement 0xFF, _01D0
+    ApplyMovement LOCALID_PLAYER, _01D0
     WaitMovement
     GoTo _0066
     End
 
 _0124:
     ApplyMovement 0, _01E4
-    ApplyMovement 0xFF, _01F4
+    ApplyMovement LOCALID_PLAYER, _01F4
     WaitMovement
     GoTo _0066
 
@@ -106,13 +106,13 @@ _0124:
 
     .balign 4, 0
 _0140:
-    MoveAction_00D 3
+    MoveAction_013 3
     MoveAction_000
     EndMovement
 
     .balign 4, 0
 _014C:
-    MoveAction_00D 2
+    MoveAction_013 2
     EndMovement
 
     .byte 0
@@ -154,60 +154,60 @@ _014C:
 
     .balign 4, 0
 _0178:
-    MoveAction_00F 4
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_015 4
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _0188:
-    MoveAction_00D
-    MoveAction_00F 4
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_013
+    MoveAction_015 4
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _019C:
-    MoveAction_00F 8
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_015 8
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _01AC:
-    MoveAction_00D
-    MoveAction_00F 8
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_013
+    MoveAction_015 8
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _01C0:
-    MoveAction_00F 12
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_015 12
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _01D0:
-    MoveAction_00D
-    MoveAction_00F 12
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_013
+    MoveAction_015 12
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _01E4:
-    MoveAction_00F 16
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_015 16
+    MoveAction_012 2
+    MoveAction_069
     EndMovement
 
     .balign 4, 0
 _01F4:
-    MoveAction_00D
-    MoveAction_00F 16
-    MoveAction_00C 2
-    MoveAction_045
+    MoveAction_013
+    MoveAction_015 16
+    MoveAction_012 2
+    MoveAction_069
     EndMovement

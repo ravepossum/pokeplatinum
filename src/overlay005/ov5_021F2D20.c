@@ -88,9 +88,7 @@ const UnkStruct_020217F4 Unk_ov5_02200570[];
 
 void *ov5_021F2D20(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_ov5_021F2D20 *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F2D20)), 0, 0);
+    UnkStruct_ov5_021F2D20 *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F2D20)), 0, 0);
     v0->unk_00 = param0;
 
     ov5_021F2D4C(v0);
@@ -158,15 +156,15 @@ void ov5_021F2EA4(MapObject *param0, int param1)
 
     v3 = ov5_021DF578(param0);
 
-    v2.unk_00 = MapObject_GetXPos(param0);
-    v2.unk_04 = MapObject_GetYPos(param0);
-    v2.unk_08 = MapObject_GetZPos(param0);
+    v2.unk_00 = MapObject_GetX(param0);
+    v2.unk_04 = MapObject_GetY(param0);
+    v2.unk_08 = MapObject_GetZ(param0);
     v2.unk_10 = v3;
     v2.fieldSystem = ov5_021DF574(v3);
     v2.unk_14 = ov5_021DF55C(v3, 19);
     v2.unk_18 = param0;
 
-    MapObject_PosVectorOut(param0, &v1);
+    MapObject_GetPosPtr(param0, &v1);
 
     v0 = sub_02062758(param0, 2);
     v4 = ov5_021DF72C(v3, &Unk_ov5_022004EC, &v1, param1, &v2, v0);
@@ -184,12 +182,12 @@ static int ov5_021F2F0C(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
     v3->unk_18 = *v4;
     v3->unk_04 = sub_02062924(v3->unk_18.unk_18);
-    v3->unk_08 = MapObject_Id(v3->unk_18.unk_18);
+    v3->unk_08 = MapObject_GetLocalID(v3->unk_18.unk_18);
     v3->unk_0C = sub_02062918(v3->unk_18.unk_18);
 
     v2.x = (((v3->unk_18.unk_00) << 4) * FX32_ONE);
     v2.z = (((v3->unk_18.unk_08) << 4) * FX32_ONE);
-    v2.y = sub_02063074(v3->unk_18.unk_18);
+    v2.y = MapObject_GetPosY(v3->unk_18.unk_18);
     v3->unk_14 = sub_020644A4(v3->unk_18.fieldSystem, &v2);
 
     v2.x += ((16 * FX32_ONE) >> 1);
@@ -208,9 +206,7 @@ static int ov5_021F2F0C(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
 static void ov5_021F2FA0(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
-    UnkStruct_021F2FA0 *v0;
-
-    v0 = param1;
+    UnkStruct_021F2FA0 *v0 = param1;
     sub_020211FC(v0->unk_34);
 }
 
@@ -266,8 +262,8 @@ static void ov5_021F2FAC(UnkStruct_ov101_021D5D90 *param0, void *param1)
         {
             int v5, v6;
 
-            v5 = MapObject_GetXPos(v2);
-            v6 = MapObject_GetZPos(v2);
+            v5 = MapObject_GetX(v2);
+            v6 = MapObject_GetZ(v2);
 
             if ((v1->unk_18.unk_00 != v5) || (v1->unk_18.unk_08 != v6)) {
                 ov5_021DF74C(param0);
@@ -334,18 +330,14 @@ static int ov5_021F30C4(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
 static void ov5_021F30FC(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
-    UnkStruct_021F30FC *v0;
-
-    v0 = param1;
+    UnkStruct_021F30FC *v0 = param1;
     sub_020211FC(v0->unk_1C);
 }
 
 static void ov5_021F3108(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
     int v0;
-    UnkStruct_021F30FC *v1;
-
-    v1 = param1;
+    UnkStruct_021F30FC *v1 = param1;
 
     switch (v1->unk_00) {
     case 0:
@@ -365,9 +357,7 @@ static void ov5_021F3108(UnkStruct_ov101_021D5D90 *param0, void *param1)
 static void ov5_021F313C(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
     VecFx32 v0;
-    UnkStruct_021F30FC *v1;
-
-    v1 = param1;
+    UnkStruct_021F30FC *v1 = param1;
     sub_020715E4(param0, &v0);
     sub_020212A8(v1->unk_1C, &v0);
 }
@@ -422,9 +412,7 @@ UnkStruct_ov101_021D5D90 *ov5_021F3154(FieldSystem *fieldSystem, int param1, int
 
 int ov5_021F31A8(UnkStruct_ov101_021D5D90 *param0)
 {
-    UnkStruct_021F31A8 *v0;
-
-    v0 = sub_02071598(param0);
+    UnkStruct_021F31A8 *v0 = sub_02071598(param0);
     return v0->unk_04;
 }
 
@@ -467,18 +455,14 @@ static int ov5_021F31B4(UnkStruct_ov101_021D5D90 *param0, void *param1)
 
 static void ov5_021F3238(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
-    UnkStruct_021F31A8 *v0;
-
-    v0 = param1;
+    UnkStruct_021F31A8 *v0 = param1;
     sub_020211FC(v0->unk_24);
 }
 
 static void ov5_021F3244(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
     int v0;
-    UnkStruct_021F31A8 *v1;
-
-    v1 = param1;
+    UnkStruct_021F31A8 *v1 = param1;
 
     switch (v1->unk_00) {
     case 0:
@@ -495,9 +479,7 @@ static void ov5_021F3244(UnkStruct_ov101_021D5D90 *param0, void *param1)
 static void ov5_021F326C(UnkStruct_ov101_021D5D90 *param0, void *param1)
 {
     VecFx32 v0;
-    UnkStruct_021F31A8 *v1;
-
-    v1 = param1;
+    UnkStruct_021F31A8 *v1 = param1;
 
     sub_020715E4(param0, &v0);
     sub_020212A8(v1->unk_24, &v0);

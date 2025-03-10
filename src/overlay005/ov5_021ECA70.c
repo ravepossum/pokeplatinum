@@ -60,23 +60,19 @@ void ov5_021ECABC(MapObject *param0)
 
 void ov5_021ECAC4(MapObject *param0)
 {
-    UnkStruct_ov5_021ECB8C *v0;
-
-    v0 = sub_02062AF0(param0);
+    UnkStruct_ov5_021ECB8C *v0 = sub_02062AF0(param0);
 
     if (v0->unk_00 != NULL) {
         ov5_021ED01C(v0->unk_00, &v0->unk_04);
     }
 
     ov5_021ECFA4(param0, &v0->unk_00);
-    MapObject_SetStatusFlagOn(param0, (1 << 21));
+    MapObject_SetStatusFlagOn(param0, MAP_OBJ_STATUS_21);
 }
 
 void ov5_021ECAF0(MapObject *param0)
 {
-    UnkStruct_ov5_021ECB8C *v0;
-
-    v0 = sub_02062AF0(param0);
+    UnkStruct_ov5_021ECB8C *v0 = sub_02062AF0(param0);
 
     if (ov5_021EDD94(param0) == 1) {
         return;
@@ -89,7 +85,7 @@ void ov5_021ECAF0(MapObject *param0)
     if (v0->unk_00 != NULL) {
         ov5_021ED03C(v0->unk_00, &v0->unk_04);
         ov5_021EDEB4(param0, v0->unk_00);
-        MapObject_SetStatusFlagOff(param0, (1 << 21));
+        MapObject_SetStatusFlagOff(param0, MAP_OBJ_STATUS_21);
     }
 }
 
@@ -140,9 +136,7 @@ UnkStruct_020216E0 *ov5_021ECB8C(UnkStruct_ov5_021ECB8C *param0)
 
 static void ov5_021ECB90(MapObject *param0)
 {
-    UnkStruct_ov5_021ECB8C *v0;
-
-    v0 = sub_02062ACC(param0, (sizeof(UnkStruct_ov5_021ECB8C)));
+    UnkStruct_ov5_021ECB8C *v0 = sub_02062ACC(param0, (sizeof(UnkStruct_ov5_021ECB8C)));
 
     ov5_021ECF04(param0, &v0->unk_00);
 }
@@ -161,12 +155,12 @@ static void ov5_021ECBCC(MapObject *param0, UnkStruct_020216E0 *param1)
 {
     int v0 = 1;
 
-    if (MapObject_GetStateFlag(param0, (1 << 9)) == 1) {
+    if (MapObject_CheckStatusFlag(param0, MAP_OBJ_STATUS_HIDE) == 1) {
         v0 = 0;
     }
 
-    if (MapObject_GetStateFlag(param0, (1 << 12)) == 1) {
-        if (MapObject_GetStateFlag(param0, (1 << 13)) == 0) {
+    if (MapObject_CheckStatusFlag(param0, MAP_OBJ_STATUS_12) == 1) {
+        if (!MapObject_CheckStatusFlag(param0, MAP_OBJ_STATUS_13)) {
             v0 = 0;
         }
     }
@@ -176,8 +170,6 @@ static void ov5_021ECBCC(MapObject *param0, UnkStruct_020216E0 *param1)
 
 static void ov5_021ECC0C(MapObject *param0)
 {
-    UnkStruct_ov5_021ECB8C *v0;
-
-    v0 = sub_02062AF0(param0);
+    UnkStruct_ov5_021ECB8C *v0 = sub_02062AF0(param0);
     ov5_021ECFA4(param0, &v0->unk_00);
 }

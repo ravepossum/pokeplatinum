@@ -4,7 +4,7 @@
 
     ScriptEntry _000A
     ScriptEntry _002E
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     ScrCmd_292 25, 0x4000
@@ -22,18 +22,18 @@ _002E:
     ApplyMovement 1, _004C
     WaitMovement
     SetFlag 0x27C
-    ScrCmd_065 1
+    RemoveObject 1
     SetVar 0x4111, 0
     ReleaseAll
     End
 
     .balign 4, 0
 _004C:
-    MoveAction_041
+    MoveAction_065
     MoveAction_001
-    MoveAction_041
-    MoveAction_049
-    MoveAction_00D 2
-    MoveAction_04A
-    MoveAction_045
+    MoveAction_065
+    MoveAction_073
+    MoveAction_013 2
+    MoveAction_074
+    MoveAction_069
     EndMovement

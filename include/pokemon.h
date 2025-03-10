@@ -3,25 +3,24 @@
 
 #include <nitro/rtc.h>
 
-#include "constants/moves.h"
+#include "constants/pokemon.h"
 #include "constants/sound.h"
-#include "constants/string.h"
 
-#include "struct_decls/cell_actor_data.h"
 #include "struct_decls/pokemon_animation_sys_decl.h"
-#include "struct_decls/sprite_decl.h"
-#include "struct_decls/struct_0200C6E4_decl.h"
-#include "struct_decls/struct_0200C704_decl.h"
 #include "struct_decls/struct_02078B40_decl.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/archived_sprite.h"
 #include "struct_defs/chatot_cry.h"
+#include "struct_defs/pokemon.h"
+#include "struct_defs/pokemon_sprite.h"
+#include "struct_defs/species.h"
 #include "struct_defs/sprite_animation_frame.h"
 
 #include "overlay005/struct_ov5_021DE5D0.h"
 
 #include "narc.h"
 #include "palette.h"
+#include "party.h"
+#include "sprite_system.h"
 #include "string.h"
 #include "trainer_info.h"
 
@@ -32,197 +31,14 @@
 #define FACE_BACK  0
 #define FACE_FRONT 2
 
-/**
- * @brief Pokemon Personal data structure. This contains data that is the same across all pokemon of the same species/form
- */
-typedef struct PokemonPersonalData {
-    u8 baseHp; //!< The pokemons base HP stat
-    u8 baseAtk; //!< The pokemons base Attack stat
-    u8 baseDef; //!< The pokemons base Defense stat
-    u8 baseSpeed; //!< The pokemons base Speed stat
-    u8 baseSpAtk; //!< The pokemons base Special Attack stat
-    u8 baseSpDef; //!< The pokemons base Special Defense stat
-    u8 type1; //!< The pokemons first type
-    u8 type2; //!< The pokemons second type
-    u8 catchRate; //!< The pokemons catch rate
-    u8 baseExp; //!< A factor in determining experience yield when defeating this pokemon
-    u16 evHpYield : 2; //!< How many HP EVs will be gained when defeating this pokemon
-    u16 evAtkYield : 2; //!< How many Attack EVs will be gained when defeating this pokemon
-    u16 evDefYield : 2; //!< How many Defense EVs will be gained when defeating this pokemon
-    u16 evSpeedYield : 2; //!< How many Speed EVs will be gained when defeating this pokemon
-    u16 evSpAtkYield : 2; //!< How many Special Attack EVs will be gained when defeating this pokemon
-    u16 evSpDefYield : 2; //!< How many Special Defense EVs will be gained when defeating this pokemon
-    // u16 padding : 4;
+#define INIT_IVS_RANDOM 32
 
-    u16 item1; //!< Common held item when this pokemon is encountered in the wild
-    u16 item2; //!< Rare held item when this pokemon is encountered in the wild
-    u8 gender; //!< The pokemons gender ratio, except for special values, a higher value will result in more females and a lower value will result in more males appearing
-    u8 hatchCycles; //!< How long eggs of this pokemon will take to hatch. In Gen.IV One cycle is 255 steps
-    u8 baseFriendship; //!< The pokemons base Friendship stat
-    u8 expRate; //!< The experience rate category of the pokemon. This sets which formula is used to determine the pokemons level based on its experience
-    u8 eggGroup1; //!< The pokemons first egg group
-    u8 eggGroup2; //!< The pokemons second egg group
-    u8 ability1; //!< The pokemons first possible ability
-    u8 ability2; //!< The pokemons second possible ability
-    u8 greatMarshFleeRate; //!< The pokemons base flee rate in the Great Marsh safari zone
-    u8 color : 7; //!< The pokemons color category
-    u8 flipSprite : 1;
-    // u16 padding;
-
-    u32 tmLearnsetMask1; //!< Bitflags for whether this pokemon can learn a TM (TM1 -> TM32)
-    u32 tmLearnsetMask2; //!< Bitflags for whether this pokemon can learn a TM (TM33 -> TM64)
-    u32 tmLearnsetMask3; //!< Bitflags for whether this pokemon can learn a TM (TM65 -> TM92, HM1 -> HM4)
-    u32 tmLearnsetMask4; //!< Bitflags for whether this pokemon can learn a TM (HM5 -> HM8, rest unused)
-} PokemonPersonalData;
-
-/**
- * @brief Block A of the BoxPokemon data structure
- */
-typedef struct PokemonDataBlockA {
-    u16 species; //!< The Pokemon's species; their National Pokedex number.
-    u16 heldItem; //!< The Pokemon's held item.
-
-    u32 otID; //!< The ID of the Pokemon's original trainer (who caught/hatched it).
-    u32 exp; //!< The Pokemon's current total EXP value. Level is computed from this value according to the species' EXP curve.
-
-    u8 friendship; //!< The Pokemon's current friendship value; affects certain evolutions and the power of Return and Frustration.
-    u8 ability; //!< The Pokemon's ability. See enum Ability for definitions.
-    u8 marks; //!< A bitmask of marks applied to the Pokemon, e.g. Circle, Square, Star.
-    u8 originLanguage; //!< The language of the Pokemon's originating game.
-
-    u8 hpEV; //!< The Pokemon's current HP EVs.
-    u8 atkEV; //!< The Pokemon's current Attack EVs.
-    u8 defEV; //!< The Pokemon's current Defense EVs.
-    u8 speedEV; //!< The Pokemon's current Speed EVs.
-    u8 spAtkEV; //!< The Pokemon's current Special Attack EVs.
-    u8 spDefEV; //!< The Pokemon's current Special Defense EVs.
-
-    u8 cool; //!< The Pokemon's current Cool stat.
-    u8 beauty; //!< The Pokemon's current Beauty stat.
-    u8 cute; //!< The Pokemon's current Cute stat.
-    u8 smart; //!< The Pokemon's current Smart stat.
-    u8 tough; //!< The Pokemon's current Tough stat.
-    u8 sheen; //!< The Pokemon's current Sheen. Effectively controls the maximum number of Poffins that can be eaten.
-
-    u32 sinnohRibbons; //!< A bitmask of ribbons earned by the Pokemon from the Sinnoh-era games.
-} PokemonDataBlockA;
-
-/**
- * @brief Block B of the BoxPokemon data structure
- */
-typedef struct PokemonDataBlockB {
-    u16 moves[LEARNED_MOVES_MAX]; //!< List of moves currently known by the Pokemon.
-    u8 moveCurrentPPs[LEARNED_MOVES_MAX]; //!< The current PP of each of the Pokemon's moves.
-    u8 movePPUps[LEARNED_MOVES_MAX]; //!< The number of PP Ups applied to each of the Pokemon's moves.
-
-    u32 hpIV : 5; //!< The Pokemon's HP IV.
-    u32 atkIV : 5; //!< The Pokemon's Attack IV.
-    u32 defIV : 5; //!< The Pokemon's Defense IV.
-    u32 speedIV : 5; //!< The Pokemon's Speed IV.
-    u32 spAtkIV : 5; //!< The Pokemon's Special Attack IV.
-    u32 spDefIV : 5; //!< The Pokemon's Special Defense IV.
-    u32 isEgg : 1; //!< Whether or not the Pokemon is an egg.
-    u32 hasNickname : 1; //!< Whether or not the Pokemon has a nickname.
-
-    u32 hoennRibbons; //!< A bitmask of ribbons earned by the Pokemon from the Hoenn-era games.
-
-    u8 fatefulEncounter : 1; //!< Whether or not the Pokemon is a Fateful Encounter (i.e., received via out-of-game event).
-    u8 gender : 2; //!< The Pokemon's gender; should only ever be 0, 1, or 2. See enum Gender.
-    u8 form : 5; //!< The Pokemon's form.
-    u8 dummy_19; //!< Unused space.
-    u16 dummy_1A; //!< Unused space.
-
-    u16 fatefulMetLocation; //!< Met location for a Fateful Encounter.
-    u16 fatefulHatchLocation; //!< Hatch location for a Fateful Encounter.
-} PokemonDataBlockB;
-
-/**
- * @brief Block C of the BoxPokemon data structure
- */
-typedef struct PokemonDataBlockC {
-    charcode_t nickname[MON_NAME_LEN + 1]; //!< The Pokemon's nickname.
-
-    u8 originCode; //!< The region code for the Pokemon's originating game.
-    u8 originGame; //!< The game code for the Pokemon's originating game.
-
-    u64 contestRibbons; //!< A bitmask of ribbons given to the Pokemon from Sinnoh's Super Contests.
-} PokemonDataBlockC;
-
-/**
- * @brief Block D of the BoxPokemon data structure
- */
-typedef struct PokemonDataBlockD {
-    u16 otName[TRAINER_NAME_LEN + 1]; //!< The name of the Pokemon's original trainer (who caught/hatched it).
-
-    u8 metYear; //!< The year in which the Pokemon was first met.
-    u8 metMonth; //!< The month in which the Pokemon was first met.
-    u8 metDay; //!< The day on which the Pokemon was first met.
-
-    u8 hatchYear; //!< The year in which the Pokemon was hatched.
-    u8 hatchMonth; //!< The month in which the Pokemon was hatched.
-    u8 hatchDay; //!< The day on which the Pokemon was hatched.
-
-    u16 metLocation; //!< The Pokemon's met location.
-    u16 hatchLocation; //!< The Pokemon's hatched location.
-
-    u8 pokerus; //!< The Pokemon's Pokerus value.
-    u8 pokeball; //!< The Pokemon's Pokeball ID.
-    u8 metLevel : 7; //!< The level at which this Pokemon was first met.
-    u8 otGender : 1; //!< The gender of the Pokemon's original trainer; 0 for male, 1 for female.
-    u8 metTerrain; //!< The terrain ID of the location where the Pokemon was first met. Used by Burmy for its aesthetic forms.
-    u16 dummy_1E; //!< Unused space.
-} PokemonDataBlockD;
-
-typedef union {
-    PokemonDataBlockA blockA;
-    PokemonDataBlockB blockB;
-    PokemonDataBlockC blockC;
-    PokemonDataBlockD blockD;
-} PokemonDataBlock;
-
-/**
- * @brief Boxed Pokemon data structure
- */
-typedef struct BoxPokemon {
-    u32 personality; //!< The Pokemon's personality value (or PID).
-    u16 partyDecrypted : 1; //!< Whether the Pokemon's party data is currently decrypted.
-    u16 boxDecrypted : 1; //!< Whether the Pokemon's boxed data is currently decrypted.
-    u16 invalidData : 1; //!< Whether the Pokemon's data is invalid. If set to 1, this Pokemon will appear in-game as a Bad Egg.
-    u16 padding_04_3 : 13; //!< Leftover padding-space.
-    u16 checksum; //!< Checksum for the Pokemon's data blocks.
-    PokemonDataBlock dataBlocks[4]; //!< Data blocks containing the Pokemon's boxed data, stored encrypted.
-} BoxPokemon;
-
-#include "struct_defs/struct_0202818C.h"
-#include "struct_defs/struct_0202CA28.h"
-
-/**
- * @brief Party Pokemon data structure
- *  This is used to store stats for a pokemon while it is in the players party.
- *  Rather than recalculating stats after each battle, they're stored here.
- */
-typedef struct PartyPokemon {
-    u32 status; //!< The Pokemon's current status condition.
-    u8 level; //!< The Pokemon's current level, as computed from its total EXP value and its species' level curve.
-    u8 mail; //!< The ID of the mail the Pokemon is holding.
-    u16 hp; //!< The Pokemon's current HP.
-    u16 maxHP; //!< The Pokemon's maximum HP.
-    u16 attack; //!< The Pokemon's Attack stat.
-    u16 defense; //!< The Pokemon's Defense stat.
-    u16 speed; //!< The Pokemon's Speed stat.
-    u16 spAtk; //!< The Pokemon's Special Attack stat.
-    u16 spDef; //!< The Pokemon's Special Defense stat.
-    UnkStruct_0202818C unk_14;
-    UnkStruct_0202CA28 unk_4C;
-} PartyPokemon;
-
-/**
- * @brief The main Pokemon data structure
- */
-typedef struct Pokemon {
-    BoxPokemon box; //!< Contains the pokemons boxed data
-    PartyPokemon party; //!< Contains the pokemons extra data while it is in the players party
-} Pokemon;
+enum EvolutionClass {
+    EVO_CLASS_BY_LEVEL = 0,
+    EVO_CLASS_BY_TRADE,
+    EVO_CLASS_UNUSED_02,
+    EVO_CLASS_BY_ITEM,
+};
 
 /**
  * @brief Zeros out a Pokemon data structure, then encrypts the result
@@ -291,7 +107,7 @@ void Pokemon_InitWith(Pokemon *mon, int monSpecies, int monLevel, int monIVs, BO
 void sub_02074044(Pokemon *mon, u16 monSpecies, u8 monLevel, u8 monIVs, u8 monNature);
 void sub_02074088(Pokemon *mon, u16 monSpecies, u8 monLevel, u8 monIVs, u8 param4, u8 param5, u8 param6);
 u32 sub_02074128(u16 monSpecies, u8 param1, u8 param2);
-void sub_02074158(Pokemon *mon, u16 monSpecies, u8 monLevel, u32 monCombinedIVs, u32 monPersonality);
+void Pokemon_InitAndCalcStats(Pokemon *mon, u16 monSpecies, u8 monLevel, u32 monCombinedIVs, u32 monPersonality);
 
 /**
  * @brief Calculates and stores the current level and stats for a given Pokemon based on its IVs, EVs etc.
@@ -357,58 +173,58 @@ void BoxPokemon_SetValue(BoxPokemon *boxMon, enum PokemonDataParam param, const 
 void Pokemon_IncreaseValue(Pokemon *mon, enum PokemonDataParam param, int value);
 
 /**
- * @brief Gets a PokemonPersonalData based on a pokemon species and form
+ * @brief Gets a SpeciesData based on a pokemon species and form
  *
  * @param monSpecies
  * @param monForm
- * @param heapID The index of the heap that the PokemonPersonalData should be loaded into
- * @return PokemonPersonalData*
+ * @param heapID The index of the heap that the SpeciesData should be loaded into
+ * @return SpeciesData*
  */
-PokemonPersonalData *PokemonPersonalData_FromMonForm(int monSpecies, int monForm, int heapID);
+SpeciesData *SpeciesData_FromMonForm(int monSpecies, int monForm, int heapID);
 
 /**
- * @brief Gets a PokemonPersonalData based on a pokemon species
+ * @brief Gets a SpeciesData based on a pokemon species
  *
  * @param monSpecies
- * @param heapID The index of the heap that the PokemonPersonalData should be loaded into
- * @return PokemonPersonalData*
+ * @param heapID The index of the heap that the SpeciesData should be loaded into
+ * @return SpeciesData*
  */
-PokemonPersonalData *PokemonPersonalData_FromMonSpecies(int monSpecies, int heapID);
+SpeciesData *SpeciesData_FromMonSpecies(int monSpecies, int heapID);
 
 /**
- * @brief Gets a value from a PokemonPersonalData structure
+ * @brief Gets a value from a SpeciesData structure
  *
- * @param monPersonalData
+ * @param speciesData
  * @param param What value to get
  * @return The requested value
  */
-u32 PokemonPersonalData_GetValue(PokemonPersonalData *monPersonalData, enum PokemonPersonalDataParam param);
+u32 SpeciesData_GetValue(SpeciesData *speciesData, enum SpeciesDataParam param);
 
 /**
- * @brief Frees a PokemonPersonalData structure from the heap
+ * @brief Frees a SpeciesData structure from the heap
  *
- * @param monPersonalData
+ * @param speciesData
  */
-void PokemonPersonalData_Free(PokemonPersonalData *monPersonalData);
+void SpeciesData_Free(SpeciesData *speciesData);
 
 /**
- * @brief Loads a PokemonPersonalData based on its species and form and gets a value from it
+ * @brief Loads a SpeciesData based on its species and form and gets a value from it
  *
  * @param monSpecies
  * @param monForm
  * @param param What value to get
  * @return The requested value
  */
-u32 PokemonPersonalData_GetFormValue(int monSpecies, int monForm, enum PokemonPersonalDataParam param);
+u32 SpeciesData_GetFormValue(int monSpecies, int monForm, enum SpeciesDataParam param);
 
 /**
- * @brief Loads a PokemonPersonalData based on its species and gets a value from it
+ * @brief Loads a SpeciesData based on its species and gets a value from it
  *
  * @param monSpecies
  * @param param What value to get
  * @return The requested value
  */
-u32 PokemonPersonalData_GetSpeciesValue(int monSpecies, enum PokemonPersonalDataParam param);
+u32 SpeciesData_GetSpeciesValue(int monSpecies, enum SpeciesDataParam param);
 
 /**
  * @brief Gets how much progress a Pokemon has made towards its next level as a percentage
@@ -471,12 +287,12 @@ u32 Pokemon_GetSpeciesLevelAt(u16 monSpecies, u32 monExp);
 /**
  * @brief Gets the level of a pokemon based on its personal data and exp
  *
- * @param monPersonalData
+ * @param speciesData
  * @param unused_monSpecies unused
  * @param monExp
  * @return The pokemons level
  */
-u32 PokemonPersonalData_GetLevelAt(PokemonPersonalData *monPersonalData, u16 unused_monSpecies, u32 monExp);
+u32 SpeciesData_GetLevelAt(SpeciesData *speciesData, u16 unused_monSpecies, u32 monExp);
 
 /**
  * @brief Gets the nature of a Pokemon based on its personality value
@@ -539,14 +355,14 @@ u8 BoxPokemon_GetGender(BoxPokemon *boxMon);
 u8 Pokemon_GetGenderOf(u16 monSpecies, u32 monPersonality);
 
 /**
- * @brief Gets the gender of a pokemon based on its PokemonPersonalData and personality value
+ * @brief Gets the gender of a pokemon based on its SpeciesData and personality value
  *
- * @param monPersonalData
+ * @param speciesData
  * @param unused_monSpecies unused
  * @param monPersonality
  * @return The pokemons gender
  */
-u8 PokemonPersonalData_GetGenderOf(PokemonPersonalData *monPersonalData, u16 unused_monSpecies, u32 monPersonality);
+u8 SpeciesData_GetGenderOf(SpeciesData *speciesData, u16 unused_monSpecies, u32 monPersonality);
 
 /**
  * @brief Gets whether a BoxPokemon is shiny based on its Original Trainer ID and its personality value
@@ -666,7 +482,7 @@ u8 BoxPokemon_SpriteYOffset(BoxPokemon *boxMon, u8 face, BOOL preferDP);
  */
 u8 LoadPokemonSpriteYOffset(u16 species, u8 gender, u8 face, u8 form, u32 personality);
 void sub_0207697C(ArchivedSprite *param0, u16 param1);
-CellActorData *sub_02076994(SpriteRenderer *param0, SpriteGfxHandler *param1, PaletteData *param2, int param3, int param4, int param5, int param6, int param7, int heapID);
+ManagedSprite *sub_02076994(SpriteSystem *param0, SpriteManager *param1, PaletteData *param2, int param3, int param4, int param5, int param6, int param7, int heapID);
 void sub_02076AAC(int param0, int param1, UnkStruct_ov5_021DE5D0 *param2);
 
 /**
@@ -708,7 +524,7 @@ u8 BoxPokemon_GetForm(BoxPokemon *boxMon);
 BoxPokemon *Pokemon_GetBoxPokemon(Pokemon *mon);
 
 BOOL Pokemon_ShouldLevelUp(Pokemon *mon);
-u16 sub_02076B94(Party *party, Pokemon *mon, u8 evoTypeList, u16 evoParam, int *evoTypeResult);
+u16 Pokemon_GetEvolutionTargetSpecies(Party *party, Pokemon *mon, u8 evoClass, u16 evoParam, int *evoTypeResult);
 u16 sub_02076F84(const u16 monSpecies);
 u16 sub_02076FD4(const u16 monSpecies);
 
@@ -963,7 +779,7 @@ void Pokemon_LoadLevelUpMovesOf(int monSpecies, int monForm, u16 *monLevelUpMove
  *
  * @param chatotCry             Chatot cry data from the save block. Only used
  *                              if the Pokemon itself is Chatot.
- * @param crymod                Modification to apply to the Pokemon's cry.
+ * @param cryMod                Modification to apply to the Pokemon's cry.
  * @param species
  * @param form
  * @param pan
@@ -971,7 +787,7 @@ void Pokemon_LoadLevelUpMovesOf(int monSpecies, int monForm, u16 *monLevelUpMove
  * @param forceDefaultChatot    If TRUE, force usage of Chatot's default cry.
  * @param heapID
  */
-void Pokemon_PlayCry(ChatotCry *chatotCry, enum PokemonCryMod crymod, u16 species, int form, int pan, int volume, int forceDefaultChatot, int heapID);
+void Pokemon_PlayCry(ChatotCry *chatotCry, enum PokemonCryMod cryMod, u16 species, int form, int pan, int volume, int forceDefaultChatot, int heapID);
 
 /**
  * @brief Play a Pokemon's cry, according to the given species and form number.
@@ -989,9 +805,9 @@ void Pokemon_PlayCry(ChatotCry *chatotCry, enum PokemonCryMod crymod, u16 specie
  */
 void Pokemon_PlayDelayedCry(ChatotCry *chatotCry, enum PokemonCryMod crymod, u16 species, int form, int pan, int volume, int forceDefaultChatot, int heapID, u8 delay);
 BOOL Pokemon_IsEligibleForAction(Pokemon *mon);
-void Pokemon_SetCatchData(Pokemon *mon, TrainerInfo *param1, int monPokeball, int param3, int param4, int param5);
+void Pokemon_SetCatchData(Pokemon *mon, TrainerInfo *trainerInfo, int monPokeball, int metLocation, int metTerrain, enum HeapId heapId);
 void Pokemon_UpdateAfterCatch(Pokemon *mon, TrainerInfo *param1, int monPokeball, int param3, int param4, int param5);
-void Pokemon_GiveHeldItem(Pokemon *mon, u32 param1, int param2);
+void Pokemon_GiveHeldItem(Pokemon *mon, u32 battleType, int itemRates);
 BOOL Pokemon_CanLearnTM(Pokemon *mon, u8 tmID);
 BOOL CanPokemonFormLearnTM(u16 monSpecies, int monForm, u8 tmID);
 
@@ -1010,7 +826,7 @@ BOOL sub_02078838(Pokemon *mon);
 BOOL sub_0207884C(BoxPokemon *boxMon, TrainerInfo *param1, int heapID);
 int sub_020788D0(int param0);
 void sub_0207893C(Pokemon *mon);
-void sub_0207896C(BoxPokemon *boxMon);
+void BoxPokemon_RestorePP(BoxPokemon *boxMon);
 
 /**
  * @brief Load the animation frames for a given species and a client type
@@ -1034,7 +850,7 @@ void PokeSprite_LoadAnimationFrames(NARC *narc, SpriteAnimationFrame *frames, u1
  * @param reverse       If TRUE, reverse the sprite + animation
  * @param frame         Which frame of the animation to initialize
  */
-void PokeSprite_LoadAnimation(NARC *narc, PokemonAnimationSys *animationSys, Sprite *sprite, u16 species, int face, int reverse, int frame);
+void PokeSprite_LoadAnimation(NARC *narc, PokemonAnimationSys *animationSys, PokemonSprite *sprite, u16 species, int face, int reverse, int frame);
 
 /**
  * @brief Load the cry delay for a given species and a client type.

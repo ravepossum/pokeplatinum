@@ -3,17 +3,17 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_020797DC_decl.h"
+#include "struct_decls/pc_boxes_decl.h"
 
 #include "overlay019/ov19_021D0D80.h"
+#include "overlay019/pc_mon_preview.h"
 #include "overlay019/struct_ov19_021D4DF0.h"
-#include "overlay019/struct_ov19_021D5BAC.h"
 #include "overlay019/struct_ov19_021DF964.h"
 
-#include "core_sys.h"
 #include "enums.h"
+#include "pc_boxes.h"
+#include "system.h"
 #include "unk_02005474.h"
-#include "unk_020797C8.h"
 
 static void ov19_021DFCF8(UnkStruct_ov19_021DF964 *param0);
 static void ov19_021DFD08(UnkStruct_ov19_021DF964 *param0, UnkEnum_021DFB94 param1);
@@ -49,9 +49,9 @@ void ov19_021DF990(UnkStruct_ov19_021D4DF0 *param0)
         ov19_021DFD08(v0, UnkEnum_021DFB94_37);
 
         {
-            const UnkStruct_ov19_021D5BAC *v1 = ov19_021D5E70(param0);
+            const PCMonPreview *preview = ov19_GetPCMonPreview(param0);
 
-            if (v1->unk_0F == 0) {
+            if (preview->isEgg == FALSE) {
                 ov19_021DFD08(v0, UnkEnum_021DFB94_40);
             }
         }
@@ -90,7 +90,7 @@ void ov19_021DFAD0(UnkStruct_ov19_021D4DF0 *param0)
 
     v0 = &(param0->unk_74);
     v1 = ov19_021D5F7C(param0);
-    v2 = ov19_021D5E74(param0);
+    v2 = ov19_GetPreviewedMonHeldItem(param0);
 
     ov19_021DFCF8(v0);
     v0->unk_23 = 1;
@@ -147,7 +147,7 @@ void ov19_021DFB94(UnkStruct_ov19_021D4DF0 *param0, UnkEnum_021DFB94 param1)
     ov19_021DFD08(v0, UnkEnum_021DFB94_06);
     ov19_021DFD08(v0, UnkEnum_021DFB94_07);
 
-    v2 = sub_02079D20(v1);
+    v2 = PCBoxes_CountUnlockedWallpapers(v1);
 
     if (v2 > 0) {
         ov19_021DFD08(v0, UnkEnum_021DFB94_08);
@@ -195,7 +195,7 @@ void ov19_021DFC04(UnkStruct_ov19_021D4DF0 *param0, UnkEnum_021DFB94 param1)
         }
 
         for (v3 = 0; v3 < 8; v3++) {
-            if (sub_02079CFC(v2, v3)) {
+            if (PCBoxes_CheckHasUnlockedWallpaper(v2, v3)) {
                 if (v4) {
                     v4--;
                 } else {
@@ -219,7 +219,7 @@ void ov19_021DFC80(UnkStruct_ov19_021D4DF0 *param0)
     ov19_021DFCF8(v0);
 
     v0->unk_23 = 4;
-    v0->unk_22 = param0->unk_4C.unk_0B;
+    v0->unk_22 = param0->pcMonPreview.markings;
 
     ov19_021DFD08(v0, UnkEnum_021DFB94_56);
     ov19_021DFD08(v0, UnkEnum_021DFB94_57);
@@ -254,7 +254,7 @@ int ov19_021DFD2C(UnkStruct_ov19_021D4DF0 *param0)
 {
     UnkStruct_ov19_021DF964 *v0 = &(param0->unk_74);
 
-    if (gCoreSys.pressedKeys & PAD_KEY_UP) {
+    if (gSystem.pressedKeys & PAD_KEY_UP) {
         if (v0->unk_20) {
             v0->unk_20--;
             return -2;
@@ -264,7 +264,7 @@ int ov19_021DFD2C(UnkStruct_ov19_021D4DF0 *param0)
         }
     }
 
-    if (gCoreSys.pressedKeys & PAD_KEY_DOWN) {
+    if (gSystem.pressedKeys & PAD_KEY_DOWN) {
         if (v0->unk_20 < (v0->unk_21 - 1)) {
             v0->unk_20++;
             return -2;
@@ -274,12 +274,12 @@ int ov19_021DFD2C(UnkStruct_ov19_021D4DF0 *param0)
         }
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    if (gSystem.pressedKeys & PAD_BUTTON_B) {
         Sound_PlayEffect(1501);
         return -1;
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (gSystem.pressedKeys & PAD_BUTTON_A) {
         Sound_PlayEffect(1501);
         return v0->unk_00[v0->unk_20];
     }

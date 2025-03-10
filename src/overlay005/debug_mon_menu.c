@@ -5,35 +5,36 @@
 #include "constants/map_object.h"
 #include "constants/narc.h"
 #include "constants/pokemon.h"
-#include "consts/gender.h"
-#include "consts/items.h"
-#include "consts/moves.h"
-#include "consts/pokemon.h"
-#include "consts/species.h"
+#include "generated/genders.h"
+#include "generated/items.h"
+#include "generated/moves.h"
+#include "generated/species.h"
+#include "generated/text_banks.h"
 
 #include "struct_defs/struct_0203D8AC.h"
 #include "struct_defs/struct_02090800.h"
 
 #include "field/field_system.h"
-#include "gmm/message_bank_unk_0336.h"
 #include "overlay005/debug_menu.h"
 #include "overlay006/ov6_02243258.h"
-#include "text/pl_msg.naix"
 
-#include "core_sys.h"
 #include "field_map_change.h"
 #include "field_system.h"
 #include "message.h"
 #include "move_table.h"
 #include "party.h"
+#include "pc_boxes.h"
 #include "render_window.h"
 #include "strbuf.h"
 #include "sys_task.h"
+#include "system.h"
 #include "text.h"
 #include "unk_0200F174.h"
 #include "unk_0203D1B8.h"
 #include "unk_0206B70C.h"
 #include "unk_02092494.h"
+
+#include "res/text/bank/unk_0336.h"
 
 static void DebugMonMenu_PrintString(Window *window, MessageLoader *msgLoader, u32 entryID, u32 x, u32 y, u32 delay, u32 color);
 static void DebugMonMenu_SetTrainerMemo(DebugMonMenu *monMenu, BOOL playerIsOT);
@@ -611,8 +612,7 @@ static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu)
             return 0;
         }
 
-        // add boxmon
-        sub_02079868(SaveData_PCBoxes(monMenu->sys->saveData), Pokemon_GetBoxPokemon(monMenu->mon.monData));
+        PCBoxes_TryStoreBoxMon(SaveData_PCBoxes(monMenu->sys->saveData), Pokemon_GetBoxPokemon(monMenu->mon.monData));
 
         return 1;
 
@@ -753,7 +753,7 @@ static void DebugMon_CalcFullStats(DebugMonMenu *monMenu, DebugMon *mon)
     Pokemon_SetValue(mon->monData, MON_DATA_POKERUS, &mon->stats[DEBUG_MON_POKERUS]);
     Pokemon_SetValue(mon->monData, MON_DATA_HELD_ITEM, &mon->stats[DEBUG_MON_HELD_ITEM]);
 
-    u32 ability = PokemonPersonalData_GetSpeciesValue(mon->stats[DEBUG_MON_SPECIES], MON_DATA_PERSONAL_ABILITY_1 + mon->stats[DEBUG_MON_ABILITY]);
+    u32 ability = SpeciesData_GetSpeciesValue(mon->stats[DEBUG_MON_SPECIES], SPECIES_DATA_ABILITY_1 + mon->stats[DEBUG_MON_ABILITY]);
     Pokemon_SetValue(mon->monData, MON_DATA_ABILITY, &ability);
 
     Pokemon_SetValue(mon->monData, MON_DATA_FATEFUL_ENCOUNTER, &mon->stats[DEBUG_MON_FATEFUL_ENCOUNTER]);
@@ -868,7 +868,7 @@ static void DebugMon_SetStatsFromMonData(DebugMon *mon)
     mon->stats[DEBUG_MON_HELD_ITEM] = Pokemon_GetValue(mon->monData, MON_DATA_HELD_ITEM, NULL);
     mon->stats[DEBUG_MON_ABILITY] = Pokemon_GetValue(mon->monData, MON_DATA_ABILITY, NULL);
 
-    if (mon->stats[DEBUG_MON_ABILITY] == PokemonPersonalData_GetSpeciesValue(mon->stats[DEBUG_MON_SPECIES], MON_DATA_ABILITY)) {
+    if (mon->stats[DEBUG_MON_ABILITY] == SpeciesData_GetSpeciesValue(mon->stats[DEBUG_MON_SPECIES], SPECIES_DATA_ABILITY_1)) {
         mon->stats[DEBUG_MON_ABILITY] = 0;
     } else {
         mon->stats[DEBUG_MON_ABILITY] = 1;
@@ -952,7 +952,7 @@ static void DebugMon_SetMonDataFromStats(DebugMon *mon)
 
     Pokemon_SetValue(mon->monData, MON_DATA_HELD_ITEM, &mon->stats[DEBUG_MON_HELD_ITEM]);
 
-    int ability = PokemonPersonalData_GetSpeciesValue(mon->stats[DEBUG_MON_SPECIES], MON_DATA_ABILITY + mon->stats[DEBUG_MON_ABILITY]);
+    int ability = SpeciesData_GetSpeciesValue(mon->stats[DEBUG_MON_SPECIES], SPECIES_DATA_ABILITY_1 + mon->stats[DEBUG_MON_ABILITY]);
     Pokemon_SetValue(mon->monData, MON_DATA_ABILITY, &ability);
 
     Pokemon_SetValue(mon->monData, MON_DATA_HP_IV, &mon->stats[DEBUG_MON_HP_IV]);
@@ -1091,7 +1091,7 @@ static u8 DebugMonValue_Display(DebugMonMenu *monMenu, u8 statID, u32 color, u8 
         break;
 
     case DEBUG_MON_ABILITY:
-        StringTemplate_SetAbilityName(monMenu->strTemplate, 0, PokemonPersonalData_GetSpeciesValue(mon->stats[DEBUG_MON_SPECIES], MON_DATA_ABILITY + mon->stats[statID]));
+        StringTemplate_SetAbilityName(monMenu->strTemplate, 0, SpeciesData_GetSpeciesValue(mon->stats[DEBUG_MON_SPECIES], SPECIES_DATA_ABILITY_1 + mon->stats[statID]));
         DebugMonValue_PrintStrExpanded(&monMenu->mainWindow, monMenu->msgLoader, monMenu->strTemplate, dmm_template_ability, 12 + 72 + 24, y, TEXT_SPEED_NO_TRANSFER, color);
         break;
 
@@ -1227,7 +1227,7 @@ static u32 DebugMonValue_GetColor(DebugMon *mon, u8 digit, u32 color)
 
 static void DebugMonValue_PrintSpeciesName(Window *window, u32 species, u32 x, u32 y, u32 delay, u32 color)
 {
-    MessageLoader *msgLoader = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, message_bank_species_names, HEAP_ID_APPLICATION);
+    MessageLoader *msgLoader = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_SPECIES_NAME, HEAP_ID_APPLICATION);
     Strbuf *buf = MessageLoader_GetNewStrbuf(msgLoader, species);
 
     Text_AddPrinterWithParamsAndColor(window, 0, buf, x, y, delay, color, NULL);

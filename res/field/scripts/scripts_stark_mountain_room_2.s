@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/stark_mountain_room_2.h"
 
     .data
 
@@ -8,7 +9,7 @@
     ScriptEntry _021C
     ScriptEntry _022F
     ScriptEntry _001A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001A:
     GoToIfLt 0x4094, 2, _0029
@@ -20,7 +21,7 @@ _0029:
 
 _0031:
     LockAll
-    SetPlayerBike 0
+    SetPlayerBike FALSE
     CallIfUnset 221, _007D
     CallIfSet 221, _00B7
     BufferPlayerName 0
@@ -32,7 +33,7 @@ _0031:
     Message 2
     WaitABXPadPress
     CloseMessage
-    SetVar 0x403F, 0x263
+    SetVar VAR_PARTNER_TRAINER_ID, TRAINER_BUCK_STARK_MOUNTAIN
     SetHasPartner
     ScrCmd_06D 14, 48
     ReleaseAll
@@ -42,14 +43,14 @@ _0031:
     .byte 0
 
 _007D:
-    ScrCmd_186 14, 42, 78
+    SetObjectEventPos 14, 42, 78
     ScrCmd_189 14, 0
     ScrCmd_188 14, 14
     ClearFlag 0x1DA
-    ScrCmd_064 14
+    AddObject 14
     ApplyMovement 14, _00DC
     WaitMovement
-    ApplyMovement 0xFF, _00EC
+    ApplyMovement LOCALID_PLAYER, _00EC
     WaitMovement
     BufferPlayerName 0
     Message 0
@@ -57,7 +58,7 @@ _007D:
     Return
 
 _00B7:
-    ScrCmd_186 14, 42, 68
+    SetObjectEventPos 14, 42, 68
     ScrCmd_189 14, 0
     ScrCmd_188 14, 14
     ApplyMovement 14, _0144
@@ -67,7 +68,7 @@ _00B7:
 
     .balign 4, 0
 _00DC:
-    MoveAction_00C 8
+    MoveAction_012 8
     EndMovement
 
     .byte 12
@@ -81,7 +82,7 @@ _00DC:
 
     .balign 4, 0
 _00EC:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .byte 12
@@ -96,7 +97,7 @@ _00EC:
 _00FC:
     LockAll
     ApplyMovement 14, _014C
-    ApplyMovement 0xFF, _0134
+    ApplyMovement LOCALID_PLAYER, _0134
     WaitMovement
     Message 4
     CloseMessage
@@ -110,43 +111,43 @@ _00FC:
 
     .balign 4, 0
 _0134:
-    MoveAction_020
+    MoveAction_032
     EndMovement
 
     .balign 4, 0
 _013C:
-    MoveAction_00C
+    MoveAction_012
     EndMovement
 
     .balign 4, 0
 _0144:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
     .balign 4, 0
 _014C:
-    MoveAction_021
+    MoveAction_033
     EndMovement
 
 _0154:
     LockAll
     ClearHasPartner
     ScrCmd_06D 14, 15
-    ScrCmd_1BD 0x800C
+    GetPlayerDir 0x800C
     GoToIfEq 0x800C, 0, _0177
     GoTo _0191
     End
 
 _0177:
     ApplyMovement 14, _01F0
-    ApplyMovement 0xFF, _01E4
+    ApplyMovement LOCALID_PLAYER, _01E4
     WaitMovement
     GoTo _01AB
     End
 
 _0191:
     ApplyMovement 14, _01FC
-    ApplyMovement 0xFF, _01E4
+    ApplyMovement LOCALID_PLAYER, _01E4
     WaitMovement
     GoTo _01AB
     End
@@ -161,7 +162,7 @@ _01AB:
     WaitMovement
     WaitFanfare SEQ_SE_CONFIRM
     PlayFanfare SEQ_SE_DP_KAIDAN2
-    ScrCmd_065 14
+    RemoveObject 14
     WaitFanfare SEQ_SE_DP_KAIDAN2
     SetVar 0x4094, 2
     ReleaseAll
@@ -169,31 +170,31 @@ _01AB:
 
     .balign 4, 0
 _01E4:
-    MoveAction_00E
-    MoveAction_023
+    MoveAction_014
+    MoveAction_035
     EndMovement
 
     .balign 4, 0
 _01F0:
-    MoveAction_00C
-    MoveAction_022
+    MoveAction_012
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _01FC:
-    MoveAction_00E
+    MoveAction_014
     EndMovement
 
     .balign 4, 0
 _0204:
-    MoveAction_020
-    MoveAction_03F 2
-    MoveAction_022
+    MoveAction_032
+    MoveAction_063 2
+    MoveAction_034
     EndMovement
 
     .balign 4, 0
 _0214:
-    MoveAction_00C
+    MoveAction_012
     EndMovement
 
 _021C:

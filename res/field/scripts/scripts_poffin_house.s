@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/poffin_house.h"
 
     .data
 
@@ -8,7 +9,7 @@
     ScriptEntry _00A9
     ScriptEntry _002F
     ScriptEntry _001A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001A:
     ScrCmd_238 11, 0x4000
@@ -32,7 +33,7 @@ _0055:
 
 _0066:
     ClearFlag 0x217
-    ScrCmd_064 4
+    AddObject 4
     End
 
 _0070:

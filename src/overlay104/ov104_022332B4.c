@@ -85,9 +85,7 @@ BOOL ov104_022332F4(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_02233310(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223ADA0 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223ADA0 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_022340D0(v0);
 
     return 0;
@@ -110,7 +108,7 @@ BOOL ov104_02233324(UnkStruct_ov104_0222E930 *param0)
     };
 
     v1 = sub_0209B978(param0->unk_00->unk_00);
-    v2 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov104_02234130));
+    v2 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov104_02234130));
 
     MI_CpuClear8(v2, sizeof(UnkStruct_ov104_02234130));
 
@@ -177,7 +175,7 @@ BOOL ov104_022333F8(UnkStruct_ov104_0222E930 *param0)
         v1->unk_4DC[v0] = 0;
     }
 
-    v2 = Heap_AllocFromHeap(11, sizeof(UnkStruct_ov104_02234130));
+    v2 = Heap_AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(UnkStruct_ov104_02234130));
     MI_CpuClear8(v2, sizeof(UnkStruct_ov104_02234130));
 
     v2->unk_00 = v3->unk_08;
@@ -205,9 +203,7 @@ static void ov104_02233478(void *param0)
 
 BOOL ov104_0223348C(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223ADA0 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223ADA0 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_0223449C(v0);
 
     return 0;
@@ -215,9 +211,7 @@ BOOL ov104_0223348C(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_022334A0(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223ADA0 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223ADA0 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_02234570(v0);
 
     return 0;
@@ -225,9 +219,7 @@ BOOL ov104_022334A0(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_022334B4(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223ADA0 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223ADA0 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_022346A4(v0);
 
     return 0;
@@ -235,9 +227,7 @@ BOOL ov104_022334B4(UnkStruct_ov104_0222E930 *param0)
 
 BOOL ov104_022334C8(UnkStruct_ov104_0222E930 *param0)
 {
-    UnkStruct_ov104_0223ADA0 *v0;
-
-    v0 = sub_0209B978(param0->unk_00->unk_00);
+    UnkStruct_ov104_0223ADA0 *v0 = sub_0209B978(param0->unk_00->unk_00);
     ov104_0223470C(v0);
 
     return 0;
@@ -301,7 +291,7 @@ BOOL ov104_022334DC(UnkStruct_ov104_0222E930 *param0)
         *v15 = v4->unk_3F0[v13].unk_04[v14];
         break;
     case 17:
-        v3 = Pokemon_New(11);
+        v3 = Pokemon_New(HEAP_ID_FIELDMAP);
         ov104_0222DF40(&v4->unk_3F0[v13], v3, ov104_0223ADA0(v4));
         *v15 = Pokemon_GetValue(v3, MON_DATA_TYPE_1, NULL);
         Heap_FreeToHeap(v3);
@@ -313,7 +303,7 @@ BOOL ov104_022334DC(UnkStruct_ov104_0222E930 *param0)
             v0[v10] = 0;
         }
 
-        v3 = Pokemon_New(11);
+        v3 = Pokemon_New(HEAP_ID_FIELDMAP);
 
         for (v10 = 0; v10 < v5; v10++) {
             ov104_0222DF40(&v4->unk_3F0[v10], v3, ov104_0223ADA0(v4));

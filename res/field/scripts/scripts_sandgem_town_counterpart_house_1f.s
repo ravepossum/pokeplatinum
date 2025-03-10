@@ -1,10 +1,11 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/sandgem_town_counterpart_house_1f.h"
 
     .data
 
     ScriptEntry _000A
     ScriptEntry _003A
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -35,8 +36,8 @@ _003A:
 
 _005A:
     GetPlayerGender 0x800C
-    GoToIfEq 0x800C, 0, _007A
-    GoToIfEq 0x800C, 1, _0086
+    GoToIfEq 0x800C, GENDER_MALE, _007A
+    GoToIfEq 0x800C, GENDER_FEMALE, _0086
     End
 
 _007A:
@@ -59,7 +60,7 @@ _009A:
     GoToIfUnset 0x964, _005A
     GoToIfSet 240, _00C4
     SetFlag 240
-    ScrCmd_21B
+    EnableSwarms
     BufferPlayerName 0
     Message 4
     WaitABXPadPress
@@ -69,12 +70,12 @@ _009A:
 
 _00C4:
     BufferPlayerName 0
-    ScrCmd_0E3 0x4001, 0x4000
+    GetSwarmMapAndSpecies 0x4001, 0x4000
     ScrCmd_0E2 1, 0x4001
-    ScrCmd_0DA 2, 0x4000, 0, 1
+    BufferSpeciesNameFromVar 2, 0x4000, 0, 1
     GetPlayerGender 0x800C
-    GoToIfEq 0x800C, 0, _00FA
-    GoToIfEq 0x800C, 1, _0103
+    GoToIfEq 0x800C, GENDER_MALE, _00FA
+    GoToIfEq 0x800C, GENDER_FEMALE, _0103
     End
 
 _00FA:

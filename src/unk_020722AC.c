@@ -2,20 +2,18 @@
 #include <string.h>
 
 #include "struct_decls/struct_02028430_decl.h"
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/struct_0202818C.h"
 #include "struct_defs/struct_0206A844.h"
 #include "struct_defs/struct_02097728.h"
 #include "struct_defs/struct_02098C44.h"
 
 #include "field/field_system.h"
-#include "overlay005/ov5_021D37AC.h"
+#include "overlay005/map_prop_animation.h"
 #include "overlay005/ov5_021D431C.h"
 #include "overlay006/ov6_02247078.h"
 
 #include "bag.h"
 #include "bg_window.h"
-#include "core_sys.h"
 #include "field_system.h"
 #include "field_task.h"
 #include "font.h"
@@ -36,6 +34,7 @@
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "text.h"
 #include "unk_02005474.h"
 #include "unk_0200F174.h"
@@ -71,7 +70,7 @@ typedef struct {
 } UnkStruct_02072334_sub1;
 
 typedef struct {
-    int unk_00;
+    int heapID;
     int *unk_04;
     SysTask *unk_08;
     SysTaskFunc unk_0C;
@@ -196,23 +195,23 @@ void sub_020722AC(void *param0, int *param1)
     UnkStruct_02072334 *v0 = NULL;
     SaveData *v1;
 
-    Heap_Create(3, 43, 0x5000);
+    Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_43, 0x5000);
 
-    v0 = Heap_AllocFromHeap(43, sizeof(UnkStruct_02072334));
+    v0 = Heap_AllocFromHeap(HEAP_ID_43, sizeof(UnkStruct_02072334));
     MI_CpuClear8(v0, sizeof(UnkStruct_02072334));
     v0->unk_04 = param1;
 
     v1 = FieldSystem_GetSaveData(param0);
 
     v0->fieldSystem = (FieldSystem *)param0;
-    v0->unk_00 = 43;
+    v0->heapID = HEAP_ID_43;
     v0->unk_19 = 0;
     v0->unk_1A = 0xFF;
     v0->unk_16 = Options_TextFrameDelay(SaveData_Options(v1));
     v0->unk_14 = Options_Frame(SaveData_Options(v1));
 
-    sub_02072ED0(v0->unk_1C, 20, v0->unk_00);
-    sub_02072F30(v0, v1, v0->unk_00);
+    sub_02072ED0(v0->unk_1C, 20, v0->heapID);
+    sub_02072F30(v0, v1, v0->heapID);
     sub_02073130(v0);
 
     v0->unk_08 = SysTask_Start(sub_02072370, v0, 0);
@@ -225,7 +224,7 @@ void sub_02072334(UnkStruct_02072334 *param0)
     sub_020731A4(param0);
     sub_02072F04(param0->unk_1C, 20);
     Heap_FreeToHeap(param0);
-    Heap_Destroy(param0->unk_00);
+    Heap_Destroy(param0->heapID);
 }
 
 static void sub_02072364(SysTask *param0, void *param1)
@@ -246,21 +245,19 @@ static void sub_02072370(SysTask *param0, void *param1)
 static void sub_02072390(SysTask *param0, void *param1)
 {
     UnkStruct_02072334 *v0 = (UnkStruct_02072334 *)param1;
-    s32 v1;
-
-    v1 = ListMenu_ProcessInput(v0->unk_160);
+    s32 v1 = ListMenu_ProcessInput(v0->unk_160);
 
     if (v0->unk_1A4 != NULL) {
         sub_0206A870(v0->unk_1A4);
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    if (gSystem.pressedKeys & PAD_BUTTON_B) {
         sub_02072EA4(v0, sub_02072518, sub_02072364);
         Sound_PlayEffect(1500);
         return;
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (gSystem.pressedKeys & PAD_BUTTON_A) {
         Sound_PlayEffect(1500);
 
         switch (v1) {
@@ -306,17 +303,15 @@ static void sub_02072418(SysTask *param0, void *param1)
 static void sub_02072470(SysTask *param0, void *param1)
 {
     UnkStruct_02072334 *v0 = (UnkStruct_02072334 *)param1;
-    s32 v1;
+    s32 v1 = ListMenu_ProcessInput(v0->unk_160);
 
-    v1 = ListMenu_ProcessInput(v0->unk_160);
-
-    if (gCoreSys.pressedKeys & PAD_BUTTON_B) {
+    if (gSystem.pressedKeys & PAD_BUTTON_B) {
         sub_02072EA4(v0, sub_02072534, sub_02072370);
         Sound_PlayEffect(1500);
         return;
     }
 
-    if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+    if (gSystem.pressedKeys & PAD_BUTTON_A) {
         Sound_PlayEffect(1500);
 
         switch (v1) {
@@ -488,7 +483,7 @@ static void sub_020726B4(SysTask *param0, void *param1)
         }
         break;
     case 2:
-        if (!(gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B))) {
+        if (!(gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B))) {
             return;
         }
 
@@ -568,7 +563,7 @@ static void sub_020727F8(SysTask *param0, void *param1)
         }
         break;
     case 2:
-        if (!(gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B))) {
+        if (!(gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B))) {
             return;
         }
 
@@ -597,7 +592,7 @@ static void sub_02072878(SysTask *param0, void *param1)
 
         sub_020734F4(v4, 1);
 
-        if (Bag_GetItemQuantity(v4->unk_1B0, v4->unk_1C[v4->unk_18].unk_06, v4->unk_00) > 0) {
+        if (Bag_GetItemQuantity(v4->unk_1B0, v4->unk_1C[v4->unk_18].unk_06, v4->heapID) > 0) {
             v4->unk_13B_6 = 1;
         } else {
             v4->unk_13B_6 = 0;
@@ -673,7 +668,7 @@ static void sub_020729B4(UnkStruct_02072334 *param0)
         { 0x3, 0x1, 0x1, 0x9, 0x2, 0xD, 0x283 }
     };
 
-    param0->unk_1A4 = sub_0206A780(param0->unk_00);
+    param0->unk_1A4 = sub_0206A780(param0->heapID);
 
     sub_0206A8A0(param0->unk_1A4, 200, 10, 138);
     sub_0206A8C4(param0->unk_1A4, 0, 1);
@@ -683,7 +678,7 @@ static void sub_020729B4(UnkStruct_02072334 *param0)
     Window_FillTilemap(&param0->unk_174, ((15 << 4) | 15));
     Window_FillTilemap(&param0->unk_194, ((15 << 4) | 15));
 
-    param0->unk_164 = StringList_New(param0->unk_1B + 1, param0->unk_00);
+    param0->unk_164 = StringList_New(param0->unk_1B + 1, param0->heapID);
 
     for (v0 = 0; v0 < 20; v0++) {
         v2 = &(param0->unk_1C[v0]);
@@ -703,7 +698,7 @@ static void sub_020729B4(UnkStruct_02072334 *param0)
 
     param0->unk_140.window = &(param0->unk_174);
     param0->unk_140.choices = param0->unk_164;
-    param0->unk_140.tmp = (void *)param0;
+    param0->unk_140.parent = (void *)param0;
     param0->unk_140.count = v1;
     param0->unk_140.yOffset = 6;
     param0->unk_140.cursorCallback = sub_02072C0C;
@@ -723,7 +718,7 @@ static void sub_020729B4(UnkStruct_02072334 *param0)
         param0->unk_13B_4 = 0;
     }
 
-    param0->unk_160 = ListMenu_New(&(param0->unk_140), param0->unk_13C, param0->unk_13E, param0->unk_00);
+    param0->unk_160 = ListMenu_New(&(param0->unk_140), param0->unk_13C, param0->unk_13E, param0->heapID);
 
     Window_DrawStandardFrame(&param0->unk_174, 0, (1024 - (18 + 12) - 9), 11);
     Text_AddPrinterWithParamsAndColor(&param0->unk_194, FONT_SYSTEM, param0->unk_110.unk_0C, 2, 0, TEXT_SPEED_INSTANT, TEXT_COLOR(1, 2, 15), NULL);
@@ -787,7 +782,7 @@ static void sub_02072C98(UnkStruct_02072334 *param0, u8 param1, u8 param2)
     };
 
     v1 = NELEMS(Unk_020F0524);
-    param0->unk_164 = StringList_New(v1, param0->unk_00);
+    param0->unk_164 = StringList_New(v1, param0->heapID);
 
     Window_AddFromTemplate(param0->unk_170, &(param0->unk_174), &v2);
     Window_FillTilemap(&param0->unk_174, ((15 << 4) | 15));
@@ -800,12 +795,12 @@ static void sub_02072C98(UnkStruct_02072334 *param0, u8 param1, u8 param2)
 
     param0->unk_140.window = &(param0->unk_174);
     param0->unk_140.choices = param0->unk_164;
-    param0->unk_140.tmp = (void *)param0;
+    param0->unk_140.parent = (void *)param0;
     param0->unk_140.count = v1;
     param0->unk_140.maxDisplay = 4;
     param0->unk_140.pagerMode = PAGER_MODE_NONE;
     param0->unk_140.cursorCallback = sub_02072DA4;
-    param0->unk_160 = ListMenu_New(&(param0->unk_140), param1, param2, param0->unk_00);
+    param0->unk_160 = ListMenu_New(&(param0->unk_140), param1, param2, param0->heapID);
 
     Window_DrawStandardFrame(&param0->unk_174, 0, (1024 - (18 + 12) - 9), 11);
     Bg_ScheduleTilemapTransfer(param0->unk_170, 3);
@@ -955,9 +950,7 @@ static void sub_02072F30(UnkStruct_02072334 *param0, SaveData *param1, int param
 
 static void sub_02073020(UnkStruct_02072334 *param0, u8 param1)
 {
-    UnkStruct_02072EB8 *v0;
-
-    v0 = &(param0->unk_1C[param1]);
+    UnkStruct_02072EB8 *v0 = &(param0->unk_1C[param1]);
 
     param0->unk_1C[v0->unk_02].unk_03 = v0->unk_03;
     param0->unk_1C[v0->unk_03].unk_02 = v0->unk_02;
@@ -971,10 +964,10 @@ static BOOL sub_02073060(UnkStruct_02072334 *param0)
     BOOL v1;
 
     v0 = &(param0->unk_1C[param0->unk_18]);
-    v1 = Bag_CanFitItem(param0->unk_1B0, v0->unk_06, 1, param0->unk_00);
+    v1 = Bag_CanFitItem(param0->unk_1B0, v0->unk_06, 1, param0->heapID);
 
     if (v1) {
-        Bag_TryAddItem(param0->unk_1B0, v0->unk_06, 1, param0->unk_00);
+        Bag_TryAddItem(param0->unk_1B0, v0->unk_06, 1, param0->heapID);
     }
 
     sub_02028470(param0->unk_1AC, 0, param0->unk_18);
@@ -999,11 +992,11 @@ static void sub_020730B8(UnkStruct_02072334 *param0, u8 param1, BOOL param2)
     v1 = Party_GetFromSavedata(FieldSystem_GetSaveData(param0->fieldSystem));
     v2 = Party_GetPokemonBySlotIndex(v1, param1);
 
-    sub_020977E4(param0->unk_1AC, param0->unk_18, v2, param0->unk_00);
+    sub_020977E4(param0->unk_1AC, param0->unk_18, v2, param0->heapID);
 
     if (param2) {
-        if (Bag_CanFitItem(param0->unk_1B0, v0->unk_06, 1, param0->unk_00)) {
-            Bag_TryAddItem(param0->unk_1B0, v0->unk_06, 1, param0->unk_00);
+        if (Bag_CanFitItem(param0->unk_1B0, v0->unk_06, 1, param0->heapID)) {
+            Bag_TryAddItem(param0->unk_1B0, v0->unk_06, 1, param0->heapID);
         }
     }
 
@@ -1017,9 +1010,9 @@ static void sub_02073130(UnkStruct_02072334 *param0)
     int v1;
     Strbuf *v2;
 
-    param0->unk_10C = MessageLoader_Init(1, 26, 408, param0->unk_00);
-    param0->unk_110.unk_00 = StringTemplate_New(1, 128, param0->unk_00);
-    param0->unk_110.unk_04 = Strbuf_Init(128, param0->unk_00);
+    param0->unk_10C = MessageLoader_Init(1, 26, 408, param0->heapID);
+    param0->unk_110.unk_00 = StringTemplate_New(1, 128, param0->heapID);
+    param0->unk_110.unk_04 = Strbuf_Init(128, param0->heapID);
     param0->unk_110.unk_08 = MessageLoader_GetNewStrbuf(param0->unk_10C, 4);
     param0->unk_110.unk_0C = MessageLoader_GetNewStrbuf(param0->unk_10C, 0);
 
@@ -1047,11 +1040,11 @@ static void sub_020731F4(UnkStruct_02072334 *param0)
 {
     param0->unk_170 = FieldSystem_GetBgConfig(param0->fieldSystem);
 
-    LoadMessageBoxGraphics(param0->unk_170, 3, (1024 - (18 + 12)), 10, param0->unk_14, param0->unk_00);
-    LoadStandardWindowGraphics(param0->unk_170, 3, (1024 - (18 + 12) - 9), 11, 0, param0->unk_00);
+    LoadMessageBoxGraphics(param0->unk_170, 3, (1024 - (18 + 12)), 10, param0->unk_14, param0->heapID);
+    LoadStandardWindowGraphics(param0->unk_170, 3, (1024 - (18 + 12) - 9), 11, 0, param0->heapID);
 
-    Font_LoadTextPalette(0, 13 * 32, param0->unk_00);
-    Font_LoadScreenIndicatorsPalette(0, 12 * 32, param0->unk_00);
+    Font_LoadTextPalette(0, 13 * 32, param0->heapID);
+    Font_LoadScreenIndicatorsPalette(0, 12 * 32, param0->heapID);
 
     Window_Add(param0->unk_170, &param0->unk_184, 3, 2, 19, 27, 4, 12, ((1024 - (18 + 12) - 9) - 27 * 4));
     Window_FillTilemap(&param0->unk_184, 0);
@@ -1124,12 +1117,12 @@ static void sub_020733E0(UnkStruct_02072334 *param0)
         0x355
     };
 
-    param0->unk_168 = Menu_MakeYesNoChoice(param0->unk_170, &v0, (1024 - (18 + 12) - 9), 11, param0->unk_00);
+    param0->unk_168 = Menu_MakeYesNoChoice(param0->unk_170, &v0, (1024 - (18 + 12) - 9), 11, param0->heapID);
 }
 
 static int sub_0207340C(UnkStruct_02072334 *param0)
 {
-    switch (Menu_ProcessInputAndHandleExit(param0->unk_168, param0->unk_00)) {
+    switch (Menu_ProcessInputAndHandleExit(param0->unk_168, param0->heapID)) {
     case 0:
         return 1;
     case 0xfffffffe:
@@ -1143,7 +1136,7 @@ static int sub_02073438(UnkStruct_02072334 *param0, int param1)
 {
     switch (param0->unk_12) {
     case 0:
-        StartScreenTransition(0, param1, param1, 0x0, 6, 1, param0->unk_00);
+        StartScreenTransition(0, param1, param1, 0x0, 6, 1, param0->heapID);
         param0->unk_12++;
         break;
     case 1:
@@ -1175,7 +1168,7 @@ static int sub_02073480(UnkStruct_02072334 *param0)
         param0->unk_12++;
         break;
     case 2:
-        if (!ov5_021D42F0(param0->fieldSystem->unk_54, 90)) {
+        if (!MapPropOneShotAnimationManager_IsAnimationLoopFinished(param0->fieldSystem->mapPropOneShotAnimMan, 90)) {
             break;
         }
 
@@ -1206,7 +1199,7 @@ static int sub_02073524(UnkStruct_02072334 *param0, int param1)
 
     switch (param0->unk_12) {
     case 0:
-        v0 = Heap_AllocFromHeap(param0->unk_00, sizeof(PartyManagementData));
+        v0 = Heap_AllocFromHeap(param0->heapID, sizeof(PartyManagementData));
         MI_CpuClear8(v0, sizeof(PartyManagementData));
 
         v0->unk_00 = Party_GetFromSavedata(FieldSystem_GetSaveData(param0->fieldSystem));
@@ -1244,9 +1237,9 @@ static int sub_020735E8(UnkStruct_02072334 *param0)
     switch (param0->unk_12) {
     case 0:
         if (param0->unk_1C[param0->unk_18].unk_01) {
-            param0->unk_1A8 = sub_0203D94C(param0->fieldSystem, 0, param0->unk_18, param0->unk_00);
+            param0->unk_1A8 = sub_0203D94C(param0->fieldSystem, 0, param0->unk_18, param0->heapID);
         } else {
-            param0->unk_1A8 = sub_0203D920(param0->fieldSystem, 0, param0->unk_17, param0->unk_1C[param0->unk_18].unk_05, param0->unk_00);
+            param0->unk_1A8 = sub_0203D920(param0->fieldSystem, 0, param0->unk_17, param0->unk_1C[param0->unk_18].unk_05, param0->heapID);
         }
 
         param0->unk_12++;

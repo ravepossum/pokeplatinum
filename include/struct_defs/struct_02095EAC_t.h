@@ -2,7 +2,6 @@
 #define POKEPLATINUM_STRUCT_02095EAC_T_H
 
 #include "struct_decls/struct_02015920_decl.h"
-#include "struct_defs/struct_0200C738.h"
 #include "struct_defs/struct_0203DDFC.h"
 #include "struct_defs/struct_02095EAC_sub1.h"
 
@@ -10,9 +9,10 @@
 #include "overlay058/struct_ov58_021D2820.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
 #include "message.h"
+#include "sprite.h"
 #include "sprite_resource.h"
+#include "sprite_util.h"
 #include "strbuf.h"
 #include "string_template.h"
 #include "trainer_info.h"
@@ -27,15 +27,15 @@ struct UnkStruct_02095EAC_t {
     Strbuf *unk_28;
     Strbuf *unk_2C;
     int unk_30;
-    CellActorCollection *unk_34;
-    UnkStruct_0200C738 unk_38;
+    SpriteList *unk_34;
+    G2dRenderer unk_38;
     SpriteResourceCollection *unk_1C4[4];
     SpriteResource *unk_1D4[2][4];
-    CellActorResourceData unk_1F4;
-    CellActorResourceData unk_218;
-    CellActor *unk_23C[14];
-    CellActor *unk_274[14];
-    CellActor *unk_2AC[12];
+    SpriteResourcesHeader unk_1F4;
+    SpriteResourcesHeader unk_218;
+    Sprite *unk_23C[14];
+    Sprite *unk_274[14];
+    Sprite *unk_2AC[12];
     Window unk_2DC[5];
     Window unk_32C;
     Window unk_33C;

@@ -1,18 +1,19 @@
 #ifndef POKEPLATINUM_STRUCT_OV19_021D4DF0_H
 #define POKEPLATINUM_STRUCT_OV19_021D4DF0_H
 
-#include "struct_decls/struct_020797DC_decl.h"
-#include "struct_decls/struct_party_decl.h"
+#include "struct_decls/pc_boxes_decl.h"
 
+#include "overlay019/pc_mon_preview.h"
 #include "overlay019/struct_ov19_021D3CFC.h"
 #include "overlay019/struct_ov19_021D4DE4.h"
 #include "overlay019/struct_ov19_021D4EE4.h"
 #include "overlay019/struct_ov19_021D4F34.h"
 #include "overlay019/struct_ov19_021D4F5C.h"
 #include "overlay019/struct_ov19_021D5594.h"
-#include "overlay019/struct_ov19_021D5BAC.h"
 #include "overlay019/struct_ov19_021D5D20.h"
 #include "overlay019/struct_ov19_021DF964.h"
+
+#include "party.h"
 
 typedef struct {
     const PCBoxes *unk_00;
@@ -21,7 +22,7 @@ typedef struct {
     UnkStruct_ov19_021D5594 unk_14;
     UnkStruct_ov19_021D4F5C unk_40;
     UnkStruct_ov19_021D4DE4 unk_48;
-    UnkStruct_ov19_021D5BAC unk_4C;
+    PCMonPreview pcMonPreview;
     UnkStruct_ov19_021DF964 unk_74;
     UnkStruct_ov19_021D5D20 unk_98;
     UnkStruct_ov19_021D4F34 unk_9C;

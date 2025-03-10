@@ -7,18 +7,18 @@
 
 #include "overlay019/ov19_021D0D80.h"
 #include "overlay019/ov19_021D61B0.h"
+#include "overlay019/pc_mon_preview.h"
 #include "overlay019/struct_ov19_021D4DF0.h"
-#include "overlay019/struct_ov19_021D5BAC.h"
 #include "overlay019/struct_ov19_021D61B0_decl.h"
 #include "overlay019/struct_ov19_021DA9E0.h"
 
 #include "bg_window.h"
-#include "cell_actor.h"
 #include "graphics.h"
 #include "heap.h"
 #include "message.h"
 #include "narc.h"
 #include "pokemon.h"
+#include "sprite.h"
 #include "strbuf.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
@@ -55,7 +55,7 @@ static void ov19_021DAE60(Window *param0, UnkStruct_ov19_021DA9E0 *param1, u32 p
 static void ov19_021DB0E4(UnkStruct_ov19_021DA9E0 *param0);
 static void ov19_021DB24C(UnkStruct_ov19_021DA9E0 *param0, u8 param1);
 
-BOOL ov19_021DA92C(UnkStruct_ov19_021DA9E0 *param0, UnkStruct_ov19_021D61B0 *param1, const UnkStruct_ov19_021D4DF0 *param2, BgConfig *param3, CellActorCollection *param4, const MessageLoader *param5, NARC *param6)
+BOOL ov19_021DA92C(UnkStruct_ov19_021DA9E0 *param0, UnkStruct_ov19_021D61B0 *param1, const UnkStruct_ov19_021D4DF0 *param2, BgConfig *param3, SpriteList *param4, const MessageLoader *param5, NARC *param6)
 {
     int v0;
 
@@ -72,13 +72,13 @@ BOOL ov19_021DA92C(UnkStruct_ov19_021DA9E0 *param0, UnkStruct_ov19_021D61B0 *par
     param0->unk_4C = NULL;
     param0->unk_24 = NULL;
     param0->unk_20 = ov19_021D7818(param1);
-    param0->unk_18 = sub_0200C440(9, 6, 15, 10);
-    param0->unk_1C = sub_0200C440(1, 2, 15, 10);
-    param0->unk_28 = Graphics_GetCellBankFromOpenNARC(param6, 16, 1, &(param0->unk_2C), 10);
+    param0->unk_18 = sub_0200C440(9, 6, 15, HEAP_ID_10);
+    param0->unk_1C = sub_0200C440(1, 2, 15, HEAP_ID_10);
+    param0->unk_28 = Graphics_GetCellBankFromOpenNARC(param6, 16, 1, &(param0->unk_2C), HEAP_ID_10);
     param0->unk_30 = NULL;
     param0->unk_44 = MessageLoader_GetNewStrbuf(param5, 21);
     param0->unk_48 = MessageLoader_GetNewStrbuf(param5, 22);
-    param0->unk_34 = Graphics_GetCellBank(sub_0207C944(), sub_0207C924(), 1, &(param0->unk_38), 10);
+    param0->unk_34 = Graphics_GetCellBank(sub_0207C944(), sub_0207C924(), 1, &(param0->unk_38), HEAP_ID_10);
 
     for (v0 = 0; v0 < 2; v0++) {
         param0->unk_3C[v0] = NULL;
@@ -132,7 +132,7 @@ void ov19_021DA9E0(UnkStruct_ov19_021DA9E0 *param0)
     }
 
     if (param0->unk_30) {
-        CellActor_Delete(param0->unk_30);
+        Sprite_Delete(param0->unk_30);
     }
 
     if (param0->unk_34) {
@@ -141,7 +141,7 @@ void ov19_021DA9E0(UnkStruct_ov19_021DA9E0 *param0)
 
     for (v0 = 0; v0 < 2; v0++) {
         if (param0->unk_3C[v0] != NULL) {
-            CellActor_Delete(param0->unk_3C[v0]);
+            Sprite_Delete(param0->unk_3C[v0]);
         }
     }
 
@@ -187,7 +187,7 @@ void ov19_021DAADC(UnkStruct_ov19_021DA9E0 *param0)
         return;
     }
 
-    param0->unk_04 = Window_New(10, 4);
+    param0->unk_04 = Window_New(HEAP_ID_10, 4);
 
     if (param0->unk_04) {
         int v1;
@@ -212,13 +212,13 @@ void ov19_021DAADC(UnkStruct_ov19_021DA9E0 *param0)
 static void ov19_021DAB44(UnkStruct_ov19_021DA9E0 *param0)
 {
     NNSG2dImageProxy v0;
-    CellActorResourceData v1;
+    SpriteResourcesHeader v1;
     u32 v2, v3, v4;
 
     v2 = sub_0207C944();
     v3 = sub_0207C908(2);
 
-    Graphics_LoadPalette(v2, sub_0207C920(), 1, 10 * 0x20, 0x20 * 3, 10);
+    Graphics_LoadPalette(v2, sub_0207C920(), 1, 10 * 0x20, 0x20 * 3, HEAP_ID_10);
 
     for (v4 = 0; v4 < 2; v4++) {
         NNS_G2dInitImageProxy(&v0);
@@ -228,7 +228,7 @@ static void ov19_021DAB44(UnkStruct_ov19_021DA9E0 *param0)
         param0->unk_3C[v4] = ov19_021D785C(param0->unk_0C, &v1, 24 + 36 * v4, 176, 46, NNS_G2D_VRAM_TYPE_2DMAIN);
         GF_ASSERT(param0->unk_3C[v4] != NULL);
 
-        CellActor_SetDrawFlag(param0->unk_3C[v4], 0);
+        Sprite_SetDrawFlag(param0->unk_3C[v4], 0);
     }
 
     NNS_G2dInitImageProxy(&v0);
@@ -242,12 +242,12 @@ static void ov19_021DAB44(UnkStruct_ov19_021DA9E0 *param0)
 static void ov19_021DAC4C(UnkStruct_ov19_021DA9E0 *param0)
 {
     if (param0->unk_4C == NULL) {
-        UnkStruct_ov19_021DAE2C *v0 = Heap_AllocFromHeap(10, sizeof(UnkStruct_ov19_021DAE2C));
+        UnkStruct_ov19_021DAE2C *v0 = Heap_AllocFromHeap(HEAP_ID_10, sizeof(UnkStruct_ov19_021DAE2C));
 
         if (v0) {
-            const UnkStruct_ov19_021D5BAC *v1 = ov19_021D5E70(param0->unk_10);
+            const PCMonPreview *preview = ov19_GetPCMonPreview(param0->unk_10);
 
-            v0->unk_00 = (v1->unk_0F) ? 4 : 0;
+            v0->unk_00 = (preview->isEgg) ? 4 : 0;
             v0->unk_08 = param0;
             param0->unk_4C = SysTask_Start(ov19_021DACF8, v0, 1);
         } else {
@@ -270,9 +270,9 @@ static void ov19_021DACB0(UnkStruct_ov19_021DA9E0 *param0)
     UnkStruct_ov19_021DAE2C *v0 = SysTask_GetParam(param0->unk_4C);
 
     if (v0) {
-        const UnkStruct_ov19_021D5BAC *v1 = ov19_021D5E70(param0->unk_10);
+        const PCMonPreview *preview = ov19_GetPCMonPreview(param0->unk_10);
 
-        v0->unk_00 = (v1->unk_0F) ? 4 : 0;
+        v0->unk_00 = (preview->isEgg) ? 4 : 0;
         ov19_021DAE10(param0);
     }
 }
@@ -291,7 +291,7 @@ static void ov19_021DACF8(SysTask *param0, void *param1)
 {
     UnkStruct_ov19_021DAE2C *v0 = (UnkStruct_ov19_021DAE2C *)param1;
     UnkStruct_ov19_021DA9E0 *v1 = v0->unk_08;
-    const UnkStruct_ov19_021D5BAC *v2;
+    const PCMonPreview *preview;
 
     switch (v0->unk_00) {
     case 0:
@@ -308,9 +308,9 @@ static void ov19_021DACF8(SysTask *param0, void *param1)
         v0->unk_00 = 2;
         break;
     case 2:
-        v2 = ov19_021D5E70(v1->unk_10);
+        preview = ov19_GetPCMonPreview(v1->unk_10);
 
-        if (!v2->unk_0F && (++(v0->unk_04) > 80)) {
+        if (!preview->isEgg && (++(v0->unk_04) > 80)) {
             ov19_021DAE2C(v0);
             v0->unk_04 = 0;
             v0->unk_06 = 0;
@@ -349,12 +349,12 @@ static void ov19_021DADCC(UnkStruct_ov19_021DA9E0 *param0, fx32 param1)
     VecFx32 v1;
 
     for (v0 = 0; v0 < 2; v0++) {
-        v1 = *CellActor_GetPosition(param0->unk_3C[v0]);
+        v1 = *Sprite_GetPosition(param0->unk_3C[v0]);
         v1.y -= param1;
 
-        CellActor_SetPosition(param0->unk_3C[v0], &v1);
+        Sprite_SetPosition(param0->unk_3C[v0], &v1);
 
-        if ((v0 == 0) && CellActor_GetDrawFlag(param0->unk_3C[v0])) {
+        if ((v0 == 0) && Sprite_GetDrawFlag(param0->unk_3C[v0])) {
             u32 v2, v3;
 
             v2 = v1.x >> FX32_SHIFT;
@@ -368,16 +368,14 @@ static void ov19_021DAE10(UnkStruct_ov19_021DA9E0 *param0)
     int v0;
 
     for (v0 = 0; v0 < 2; v0++) {
-        CellActor_SetDrawFlag(param0->unk_3C[v0], 0);
+        Sprite_SetDrawFlag(param0->unk_3C[v0], 0);
     }
 }
 
 static void ov19_021DAE2C(UnkStruct_ov19_021DAE2C *param0)
 {
     u32 v0;
-    Window *v1;
-
-    v1 = &(param0->unk_08->unk_04[3]);
+    Window *v1 = &(param0->unk_08->unk_04[3]);
 
     Window_FillTilemap(v1, 0);
     ov19_021DAE60(v1, param0->unk_08, param0->unk_02, 0);
@@ -394,19 +392,17 @@ static void ov19_021DAE2C(UnkStruct_ov19_021DAE2C *param0)
 static void ov19_021DAE60(Window *param0, UnkStruct_ov19_021DA9E0 *param1, u32 param2, u32 param3)
 {
     const Strbuf *v0;
-    u32 v1;
-
-    v1 = (param3 * 16) + 0;
+    u32 v1 = (param3 * 16) + 0;
 
     switch (param2) {
     case 0:
-        v0 = param1->unk_10->unk_4C.unk_1C;
+        v0 = param1->unk_10->pcMonPreview.heldItemName;
         break;
     case 2:
-        v0 = param1->unk_10->unk_4C.unk_20;
+        v0 = param1->unk_10->pcMonPreview.nature;
         break;
     case 3:
-        v0 = param1->unk_10->unk_4C.unk_24;
+        v0 = param1->unk_10->pcMonPreview.ability;
         break;
 
     case 1: {
@@ -414,27 +410,27 @@ static void ov19_021DAE60(Window *param0, UnkStruct_ov19_021DA9E0 *param1, u32 p
         u32 v3, v4;
 
         v3 = sub_0207C944();
-        v4 = sub_0207C908(param1->unk_10->unk_4C.unk_0C);
+        v4 = sub_0207C908(param1->unk_10->pcMonPreview.type1);
 
-        Graphics_LoadObjectTiles(sub_0207C944(), sub_0207C908(param1->unk_10->unk_4C.unk_0C), 0, 1504 * 0x20, 0, 1, 10);
+        Graphics_LoadObjectTiles(sub_0207C944(), sub_0207C908(param1->unk_10->pcMonPreview.type1), 0, 1504 * 0x20, 0, 1, HEAP_ID_10);
 
-        v2 = *CellActor_GetPosition(param1->unk_3C[0]);
+        v2 = *Sprite_GetPosition(param1->unk_3C[0]);
         v2.y = (176 + (16 * param3)) << FX32_SHIFT;
 
-        CellActor_SetPosition(param1->unk_3C[0], &v2);
-        CellActor_SetExplicitPalette(param1->unk_3C[0], 10 + sub_0207C92C(param1->unk_10->unk_4C.unk_0C));
-        CellActor_SetDrawFlag(param1->unk_3C[0], 1);
+        Sprite_SetPosition(param1->unk_3C[0], &v2);
+        Sprite_SetExplicitPalette(param1->unk_3C[0], 10 + sub_0207C92C(param1->unk_10->pcMonPreview.type1));
+        Sprite_SetDrawFlag(param1->unk_3C[0], 1);
 
-        if (param1->unk_10->unk_4C.unk_0C != param1->unk_10->unk_4C.unk_0D) {
-            Graphics_LoadObjectTiles(sub_0207C944(), sub_0207C908(param1->unk_10->unk_4C.unk_0D), 0, (1504 + 8) * 0x20, 0, 1, 10);
+        if (param1->unk_10->pcMonPreview.type1 != param1->unk_10->pcMonPreview.type2) {
+            Graphics_LoadObjectTiles(sub_0207C944(), sub_0207C908(param1->unk_10->pcMonPreview.type2), 0, (1504 + 8) * 0x20, 0, 1, HEAP_ID_10);
 
             v2.x += (36 << FX32_SHIFT);
 
-            CellActor_SetPosition(param1->unk_3C[1], &v2);
-            CellActor_SetExplicitPalette(param1->unk_3C[1], 10 + sub_0207C92C(param1->unk_10->unk_4C.unk_0D));
-            CellActor_SetDrawFlag(param1->unk_3C[1], 1);
+            Sprite_SetPosition(param1->unk_3C[1], &v2);
+            Sprite_SetExplicitPalette(param1->unk_3C[1], 10 + sub_0207C92C(param1->unk_10->pcMonPreview.type2));
+            Sprite_SetDrawFlag(param1->unk_3C[1], 1);
         } else {
-            CellActor_SetDrawFlag(param1->unk_3C[1], 0);
+            Sprite_SetDrawFlag(param1->unk_3C[1], 0);
         }
     }
         return;
@@ -525,15 +521,13 @@ void ov19_021DB078(UnkStruct_ov19_021DA9E0 *param0)
 static void ov19_021DB0E4(UnkStruct_ov19_021DA9E0 *param0)
 {
     ArchivedSprite v0;
-    const UnkStruct_ov19_021D5BAC *v1;
+    const PCMonPreview *preview = ov19_GetPCMonPreview(param0->unk_10);
 
-    v1 = ov19_021D5E70(param0->unk_10);
+    Text_AddPrinterWithParamsAndColor(&param0->unk_04[0], FONT_SYSTEM, preview->speciesName, 2, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(9, 6, 15), NULL);
+    Text_AddPrinterWithParamsAndColor(&param0->unk_04[2], FONT_SYSTEM, preview->nickname, 2, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(1, 2, 15), NULL);
+    Text_AddPrinterWithParamsAndColor(&param0->unk_04[2], FONT_SYSTEM, preview->nickname, 2, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(1, 2, 15), NULL);
 
-    Text_AddPrinterWithParamsAndColor(&param0->unk_04[0], FONT_SYSTEM, v1->unk_18, 2, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(9, 6, 15), NULL);
-    Text_AddPrinterWithParamsAndColor(&param0->unk_04[2], FONT_SYSTEM, v1->unk_14, 2, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(1, 2, 15), NULL);
-    Text_AddPrinterWithParamsAndColor(&param0->unk_04[2], FONT_SYSTEM, v1->unk_14, 2, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(1, 2, 15), NULL);
-
-    switch (v1->unk_0E) {
+    switch (preview->gender) {
     case 0:
         Text_AddPrinterWithParamsAndColor(&param0->unk_04[2], FONT_SYSTEM, param0->unk_44, 70, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(7, 8, 15), NULL);
         break;
@@ -542,19 +536,19 @@ static void ov19_021DB0E4(UnkStruct_ov19_021DA9E0 *param0)
         break;
     }
 
-    if (v1->unk_0F == 0) {
-        Text_AddPrinterWithParamsAndColor(&param0->unk_04[3], FONT_SYSTEM, v1->unk_1C, 0, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(9, 6, 0), NULL);
+    if (preview->isEgg == FALSE) {
+        Text_AddPrinterWithParamsAndColor(&param0->unk_04[3], FONT_SYSTEM, preview->heldItemName, 0, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(9, 6, 0), NULL);
 
-        if (v1->unk_08) {
-            sub_0200C648(param0->unk_18, 2, v1->unk_08, 3, 2, &(param0->unk_04[1]), 0, 0);
+        if (preview->dexNum) {
+            sub_0200C648(param0->unk_18, 2, preview->dexNum, 3, 2, &(param0->unk_04[1]), 0, 0);
         }
 
-        sub_0200C648(param0->unk_1C, 1, v1->unk_0A, 3, 1, &(param0->unk_04[2]), 0, 16);
+        sub_0200C648(param0->unk_1C, 1, preview->level, 3, 1, &(param0->unk_04[2]), 0, 16);
     }
 
-    BoxPokemon_BuildArchivedSprite(&v0, v1->unk_00, 2, 0);
+    BoxPokemon_BuildArchivedSprite(&v0, preview->mon, 2, 0);
     param0->unk_24 = sub_02007C34(param0->unk_20, &v0, 44, 84, 0, 0, NULL, NULL);
-    ov19_021DB24C(param0, v1->unk_0B);
+    ov19_021DB24C(param0, preview->markings);
 }
 
 BOOL ov19_021DB220(UnkStruct_ov19_021DA9E0 *param0)
@@ -573,10 +567,10 @@ void ov19_021DB224(UnkStruct_ov19_021DA9E0 *param0)
     }
 
     if (ov19_021D5E4C(param0->unk_10)) {
-        const UnkStruct_ov19_021D5BAC *v0;
+        const PCMonPreview *preview;
 
-        v0 = ov19_021D5E70(param0->unk_10);
-        ov19_021DB24C(param0, v0->unk_0B);
+        preview = ov19_GetPCMonPreview(param0->unk_10);
+        ov19_021DB24C(param0, preview->markings);
     }
 }
 
@@ -603,17 +597,17 @@ static void ov19_021DB24C(UnkStruct_ov19_021DA9E0 *param0, u8 param1)
 
 void ov19_021DB2B0(UnkStruct_ov19_021DA9E0 *param0)
 {
-    const UnkStruct_ov19_021D5BAC *v0;
+    const PCMonPreview *preview;
 
     if (param0->unk_00 == 0) {
         return;
     }
 
-    v0 = ov19_021D5E70(param0->unk_10);
+    preview = ov19_GetPCMonPreview(param0->unk_10);
     Window_FillTilemap(&param0->unk_04[3], 0);
 
-    if (v0->unk_0F == 0) {
-        Text_AddPrinterWithParamsAndColor(&param0->unk_04[3], FONT_SYSTEM, v0->unk_1C, 0, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(9, 6, 0), NULL);
+    if (preview->isEgg == FALSE) {
+        Text_AddPrinterWithParamsAndColor(&param0->unk_04[3], FONT_SYSTEM, preview->heldItemName, 0, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(9, 6, 0), NULL);
     }
 
     ov19_021DACB0(param0);

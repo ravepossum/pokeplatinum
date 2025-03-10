@@ -12,7 +12,7 @@
 #include "pokemon.h"
 #include "script_manager.h"
 #include "string_template.h"
-#include "unk_0206AFE0.h"
+#include "system_vars.h"
 #include "unk_0206CCB0.h"
 #include "vars_flags.h"
 
@@ -81,9 +81,7 @@ static u32 ov5_021EE8A8(u16 param0, u16 param1)
     u32 v3;
     u64 v4;
     u8 v5;
-    HeightWeightData *v6;
-
-    v6 = Pokedex_HeightWeightData(4);
+    HeightWeightData *v6 = Pokedex_HeightWeightData(4);
     Pokedex_HeightWeightData_Load(v6, 0, 4);
 
     v3 = Pokedex_HeightWeightData_Height((const HeightWeightData *)v6, param0);
@@ -111,7 +109,7 @@ u8 ov5_021EE920(FieldSystem *fieldSystem, u16 param1)
     v3 = Pokemon_GetValue(v0, MON_DATA_SPECIES, NULL);
     v1 = ov5_021EE7D4(v0);
     v4 = ov5_021EE8A8(v3, v1);
-    v2 = sub_0206B0B4(SaveData_GetVarsFlags(fieldSystem->saveData));
+    v2 = SystemVars_GetSizeContestRecord(SaveData_GetVarsFlags(fieldSystem->saveData));
     v5 = ov5_021EE8A8(v3, v2);
 
     {
@@ -139,7 +137,7 @@ void ov5_021EE9BC(FieldSystem *fieldSystem, u16 param1)
     v0 = Party_GetPokemonBySlotIndex(Party_GetFromSavedata(fieldSystem->saveData), param1);
     v1 = ov5_021EE7D4(v0);
 
-    sub_0206B0C4(SaveData_GetVarsFlags(fieldSystem->saveData), v1);
+    SystemVars_SetSizeContestRecord(SaveData_GetVarsFlags(fieldSystem->saveData), v1);
 }
 
 static void ov5_021EE9E8(FieldSystem *fieldSystem, u8 param1, u8 param2, u16 param3, vu16 param4)
@@ -162,7 +160,7 @@ void ov5_021EEA54(FieldSystem *fieldSystem, u8 param1, u8 param2, u16 param3)
 {
     vu16 v0;
 
-    v0 = sub_0206B0B4(SaveData_GetVarsFlags(fieldSystem->saveData));
+    v0 = SystemVars_GetSizeContestRecord(SaveData_GetVarsFlags(fieldSystem->saveData));
     ov5_021EE9E8(fieldSystem, param1, param2, param3, v0);
 }
 

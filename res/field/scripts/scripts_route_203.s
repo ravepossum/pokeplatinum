@@ -1,4 +1,5 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/route_203.h"
 
     .data
 
@@ -8,7 +9,7 @@
     ScriptEntry _005B
     ScriptEntry _0070
     ScriptEntry _0085
-    .short 0xFD13
+    ScriptEntryEnd
 
 _001A:
     PlayFanfare SEQ_SE_CONFIRM
@@ -21,35 +22,19 @@ _001A:
     End
 
 _002D:
-    ScrCmd_036 3, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 3
     End
 
 _0044:
-    ScrCmd_036 4, 1, 0, 0x800C
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03B 0x800C
-    CallCommonScript 0x7D0
+    ShowArrowSign 4
     End
 
 _005B:
-    ScrCmd_037 3, 0
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03A 5, 0x800C
-    CallCommonScript 0x7D0
+    ShowScrollingSign 5
     End
 
 _0070:
-    ScrCmd_037 3, 0
-    ScrCmd_038 3
-    ScrCmd_039
-    ScrCmd_03A 6, 0x800C
-    CallCommonScript 0x7D0
+    ShowScrollingSign 6
     End
 
 _0085:
@@ -89,26 +74,26 @@ _0111:
     BufferPlayerName 1
     Message 0
     CloseMessage
-    ScrCmd_0DE 0x800C
-    GoToIfEq 0x800C, 0x183, _014C
-    GoToIfEq 0x800C, 0x186, _0158
+    GetPlayerStarterSpecies 0x800C
+    GoToIfEq 0x800C, SPECIES_TURTWIG, _014C
+    GoToIfEq 0x800C, SPECIES_CHIMCHAR, _0158
     GoTo _0140
 
 _0140:
-    StartTrainerBattle trainer_rival_route_203_piplup
+    StartTrainerBattle TRAINER_RIVAL_ROUTE_203_PIPLUP
     GoTo _0164
 
 _014C:
-    StartTrainerBattle trainer_rival_route_203_turtwig
+    StartTrainerBattle TRAINER_RIVAL_ROUTE_203_TURTWIG
     GoTo _0164
 
 _0158:
-    StartTrainerBattle trainer_rival_route_203_chimchar
+    StartTrainerBattle TRAINER_RIVAL_ROUTE_203_CHIMCHAR
     GoTo _0164
 
 _0164:
     CheckWonBattle 0x800C
-    GoToIfEq 0x800C, 0, _0207
+    GoToIfEq 0x800C, FALSE, _0207
     BufferRivalName 0
     Message 1
     CloseMessage
@@ -140,65 +125,65 @@ _01E9:
     GoTo _01F9
 
 _01F9:
-    ScrCmd_065 5
+    RemoveObject 5
     SetVar 0x4088, 1
     ReleaseAll
     End
 
 _0207:
-    ScrCmd_0EB
+    BlackOutFromBattle
     ReleaseAll
     End
 
     .balign 4, 0
 _0210:
-    MoveAction_013 10
+    MoveAction_019 10
     EndMovement
 
     .balign 4, 0
 _0218:
-    MoveAction_013 10
+    MoveAction_019 10
     EndMovement
 
     .balign 4, 0
 _0220:
-    MoveAction_013 10
+    MoveAction_019 10
     EndMovement
 
     .balign 4, 0
 _0228:
-    MoveAction_013 10
+    MoveAction_019 10
     EndMovement
 
     .balign 4, 0
 _0230:
-    MoveAction_012 4
+    MoveAction_018 4
     EndMovement
 
     .balign 4, 0
 _0238:
-    MoveAction_012 2
-    MoveAction_011
-    MoveAction_012 2
+    MoveAction_018 2
+    MoveAction_017
+    MoveAction_018 2
     EndMovement
 
     .balign 4, 0
 _0248:
-    MoveAction_012 2
-    MoveAction_011 2
-    MoveAction_012 2
+    MoveAction_018 2
+    MoveAction_017 2
+    MoveAction_018 2
     EndMovement
 
     .balign 4, 0
 _0258:
-    MoveAction_012 2
-    MoveAction_011 3
-    MoveAction_012 2
+    MoveAction_018 2
+    MoveAction_017 3
+    MoveAction_018 2
     EndMovement
 
     .balign 4, 0
 _0268:
-    MoveAction_03F
-    MoveAction_04B
-    MoveAction_03F
+    MoveAction_063
+    MoveAction_075
+    MoveAction_063
     EndMovement

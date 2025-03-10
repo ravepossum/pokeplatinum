@@ -13,15 +13,15 @@ typedef struct UnkStruct_ov70_0225C894_t {
     UnkStruct_ov63_0222BCE8 *unk_00;
 } UnkStruct_ov70_0225C894;
 
-UnkStruct_ov70_0225C894 *ov70_0225C858(u32 param0)
+UnkStruct_ov70_0225C894 *ov70_0225C858(u32 heapID)
 {
     UnkStruct_ov70_0225C894 *v0;
     void *v1;
 
-    v0 = Heap_AllocFromHeap(param0, sizeof(UnkStruct_ov70_0225C894));
-    v0->unk_00 = ov63_0222BCE8(35, 42, param0);
+    v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov70_0225C894));
+    v0->unk_00 = ov63_0222BCE8(35, 42, heapID);
 
-    v1 = LoadMemberFromNARC(174, 0, 0, param0, 1);
+    v1 = LoadMemberFromNARC(174, 0, 0, heapID, 1);
 
     ov63_0222BD50(v0->unk_00, v1);
     Heap_FreeToHeap(v1);
@@ -47,17 +47,13 @@ BOOL ov70_0225C8AC(const UnkStruct_ov70_0225C894 *param0, u16 param1, u16 param2
 
 u32 ov70_0225C8B8(const UnkStruct_ov70_0225C894 *param0, u16 param1, u16 param2)
 {
-    u32 v0;
-
-    v0 = ov63_0222BDE4(param0->unk_00, param1, param2);
+    u32 v0 = ov63_0222BDE4(param0->unk_00, param1, param2);
     return v0 >> 15;
 }
 
 u32 ov70_0225C8C4(const UnkStruct_ov70_0225C894 *param0, u16 param1, u16 param2)
 {
-    u32 v0;
-
-    v0 = ov63_0222BDE4(param0->unk_00, param1, param2);
+    u32 v0 = ov63_0222BDE4(param0->unk_00, param1, param2);
     v0 &= 0x7fff;
 
     return v0;

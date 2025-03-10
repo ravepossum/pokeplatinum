@@ -19,7 +19,6 @@
 #include "comm_player_manager.h"
 #include "communication_information.h"
 #include "communication_system.h"
-#include "core_sys.h"
 #include "field_system.h"
 #include "heap.h"
 #include "list_menu.h"
@@ -27,6 +26,7 @@
 #include "map_object.h"
 #include "menu.h"
 #include "message.h"
+#include "pokedex.h"
 #include "render_window.h"
 #include "savedata.h"
 #include "strbuf.h"
@@ -34,9 +34,9 @@
 #include "string_template.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+#include "system.h"
 #include "text.h"
 #include "unk_02005474.h"
-#include "unk_0202631C.h"
 #include "unk_0202854C.h"
 #include "unk_020573FC.h"
 
@@ -131,9 +131,9 @@ static void ov23_022522F0(UnkStruct_ov23_02250CD4 *param0, int param1)
 {
     MATHRandContext16 v0;
     int v1, v2, v3, v4, v5;
-    SaveData *v6 = FieldSystem_GetSaveData(param0->fieldSystem);
-    UndergroundData *v7 = sub_020298B0(v6);
-    BOOL v8 = Pokedex_IsNationalDexObtained(SaveData_Pokedex(v6));
+    SaveData *saveData = FieldSystem_GetSaveData(param0->fieldSystem);
+    UndergroundData *v7 = sub_020298B0(saveData);
+    BOOL natdexObtained = Pokedex_IsNationalDexObtained(SaveData_GetPokedex(saveData));
 
     MATH_InitRand16(&v0, sub_02028930(v7) + param1);
 
@@ -154,7 +154,7 @@ static void ov23_022522F0(UnkStruct_ov23_02250CD4 *param0, int param1)
         param0->unk_274[v5] = v1;
         param0->unk_279[v5] = sub_0205742C(v1);
 
-        if ((v8 == 0) && (1 == sub_0205747C(v1))) {
+        if ((natdexObtained == 0) && (1 == sub_0205747C(v1))) {
             v5--;
             continue;
         }
@@ -406,13 +406,13 @@ static void ov23_02252A18(UnkStruct_ov23_02250CD4 *param0)
         int v3;
 
         if (param0->unk_2AC == 1) {
-            v2 = MessageLoader_Init(0, 26, 630, 4);
+            v2 = MessageLoader_Init(0, 26, 630, HEAP_ID_FIELD);
             ov23_02253DFC(ov23_022421DC(), 630, 0);
         } else if (param0->unk_2AC == 0) {
-            v2 = MessageLoader_Init(0, 26, 626, 4);
+            v2 = MessageLoader_Init(0, 26, 626, HEAP_ID_FIELD);
             ov23_02253DFC(ov23_022421DC(), 626, 0);
         } else {
-            v2 = MessageLoader_Init(0, 26, 628, 4);
+            v2 = MessageLoader_Init(0, 26, 628, HEAP_ID_FIELD);
             ov23_02253DFC(ov23_022421DC(), 628, 0);
         }
 
@@ -431,7 +431,7 @@ static void ov23_02252A18(UnkStruct_ov23_02250CD4 *param0)
     v0.count = v1;
     v0.maxDisplay = v1;
     v0.cursorCallback = ov23_0225265C;
-    v0.tmp = param0;
+    v0.parent = param0;
 
     param0->unk_268 = ov23_02252A04;
     param0->unk_294 = ov23_02243154(13 + param0->unk_2AC);
@@ -712,7 +712,7 @@ static void ov23_02252E70(SysTask *param0, void *param1)
         break;
     case 6:
         if (ov23_02254238(ov23_022421BC()) == 0) {
-            if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+            if (gSystem.pressedKeys & PAD_BUTTON_A) {
                 v0->unk_2AA = 7;
             }
         }
@@ -780,7 +780,7 @@ static void ov23_02252E70(SysTask *param0, void *param1)
         break;
     case 9:
         if (ov23_02254238(ov23_022421BC()) == 0) {
-            if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+            if (gSystem.pressedKeys & PAD_BUTTON_A) {
                 if (v0->unk_2AC == 1) {
                     ov23_02252CF4(2, v0->unk_2A8);
                 } else if (v0->unk_2AC == 0) {
@@ -796,7 +796,7 @@ static void ov23_02252E70(SysTask *param0, void *param1)
         break;
     case 10:
         if (ov23_02254238(ov23_022421BC()) == 0) {
-            if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+            if (gSystem.pressedKeys & PAD_BUTTON_A) {
                 ov23_02252C9C(8);
                 v0->unk_2AA = 2;
             }
@@ -877,7 +877,7 @@ static void ov23_02252E70(SysTask *param0, void *param1)
         break;
     case 16:
         if (ov23_02254238(ov23_022421BC()) == 0) {
-            if (gCoreSys.pressedKeys & PAD_BUTTON_A) {
+            if (gSystem.pressedKeys & PAD_BUTTON_A) {
                 ov23_0225412C(ov23_022421BC(), v0->unk_27E[0]);
                 ov23_02252CE0(2, v0->unk_279[0]);
                 ov23_02252C9C(7);
@@ -894,7 +894,7 @@ static void ov23_02252E70(SysTask *param0, void *param1)
         break;
     case 18:
         if (ov23_02254238(ov23_022421BC()) == 0) {
-            if (gCoreSys.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+            if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
                 ov23_02252CD4();
                 ov23_02252C78(v0);
                 ov23_02243204();
@@ -921,15 +921,15 @@ void ov23_022534A0(FieldSystem *fieldSystem)
 
     ov23_022430D0(3 + v7);
 
-    v4 = Heap_AllocFromHeap(4, sizeof(UnkStruct_ov23_02250CD4));
+    v4 = Heap_AllocFromHeap(HEAP_ID_FIELD, sizeof(UnkStruct_ov23_02250CD4));
     MI_CpuClear8(v4, sizeof(UnkStruct_ov23_02250CD4));
 
     v4->fieldSystem = fieldSystem;
     v4->unk_2AC = v7;
     v4->unk_288 = v6;
-    v4->unk_68 = Strbuf_Init((50 * 2), 4);
-    v4->unk_6C = Strbuf_Init((50 * 2), 4);
-    v4->unk_70 = StringTemplate_Default(4);
+    v4->unk_68 = Strbuf_Init((50 * 2), HEAP_ID_FIELD);
+    v4->unk_6C = Strbuf_Init((50 * 2), HEAP_ID_FIELD);
+    v4->unk_70 = StringTemplate_Default(HEAP_ID_FIELD);
     v4->unk_2AA = 0;
 
     Sound_PlayEffect(1500);
@@ -947,7 +947,7 @@ void ov23_022534A0(FieldSystem *fieldSystem)
         for (i = 0; i < objEventCount; i++) {
             if (objEventList[i].x == v1 && objEventList[i].z == v2) {
                 mapObj = MapObjMan_LocalMapObjByIndex(v4->fieldSystem->mapObjMan, i);
-                MapObject_SetDir(mapObj, v3);
+                MapObject_TryFace(mapObj, v3);
             }
         }
     }

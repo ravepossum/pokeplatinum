@@ -13,8 +13,8 @@
 #include "overlay101/struct_ov101_021D5D90_decl.h"
 #include "overlay101/struct_ov101_021D86B0.h"
 
+#include "fx_util.h"
 #include "unk_02005474.h"
-#include "unk_0201E190.h"
 #include "unk_020711EC.h"
 #include "unk_02073838.h"
 
@@ -42,9 +42,7 @@ static const UnkStruct_ov101_021D86B0 Unk_ov5_02200B1C;
 
 void *ov5_021F55CC(UnkStruct_ov5_021DF47C *param0)
 {
-    UnkStruct_ov5_021F55F8 *v0;
-
-    v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F55F8)), 0, 0);
+    UnkStruct_ov5_021F55F8 *v0 = ov5_021DF53C(param0, (sizeof(UnkStruct_ov5_021F55F8)), 0, 0);
     v0->unk_00 = param0;
 
     ov5_021F55F8(v0);
@@ -131,7 +129,7 @@ static void ov5_021F56F0(UnkStruct_ov101_021D5D90 *param0, void *param1)
         const MtxFx43 *v4 = NNS_G3dGlbGetInvCameraMtx();
         MtxFx33 v5;
 
-        sub_0201E2E0(&v3, 90, 0, 0);
+        MTX_Rot33Angles(&v3, 90, 0, 0);
 
         MTX_Copy43To33(v4, &v5);
         MTX_Concat33(&v3, &v5, &v3);

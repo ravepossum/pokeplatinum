@@ -3,9 +3,6 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "consts/battle.h"
-
-#include "struct_decls/struct_party_decl.h"
 #include "struct_defs/struct_0204B184.h"
 
 #include "overlay104/ov104_0222DCE0.h"
@@ -1496,7 +1493,7 @@ void ov104_0223B0C8(u8 param0, u8 param1, u8 param2, u8 param3, u16 param4, u16 
         }
 
         if (v7 == (NELEMS(Unk_ov104_02240714))) {
-            v9 = Unk_ov104_0224032C[(NELEMS(Unk_ov104_0224032C)) - 1].unk_00;
+            v9 = Unk_ov104_0224032C[NELEMS(Unk_ov104_0224032C) - 1].unk_00;
         }
 
         for (v7 = 0; v7 < (NELEMS(Unk_ov104_0224032C)); v7++) {
@@ -1506,11 +1503,11 @@ void ov104_0223B0C8(u8 param0, u8 param1, u8 param2, u8 param3, u16 param4, u16 
         }
 
         if (v7 == (NELEMS(Unk_ov104_0224032C))) {
-            v7 = ((NELEMS(Unk_ov104_0224032C)) - 1);
+            v7 = (NELEMS(Unk_ov104_0224032C) - 1);
         }
 
         if (param6 == 2) {
-            v0 = &Unk_ov104_0224032C[((NELEMS(Unk_ov104_0224032C)) - 1)];
+            v0 = &Unk_ov104_0224032C[(NELEMS(Unk_ov104_0224032C) - 1)];
         } else {
             v0 = &Unk_ov104_0224032C[v7];
         }
@@ -1597,7 +1594,7 @@ FieldBattleDTO *ov104_0223B250(UnkStruct_ov104_0223B5C0 *param0, UnkStruct_ov104
     v8->terrain = TERRAIN_BATTLE_HALL;
     Party_InitWithCapacity(v8->parties[0], v4);
 
-    v9 = Pokemon_New(11);
+    v9 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v1 = 0; v1 < v4; v1++) {
         Pokemon_Copy(Party_GetPokemonBySlotIndex(v13, param0->unk_260[v1]), v9);
@@ -1622,12 +1619,12 @@ FieldBattleDTO *ov104_0223B250(UnkStruct_ov104_0223B5C0 *param0, UnkStruct_ov104
     v2 = ov104_0223B604(param0, v6, v7);
 
     for (v1 = 0; v1 < 4; v1++) {
-        v8->trainerData[v1].aiMask = v2;
+        v8->trainer[v1].header.aiMask = v2;
     }
 
     ov104_0223B518(&param0->unk_290[v6], v7, param0->unk_18[v6], &param0->unk_268[v6], v5, 11, 180);
 
-    v9 = Pokemon_New(11);
+    v9 = Pokemon_New(HEAP_ID_FIELDMAP);
 
     for (v1 = 0; v1 < v5; v1++) {
         while (TRUE) {
@@ -1658,7 +1655,7 @@ FieldBattleDTO *ov104_0223B250(UnkStruct_ov104_0223B5C0 *param0, UnkStruct_ov104
         ov104_0222E284(v8, &v10, v5, 3, 11);
         Party_InitWithCapacity(v8->parties[3], v5);
 
-        v9 = Pokemon_New(11);
+        v9 = Pokemon_New(HEAP_ID_FIELDMAP);
 
         while (TRUE) {
             if (ov104_0223B4A4(param0, v6) == 0) {
@@ -1850,9 +1847,7 @@ static u16 ov104_0223B604(UnkStruct_ov104_0223B5C0 *param0, u8 param1, u8 param2
 
 static u16 ov104_0223B644(u8 param0)
 {
-    u8 v0;
-
-    v0 = param0;
+    u8 v0 = param0;
 
     if (v0 >= 10) {
         v0 = (10 - 1);

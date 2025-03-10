@@ -1,11 +1,12 @@
 #include "macros/scrcmd.inc"
+#include "res/text/bank/veilstone_city_prize_exchange.h"
 
     .data
 
     ScriptEntry _000E
     ScriptEntry _017C
     ScriptEntry _027E
-    .short 0xFD13
+    ScriptEntryEnd
 
 _000E:
     PlayFanfare SEQ_SE_CONFIRM
@@ -27,8 +28,8 @@ _0039:
     ScrCmd_2A6 0x800C, 0x8000, 0x8001
     CallIfLt 0x8000, 0x148, _0100
     CallIfGe 0x8000, 0x148, _010A
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0039
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0039
     ScrCmd_2A9 0x800C, 0x8001
     GoToIfEq 0x800C, 0, _00F5
     ScrCmd_07D 0x8000, 1, 0x800C
@@ -101,15 +102,15 @@ _017C:
     GoToIfSet 196, _01AF
     SetFlag 196
     Message 8
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0250
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0250
     GoTo _01CB
     End
 
 _01AF:
     Message 9
-    ScrCmd_03E 0x800C
-    GoToIfEq 0x800C, 1, _0250
+    ShowYesNoMenu 0x800C
+    GoToIfEq 0x800C, MENU_NO, _0250
     GoTo _01CB
     End
 
@@ -119,7 +120,7 @@ _01CB:
     WaitFadeScreen
     ScrCmd_191
     ScrCmd_193 0x8000
-    ScrCmd_0A1
+    ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x8000, 0xFF, _0250
