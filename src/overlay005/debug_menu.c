@@ -413,33 +413,48 @@ static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *sys, DebugMenu *menu)
     SysTask *camTask = SysTask_Start(Task_DebugMenu_AdjustCamera, menu, 0);
 }
 
+#define tCameraFOV menu->data
+
+#define CAMERA_FOV_INCREMENT   100
+#define CAMERA_ANGLE_INCREMENT 800
+
 static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data)
 {
     DebugMenu *menu = (DebugMenu *)data;
     Camera *cam = menu->sys->camera;
     CameraAngle angle = { 0, 0, 0, 0 };
 
-    if (JOY_HELD(PAD_KEY_UP)) {
-        menu->data += 100;
-    } else if (JOY_HELD(PAD_KEY_DOWN)) {
-        menu->data -= 100;
+    if (JOY_HELD(PAD_BUTTON_R)) {
+        tCameraFOV += CAMERA_FOV_INCREMENT;
+    } else if (JOY_HELD(PAD_BUTTON_L)) {
+        tCameraFOV -= CAMERA_FOV_INCREMENT;
     }
 
-    if (JOY_HELD(PAD_KEY_LEFT)) {
-        angle.y = -800;
-        Camera_AdjustAngleAroundTarget(&angle, cam);
-    } else if (JOY_HELD(PAD_KEY_RIGHT)) {
-        angle.y = 800;
+    if (JOY_HELD(PAD_KEY)) {
+        if (JOY_HELD(PAD_KEY_UP)) {
+            angle.x = -CAMERA_ANGLE_INCREMENT;
+        } else if (JOY_HELD(PAD_KEY_DOWN)) {
+            angle.x = CAMERA_ANGLE_INCREMENT;
+        }
+
+        if (JOY_HELD(PAD_KEY_LEFT)) {
+            angle.y = -CAMERA_ANGLE_INCREMENT;
+        } else if (JOY_HELD(PAD_KEY_RIGHT)) {
+            angle.y = CAMERA_ANGLE_INCREMENT;
+        }
+
         Camera_AdjustAngleAroundTarget(&angle, cam);
     }
 
-    Camera_SetFOV(menu->data, cam);
+    Camera_SetFOV(tCameraFOV, cam);
 
     if (JOY_HELD(PAD_BUTTON_START)) {
         SysTask_Done(task);
         FieldSystem_ResumeProcessing();
     }
 }
+
+#undef tCameraFOV
 
 // Smaller functionality
 
