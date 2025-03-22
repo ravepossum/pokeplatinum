@@ -407,9 +407,12 @@ RomSpec
 	HostRoot res/field/encounters
 	File pl_enc_data.narc
 	
+	Root /fielddata/build_model
+	HostRoot res/field/props/models
+	File build_model.narc
+	
 	Root /
 	HostRoot res/prebuilt
-	File fielddata/build_model/build_model.narc
 	File fielddata/build_model/build_model_matshp.dat
 	
 	Root /fielddata/mapmatrix
