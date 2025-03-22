@@ -416,7 +416,7 @@ RomSpec
 	File fielddata/build_model/build_model_matshp.dat
 	
 	Root /fielddata/mapmatrix
-	HostRoot res/field/maps/matrices
+	HostRoot res/field/matrices
 	File map_matrix.narc
 	
 	Root /
