@@ -3,8 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "constants/field/map_prop.h"
 #include "constants/map_object.h"
+#include "generated/map_prop_models.h"
 
 #include "field/field_system.h"
 #include "field/field_system_sub2_t.h"

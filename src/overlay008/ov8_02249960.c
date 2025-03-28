@@ -5,7 +5,7 @@
 
 #include "constants/field/dynamic_map_features.h"
 #include "constants/field/map.h"
-#include "constants/field/map_prop.h"
+#include "generated/map_prop_models.h"
 #include "generated/movement_actions.h"
 #include "generated/movement_types.h"
 

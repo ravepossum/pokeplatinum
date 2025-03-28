@@ -4,8 +4,8 @@
 #include <string.h>
 
 #include "constants/field/dynamic_map_features.h"
-#include "constants/field/map_prop.h"
 #include "constants/great_marsh_tram.h"
+#include "generated/map_prop_models.h"
 
 #include "struct_decls/struct_02061AB4_decl.h"
 
