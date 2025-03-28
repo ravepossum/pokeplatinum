@@ -32,7 +32,13 @@ RomSpec
 	HostRoot res/prebuilt  # Directory in source
 
 	File data/UTF16.dat
-	File data/arealight.narc
+
+	Root /data
+	HostRoot res/field/lighting
+	File arealight.narc
+	
+	Root /
+	HostRoot res/prebuilt
 	File data/battle_win.NSCR
 	File data/btower_canm.resdat
 	File data/btower_celact.cldat
@@ -422,7 +428,10 @@ RomSpec
 	Root /
 	HostRoot res/prebuilt
 	File fielddata/areadata/area_data.narc
-	File fielddata/areadata/area_build_model/area_build.narc
+
+	Root /fielddata/areadata/area_build_model	
+	HostRoot res/field/props/model_sets
+	File area_build.narc
 	
 	Root /fielddata/areadata/area_build_model
 	HostRoot res/field/props/texture_sets
@@ -463,7 +472,13 @@ RomSpec
 	File battle/tr_ai/tr_ai_seq.narc
 	File arc/area_win_gra.narc
 	File arc/balance_ball_gra.narc
-	File arc/bm_anime.narc
+
+	Root /arc
+	HostRoot res/field/props/animations
+	File bm_anime.narc
+
+	Root /
+	HostRoot res/prebuilt
 	File arc/bm_anime_list.narc
 	File arc/codein_gra.narc
 	File arc/demo_tengan_gra.narc
