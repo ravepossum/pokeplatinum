@@ -4,7 +4,6 @@
 #include "constants/species.h"
 
 #include "struct_decls/struct_02015920_decl.h"
-#include "struct_defs/archived_sprite.h"
 #include "struct_defs/struct_02015958.h"
 #include "struct_defs/struct_0208737C.h"
 #include "struct_defs/struct_02099F80.h"
@@ -28,6 +27,8 @@
 #include "save_player.h"
 #include "savedata.h"
 #include "savedata_misc.h"
+#include "sound.h"
+#include "sound_playback.h"
 #include "strbuf.h"
 #include "string_list.h"
 #include "string_template.h"
@@ -35,8 +36,6 @@
 #include "system.h"
 #include "text.h"
 #include "trainer_info.h"
-#include "unk_020041CC.h"
-#include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_020131EC.h"
 #include "unk_0201567C.h"
@@ -137,7 +136,7 @@ int ov73_021D0D80(OverlayManager *param0, int *param1)
 
     v0->heapId = childHeapID;
     v0->unk_04 = ((ApplicationArgs *)OverlayManager_Args(param0))->saveData;
-    v0->unk_08 = SaveData_Options(v0->unk_04);
+    v0->unk_08 = SaveData_GetOptions(v0->unk_04);
     v0->unk_0C = 0;
     v0->unk_10 = 0;
     v0->unk_14 = NULL;
@@ -442,7 +441,7 @@ static void ov73_021D1238(UnkStruct_ov73_021D1058 *param0)
 
 static void ov73_021D12C4(UnkStruct_ov73_021D1058 *param0)
 {
-    param0->unk_4C = MessageLoader_Init(1, 26, 389, param0->heapId);
+    param0->unk_4C = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_UNK_0389, param0->heapId);
 
     Text_ResetAllPrinters();
 
@@ -736,7 +735,7 @@ static BOOL ov73_021D1510(UnkStruct_ov73_021D1058 *param0, u32 param1, int param
 static void ov73_021D1634(ListMenu *param0, u32 param1, u8 param2)
 {
     if (param2 == 0) {
-        Sound_PlayEffect(1500);
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
     }
 }
 
@@ -765,7 +764,7 @@ static BOOL ov73_021D1648(UnkStruct_ov73_021D1058 *param0, int param1, int param
         case 2:
             v2 = &Unk_ov72_021D37CC;
 
-            if ((gGameVersion == DIAMOND) || (GAME_VERSION == PLATINUM)) {
+            if ((gGameVersion == VERSION_DIAMOND) || (GAME_VERSION == VERSION_PLATINUM)) {
                 v3 = Unk_ov72_021D3954;
                 v5 = NELEMS(Unk_ov72_021D3954);
             } else {
@@ -812,7 +811,7 @@ static BOOL ov73_021D1648(UnkStruct_ov73_021D1058 *param0, int param1, int param
         Window_Remove(&param0->unk_30);
         ListMenu_Free(param0->unk_40, NULL, NULL);
         StringList_Free(param0->unk_44);
-        Sound_PlayEffect(1500);
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
 
         param0->unk_2C = 0;
         v0 = 1;
@@ -878,7 +877,7 @@ static BOOL ov73_021D1784(UnkStruct_ov73_021D1058 *param0, u32 param1, int param
         break;
     case 3:
         if (((gSystem.pressedKeys & PAD_BUTTON_A) == PAD_BUTTON_A) || ((gSystem.pressedKeys & PAD_BUTTON_B) == PAD_BUTTON_B)) {
-            Sound_PlayEffect(1500);
+            Sound_PlayEffect(SEQ_SE_CONFIRM);
             param0->unk_54 = 4;
         }
         break;
@@ -907,10 +906,10 @@ static void ov73_021D1930(UnkStruct_ov73_021D1058 *param0)
     {
         int v0, v1;
 
-        if (gGameVersion == 12) {
+        if (gGameVersion == VERSION_PLATINUM) {
             v0 = 3;
             v1 = 27;
-        } else if (gGameVersion == 10) {
+        } else if (gGameVersion == VERSION_DIAMOND) {
             v0 = 1;
             v1 = 25;
         } else {
@@ -1094,7 +1093,7 @@ static const u8 Unk_ov72_021D39D4[] = {
 
 static void ov73_021D1B80(UnkStruct_ov73_021D1058 *param0)
 {
-    ArchivedSprite v0;
+    PokemonSpriteTemplate v0;
     void *v1;
     void *v2;
     void *v3;
@@ -1103,7 +1102,7 @@ static void ov73_021D1B80(UnkStruct_ov73_021D1058 *param0)
     int v6 = 8;
     int v7 = 10;
 
-    BuildArchivedPokemonSprite(&v0, 427, 0, 2, 0, 0, 0);
+    BuildPokemonSpriteTemplate(&v0, 427, 0, 2, 0, 0, 0);
 
     v1 = Heap_AllocFromHeap(param0->heapId, (10 * 10) * 2);
 
@@ -1396,7 +1395,7 @@ static BOOL ov73_021D200C(UnkStruct_ov73_021D1058 *param0, int *param1)
         }
     } break;
     case 6:
-        sub_02005844(SPECIES_BUNEARY, 0);
+        Sound_PlayPokemonCry(SPECIES_BUNEARY, 0);
         v0 = 1;
         break;
     }
@@ -1417,8 +1416,8 @@ static BOOL ov73_021D2318(UnkStruct_ov73_021D1058 *param0)
 
     switch (param0->unk_0C) {
     case 0:
-        sub_02004550(2, 1029, 1);
-        sub_020055D0(1029, 0);
+        Sound_SetSceneAndPlayBGM(SOUND_SCENE_2, SEQ_OPENING, 1);
+        Sound_StopBGM(SEQ_OPENING, 0);
         Bg_ToggleLayer(0, 1);
         Bg_ToggleLayer(7, 1);
         StartScreenTransition(0, 1, 1, 0x0, 6, 1, param0->heapId);
@@ -1440,7 +1439,7 @@ static BOOL ov73_021D2318(UnkStruct_ov73_021D1058 *param0)
         }
         break;
     case 3:
-        Sound_PlayBGM(1029);
+        Sound_PlayBGM(SEQ_OPENING);
         param0->unk_89 = 1;
         param0->unk_8A = 0;
         ov73_021D1A20(param0);
@@ -1757,7 +1756,7 @@ static BOOL ov73_021D2318(UnkStruct_ov73_021D1058 *param0)
                 int v3[] = { 33, 34, 0xffff };
 
                 if (v3[param0->unk_94[0]] == 0xffff) {
-                    Sound_PlayEffect(1798);
+                    Sound_PlayEffect(SEQ_SE_DP_BOWA2);
 
                     param0->unk_0C = 50;
                 } else {
@@ -1900,7 +1899,7 @@ static BOOL ov73_021D2318(UnkStruct_ov73_021D1058 *param0)
                 param0->unk_84 = 0;
             }
 
-            Sound_PlayEffect(1500);
+            Sound_PlayEffect(SEQ_SE_CONFIRM);
         }
 
         ov73_021D1DE8(param0);
@@ -2102,7 +2101,7 @@ static BOOL ov73_021D2318(UnkStruct_ov73_021D1058 *param0)
             case 5: {
                 u32 v9;
 
-                if ((gGameVersion == DIAMOND) || (GAME_VERSION == PLATINUM)) {
+                if ((gGameVersion == VERSION_DIAMOND) || (GAME_VERSION == VERSION_PLATINUM)) {
                     v9 = Unk_ov72_021D3954[param0->unk_48 - 1].unk_00;
                 } else {
                     v9 = Unk_ov73_021D1648[param0->unk_48 - 1].unk_00;
@@ -2187,7 +2186,7 @@ static BOOL ov73_021D2318(UnkStruct_ov73_021D1058 *param0)
         break;
     case 101:
         if (ov73_021D1510(param0, 30, 1) == 1) {
-            sub_0200564C(0, 50);
+            Sound_FadeOutBGM(0, 50);
             param0->unk_0C = 102;
         }
         break;

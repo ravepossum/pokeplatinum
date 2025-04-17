@@ -23,8 +23,8 @@
 #include "savedata_misc.h"
 #include "sys_task_manager.h"
 #include "system.h"
+#include "terrain_collision_manager.h"
 #include "unk_0201CED8.h"
-#include "unk_02054D00.h"
 #include "unk_020655F4.h"
 #include "unk_020677F4.h"
 #include "unk_0206CCB0.h"
@@ -178,7 +178,7 @@ BOOL sub_02055E00(FieldSystem *fieldSystem, MapObject *param1)
     BerryPatches_HarvestPatch(v3, v0);
     sub_02067834(param1);
 
-    return Bag_TryAddItem(SaveData_GetBag(fieldSystem->saveData), sub_02055C50(v2), v1, 4);
+    return Bag_TryAddItem(SaveData_GetBag(fieldSystem->saveData), sub_02055C50(v2), v1, HEAP_ID_FIELD);
 }
 
 void sub_02055E80(FieldSystem *fieldSystem, MapObject *param1, u16 param2)
@@ -313,7 +313,7 @@ static BOOL sub_02056010(FieldSystem *fieldSystem, UnkStruct_020562AC *param1, i
         GF_ASSERT(0);
     }
 
-    if (FieldSystem_CheckCollision(fieldSystem, v0, v1)) {
+    if (TerrainCollisionManager_CheckCollision(fieldSystem, v0, v1)) {
         return 1;
     }
 

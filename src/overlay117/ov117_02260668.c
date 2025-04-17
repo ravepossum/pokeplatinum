@@ -37,6 +37,7 @@
 #include "palette.h"
 #include "render_text.h"
 #include "render_window.h"
+#include "sound_playback.h"
 #include "sprite_system.h"
 #include "sprite_util.h"
 #include "strbuf.h"
@@ -46,7 +47,6 @@
 #include "system.h"
 #include "text.h"
 #include "trainer_info.h"
-#include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_02012744.h"
 #include "unk_02014000.h"
@@ -228,7 +228,7 @@ int ov117_02260668(OverlayManager *param0, int *param1)
     SetSubScreenViewRect(SpriteSystem_GetRenderer(v0->unk_24), 0, ((192 + 160) << FX32_SHIFT));
     ov117_02261574(v0);
 
-    v0->unk_80 = MessageLoader_Init(0, 26, 9, HEAP_ID_110);
+    v0->unk_80 = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_UNK_0009, HEAP_ID_110);
     v0->unk_84 = StringTemplate_Default(HEAP_ID_110);
     v0->unk_88 = Strbuf_Init((2 * 160), HEAP_ID_110);
     v0->unk_90 = sub_02012744((2 * 6 + 6 + 1), HEAP_ID_110);
@@ -1178,7 +1178,7 @@ BOOL ov117_02261E38(UnkStruct_ov117_02261280 *param0, int param1)
 
             v0->unk_C8[v2][v3].unk_00 = 1;
 
-            Sound_PlayEffect(1401);
+            Sound_PlayEffect(SEQ_SE_PL_BALLOON03_2);
             return 1;
         }
     }

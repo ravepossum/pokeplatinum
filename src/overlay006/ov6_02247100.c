@@ -21,8 +21,8 @@
 #include "location.h"
 #include "player_avatar.h"
 #include "pokemon.h"
+#include "sound_playback.h"
 #include "sys_task_manager.h"
-#include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_0203A7D8.h"
 #include "unk_020655F4.h"
@@ -87,13 +87,13 @@ static int ov6_0224715C(FieldTask *task, FieldSystem *fieldSystem, UnkStruct_ov6
 
     switch (param2->unk_08) {
     case 0:
-        Sound_PlayEffect(1539);
+        Sound_PlayEffect(SEQ_SE_DP_KAIDAN2);
         break;
     case 1:
-        Sound_PlayEffect(1539);
+        Sound_PlayEffect(SEQ_SE_DP_KAIDAN2);
         break;
     case 2:
-        Sound_PlayEffect(1614);
+        Sound_PlayEffect(SEQ_SE_DP_TELE);
         break;
     }
 

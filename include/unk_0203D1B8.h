@@ -1,7 +1,6 @@
 #ifndef POKEPLATINUM_UNK_0203D1B8_H
 #define POKEPLATINUM_UNK_0203D1B8_H
 
-#include "struct_decls/struct_02070950_decl.h"
 #include "struct_decls/struct_0209747C_decl.h"
 #include "struct_defs/choose_starter_data.h"
 #include "struct_defs/struct_0203D8AC.h"
@@ -21,6 +20,7 @@
 #include "overlay090/struct_ov90_021D0D80.h"
 
 #include "field_battle_data_transfer.h"
+#include "field_move_tasks.h"
 #include "field_task.h"
 #include "pokemon.h"
 #include "savedata.h"
@@ -33,10 +33,10 @@ u16 sub_0203D2C4(void *param0);
 void sub_0203D2E4(FieldSystem *fieldSystem, void *param1);
 void sub_0203D30C(FieldSystem *fieldSystem, void *param1);
 void FieldSystem_OpenSummaryScreen(FieldSystem *fieldSystem, void *overlayArgs);
-void *sub_0203D390(FieldSystem *fieldSystem, UnkStruct_02070950 *param1, u8 param2);
+void *sub_0203D390(FieldSystem *fieldSystem, FieldMoveContext *param1, u8 param2);
 void *sub_0203D3C0(int param0, FieldSystem *fieldSystem);
 void *sub_0203D3E4(int param0, FieldSystem *fieldSystem);
-int sub_0203D408(void *param0);
+int PartyManagementData_GetSelectedSlot(PartyManagementData *partyMan);
 void *sub_0203D410(int param0, FieldSystem *fieldSystem, int param2);
 int sub_0203D438(void *param0);
 int sub_0203D440(void *param0);
@@ -89,7 +89,7 @@ void *sub_0203E53C(FieldSystem *fieldSystem, int heapID, int param2);
 void *sub_0203E564(FieldSystem *fieldSystem, u8 param1, u8 param2, u16 param3, int heapID);
 PartyManagementData *sub_0203E598(FieldSystem *fieldSystem, int heapID, int param2);
 void *sub_0203E608(FieldSystem *fieldSystem, int heapID);
-void *sub_0203E63C(int param0, FieldSystem *fieldSystem, u16 param2, u16 param3);
+void *FieldSystem_OpenSummaryScreenTeachMove(int unused, FieldSystem *fieldSystem, u16 partySlot, u16 move);
 void sub_0203E6C0(FieldSystem *fieldSystem, int param1, int param2);
 void sub_0203E704(FieldSystem *fieldSystem);
 void sub_0203E714(FieldSystem *fieldSystem);

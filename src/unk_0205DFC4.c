@@ -238,18 +238,15 @@ u16 sub_0205E0E4(u16 param0, u16 param1)
     }
 }
 
-u16 sub_0205E1B4(SaveData *param0)
+u16 SaveData_GetFirstNonEggInParty(SaveData *saveData)
 {
-    Pokemon *v0;
-    u16 v1, v2;
+    u16 i, partyCount = Party_GetCurrentCount(SaveData_GetParty(saveData));
 
-    v2 = Party_GetCurrentCount(Party_GetFromSavedata(param0));
+    for (i = 0; i < partyCount; i++) {
+        Pokemon *mon = Party_GetPokemonBySlotIndex(SaveData_GetParty(saveData), i);
 
-    for (v1 = 0; v1 < v2; v1++) {
-        v0 = Party_GetPokemonBySlotIndex(Party_GetFromSavedata(param0), v1);
-
-        if (Pokemon_GetValue(v0, MON_DATA_IS_EGG, NULL) == 0) {
-            return v1;
+        if (Pokemon_GetValue(mon, MON_DATA_IS_EGG, NULL) == FALSE) {
+            return i;
         }
     }
 
@@ -263,7 +260,7 @@ BOOL HasAllLegendaryTitansInParty(SaveData *param0)
     static const u16 v5[] = { 377, 378, 379 };
     u16 v6[6];
 
-    v4 = Party_GetFromSavedata(param0);
+    v4 = SaveData_GetParty(param0);
     v2 = Party_GetCurrentCount(v4);
 
     for (v0 = 0; v0 < v2; v0++) {

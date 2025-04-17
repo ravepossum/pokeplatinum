@@ -7,11 +7,11 @@
 
 #include "heap.h"
 #include "palette.h"
+#include "sound_playback.h"
 #include "sprite_system.h"
 #include "strbuf.h"
 #include "system.h"
 #include "touch_screen.h"
-#include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_02023FCC.h"
 #include "unk_020393C8.h"
@@ -873,20 +873,20 @@ void sub_0208A180(u32 param0, u32 param1, void *param2)
                 v0->unk_380.unk_04 = v0->unk_00[param0].unk_04;
             }
 
-            Sound_PlayEffect(1509);
+            Sound_PlayEffect(SEQ_SE_DP_BUTTON3);
         } else {
             if (param0 == 26) {
                 v0->unk_1F0[1].unk_14.unk_00 = 0;
                 v0->unk_1F0[1].unk_14.unk_02 = 2;
-                Sound_PlayEffect(1509);
+                Sound_PlayEffect(SEQ_SE_DP_BUTTON3);
             } else if (param0 == 27) {
                 v0->unk_1F0[1].unk_14.unk_00 = 3;
                 v0->unk_1F0[1].unk_14.unk_02 = 2;
-                Sound_PlayEffect(1506);
+                Sound_PlayEffect(SEQ_SE_DP_PIRORIRO);
             } else {
                 v0->unk_1F0[1].unk_14.unk_00 = (param0 - 16) % 5;
                 v0->unk_1F0[1].unk_14.unk_02 = (param0 - 16) / 5;
-                Sound_PlayEffect(1509);
+                Sound_PlayEffect(SEQ_SE_DP_BUTTON3);
             }
 
             if ((param0 >= 16) && (param0 <= 25)) {

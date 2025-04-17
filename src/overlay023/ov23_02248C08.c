@@ -12,9 +12,9 @@
 #include "colored_arrow.h"
 #include "heap.h"
 #include "list_menu.h"
+#include "sound_playback.h"
 #include "string_list.h"
 #include "system.h"
-#include "unk_02005474.h"
 #include "unk_0202854C.h"
 
 UnkStruct_ov23_02248D20 *ov23_02248C08(ListMenuTemplate *param0, u16 param1, u16 param2, u8 heapID, UnkFuncPtr_ov23_02248D20 param4, UndergroundData *param5, BOOL param6)
@@ -96,7 +96,7 @@ u32 ov23_02248D20(UnkStruct_ov23_02248D20 *param0)
             ov23_02248CA4(v1, v2, param0);
 
             if ((gSystem.pressedKeys & PAD_BUTTON_A) || (gSystem.pressedKeys & PAD_BUTTON_SELECT)) {
-                Sound_PlayEffect(1500);
+                Sound_PlayEffect(SEQ_SE_CONFIRM);
 
                 if (v1 + v2 == v8 - 1) {
                     return 0xffffffff;
@@ -160,7 +160,7 @@ u32 ov23_02248D20(UnkStruct_ov23_02248D20 *param0)
             }
         } else {
             if (gSystem.pressedKeys & PAD_BUTTON_SELECT) {
-                Sound_PlayEffect(1500);
+                Sound_PlayEffect(SEQ_SE_CONFIRM);
 
                 if (v1 + v2 == v8 - 1) {
                     return 0xffffffff;
@@ -183,17 +183,17 @@ u32 ov23_02248D20(UnkStruct_ov23_02248D20 *param0)
     ListMenu_CalcTrueCursorPos(v0, &param0->unk_20);
 
     if (v3 != param0->unk_20) {
-        Sound_PlayEffect(1500);
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
     }
 
     switch (v6) {
     case 0xffffffff:
         break;
     case 0xfffffffe:
-        Sound_PlayEffect(1500);
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
         break;
     default:
-        Sound_PlayEffect(1500);
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
         break;
     }
 

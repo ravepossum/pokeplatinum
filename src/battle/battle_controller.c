@@ -14,7 +14,6 @@
 #include "constants/trainer.h"
 #include "generated/abilities.h"
 #include "generated/game_records.h"
-#include "generated/sdat.h"
 
 #include "struct_decls/battle_system.h"
 #include "struct_defs/trainer.h"
@@ -41,8 +40,8 @@
 #include "move_table.h"
 #include "party.h"
 #include "pokemon.h"
+#include "sound_playback.h"
 #include "trainer_info.h"
-#include "unk_02005474.h"
 #include "unk_0200F174.h"
 
 enum {

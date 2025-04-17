@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "constants/screen.h"
-#include "generated/sdat.h"
 
 #include "struct_defs/struct_0207C690.h"
 #include "struct_defs/struct_02099F80.h"
@@ -18,10 +17,10 @@
 #include "narc.h"
 #include "overlay_manager.h"
 #include "render_text.h"
+#include "sound_playback.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "system.h"
-#include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_0201E3D8.h"
 #include "unk_0202419C.h"

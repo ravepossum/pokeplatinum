@@ -28,8 +28,8 @@ _003D:
     FacePlayer
     GoToIfEq 0x4069, 0x122, _00ED
     GoToIfEq 0x4069, 0x118, _00F8
-    GoToIfUnset 0x964, _010F
-    ScrCmd_32B 0x800C
+    GoToIfUnset FLAG_GAME_COMPLETED, _010F
+    CheckPartyHasFatefulEncounterRegigigas 0x800C
     GoToIfEq 0x800C, 0, _011A
     GoToIfEq 0x4069, 0x10E, _00AE
     GoToIfLt 0x4069, 0x104, _011A
@@ -43,7 +43,7 @@ _003D:
 _00AE:
     PlayCry SPECIES_REGISTEEL
     Message 2
-    ScrCmd_04D
+    WaitCry
     CloseMessage
     StartLegendaryBattle SPECIES_REGISTEEL, 30
     CheckWonBattle 0x800C
@@ -140,7 +140,7 @@ _020D:
     End
 
 _020F:
-    GoToIfUnset 0x964, _020D
+    GoToIfUnset FLAG_GAME_COMPLETED, _020D
     WaitFanfare SEQ_SE_CONFIRM
     ScrCmd_29F 1
     SetVar 0x4069, 0x10E

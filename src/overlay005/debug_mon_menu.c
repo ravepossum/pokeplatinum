@@ -329,7 +329,7 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
 
     if (JOY_NEW(PAD_BUTTON_X)) {
         if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
-            int partyCount = Party_GetCurrentCount(Party_GetFromSavedata(monMenu->sys->saveData));
+            int partyCount = Party_GetCurrentCount(SaveData_GetParty(monMenu->sys->saveData));
 
             if (monMenu->partySlot == 0) {
                 monMenu->partySlot = partyCount - 1;
@@ -348,7 +348,7 @@ void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
 
     if (JOY_NEW(PAD_BUTTON_Y)) {
         if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
-            int partyCount = Party_GetCurrentCount(Party_GetFromSavedata(monMenu->sys->saveData));
+            int partyCount = Party_GetCurrentCount(SaveData_GetParty(monMenu->sys->saveData));
 
             if (monMenu->partySlot == partyCount - 1) {
                 monMenu->partySlot = 0;
@@ -604,18 +604,18 @@ static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu)
     Party *party;
 
     if (monMenu->mode == DEBUG_MON_MENU_MODE_CREATE) {
-        party = Party_GetFromSavedata(monMenu->sys->saveData);
+        party = SaveData_GetParty(monMenu->sys->saveData);
 
         if (Party_AddPokemon(party, monMenu->mon.monData) == TRUE) {
             return 0;
         }
 
-        PCBoxes_TryStoreBoxMon(SaveData_PCBoxes(monMenu->sys->saveData), Pokemon_GetBoxPokemon(monMenu->mon.monData));
+        PCBoxes_TryStoreBoxMon(SaveData_GetPCBoxes(monMenu->sys->saveData), Pokemon_GetBoxPokemon(monMenu->mon.monData));
 
         return 1;
 
     } else if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
-        party = Party_GetFromSavedata(monMenu->sys->saveData);
+        party = SaveData_GetParty(monMenu->sys->saveData);
 
         Strbuf *buf;
 
@@ -635,7 +635,7 @@ static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu)
         u8 gender = Pokemon_GetValue(mon, MON_DATA_OT_GENDER, NULL);
         Pokemon_SetValue(monMenu->mon.monData, MON_DATA_OT_GENDER, &gender);
         // set party data?
-        sub_0207A128(party, monMenu->partySlot, monMenu->mon.monData);
+        Party_AddPokemonBySlotIndex(party, monMenu->partySlot, monMenu->mon.monData);
         return 0;
     }
 
@@ -644,7 +644,7 @@ static u8 DebugMonMenu_AddMon(DebugMonMenu *monMenu)
 
 static void DebugMonMenu_SetEditMon(DebugMonMenu *monMenu, u8 partySlot)
 {
-    Party *party = Party_GetFromSavedata(monMenu->sys->saveData);
+    Party *party = SaveData_GetParty(monMenu->sys->saveData);
     Pokemon *changeMon = Party_GetPokemonBySlotIndex(party, partySlot);
     MI_CpuCopy8(changeMon, monMenu->mon.monData, Pokemon_GetStructSize());
     DebugMon_SetStatsFromMonData(&monMenu->mon);

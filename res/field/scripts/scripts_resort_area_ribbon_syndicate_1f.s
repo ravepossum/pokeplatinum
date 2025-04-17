@@ -1,5 +1,6 @@
 #include "macros/scrcmd.inc"
 #include "res/text/bank/resort_area_ribbon_syndicate_1f.h"
+#include "generated/ribbons.h"
 
     .data
 
@@ -14,7 +15,7 @@
     ScriptEntryEnd
 
 _0022:
-    GoToIfSet 250, _002F
+    GoToIfSet FLAG_UNK_0x00FA, _002F
     End
 
 _002F:
@@ -28,7 +29,7 @@ _003F:
     ScrCmd_22F 0x8004
     GoToIfLt 0x8004, 10, _0078
     SetVar 0x40A7, 1
-    SetFlag 250
+    SetFlag FLAG_UNK_0x00FA
     BufferPlayerName 0
     Message 1
     CloseMessage
@@ -72,19 +73,19 @@ _00D6:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_247 0x8000
+    GetFirstNonEggInParty 0x8000
     BufferPlayerName 0
     BufferPartyMonSpecies 2, 0x8000
-    ScrCmd_230 0x800C, 0x8000, 68
+    GetPartyMonRibbon 0x800C, 0x8000, RIBBON_GORGEOUS_ROYAL
     GoToIfEq 0x800C, 1, _0244
-    ScrCmd_230 0x800C, 0x8000, 67
+    GetPartyMonRibbon 0x800C, 0x8000, RIBBON_ROYAL
     GoToIfEq 0x800C, 1, _01E7
-    ScrCmd_230 0x800C, 0x8000, 66
+    GetPartyMonRibbon 0x800C, 0x8000, RIBBON_GORGEOUS
     GoToIfEq 0x800C, 1, _018A
     GoTo _012F
 
 _012F:
-    ScrCmd_072 20, 2
+    ShowMoney 20, 2
     Message 3
     ShowYesNoMenu 0x800C
     GoToIfEq 0x800C, MENU_NO, _025C
@@ -92,20 +93,20 @@ _012F:
     GoToIfEq 0x800C, 0, _024F
     ScrCmd_334 35, 0x2710
     ScrCmd_070 0x2710
-    ScrCmd_074
+    UpdateMoneyDisplay
     PlayFanfare SEQ_SE_DP_REGI
     WaitFanfare SEQ_SE_DP_REGI
     Message 7
     Message 8
     WaitABXPadPress
-    ScrCmd_231 0x8000, 66
+    SetPartyMonRibbon 0x8000, RIBBON_GORGEOUS
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
 _018A:
-    ScrCmd_072 20, 2
+    ShowMoney 20, 2
     Message 4
     ShowYesNoMenu 0x800C
     GoToIfEq 0x800C, MENU_NO, _025C
@@ -113,20 +114,20 @@ _018A:
     GoToIfEq 0x800C, 0, _024F
     ScrCmd_335 35, 0x186A0
     ScrCmd_070 0x186A0
-    ScrCmd_074
+    UpdateMoneyDisplay
     PlayFanfare SEQ_SE_DP_REGI
     WaitFanfare SEQ_SE_DP_REGI
     Message 9
     Message 10
     WaitABXPadPress
-    ScrCmd_231 0x8000, 67
+    SetPartyMonRibbon 0x8000, RIBBON_ROYAL
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
 _01E7:
-    ScrCmd_072 20, 2
+    ShowMoney 20, 2
     Message 5
     ShowYesNoMenu 0x800C
     GoToIfEq 0x800C, MENU_NO, _025C
@@ -134,15 +135,15 @@ _01E7:
     GoToIfEq 0x800C, 0, _024F
     ScrCmd_335 35, 0xF423F
     ScrCmd_070 0xF423F
-    ScrCmd_074
+    UpdateMoneyDisplay
     PlayFanfare SEQ_SE_DP_REGI
     WaitFanfare SEQ_SE_DP_REGI
     Message 11
     Message 12
     WaitABXPadPress
-    ScrCmd_231 0x8000, 68
+    SetPartyMonRibbon 0x8000, RIBBON_GORGEOUS_ROYAL
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -157,7 +158,7 @@ _024F:
     Message 13
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -165,7 +166,7 @@ _025C:
     Message 14
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -209,7 +210,7 @@ _02BA:
     WaitFanfare SEQ_SE_CONFIRM
     PlayCry SPECIES_SKITTY
     Message 18
-    ScrCmd_04D
+    WaitCry
     WaitABXPadPress
     CloseMessage
     ReleaseAll
@@ -222,7 +223,7 @@ _02D9:
     WaitFanfare SEQ_SE_CONFIRM
     PlayCry SPECIES_PSYDUCK
     Message 19
-    ScrCmd_04D
+    WaitCry
     WaitABXPadPress
     CloseMessage
     ReleaseAll

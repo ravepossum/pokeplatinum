@@ -9,8 +9,8 @@
 
 _000E:
     SetVar 0x4000, 0
-    ScrCmd_25B
-    ScrCmd_25D 0x4001
+    InitPersistedMapFeaturesForPlatformLift
+    CheckPlatformLiftNotUsedWhenEnteredMap 0x4001
     GoToIfEq 0x4001, 0, _0029
     End
 
@@ -19,7 +19,7 @@ _0029:
     End
 
 _0031:
-    ScrCmd_25C
+    TriggerPlatformLift
     SetVar 0x4000, 1
     End
 

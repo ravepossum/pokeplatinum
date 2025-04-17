@@ -15,13 +15,13 @@
 
 _0022:
     LockAll
-    ClearFlag 0x2BA
+    ClearFlag FLAG_UNK_0x02BA
     AddObject 1
     ScrCmd_1B2 1
     SetObjectEventPos 0, 32, 34
     ScrCmd_189 0, 0
     ScrCmd_188 0, 14
-    ClearFlag 0x1CD
+    ClearFlag FLAG_UNK_0x01CD
     AddObject 0
     ScrCmd_066 30, 30
     ApplyMovement 241, _016C
@@ -50,7 +50,7 @@ _0088:
     ApplyMovement 0, _0154
     WaitMovement
     Message 5
-    SetFlag 0x29E
+    SetFlag FLAG_UNK_0x029E
     GoTo _00DA
     End
 
@@ -68,7 +68,7 @@ _00FD:
     WaitFadeScreen
     ScrCmd_320
     ReturnToField
-    ScrCmd_328 1
+    SetPartyGiratinaForm GIRATINA_FORM_ORIGIN
     Warp MAP_HEADER_DISTORTION_WORLD_1F, 0, 55, 40, 1
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen

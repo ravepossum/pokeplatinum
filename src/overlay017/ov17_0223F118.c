@@ -27,12 +27,12 @@
 #include "message.h"
 #include "palette.h"
 #include "pokemon.h"
+#include "sound_playback.h"
 #include "sprite_system.h"
 #include "strbuf.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "text.h"
-#include "unk_02005474.h"
 #include "unk_02012744.h"
 #include "unk_02024220.h"
 
@@ -185,7 +185,7 @@ Strbuf *ov17_0223F310(u32 param0, u32 param1)
     MessageLoader *v0;
     Strbuf *v1;
 
-    v0 = MessageLoader_Init(1, 26, 207, param1);
+    v0 = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_CONTEST_JUDGE_NAMES, param1);
     v1 = MessageLoader_GetNewStrbuf(v0, param0);
 
     MessageLoader_Free(v0);
@@ -438,7 +438,7 @@ static void ov17_0223F774(SysTask *param0, void *param1)
 
     if (v0->unk_08 > v0->unk_0C[v0->unk_11]) {
         BrightnessController_StartTransition(6, 0, 4, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), BRIGHTNESS_MAIN_SCREEN);
-        Sound_PlayEffect(1528);
+        Sound_PlayEffect(SEQ_SE_DP_CON_014);
 
         v0->unk_08 = 0;
         v0->unk_11++;

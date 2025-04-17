@@ -27,14 +27,14 @@ _0046:
     End
 
 _004E:
-    GoToIfSet 142, _005B
+    GoToIfSet FLAG_UNK_0x008E, _005B
     End
 
 _005B:
-    SetFlag 0x18F
+    SetFlag FLAG_UNK_0x018F
     RemoveObject 3
     RemoveObject 2
-    ClearFlag 142
+    ClearFlag FLAG_UNK_0x008E
     End
     End
 
@@ -82,7 +82,7 @@ _006F:
     Message 4
     PlayCry SPECIES_MESPRIT
     Message 5
-    ScrCmd_04D
+    WaitCry
     CloseMessage
     ApplyMovement 5, _02C0
     ApplyMovement LOCALID_PLAYER, _0388
@@ -103,14 +103,14 @@ _006F:
     ApplyMovement 5, _02F8
     ApplyMovement LOCALID_PLAYER, _039C
     WaitMovement
-    SetFlag 0x196
+    SetFlag FLAG_UNK_0x0196
     RemoveObject 5
     PlayFanfare SEQ_SE_DP_KAIDAN2
     GoTo _01A1
     End
 
 _01A1:
-    SetVar 0x4086, 4
+    SetVar VAR_FOLLOWER_RIVAL_STATE, 4
     SetVar 0x4095, 1
     ReleaseAll
     End
@@ -630,8 +630,8 @@ _0418:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    GoToIfSet 184, _043D
-    SetFlag 184
+    GoToIfSet FLAG_UNK_0x00B8, _043D
+    SetFlag FLAG_UNK_0x00B8
     BufferPlayerName 0
     Message 8
     WaitABXPadPress

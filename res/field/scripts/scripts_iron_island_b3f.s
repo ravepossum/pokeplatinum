@@ -9,15 +9,15 @@
     ScriptEntryEnd
 
 _0012:
-    ScrCmd_32B 0x4004
+    CheckPartyHasFatefulEncounterRegigigas 0x4004
     GoToIfEq 0x4004, 0, _0061
     GoToIfEq 0x4004, 1, _006B
     End
 
 _0032:
-    ScrCmd_25B
+    InitPersistedMapFeaturesForPlatformLift
     CallIfNe 0x4069, 0x122, _0079
-    ScrCmd_32B 0x4004
+    CheckPartyHasFatefulEncounterRegigigas 0x4004
     GoToIfEq 0x4004, 0, _0061
     GoToIfEq 0x4004, 1, _006B
     End
@@ -31,7 +31,7 @@ _006B:
     End
 
 _0075:
-    ScrCmd_25C
+    TriggerPlatformLift
     End
 
 _0079:

@@ -36,6 +36,8 @@
 #include "render_window.h"
 #include "save_player.h"
 #include "savedata.h"
+#include "sound.h"
+#include "sound_playback.h"
 #include "sprite.h"
 #include "sprite_resource.h"
 #include "sprite_transfer.h"
@@ -47,8 +49,6 @@
 #include "system.h"
 #include "text.h"
 #include "trainer_info.h"
-#include "unk_020041CC.h"
-#include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_02015920.h"
 #include "unk_0202ACE0.h"
@@ -1144,7 +1144,7 @@ void ov114_0225CBB0(UnkStruct_ov114_0225CAD4 *param0)
     param0->unk_2C = SysTask_Start(ov114_0225FF54, param0, 0);
     param0->unk_04 = 1;
 
-    Sound_PlayEffect(1521);
+    Sound_PlayEffect(SEQ_SE_DP_PINPON);
 }
 
 BOOL ov114_0225CBE0(const UnkStruct_ov114_0225CAD4 *param0)
@@ -1412,7 +1412,7 @@ static void ov114_0225D07C(UnkStruct_ov114_0225CFCC *param0)
 
 static void ov114_0225D084(UnkStruct_ov114_0225D084 *param0, u32 param1)
 {
-    param0->unk_00 = MessageLoader_Init(0, 26, 411, param1);
+    param0->unk_00 = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_UNK_0411, param1);
     param0->unk_04 = StringTemplate_New(8, 64, param1);
     param0->unk_08 = Strbuf_Init(128, param1);
     param0->unk_0C = Strbuf_Init(128, param1);
@@ -1515,7 +1515,7 @@ static void ov114_0225D254(UnkStruct_ov114_0225D084 *param0, u32 param1, Window 
 
 static void ov114_0225D290(UnkStruct_ov114_0225D338 *param0, UnkStruct_ov114_0225CEF0 *param1, SaveData *param2, BOOL param3, u32 param4)
 {
-    u32 v0 = Options_Frame(SaveData_Options(param2));
+    u32 v0 = Options_Frame(SaveData_GetOptions(param2));
     u32 v1;
     int v2;
     u8 v3;
@@ -1621,7 +1621,7 @@ static UnkStruct_ov114_0225D678 *ov114_0225D48C(const UnkStruct_ov114_0225C76C *
     UnkStruct_ov114_0225D678 *v0;
     int v1;
 
-    sub_02004550(19, 1211, 0);
+    Sound_SetSceneAndPlayBGM(SOUND_SCENE_19, SEQ_PL_WIFIGAME, 0);
 
     v0 = Heap_AllocFromHeap(heapID, sizeof(UnkStruct_ov114_0225D678));
     memset(v0, 0, sizeof(UnkStruct_ov114_0225D678));
@@ -2336,7 +2336,7 @@ static BOOL ov114_0225E31C(UnkStruct_ov114_0225E1A4 *param0, UnkStruct_ov114_022
         param0->unk_2C++;
 
         if (v0 == 1) {
-            Sound_PlayEffect(1385);
+            Sound_PlayEffect(SEQ_SE_PL_FCALL);
 
             ov114_0225CBF0(&param0->unk_18, Unk_ov114_02260110[param0->unk_10], Unk_ov114_0226011C[param0->unk_10], Unk_ov114_02260128[param0->unk_10], 4);
             param0->unk_2E++;
@@ -3427,7 +3427,7 @@ static BOOL ov114_0225F5AC(UnkStruct_ov114_0225F578 *param0, UnkStruct_ov114_022
             break;
         }
 
-        Sound_PlayEffect(1404);
+        Sound_PlayEffect(SEQ_SE_PL_BALLOON07);
         Sprite_SetDrawFlag(param0->unk_08[(param0->unk_4A % (5 * 3))], 1);
         param0->unk_49 = 8;
         param0->unk_48++;
@@ -3510,7 +3510,7 @@ static BOOL ov114_0225F7D8(UnkStruct_ov114_0225E854 *param0)
 static void ov114_0225F83C(UnkStruct_ov114_0225E854 *param0)
 {
     if (param0->unk_6C4 == 0) {
-        sub_02006150(1222);
+        Sound_PlayFanfare(1222);
         param0->unk_6C4 = 1;
     }
 }
@@ -3518,7 +3518,7 @@ static void ov114_0225F83C(UnkStruct_ov114_0225E854 *param0)
 static BOOL ov114_0225F860(UnkStruct_ov114_0225E854 *param0)
 {
     if (param0->unk_6C4 == 1) {
-        if (sub_020061E4() == 0) {
+        if (Sound_IsBGMPausedByFanfare() == 0) {
             param0->unk_6C4 = 0;
         }
     }
@@ -3532,7 +3532,7 @@ static BOOL ov114_0225F860(UnkStruct_ov114_0225E854 *param0)
 
 static void ov114_0225F890(UnkStruct_ov114_0225E854 *param0)
 {
-    UnkStruct_0202B370 *v0 = sub_0202B370(param0->unk_0C.unk_00);
+    WiFiList *v0 = SaveData_GetWiFiList(param0->unk_0C.unk_00);
     int v1;
     int v2, v3;
     int v4;
@@ -3826,19 +3826,19 @@ static void ov114_0225FDC8(SysTask *param0, void *param1)
         if (v2 != v3) {
             switch (v3) {
             case 7:
-                Sound_PlayEffect(1501);
+                Sound_PlayEffect(SEQ_SE_DP_DECIDE);
                 break;
             case 9:
-                Sound_PlayEffect(1501);
+                Sound_PlayEffect(SEQ_SE_DP_DECIDE);
                 break;
             case 11:
-                Sound_PlayEffect(1501);
+                Sound_PlayEffect(SEQ_SE_DP_DECIDE);
                 break;
             case 13:
-                Sound_PlayEffect(1501);
+                Sound_PlayEffect(SEQ_SE_DP_DECIDE);
                 break;
             case 15:
-                Sound_PlayEffect(1603);
+                Sound_PlayEffect(SEQ_SE_DP_CON_016);
                 break;
             default:
                 break;

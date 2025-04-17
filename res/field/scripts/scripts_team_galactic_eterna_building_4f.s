@@ -69,20 +69,20 @@ _00E2:
     CloseMessage
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
-    SetFlag 0x1FD
-    SetFlag 0x1BB
-    SetFlag 0x1C2
-    SetFlag 129
-    ClearFlag 0x192
-    ClearFlag 0x200
-    ClearFlag 0x1FE
+    SetFlag FLAG_UNK_0x01FD
+    SetFlag FLAG_UNK_0x01BB
+    SetFlag FLAG_UNK_0x01C2
+    SetFlag FLAG_UNK_0x0081
+    ClearFlag FLAG_UNK_0x0192
+    ClearFlag FLAG_UNK_0x0200
+    ClearFlag FLAG_UNK_0x01FE
     RemoveObject 2
     RemoveObject 1
     RemoveObject 3
     SetVar 0x407A, 3
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
-    SetFlag 0x987
+    SetFlag FLAG_ALT_MUSIC_GALACTIC_ETERNA_BUILDING
     ReleaseAll
     End
 
@@ -168,7 +168,7 @@ _0198:
     WaitFanfare SEQ_SE_CONFIRM
     PlayCry SPECIES_CLEFAIRY
     Message 2
-    ScrCmd_04D
+    WaitCry
     WaitABXPadPress
     CloseMessage
     ReleaseAll
@@ -181,7 +181,7 @@ _01B7:
     WaitFanfare SEQ_SE_CONFIRM
     PlayCry SPECIES_BUNEARY
     Message 5
-    ScrCmd_04D
+    WaitCry
     WaitABXPadPress
     CloseMessage
     ReleaseAll
@@ -191,7 +191,7 @@ _01D6:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    GoToIfSet 129, _01F4
+    GoToIfSet FLAG_UNK_0x0081, _01F4
     Message 3
     WaitABXPadPress
     CloseMessage

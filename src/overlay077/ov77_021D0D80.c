@@ -25,11 +25,11 @@
 #include "message.h"
 #include "narc.h"
 #include "overlay_manager.h"
+#include "sound.h"
+#include "sound_playback.h"
 #include "strbuf.h"
 #include "system.h"
 #include "text.h"
-#include "unk_020041CC.h"
-#include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_0202419C.h"
 #include "unk_02024220.h"
@@ -224,8 +224,8 @@ static int ov77_021D0E3C(OverlayManager *param0, int *param1)
         }
         break;
     case 2:
-        sub_02004234(0);
-        sub_02004550(1, 1173, 1);
+        Sound_SetScene(SOUND_SCENE_NONE);
+        Sound_SetSceneAndPlayBGM(SOUND_SCENE_1, SEQ_TITLE01, 1);
         *param1 = 3;
         break;
     case 3:
@@ -244,8 +244,8 @@ static int ov77_021D0E3C(OverlayManager *param0, int *param1)
 
         if (((gSystem.pressedKeys & PAD_BUTTON_A) == PAD_BUTTON_A) || ((gSystem.pressedKeys & PAD_BUTTON_START) == PAD_BUTTON_START)) {
             v0->unk_4E8 = 1;
-            sub_0200564C(0, 60);
-            sub_02005844(SPECIES_GIRATINA, 1);
+            Sound_FadeOutBGM(0, 60);
+            Sound_PlayPokemonCry(SPECIES_GIRATINA, 1);
             ov77_021D1D48(v0->unk_04, v0->heapID);
             *param1 = 4;
             break;
@@ -264,7 +264,7 @@ static int ov77_021D0E3C(OverlayManager *param0, int *param1)
             {
                 GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG0, 0);
             }
-            sub_0200564C(0, 60);
+            Sound_FadeOutBGM(0, 60);
             *param1 = 5;
             break;
         }
@@ -277,8 +277,8 @@ static int ov77_021D0E3C(OverlayManager *param0, int *param1)
             StartScreenTransition(0, 0, 0, 0x7fff, 6, 1, v0->heapID);
         }
 
-        if ((sub_0200598C() == 0) && (IsScreenTransitionDone() == 1) && (v0->unk_4FC >= 10)) {
-            sub_020055D0(1173, 0);
+        if ((Sound_IsPokemonCryPlaying() == 0) && (IsScreenTransitionDone() == 1) && (v0->unk_4FC >= 10)) {
+            Sound_StopBGM(SEQ_TITLE01, 0);
 
             GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG0, 0);
             GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG1, 0);
@@ -296,8 +296,8 @@ static int ov77_021D0E3C(OverlayManager *param0, int *param1)
         v0->unk_238.unk_254 = 0;
         ov77_021D20E4(&v0->unk_238, v0->unk_04, v0->heapID);
 
-        if (Sound_CheckFade() == 0) {
-            sub_020055D0(1173, 0);
+        if (Sound_IsFadeActive() == FALSE) {
+            Sound_StopBGM(SEQ_TITLE01, 0);
             StartScreenTransition(0, 0, 0, 0x7fff, 6, 1, v0->heapID);
             *param1 = 6;
         }
@@ -337,7 +337,7 @@ static int ov77_021D10FC(OverlayManager *param0, int *param1)
         EnqueueApplication(0xffffffff, &Unk_020F8A48);
         break;
     case 3:
-        sub_02004234(0);
+        Sound_SetScene(SOUND_SCENE_NONE);
         EnqueueApplication(FS_OVERLAY_ID(overlay77), &gOpeningCutsceneOverlayTemplate);
         break;
     }
@@ -1256,7 +1256,7 @@ static void ov77_021D2214(BgConfig *param0, int param1, UnkStruct_ov77_021D1568 
 
         Bg_ClearTilesRange(4, 32, 0, param1);
 
-        v4 = MessageLoader_Init(1, 26, 609, param1);
+        v4 = MessageLoader_Init(MESSAGE_LOADER_NARC_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_UNK_0609, param1);
         v5 = Strbuf_Init(64, param1);
 
         Window_AddFromTemplate(param0, &param2->unk_22C, &Unk_ov77_021D72D0);

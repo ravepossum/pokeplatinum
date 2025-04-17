@@ -29,13 +29,13 @@
 #include "palette.h"
 #include "pltt_transfer.h"
 #include "render_oam.h"
+#include "sound_playback.h"
 #include "sprite.h"
 #include "sprite_resource.h"
 #include "sprite_util.h"
 #include "strbuf.h"
 #include "system.h"
 #include "text.h"
-#include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_020393C8.h"
 #include "vram_transfer.h"
@@ -1117,7 +1117,7 @@ static void ov112_0225D57C(UnkStruct_ov112_0225D6DC *param0, UnkStruct_ov112_022
 
     memset(param0, 0, sizeof(UnkStruct_ov112_0225D6DC));
 
-    v1 = MessageLoader_Init(0, 26, 653, param2);
+    v1 = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_UNK_0653, param2);
     v2 = Strbuf_Init(128, param2);
 
     for (v0 = 0; v0 < 4; v0++) {

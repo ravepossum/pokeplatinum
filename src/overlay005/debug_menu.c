@@ -299,7 +299,7 @@ static void Task_DebugMenu_Fly(SysTask *task, void *data)
             return;
         }
 
-        Pokemon *mon = Party_GetPokemonBySlotIndex(Party_GetFromSavedata(fly->sys->saveData), 0);
+        Pokemon *mon = Party_GetPokemonBySlotIndex(SaveData_GetParty(fly->sys->saveData), 0);
         // init cut in, get gender
         fly->taskCutIn = ov6_02243F88(fly->sys, 1, mon, PlayerAvatar_Gender(fly->sys->playerAvatar));
 

@@ -11,8 +11,8 @@ _000A:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    GoToIfSet 0x108, _003B
-    SetFlag 0x108
+    GoToIfSet FLAG_UNK_0x0108, _003B
+    SetFlag FLAG_UNK_0x0108
     Message 0
     ShowYesNoMenu 0x800C
     GoToIfEq 0x800C, MENU_YES, _0055
@@ -30,19 +30,19 @@ _0055:
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     ScrCmd_191
-    ScrCmd_193 0x8000
+    GetSelectedPartySlot 0x8000
     ReturnToField
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x8000, 0xFF, _028F
-    ScrCmd_198 0x8000, 0x8001
+    GetPartyMonSpecies 0x8000, 0x8001
     GoToIfEq 0x8001, 0, _02A5
     Call _0195
     GoToIfEq 0x800C, 0, _029A
     SetVar 0x8002, 0x800C
     Call _0251
     GoToIfEq 0x800C, 1, _02BB
-    ScrCmd_1B9 0x800C, 0x8000
+    GetPartyMonFriendship 0x800C, 0x8000
     GoToIfLt 0x800C, 0xFF, _02B0
     BufferPartyMonSpecies 0, 0x8000
     GoToIfEq 0x8002, 1, _00FE
@@ -117,15 +117,15 @@ _0251:
     GoTo _0285
 
 _0271:
-    ScrCmd_099 0x800C, 0x133, 0x8000
+    CheckPartyMonHasMove 0x800C, MOVE_BLAST_BURN, 0x8000
     Return
 
 _027B:
-    ScrCmd_099 0x800C, 0x134, 0x8000
+    CheckPartyMonHasMove 0x800C, MOVE_HYDRO_CANNON, 0x8000
     Return
 
 _0285:
-    ScrCmd_099 0x800C, 0x152, 0x8000
+    CheckPartyMonHasMove 0x800C, MOVE_FRENZY_PLANT, 0x8000
     Return
 
 _028F:

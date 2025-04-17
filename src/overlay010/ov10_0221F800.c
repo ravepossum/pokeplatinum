@@ -36,6 +36,7 @@
 #include "pokemon.h"
 #include "pokemon_icon.h"
 #include "render_window.h"
+#include "sound_playback.h"
 #include "sprite.h"
 #include "sprite_system.h"
 #include "strbuf.h"
@@ -45,7 +46,6 @@
 #include "text.h"
 #include "trainer_data.h"
 #include "trainer_info.h"
-#include "unk_02005474.h"
 #include "unk_0200679C.h"
 #include "unk_0200C440.h"
 #include "unk_0200F174.h"
@@ -387,7 +387,7 @@ void ov10_0221F800(UnkStruct_ov10_0221F800 *param0)
 
     if (v0->unk_BBC == 1) {
         if ((v0->unk_00->unk_00 != NULL) && (v0->unk_00->unk_00->saveData != NULL)) {
-            v0->unk_BBC = Bag_CanRemoveItem(SaveData_GetBag(v0->unk_00->unk_00->saveData), 465, 1, param0->heapId);
+            v0->unk_BBC = Bag_CanRemoveItem(SaveData_GetBag(v0->unk_00->unk_00->saveData), ITEM_VS_RECORDER, 1, param0->heapId);
         }
     }
 }
@@ -677,7 +677,7 @@ static u8 ov10_0221FD00(UnkStruct_ov10_0221FB28 *param0)
         param0->unk_B70 = 4;
         param0->unk_B71 = 2;
         param0->unk_B68 = 12;
-        param0->unk_BA0 = MessageLoader_Init(0, 26, 605, param0->unk_00->heapId);
+        param0->unk_BA0 = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_UNK_0605, param0->unk_00->heapId);
         param0->unk_BA4 = StringTemplate_Default(param0->unk_00->heapId);
         param0->unk_BA8 = Strbuf_Init((2 * 160), param0->unk_00->heapId);
         param0->unk_BB0 = 1;
@@ -754,9 +754,9 @@ static u8 ov10_02220014(UnkStruct_ov10_0221FB28 *param0)
 
     if (param0->unk_B76 == 0) {
         if (param0->unk_00->unk_28 == 1) {
-            Sound_PlayEffect(1813);
+            Sound_PlayEffect(SEQ_SE_DP_VSDEMO01);
         } else {
-            Sound_PlayEffect(2130);
+            Sound_PlayEffect(SEQ_SE_DP_GASHIN);
         }
     }
 
@@ -823,7 +823,7 @@ static u8 ov10_02220228(UnkStruct_ov10_0221FB28 *param0)
     }
 
     if (param0->unk_B76 == 0) {
-        Sound_PlayEffect(1817);
+        Sound_PlayEffect(SEQ_SE_DP_VSDEMO05);
     }
 
     Bg_ScheduleScroll(param0->unk_0C, 3, 1, 16);
@@ -892,7 +892,7 @@ static u8 ov10_022203BC(UnkStruct_ov10_0221FB28 *param0)
     ov10_02221440(param0, 3, Unk_ov10_02222A7C[param0->unk_B76][1], 0);
 
     if (param0->unk_B76 == 0) {
-        Sound_PlayEffect(2131);
+        Sound_PlayEffect(SEQ_SE_DP_DODON);
     }
 
     if (param0->unk_B76 == 5) {
@@ -920,7 +920,7 @@ static u8 ov10_022204C0(UnkStruct_ov10_0221FB28 *param0)
     ov10_02221440(param0, 3, -Unk_ov10_02222A7C[param0->unk_B76][1], 0);
 
     if (param0->unk_B76 == 0) {
-        Sound_PlayEffect(2131);
+        Sound_PlayEffect(SEQ_SE_DP_DODON);
     }
 
     if (param0->unk_B76 == 5) {
@@ -964,7 +964,7 @@ static u8 ov10_02220604(UnkStruct_ov10_0221FB28 *param0)
 
 static u8 ov10_02220698(UnkStruct_ov10_0221FB28 *param0)
 {
-    Sound_PlayEffect(1818);
+    Sound_PlayEffect(SEQ_SE_DP_VSDEMO06);
     ManagedSprite_SetDrawFlag(param0->unk_198[12], 1);
     ManagedSprite_SetDrawFlag(param0->unk_198[13], 1);
     ManagedSprite_SetAnim(param0->unk_198[12], 0);
@@ -974,7 +974,7 @@ static u8 ov10_02220698(UnkStruct_ov10_0221FB28 *param0)
 
 static u8 ov10_022206D8(UnkStruct_ov10_0221FB28 *param0)
 {
-    Sound_PlayEffect(1818);
+    Sound_PlayEffect(SEQ_SE_DP_VSDEMO06);
     ManagedSprite_SetDrawFlag(param0->unk_198[12], 1);
     param0->unk_B75 = 64;
     return 1;
@@ -1015,7 +1015,7 @@ static u8 ov10_02220700(UnkStruct_ov10_0221FB28 *param0)
 
         if (v0 == 2) {
             MessageLoader_GetStrbuf(param0->unk_BA0, 6, param0->unk_BA8);
-            Sound_PlayEffect(1563);
+            Sound_PlayEffect(SEQ_SE_DP_SAVE);
         } else if (v0 == 3) {
             MessageLoader_GetStrbuf(param0->unk_BA0, 7, param0->unk_BA8);
         } else {
@@ -1098,7 +1098,7 @@ static u8 ov10_0222094C(UnkStruct_ov10_0221FB28 *param0)
     }
 
     PaletteData_SelectAll(param0->unk_08, 1);
-    Sound_PlayEffect(1819);
+    Sound_PlayEffect(SEQ_SE_DP_VSDEMO07);
     param0->unk_B75 = 64;
     return 1;
 }
@@ -1106,7 +1106,7 @@ static u8 ov10_0222094C(UnkStruct_ov10_0221FB28 *param0)
 static u8 ov10_022209E0(UnkStruct_ov10_0221FB28 *param0)
 {
     if (param0->unk_B76 == 0) {
-        Sound_PlayEffect(1817);
+        Sound_PlayEffect(SEQ_SE_DP_VSDEMO05);
     }
 
     if (param0->unk_B76 == 16) {
@@ -2339,7 +2339,7 @@ static void ov10_02222720(UnkStruct_ov10_0221FB28 *param0)
     Strbuf *v3;
     u32 v4;
 
-    v0 = MessageLoader_Init(0, 26, 453, param0->unk_00->heapId);
+    v0 = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_UNK_0453, param0->unk_00->heapId);
     v1 = sub_0200C440(15, 14, 0, param0->unk_00->heapId);
     v2 = StringTemplate_Default(param0->unk_00->heapId);
     v3 = Strbuf_Init(32, param0->unk_00->heapId);

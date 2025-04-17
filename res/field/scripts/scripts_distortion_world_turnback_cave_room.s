@@ -8,7 +8,7 @@
     ScriptEntryEnd
 
 _000A:
-    ScrCmd_2F2
+    InitPersistedMapFeaturesForDistortionWorld
     End
 
 _000E:
@@ -26,7 +26,7 @@ _002E:
     Message 1
     CloseMessage
     PlayFanfare SEQ_SE_PL_SYUWA
-    ScrCmd_328 0
+    SetPartyGiratinaForm GIRATINA_FORM_ALTERED
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     Warp MAP_HEADER_TURNBACK_CAVE_GIRATINA_ROOM, 0, 11, 15, 1

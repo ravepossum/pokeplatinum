@@ -1,5 +1,6 @@
 #include "macros/scrcmd.inc"
 #include "res/text/bank/unk_0547.h"
+#include "constants/daycare.h"
 
     .data
 
@@ -12,10 +13,10 @@ _000A:
     LockAll
     FacePlayer
     ScrCmd_16D
-    ScrCmd_16E 0x800C
-    GoToIfEq 0x800C, 1, _004A
-    GoToIfEq 0x800C, 2, _00BE
-    GoToIfEq 0x800C, 3, _00CB
+    GetDaycareState 0x800C
+    GoToIfEq 0x800C, DAYCARE_EGG_WAITING, _004A
+    GoToIfEq 0x800C, DAYCARE_ONE_MON, _00BE
+    GoToIfEq 0x800C, DAYCARE_TWO_MONS, _00CB
     Message 0
     WaitABXPadPress
     CloseMessage
@@ -32,8 +33,8 @@ _004A:
     Message 3
     WaitABXPadPress
     CloseMessage
-    ClearFlag 115
-    ScrCmd_1A8
+    ClearFlag FLAG_UNK_0x0073
+    ResetDaycarePersonalityAndStepCounter
     ReleaseAll
     End
 
@@ -55,8 +56,8 @@ _009F:
     Message 6
     WaitABXPadPress
     CloseMessage
-    ScrCmd_1A9
-    ClearFlag 115
+    GiveEggFromDaycare
+    ClearFlag FLAG_UNK_0x0073
     ReleaseAll
     End
 
@@ -71,7 +72,7 @@ _00BE:
 _00CB:
     ScrCmd_16D
     Message 9
-    ScrCmd_1BE 0x800C
+    GetDaycareCompatibilityLevel 0x800C
     CallIfEq 0x800C, 0, _0110
     CallIfEq 0x800C, 1, _0115
     CallIfEq 0x800C, 2, _011A
@@ -101,18 +102,18 @@ _0124:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_072 20, 2
-    ScrCmd_16E 0x800C
-    GoToIfEq 0x800C, 1, _02E2
-    GoToIfEq 0x800C, 2, _0309
-    GoToIfEq 0x800C, 3, _04A0
+    ShowMoney 20, 2
+    GetDaycareState 0x800C
+    GoToIfEq 0x800C, DAYCARE_EGG_WAITING, _02E2
+    GoToIfEq 0x800C, DAYCARE_ONE_MON, _0309
+    GoToIfEq 0x800C, DAYCARE_TWO_MONS, _04A0
     Message 15
     ShowYesNoMenu 0x800C
     GoToIfEq 0x800C, MENU_YES, _017E
     Message 20
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -123,7 +124,7 @@ _017E:
     GoToIfEq 0x800C, 2, _02D5
     Message 16
     CloseMessage
-    ScrCmd_073
+    HideMoney
     FadeScreen 6, 1, 0, 0
     WaitFadeScreen
     SetVar 0x800C, 0
@@ -137,27 +138,27 @@ _01B9:
 
 _01DE:
     ReturnToField
-    ScrCmd_072 20, 2
+    ShowMoney 20, 2
     FadeScreen 6, 1, 1, 0
     WaitFadeScreen
     GoToIfEq 0x8000, 0xFF, _0292
     ScrCmd_31E 0x8000, 0x800C
     GoToIfEq 0x800C, 0xFF, _04EF
-    ScrCmd_198 0x8000, 0x800C
-    GoToIfEq 0x800C, 0, _0285
+    GetPartyMonSpecies 0x8000, 0x800C
+    GoToIfEq 0x800C, SPECIES_NONE, _0285
     CountAliveMonsExcept 0x800C, 0x8000
     GoToIfEq 0x800C, 0, _02C8
     ScrCmd_1AF 0, 0x8000, 0x8001
-    ScrCmd_1B0 0x8000
-    SetFlag 254
-    ScrCmd_16E 0x800C
-    GoToIfEq 0x800C, 2, _025F
+    StorePartyMonIntoDaycare 0x8000
+    SetFlag FLAG_UNK_0x00FE
+    GetDaycareState 0x800C
+    GoToIfEq 0x800C, DAYCARE_ONE_MON, _025F
     GoTo _0270
 
 _025F:
     PlayCry 0x8001
     Message 17
-    ScrCmd_04D
+    WaitCry
     GoTo _029F
 
 _0270:
@@ -165,8 +166,8 @@ _0270:
     Message 36
     WaitABXPadPress
     CloseMessage
-    ScrCmd_04D
-    ScrCmd_073
+    WaitCry
+    HideMoney
     ReleaseAll
     End
 
@@ -174,7 +175,7 @@ _0285:
     Message 35
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -182,7 +183,7 @@ _0292:
     Message 23
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -197,7 +198,7 @@ _02BB:
     Message 31
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -205,7 +206,7 @@ _02C8:
     Message 33
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -213,7 +214,7 @@ _02D5:
     Message 34
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -221,7 +222,7 @@ _02E2:
     Message 19
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -230,7 +231,7 @@ _02EF:
     Return
 
 _02F4:
-    ScrCmd_1AE 0x800C, 0x8000
+    BufferDaycareGainedLevelsBySlot 0x800C, 0x8000
     CallIfNe 0x800C, 0, _02EF
     Return
 
@@ -249,23 +250,23 @@ _0309:
 _0346:
     GetPartyCount 0x800C
     GoToIfEq 0x800C, 6, _045E
-    ScrCmd_16E 0x800C
+    GetDaycareState 0x800C
     SetVar 0x8001, 0
-    GoToIfEq 0x800C, 2, _03BE
-    ScrCmd_040 1, 1, 0, 1, 0x8001
+    GoToIfEq 0x800C, DAYCARE_ONE_MON, _03BE
+    InitGlobalTextMenu 1, 1, 0, 0x8001
     ScrCmd_1BC 0, 1, 2, 0
-    ScrCmd_042 134, 0
+    AddMenuEntryImm 134, 0
     ScrCmd_1BC 0, 1, 2, 1
-    ScrCmd_042 135, 1
-    ScrCmd_042 136, 2
-    ScrCmd_043
+    AddMenuEntryImm 135, 1
+    AddMenuEntryImm 136, 2
+    ShowMenu
     SetVar 0x8008, 0x8001
     GoToIfEq 0x8008, 0, _03BE
     GoToIfEq 0x8008, 1, _03BE
     GoTo _0292
 
 _03BE:
-    ScrCmd_1AA 0x8004, 0x8001
+    BufferDaycarePriceBySlot 0x8004, 0x8001
     Message 28
     ShowYesNoMenu 0x800C
     GoToIfEq 0x800C, MENU_YES, _03DE
@@ -277,25 +278,25 @@ _03DE:
     Message 21
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
 _03FE:
     ApplyMovement 0, _046C
     WaitMovement
-    ScrCmd_1A4 0x8002, 0x8001
+    MoveMonToPartyFromDaycareSlot 0x8002, 0x8001
     ScrCmd_1A3 0x8004
-    ScrCmd_074
+    UpdateMoneyDisplay
     PlayFanfare SEQ_SE_DP_REGI
     WaitFanfare SEQ_SE_DP_REGI
     Message 29
     PlayCry 0x8002
     BufferPlayerName 1
     Message 30
-    ScrCmd_04D
-    ScrCmd_16E 0x800C
-    GoToIfEq 0x800C, 2, _0444
+    WaitCry
+    GetDaycareState 0x800C
+    GoToIfEq 0x800C, DAYCARE_ONE_MON, _0444
     GoTo _0292
 
 _0444:
@@ -308,7 +309,7 @@ _045E:
     Message 26
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -340,7 +341,7 @@ _04A0:
     Message 23
     WaitABXPadPress
     CloseMessage
-    ScrCmd_073
+    HideMoney
     ReleaseAll
     End
 
@@ -365,7 +366,7 @@ _04A0:
     .byte 0
 
 _04EF:
-    ScrCmd_073
+    HideMoney
     CallCommonScript 0x809
     End
 

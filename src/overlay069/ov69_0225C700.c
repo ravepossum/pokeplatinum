@@ -38,6 +38,7 @@
 #include "render_window.h"
 #include "save_player.h"
 #include "savedata.h"
+#include "sound_playback.h"
 #include "sprite.h"
 #include "sprite_resource.h"
 #include "sprite_transfer.h"
@@ -48,7 +49,6 @@
 #include "sys_task_manager.h"
 #include "system.h"
 #include "text.h"
-#include "unk_02005474.h"
 #include "unk_0200F174.h"
 #include "unk_02015920.h"
 #include "unk_0202419C.h"
@@ -686,7 +686,7 @@ int ov69_0225C700(OverlayManager *param0, int *param1)
     memset(v0, 0, sizeof(UnkStruct_ov69_0225CE64));
 
     v0->unk_0C = sub_0202C878(v1->unk_04);
-    v0->unk_10 = SaveData_Options(v1->unk_04);
+    v0->unk_10 = SaveData_GetOptions(v1->unk_04);
     v0->unk_14 = sub_0202C8C0(v0->unk_0C);
     v0->unk_18 = sub_0202C8C4(v0->unk_0C);
     v0->unk_1C = v1->unk_08;
@@ -1151,7 +1151,7 @@ static u32 ov69_0225CF9C(UnkStruct_ov69_0225CE64 *param0)
     ov69_0225DC54(&param0->unk_BC44);
 
     if (param0->unk_BC44.unk_00 & PAD_BUTTON_B) {
-        Sound_PlayEffect(1501);
+        Sound_PlayEffect(SEQ_SE_DP_DECIDE);
         return 2;
     } else {
         if (gSystem.pressedKeys & PAD_BUTTON_X) {
@@ -1170,7 +1170,7 @@ static u32 ov69_0225CF9C(UnkStruct_ov69_0225CE64 *param0)
                             (void)0;
                         } else {
                             ov69_0225D268(param0, v2.unk_04, v2.unk_08);
-                            Sound_PlayEffect(1471);
+                            Sound_PlayEffect(SEQ_SE_PL_TIMER04);
                         }
                     }
                 }
@@ -1763,10 +1763,10 @@ static void ov69_0225DB00(UnkStruct_ov69_0225DAEC *param0)
 {
     if (param0->unk_10 == 0) {
         param0->unk_10 = 1;
-        Sound_PlayEffect(1470);
+        Sound_PlayEffect(SEQ_SE_PL_TIMER03);
     } else {
         param0->unk_10 = 0;
-        Sound_PlayEffect(1470);
+        Sound_PlayEffect(SEQ_SE_PL_TIMER03);
     }
 
     param0->unk_12 = 1;
@@ -1932,7 +1932,7 @@ static void ov69_0225DD60(UnkStruct_ov69_0225DDC8 *param0, UnkStruct_ov69_0225D3
     {
         Options *v0;
 
-        v0 = SaveData_Options(param3);
+        v0 = SaveData_GetOptions(param3);
         param0->unk_08 = Options_TextFrameDelay(v0);
     }
 
@@ -2716,7 +2716,7 @@ static void ov69_0225EC08(UnkStruct_ov69_0225EB60 *param0, UnkStruct_ov69_0225E4
             v0 = ov69_0225EC70(param0, param0->unk_30, param1);
 
             if (v0 == 1) {
-                Sound_PlayEffect(1473);
+                Sound_PlayEffect(SEQ_SE_PL_TOKEI3);
             }
         }
 
@@ -2891,7 +2891,7 @@ static u16 ov69_0225EF04(u32 param0)
 static void ov69_0225EF1C(UnkStruct_ov69_0225EF54 *param0, u32 param1)
 {
     {
-        param0->unk_00 = MessageLoader_Init(0, 26, 696, param1);
+        param0->unk_00 = MessageLoader_Init(MESSAGE_LOADER_BANK_HANDLE, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_UNK_0696, param1);
     }
 
     {

@@ -9,7 +9,7 @@
     ScriptEntryEnd
 
 _000E:
-    ScrCmd_2F2
+    InitPersistedMapFeaturesForDistortionWorld
     End
 
 _0012:
@@ -32,7 +32,7 @@ _004B:
     PlayCry SPECIES_MESPRIT
     Message 1
     CloseMessage
-    ScrCmd_04D
+    WaitCry
     ScrCmd_311 129
     ApplyMovement LOCALID_PLAYER, _0090
     ApplyMovement 129, _00D8

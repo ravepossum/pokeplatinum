@@ -17,18 +17,18 @@ _000A:
     GoToIfEq 0x4000, 0, _0062
     ScrCmd_238 18, 0x4000
     GoToIfEq 0x4000, 0, _0062
-    ClearFlag 0x2C2
+    ClearFlag FLAG_UNK_0x02C2
     End
 
 _0062:
-    SetFlag 0x2C2
+    SetFlag FLAG_UNK_0x02C2
     End
 
 _0068:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    ScrCmd_284 0x4000
+    GetUnownFormsSeenCount 0x4000
     GoToIfGe 0x4000, 26, _008C
     Message 1
     WaitABXPadPress

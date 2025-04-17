@@ -29,7 +29,7 @@ _0035:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
     FacePlayer
-    GoToIfSet 129, _0053
+    GoToIfSet FLAG_UNK_0x0081, _0053
     Message 1
     WaitABXPadPress
     CloseMessage
@@ -50,7 +50,7 @@ _005E:
     WaitFanfare SEQ_SE_CONFIRM
     PlayCry SPECIES_BUNEARY
     Message 3
-    ScrCmd_04D
+    WaitCry
     WaitABXPadPress
     CloseMessage
     ReleaseAll
@@ -63,10 +63,10 @@ _007D:
     GoToIfEq 0x4002, 1, _00F4
     CheckPoketchAppRegistered POKETCH_APPID_FRIENDSHIPCHECKER, 0x800C
     GoToIfEq 0x800C, 0, _00D9
-    ScrCmd_247 0x8000
+    GetFirstNonEggInParty 0x8000
     BufferPartyMonSpecies 0, 0x8000
     Message 6
-    ScrCmd_1B9 0x800C, 0x8000
+    GetPartyMonFriendship 0x800C, 0x8000
     GoToIfGe 0x800C, 120, _00FF
     GoToIfGe 0x800C, 70, _010A
     GoTo _0115

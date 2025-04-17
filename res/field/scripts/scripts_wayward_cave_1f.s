@@ -10,8 +10,8 @@
     ScriptEntryEnd
 
 _0012:
-    SetFlag 0x9D7
-    GoToIfUnset 228, _0023
+    SetFlag FLAG_UNK_0x09D7
+    GoToIfUnset FLAG_UNK_0x00E4, _0023
     End
 
 _0023:
@@ -25,13 +25,13 @@ _002B:
     SetPlayerBike FALSE
     GoToIfGe 0x4091, 1, _0095
     BufferPlayerName 0
-    CallIfUnset 224, _008B
-    CallIfSet 224, _0090
+    CallIfUnset FLAG_UNK_0x00E0, _008B
+    CallIfSet FLAG_UNK_0x00E0, _0090
     BufferPlayerName 0
     PlaySound SEQ_GONIN
     Message 1
     WaitSound
-    SetFlag 224
+    SetFlag FLAG_UNK_0x00E0
     SetVar 0x4091, 1
     Message 2
     WaitABXPadPress
@@ -51,8 +51,8 @@ _0090:
     Return
 
 _0095:
-    GoToIfGe 0x40E2, 2, _00C4
-    GoToIfEq 0x40E2, 1, _00BB
+    GoToIfGe VAR_FOLLOWER_MIRA_TIMES_TALKED, 2, _00C4
+    GoToIfEq VAR_FOLLOWER_MIRA_TIMES_TALKED, 1, _00BB
     BufferPlayerName 0
     Message 9
     GoTo _00D2
@@ -70,7 +70,7 @@ _00C4:
     End
 
 _00D2:
-    AddVar 0x40E2, 1
+    AddVar VAR_FOLLOWER_MIRA_TIMES_TALKED, 1
     WaitABXPadPress
     CloseMessage
     ReleaseAll
@@ -121,7 +121,7 @@ _016A:
 
 _0182:
     RemoveObject 4
-    SetFlag 228
+    SetFlag FLAG_UNK_0x00E4
     SetVar 0x4091, 2
     ReleaseAll
     End
