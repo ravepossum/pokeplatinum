@@ -24,8 +24,8 @@
 #include "map_tile_behavior.h"
 #include "persisted_map_features_init.h"
 #include "player_avatar.h"
-#include "system.h"
 #include "sound_playback.h"
+#include "system.h"
 #include "terrain_collision_manager.h"
 #include "unk_020655F4.h"
 
