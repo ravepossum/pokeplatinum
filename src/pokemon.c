@@ -20,7 +20,7 @@
 #include "generated/natures.h"
 #include "generated/species_data_params.h"
 
-#include "struct_decls/pokemon_animation_sys_decl.h"
+#include "struct_decls/pokemon_anim_manager_decl.h"
 #include "struct_decls/struct_02023790_decl.h"
 #include "struct_defs/archived_poke_sprite_data.h"
 #include "struct_defs/chatot_cry.h"
@@ -5144,7 +5144,7 @@ void PokeSprite_LoadAnimationFrames(NARC *narc, SpriteAnimationFrame *frames, u1
     MI_CpuCopy8(data.faces[face].frames, frames, sizeof(SpriteAnimationFrame) * MAX_ANIMATION_FRAMES);
 }
 
-void PokeSprite_LoadAnimation(NARC *narc, PokemonAnimationSys *animationSys, PokemonSprite *sprite, u16 species, int face, int reverse, int frame)
+void PokeSprite_LoadAnimation(NARC *narc, PokemonAnimManager *monAnimMan, PokemonSprite *sprite, u16 species, int face, int reverse, int frame)
 {
     int faceType = (face == FACE_FRONT) ? 0 : 1;
 
@@ -5156,7 +5156,7 @@ void PokeSprite_LoadAnimation(NARC *narc, PokemonAnimationSys *animationSys, Pok
     settings.startDelay = spriteData.faces[faceType].startDelay;
     settings.reverse = reverse;
 
-    PokeAnimation_Init(animationSys, sprite, &settings, frame);
+    PokeAnimation_Init(monAnimMan, sprite, &settings, frame);
 }
 
 void PokeSprite_LoadCryDelay(NARC *narc, u8 *cryDelay, u16 species, u16 clientType)
