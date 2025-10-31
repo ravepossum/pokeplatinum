@@ -15,20 +15,21 @@
 
 #define NUM_POKEMON_ANIMS      143
 #define NUM_POKEMON_ANIM_FUNCS 34
+#define MAX_ANIM_MOTION_FUNCS  4
 
-typedef struct UnkStruct_02016DAC_t UnkStruct_02016DAC;
+typedef struct MotionFuncData MotionFuncData;
 typedef struct PokemonAnim PokemonAnim;
 
 typedef void (*PokemonAnimFunc)(PokemonAnim *);
-typedef void (*UnkFuncPtr_02016DAC)(UnkStruct_02016DAC *, PokemonAnim *);
+typedef void (*MotionFunc)(MotionFuncData *, PokemonAnim *);
 
-typedef struct UnkStruct_02016DAC_t {
-    BOOL unk_00;
+typedef struct MotionFuncData {
+    BOOL active;
     int unk_04[8];
     int *unk_24;
     int *unk_28;
     u8 unk_2C;
-    u8 unk_2D;
+    u8 startDelay;
     int unk_30;
     int unk_34;
     int unk_38;
@@ -37,14 +38,14 @@ typedef struct UnkStruct_02016DAC_t {
     int unk_44;
     int unk_48;
     int unk_4C;
-    UnkFuncPtr_02016DAC unk_50;
-} UnkStruct_02016DAC;
+    MotionFunc motionFunc;
+} MotionFuncData;
 
 typedef struct PokemonAnim {
     PokemonSprite *sprite;
     SysTask *task;
     void *narcData;
-    u32 *unk_0C;
+    u32 *scriptPtr;
     BOOL active;
     int animNum;
     int unk_18;
@@ -65,11 +66,11 @@ typedef struct PokemonAnim {
     int unk_70;
     int unk_74;
     int unk_78;
-    UnkStruct_02016DAC unk_7C[4];
+    MotionFuncData motionData[MAX_ANIM_MOTION_FUNCS];
     u8 reverse;
     u8 unk_1C5;
     u8 unk_1C6;
-    u8 unk_1C7;
+    u8 fadeActive;
 } PokemonAnim;
 
 typedef struct PokemonAnimManager {
@@ -80,16 +81,16 @@ typedef struct PokemonAnimManager {
 } PokemonAnimManager;
 
 typedef struct {
-    UnkFuncPtr_02016DAC unk_00;
-    int unk_04;
+    MotionFunc motionFunc;
+    int paramCount;
     int unk_08;
-} UnkStruct_020E5598;
+} MotionFuncParameters;
 
-static int sub_02016280(u32 *param0, u8 param1, u8 param2);
-static int sub_02016294(u32 *param0, u8 param1);
-static int sub_020162A0(u32 *param0);
+static int ReadScriptWordIndex(u32 *scriptPtr, u8 index, u8 one);
+static int ReadScriptWordIndexZero(u32 *scriptPtr, u8 one);
+static int ReadScriptWord(u32 *scriptPtr);
 static void sub_02016D04(PokemonAnim *monAnim, const int param1);
-static void sub_02016150(SysTask *param0, void *param1);
+static void sub_02016150(SysTask *task, void *monAnim);
 static void sub_02016188(PokemonAnim *monAnim);
 static void sub_02016530(PokemonAnim *monAnim);
 static void sub_02016540(PokemonAnim *monAnim);
@@ -125,11 +126,11 @@ static void sub_02016C24(PokemonAnim *monAnim);
 static void sub_02016C30(PokemonAnim *monAnim);
 static void sub_02016C3C(PokemonAnim *monAnim);
 static void sub_02016C48(PokemonAnim *monAnim);
-static void sub_02016DAC(UnkStruct_02016DAC *param0, PokemonAnim *monAnim);
-static void sub_02016E64(UnkStruct_02016DAC *param0, PokemonAnim *monAnim);
-static void sub_02016F24(UnkStruct_02016DAC *param0, PokemonAnim *monAnim);
-static void sub_02016F60(UnkStruct_02016DAC *param0, PokemonAnim *monAnim);
-static void sub_02016F9C(UnkStruct_02016DAC *param0, PokemonAnim *monAnim);
+static void sub_02016DAC(MotionFuncData *motionData, PokemonAnim *monAnim);
+static void sub_02016E64(MotionFuncData *motionData, PokemonAnim *monAnim);
+static void sub_02016F24(MotionFuncData *motionData, PokemonAnim *monAnim);
+static void sub_02016F60(MotionFuncData *motionData, PokemonAnim *monAnim);
+static void sub_02016F9C(MotionFuncData *motionData, PokemonAnim *monAnim);
 
 static const PokemonAnimFunc sPokemonAnimFuncs[NUM_POKEMON_ANIM_FUNCS] = {
     sub_02016530,
@@ -168,7 +169,7 @@ static const PokemonAnimFunc sPokemonAnimFuncs[NUM_POKEMON_ANIM_FUNCS] = {
     sub_02016BB8
 };
 
-static const UnkStruct_020E5598 Unk_020E5598[] = {
+static const MotionFuncParameters sMotionFuncToParams[] = {
     { sub_02016DAC, 0x6, 0x1 },
     { sub_02016E64, 0x6, 0x1 },
     { sub_02016F24, 0x4, 0x0 },
@@ -225,12 +226,12 @@ void PokeAnimation_Init(PokemonAnimManager *monAnimMan, PokemonSprite *monSprite
     }
 
     monAnimMan->anims[index].narcData = NARC_AllocAtEndAndReadWholeMemberByIndexPair(NARC_INDEX_POKEANIME__PL_POKE_ANM, monAnimMan->anims[index].animNum, monAnimMan->heapID);
-    monAnimMan->anims[index].unk_0C = (u32 *)monAnimMan->anims[index].narcData;
+    monAnimMan->anims[index].scriptPtr = (u32 *)monAnimMan->anims[index].narcData;
     monAnimMan->anims[index].halt = FALSE;
     monAnimMan->anims[index].completed = FALSE;
     monAnimMan->anims[index].unk_1C5 = 0;
     monAnimMan->anims[index].unk_1C6 = 28;
-    monAnimMan->anims[index].unk_1C7 = 0;
+    monAnimMan->anims[index].fadeActive = FALSE;
     monAnimMan->anims[index].task = SysTask_Start(sub_02016150, &monAnimMan->anims[index], 0);
     monAnimMan->anims[index].startDelay = startDelay;
     monAnimMan->anims[index].originalX = PokemonSprite_GetAttribute(monSprite, MON_SPRITE_X_CENTER);
@@ -286,27 +287,21 @@ static void sub_02016150(SysTask *task, void *monAnim)
     }
 }
 
+// TickPokemonAnim
 static void sub_02016188(PokemonAnim *monAnim)
 {
-    PokemonAnimFunc v0;
-
     monAnim->unk_18 = 0;
     monAnim->unk_44 = 0;
+    u8 v2 = 0;
 
-    u8 v1;
-    u8 v2;
-    UnkStruct_02016DAC *v3;
+    for (u8 i = 0; i < MAX_ANIM_MOTION_FUNCS; i++) {
+        MotionFuncData *motionData = &(monAnim->motionData[i]);
 
-    v2 = 0;
-
-    for (v1 = 0; v1 < 4; v1++) {
-        v3 = &(monAnim->unk_7C[v1]);
-
-        if (v3->unk_00) {
-            if (v3->unk_2D == 0) {
-                v3->unk_50(v3, monAnim);
+        if (motionData->active) {
+            if (motionData->startDelay == 0) {
+                motionData->motionFunc(motionData, monAnim);
             } else {
-                v3->unk_2D--;
+                motionData->startDelay--;
             }
         } else {
             v2++;
@@ -323,9 +318,9 @@ static void sub_02016188(PokemonAnim *monAnim)
         return;
     }
 
-    if (monAnim->unk_1C7) {
+    if (monAnim->fadeActive) {
         if (!PokemonSprite_IsFadeActive(monAnim->sprite)) {
-            monAnim->unk_1C7 = 0;
+            monAnim->fadeActive = FALSE;
         } else {
             return;
         }
@@ -334,15 +329,15 @@ static void sub_02016188(PokemonAnim *monAnim)
     while (TRUE) {
         monAnim->unk_44++;
 
-        GF_ASSERT((u32) * (monAnim->unk_0C) < 34);
+        GF_ASSERT(*(monAnim->scriptPtr) < NUM_POKEMON_ANIM_FUNCS);
 
-        v0 = sPokemonAnimFuncs[(u32) * (monAnim->unk_0C)];
-        v0(monAnim);
+        PokemonAnimFunc currAnimFunc = sPokemonAnimFuncs[*(monAnim->scriptPtr)];
+        currAnimFunc(monAnim);
 
         if (monAnim->halt) {
             break;
         } else {
-            monAnim->unk_0C += 1;
+            monAnim->scriptPtr += 1;
 
             if (monAnim->unk_18) {
                 break;
@@ -356,49 +351,48 @@ static void sub_02016188(PokemonAnim *monAnim)
         if (monAnim->unk_44 >= 256) {
             GF_ASSERT(FALSE);
 
-            monAnim->halt = 1;
+            monAnim->halt = TRUE;
             break;
         }
     }
 }
 
-static int sub_02016280(u32 *param0, u8 param1, u8 param2)
+static int ReadScriptWordIndex(u32 *scriptPtr, u8 index, u8 one)
 {
-    int v0 = param0[param1];
+    int ret = scriptPtr[index];
 
-    if (param2 != 1) {
+    if (one != 1) {
         GF_ASSERT(0);
     }
 
-    return v0;
+    return ret;
 }
 
-static int sub_02016294(u32 *param0, u8 param1)
+static int ReadScriptWordIndexZero(u32 *scriptPtr, u8 one)
 {
-    int v0 = sub_02016280(param0, 0, param1);
-    return v0;
+    return ReadScriptWordIndex(scriptPtr, 0, one);
 }
 
-static int sub_020162A0(u32 *param0)
+static int ReadScriptWord(u32 *scriptPtr)
 {
-    return sub_02016294(param0, 1);
+    return ReadScriptWordIndexZero(scriptPtr, 1);
 }
 
-static UnkStruct_02016DAC *sub_020162AC(PokemonAnim *monAnim, const u8 param1)
+static MotionFuncData *MotionFuncData_New(PokemonAnim *monAnim, const u8 param1)
 {
-    UnkStruct_02016DAC *v0;
-    u8 v1;
+    MotionFuncData *retPtr;
+    u8 i;
 
-    for (v1 = 0; v1 < 4; v1++) {
-        v0 = &(monAnim->unk_7C[v1]);
+    for (i = 0; i < MAX_ANIM_MOTION_FUNCS; i++) {
+        retPtr = &(monAnim->motionData[i]);
 
-        if (v0->unk_00 == 0) {
-            MI_CpuClear8(v0, sizeof(UnkStruct_02016DAC));
+        if (retPtr->active == FALSE) {
+            MI_CpuClear8(retPtr, sizeof(MotionFuncData));
 
-            v0->unk_00 = 1;
-            v0->unk_50 = Unk_020E5598[param1].unk_00;
+            retPtr->active = TRUE;
+            retPtr->motionFunc = sMotionFuncToParams[param1].motionFunc;
 
-            return v0;
+            return retPtr;
         }
     }
 
@@ -406,23 +400,23 @@ static UnkStruct_02016DAC *sub_020162AC(PokemonAnim *monAnim, const u8 param1)
     return NULL;
 }
 
-static void sub_020162F8(PokemonAnim *monAnim, int *param1)
+static void ReadScriptInt(PokemonAnim *monAnim, int *outInt)
 {
-    monAnim->unk_0C += 1;
-    (*param1) = (int)sub_020162A0(monAnim->unk_0C);
+    monAnim->scriptPtr += 1;
+    *outInt = (int)ReadScriptWord(monAnim->scriptPtr);
 }
 
-static void sub_0201630C(PokemonAnim *monAnim, u8 *param1)
+static void ReadScriptU8(PokemonAnim *monAnim, u8 *outU8)
 {
-    monAnim->unk_0C += 1;
-    (*param1) = (u8)sub_020162A0(monAnim->unk_0C);
+    monAnim->scriptPtr += 1;
+    *outU8 = (u8)ReadScriptWord(monAnim->scriptPtr);
 }
 
-static void sub_02016320(PokemonAnim *monAnim, u8 *param1)
+static void sub_02016320(PokemonAnim *monAnim, u8 *outU8)
 {
-    monAnim->unk_0C += 1;
-    (*param1) = (u8)sub_020162A0(monAnim->unk_0C);
-    GF_ASSERT((*param1) < 8);
+    monAnim->scriptPtr += 1;
+    (*outU8) = (u8)ReadScriptWord(monAnim->scriptPtr);
+    GF_ASSERT((*outU8) < 8);
 }
 
 static void sub_02016340(PokemonAnim *monAnim, u8 *param1, u8 *param2)
@@ -437,12 +431,12 @@ static void sub_02016354(PokemonAnim *monAnim, u8 *param1, int *param2, int *par
     u8 v2;
 
     sub_02016320(monAnim, param1);
-    sub_0201630C(monAnim, &v2);
+    ReadScriptU8(monAnim, &v2);
 
     if (v2 == 18) {
         sub_02016320(monAnim, &v0);
         (*param2) = monAnim->unk_24[v0];
-        sub_020162F8(monAnim, param3);
+        ReadScriptInt(monAnim, param3);
     } else if (v2 == 19) {
         sub_02016340(monAnim, &v0, &v1);
         (*param2) = monAnim->unk_24[v0];
@@ -458,11 +452,11 @@ static void sub_020163C8(PokemonAnim *monAnim, u8 *param1, int *param2, int *par
     u8 v2, v3;
 
     sub_02016320(monAnim, param1);
-    sub_0201630C(monAnim, &v2);
-    sub_0201630C(monAnim, &v3);
+    ReadScriptU8(monAnim, &v2);
+    ReadScriptU8(monAnim, &v3);
 
     if (v2 == 18) {
-        sub_020162F8(monAnim, param2);
+        ReadScriptInt(monAnim, param2);
     } else if (v2 == 19) {
         sub_02016320(monAnim, &v0);
         (*param2) = monAnim->unk_24[v0];
@@ -471,7 +465,7 @@ static void sub_020163C8(PokemonAnim *monAnim, u8 *param1, int *param2, int *par
     }
 
     if (v3 == 18) {
-        sub_020162F8(monAnim, param3);
+        ReadScriptInt(monAnim, param3);
     } else if (v3 == 19) {
         sub_02016320(monAnim, &v1);
         (*param3) = monAnim->unk_24[v1];
@@ -489,10 +483,10 @@ static void sub_02016454(PokemonAnim *monAnim, u8 *param1, int *param2, int *par
 
     sub_02016340(monAnim, param1, &v0);
     v3 = monAnim->unk_24[v0];
-    sub_0201630C(monAnim, &v5);
+    ReadScriptU8(monAnim, &v5);
 
     if (v5 == 20) {
-        sub_020162F8(monAnim, param3);
+        ReadScriptInt(monAnim, param3);
     } else if (v5 == 21) {
         sub_02016320(monAnim, &v1);
         (*param3) = monAnim->unk_24[v1];
@@ -500,10 +494,10 @@ static void sub_02016454(PokemonAnim *monAnim, u8 *param1, int *param2, int *par
         GF_ASSERT(0);
     }
 
-    sub_0201630C(monAnim, &v5);
+    ReadScriptU8(monAnim, &v5);
 
     if (v5 == 20) {
-        sub_020162F8(monAnim, &v4);
+        ReadScriptInt(monAnim, &v4);
     } else if (v5 == 21) {
         sub_02016320(monAnim, &v2);
         v4 = monAnim->unk_24[v2];
@@ -618,47 +612,43 @@ static void sub_02016678(PokemonAnim *monAnim)
     u8 v2, v3;
     u8 v4;
 
-    {
-        int v5, v6;
+    int v5, v6;
 
-        sub_0201630C(monAnim, &v4);
+    ReadScriptU8(monAnim, &v4);
 
-        if (v4 == 20) {
-            sub_02016320(monAnim, &v0);
-            v5 = monAnim->unk_24[v0];
-            sub_020162F8(monAnim, &v6);
-        } else if (v4 == 21) {
-            sub_02016340(monAnim, &v0, &v1);
-            v5 = monAnim->unk_24[v0];
-            v6 = monAnim->unk_24[v1];
-        } else {
-            GF_ASSERT(0);
-        }
-
-        sub_0201630C(monAnim, &v2);
-        GF_ASSERT(v2 <= 17);
-
-        v3 = sub_020164FC(&v5, &v6);
+    if (v4 == 20) {
+        sub_02016320(monAnim, &v0);
+        v5 = monAnim->unk_24[v0];
+        ReadScriptInt(monAnim, &v6);
+    } else if (v4 == 21) {
+        sub_02016340(monAnim, &v0, &v1);
+        v5 = monAnim->unk_24[v0];
+        v6 = monAnim->unk_24[v1];
+    } else {
+        GF_ASSERT(0);
     }
 
-    {
-        int v7;
+    ReadScriptU8(monAnim, &v2);
+    GF_ASSERT(v2 <= 17);
 
-        sub_0201630C(monAnim, &v4);
+    v3 = sub_020164FC(&v5, &v6);
 
-        if (v4 == 20) {
-            sub_02016320(monAnim, &v0);
-            sub_020162F8(monAnim, &v7);
-        } else if (v4 == 21) {
-            sub_02016340(monAnim, &v0, &v1);
-            v7 = monAnim->unk_24[v1];
-        } else {
-            GF_ASSERT(0);
-        }
+    int v7;
 
-        if (v2 == v3) {
-            monAnim->unk_24[v0] = v7;
-        }
+    ReadScriptU8(monAnim, &v4);
+
+    if (v4 == 20) {
+        sub_02016320(monAnim, &v0);
+        ReadScriptInt(monAnim, &v7);
+    } else if (v4 == 21) {
+        sub_02016340(monAnim, &v0, &v1);
+        v7 = monAnim->unk_24[v1];
+    } else {
+        GF_ASSERT(0);
+    }
+
+    if (v2 == v3) {
+        monAnim->unk_24[v0] = v7;
     }
 }
 
@@ -668,17 +658,17 @@ static void sub_02016758(PokemonAnim *monAnim)
 
     sub_02016320(monAnim, &v0);
 
-    monAnim->unk_0C += 1;
-    monAnim->unk_24[v0] = (int)sub_020162A0(monAnim->unk_0C);
+    monAnim->scriptPtr += 1;
+    monAnim->unk_24[v0] = (int)ReadScriptWord(monAnim->scriptPtr);
 }
 
 static void sub_0201677C(PokemonAnim *monAnim)
 {
     GF_ASSERT(monAnim->unk_50 == NULL);
 
-    monAnim->unk_0C += 1;
-    monAnim->unk_50 = monAnim->unk_0C;
-    monAnim->unk_48 = (int)sub_020162A0(monAnim->unk_0C);
+    monAnim->scriptPtr += 1;
+    monAnim->unk_50 = monAnim->scriptPtr;
+    monAnim->unk_48 = (int)ReadScriptWord(monAnim->scriptPtr);
     monAnim->unk_4C = 0;
 }
 
@@ -691,7 +681,7 @@ static void sub_020167A0(PokemonAnim *monAnim)
         monAnim->unk_4C = 0;
         monAnim->unk_48 = 0;
     } else {
-        monAnim->unk_0C = monAnim->unk_50;
+        monAnim->scriptPtr = monAnim->unk_50;
     }
 }
 
@@ -700,7 +690,7 @@ static void sub_020167BC(PokemonAnim *monAnim)
     u8 v0;
     int v1;
 
-    sub_020162F8(monAnim, &v1);
+    ReadScriptInt(monAnim, &v1);
     sub_02016320(monAnim, &v0);
     PokemonSprite_SetAttribute(monAnim->sprite, v1, monAnim->unk_24[v0]);
 }
@@ -710,7 +700,7 @@ static void sub_020167E8(PokemonAnim *monAnim)
     u8 v0;
     int v1;
 
-    sub_020162F8(monAnim, &v1);
+    ReadScriptInt(monAnim, &v1);
     sub_02016320(monAnim, &v0);
     PokemonSprite_AddAttribute(monAnim->sprite, v1, monAnim->unk_24[v0]);
 }
@@ -720,36 +710,32 @@ static void sub_02016814(PokemonAnim *monAnim)
     int v0;
     int v1;
 
-    sub_020162F8(monAnim, &v0);
+    ReadScriptInt(monAnim, &v0);
 
-    {
-        u8 v2;
-        u8 v3;
+    u8 v2;
+    u8 v3;
 
-        sub_0201630C(monAnim, &v3);
+    ReadScriptU8(monAnim, &v3);
 
-        if (v3 == 20) {
-            sub_020162F8(monAnim, &v1);
-        } else if (v3 == 21) {
-            sub_02016320(monAnim, &v2);
-            v1 = monAnim->unk_24[v2];
-        } else {
-            GF_ASSERT(0);
-        }
+    if (v3 == 20) {
+        ReadScriptInt(monAnim, &v1);
+    } else if (v3 == 21) {
+        sub_02016320(monAnim, &v2);
+        v1 = monAnim->unk_24[v2];
+    } else {
+        GF_ASSERT(0);
     }
 
-    {
-        u8 v4;
+    u8 v4;
 
-        sub_0201630C(monAnim, &v4);
+    ReadScriptU8(monAnim, &v4);
 
-        if (v4 == 22) {
-            PokemonSprite_SetAttribute(monAnim->sprite, v0, v1);
-        } else if (v4 == 23) {
-            PokemonSprite_AddAttribute(monAnim->sprite, v0, v1);
-        } else {
-            GF_ASSERT(0);
-        }
+    if (v4 == 22) {
+        PokemonSprite_SetAttribute(monAnim->sprite, v0, v1);
+    } else if (v4 == 23) {
+        PokemonSprite_AddAttribute(monAnim->sprite, v0, v1);
+    } else {
+        GF_ASSERT(0);
     }
 }
 
@@ -779,7 +765,7 @@ static void sub_02016900(PokemonAnim *monAnim)
     u8 v1;
 
     sub_02016320(monAnim, &v0);
-    sub_0201630C(monAnim, &v1);
+    ReadScriptU8(monAnim, &v1);
 
     if (v1 == 8) {
         monAnim->unk_60 = monAnim->unk_24[v0];
@@ -796,7 +782,7 @@ static void sub_02016948(PokemonAnim *monAnim)
     u8 v1;
 
     sub_02016320(monAnim, &v0);
-    sub_0201630C(monAnim, &v1);
+    ReadScriptU8(monAnim, &v1);
 
     if (v1 == 8) {
         monAnim->unk_60 += monAnim->unk_24[v0];
@@ -811,59 +797,52 @@ static void sub_02016998(PokemonAnim *monAnim)
 {
     int *v0;
     int v1;
+    u8 v2;
 
-    {
-        u8 v2;
+    ReadScriptU8(monAnim, &v2);
 
-        sub_0201630C(monAnim, &v2);
-
-        if (v2 == 8) {
-            v0 = &monAnim->unk_60;
-        } else if (v2 == 9) {
-            v0 = &monAnim->unk_64;
-        } else if (v2 == 10) {
-            v0 = &monAnim->unk_68;
-        } else if (v2 == 11) {
-            v0 = &monAnim->unk_6C;
-        } else if (v2 == 12) {
-            v0 = &monAnim->unk_70;
-        } else if (v2 == 13) {
-            v0 = &monAnim->unk_74;
-        } else if (v2 == 14) {
-            v0 = &monAnim->unk_78;
-        } else {
-            GF_ASSERT(0);
-        }
+    if (v2 == 8) {
+        v0 = &monAnim->unk_60;
+    } else if (v2 == 9) {
+        v0 = &monAnim->unk_64;
+    } else if (v2 == 10) {
+        v0 = &monAnim->unk_68;
+    } else if (v2 == 11) {
+        v0 = &monAnim->unk_6C;
+    } else if (v2 == 12) {
+        v0 = &monAnim->unk_70;
+    } else if (v2 == 13) {
+        v0 = &monAnim->unk_74;
+    } else if (v2 == 14) {
+        v0 = &monAnim->unk_78;
+    } else {
+        GF_ASSERT(0);
     }
 
-    {
-        u8 v3;
-        u8 v4;
+    u8 v3;
+    u8 v4;
 
-        sub_0201630C(monAnim, &v4);
+    ReadScriptU8(monAnim, &v4);
 
-        if (v4 == 20) {
-            sub_020162F8(monAnim, &v1);
-        } else if (v4 == 21) {
-            sub_02016320(monAnim, &v3);
-            v1 = monAnim->unk_24[v3];
-        } else {
-            GF_ASSERT(0);
-        }
+    if (v4 == 20) {
+        ReadScriptInt(monAnim, &v1);
+    } else if (v4 == 21) {
+        sub_02016320(monAnim, &v3);
+        v1 = monAnim->unk_24[v3];
+    } else {
+        GF_ASSERT(0);
     }
 
-    {
-        u8 v5;
+    u8 v5;
 
-        sub_0201630C(monAnim, &v5);
+    ReadScriptU8(monAnim, &v5);
 
-        if (v5 == 22) {
-            (*v0) = v1;
-        } else if (v5 == 23) {
-            (*v0) += v1;
-        } else {
-            GF_ASSERT(0);
-        }
+    if (v5 == 22) {
+        (*v0) = v1;
+    } else if (v5 == 23) {
+        (*v0) += v1;
+    } else {
+        GF_ASSERT(0);
     }
 }
 
@@ -880,26 +859,24 @@ static void sub_02016A60(PokemonAnim *monAnim)
 
 static void sub_02016AA8(PokemonAnim *monAnim)
 {
-    PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_SCALE_X, 0x100 + monAnim->unk_70);
-    PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_SCALE_Y, 0x100 + monAnim->unk_74);
+    PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_SCALE_X, MON_AFFINE_SCALE(1) + monAnim->unk_70);
+    PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_SCALE_Y, MON_AFFINE_SCALE(1) + monAnim->unk_74);
     PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_ROTATION_Z, (u16)monAnim->unk_78);
 
-    {
-        int v0;
+    int v0;
 
-        if (monAnim->unk_1C6 == 27) {
-            if (monAnim->unk_74 < 0) {
-                sub_02016514(monAnim);
-            }
-        } else if (monAnim->unk_1C6 == 29) {
-            if (monAnim->unk_74 != 0) {
-                sub_02016514(monAnim);
-            }
-        } else if (monAnim->unk_1C6 == 28) {
-            return;
-        } else {
-            GF_ASSERT(0);
+    if (monAnim->unk_1C6 == 27) {
+        if (monAnim->unk_74 < 0) {
+            sub_02016514(monAnim);
         }
+    } else if (monAnim->unk_1C6 == 29) {
+        if (monAnim->unk_74 != 0) {
+            sub_02016514(monAnim);
+        }
+    } else if (monAnim->unk_1C6 == 28) {
+        return;
+    } else {
+        GF_ASSERT(0);
     }
 }
 
@@ -910,8 +887,8 @@ static void sub_02016B10(PokemonAnim *monAnim)
 
     sub_02016320(monAnim, &v0);
 
-    monAnim->unk_0C += 1;
-    v1 = (int)sub_020162A0(monAnim->unk_0C);
+    monAnim->scriptPtr += 1;
+    v1 = (int)ReadScriptWord(monAnim->scriptPtr);
 
     if ((v1 == 8) || (v1 == 10)) {
         monAnim->unk_68 = monAnim->unk_24[v0];
@@ -924,7 +901,7 @@ static void sub_02016B10(PokemonAnim *monAnim)
 
 static void sub_02016B64(PokemonAnim *monAnim)
 {
-    sub_020162F8(monAnim, &monAnim->startDelay);
+    ReadScriptInt(monAnim, &monAnim->startDelay);
     monAnim->unk_18 = 1;
 }
 
@@ -933,10 +910,10 @@ static void sub_02016B78(PokemonAnim *monAnim)
     u8 v0, v1, v2;
     int v3;
 
-    sub_0201630C(monAnim, &v0);
-    sub_0201630C(monAnim, &v1);
-    sub_0201630C(monAnim, &v2);
-    sub_020162F8(monAnim, &v3);
+    ReadScriptU8(monAnim, &v0);
+    ReadScriptU8(monAnim, &v1);
+    ReadScriptU8(monAnim, &v2);
+    ReadScriptInt(monAnim, &v3);
     PokemonSprite_StartFade(monAnim->sprite, v0, v1, v2, v3);
 }
 
@@ -945,7 +922,7 @@ static void sub_02016BB8(PokemonAnim *monAnim)
     u8 v0, v1, v2;
 
     if (PokemonSprite_IsFadeActive(monAnim->sprite)) {
-        monAnim->unk_1C7 = 1;
+        monAnim->fadeActive = TRUE;
         monAnim->unk_18 = 1;
     }
 }
@@ -957,7 +934,7 @@ static void sub_02016BD4(PokemonAnim *monAnim)
 
 static void sub_02016BE0(PokemonAnim *monAnim)
 {
-    sub_0201630C(monAnim, &monAnim->unk_1C6);
+    ReadScriptU8(monAnim, &monAnim->unk_1C6);
     GF_ASSERT((monAnim->unk_1C6 == 27) || (monAnim->unk_1C6 == 29) || ((monAnim->unk_1C6 == 28) && TRUE));
 }
 
@@ -999,7 +976,7 @@ static void sub_02016C54(const u8 param0, const int *param1, const int *param2, 
     }
 }
 
-static void sub_02016C84(const u8 param0, UnkStruct_02016DAC *param1, PokemonAnim *param2)
+static void sub_02016C84(const u8 param0, MotionFuncData *param1, PokemonAnim *param2)
 {
     switch (param0) {
     case 35:
@@ -1034,167 +1011,162 @@ static void sub_02016C84(const u8 param0, UnkStruct_02016DAC *param1, PokemonAni
 
 static void sub_02016D04(PokemonAnim *monAnim, const int param1)
 {
-    u8 v0;
-    UnkStruct_02016DAC *v1 = sub_020162AC(monAnim, param1);
+    MotionFuncData *motionData = MotionFuncData_New(monAnim, param1);
 
-    sub_0201630C(monAnim, &v1->unk_2C);
-    sub_0201630C(monAnim, &v1->unk_2D);
+    ReadScriptU8(monAnim, &motionData->unk_2C);
+    ReadScriptU8(monAnim, &motionData->startDelay);
 
-    for (v0 = 0; v0 < Unk_020E5598[param1].unk_04; v0++) {
-        sub_020162F8(monAnim, &v1->unk_04[v0]);
+    for (u8 i = 0; i < sMotionFuncToParams[param1].paramCount; i++) {
+        ReadScriptInt(monAnim, &motionData->unk_04[i]);
     }
 
-    {
-        int v2;
+    int v2 = sMotionFuncToParams[param1].unk_08;
+    sub_02016C84(motionData->unk_04[v2], motionData, monAnim);
 
-        v2 = Unk_020E5598[param1].unk_08;
-        sub_02016C84(v1->unk_04[v2], v1, monAnim);
-    }
-
-    if (v1->unk_2D == 0) {
-        v1->unk_50(v1, monAnim);
+    if (motionData->startDelay == 0) {
+        motionData->motionFunc(motionData, monAnim);
     } else {
-        v1->unk_2D--;
+        motionData->startDelay--;
     }
 }
 
-static void sub_02016DAC(UnkStruct_02016DAC *param0, PokemonAnim *monAnim)
+static void sub_02016DAC(MotionFuncData *motionData, PokemonAnim *monAnim)
 {
     u16 v0;
-    int *v1 = param0->unk_04;
+    int *v1 = motionData->unk_04;
     v0 = (v1[3] * (v1[6] + 1)) + v1[4];
 
     switch (v1[0]) {
     case 30:
-        (*param0->unk_24) = FX_Whole(FX_SinIdx(v0) * v1[2]);
+        (*motionData->unk_24) = FX_Whole(FX_SinIdx(v0) * v1[2]);
         break;
     case 31:
-        (*param0->unk_24) = FX_Whole(FX_CosIdx(v0) * v1[2]);
+        (*motionData->unk_24) = FX_Whole(FX_CosIdx(v0) * v1[2]);
         break;
     case 32:
-        (*param0->unk_24) = -FX_Whole(FX_SinIdx(v0) * v1[2]);
+        (*motionData->unk_24) = -FX_Whole(FX_SinIdx(v0) * v1[2]);
         break;
     case 33:
-        (*param0->unk_24) = -FX_Whole(FX_CosIdx(v0) * v1[2]);
+        (*motionData->unk_24) = -FX_Whole(FX_CosIdx(v0) * v1[2]);
         break;
     default:
         GF_ASSERT(FALSE);
     }
 
-    sub_02016C54(param0->unk_2C, &(param0->unk_30), param0->unk_24, param0->unk_28);
+    sub_02016C54(motionData->unk_2C, &(motionData->unk_30), motionData->unk_24, motionData->unk_28);
 
     v1[6]++;
 
     if (v1[6] >= v1[5]) {
-        param0->unk_00 = 0;
+        motionData->active = 0;
     }
 }
 
-static void sub_02016E64(UnkStruct_02016DAC *param0, PokemonAnim *monAnim)
+static void sub_02016E64(MotionFuncData *motionData, PokemonAnim *monAnim)
 {
     u16 v0;
-    int *v1 = param0->unk_04;
+    int *v1 = motionData->unk_04;
     v0 = ((v1[3] * (v1[6] + 1)) / v1[5]) + v1[4];
 
     switch (v1[0]) {
     case 30:
-        (*param0->unk_24) = FX_Whole(FX_SinIdx(v0) * v1[2]);
+        (*motionData->unk_24) = FX_Whole(FX_SinIdx(v0) * v1[2]);
         break;
     case 31:
-        (*param0->unk_24) = FX_Whole(FX_CosIdx(v0) * v1[2]);
+        (*motionData->unk_24) = FX_Whole(FX_CosIdx(v0) * v1[2]);
         break;
     case 32:
-        (*param0->unk_24) = -FX_Whole(FX_SinIdx(v0) * v1[2]);
+        (*motionData->unk_24) = -FX_Whole(FX_SinIdx(v0) * v1[2]);
         break;
     case 33:
-        (*param0->unk_24) = -FX_Whole(FX_CosIdx(v0) * v1[2]);
+        (*motionData->unk_24) = -FX_Whole(FX_CosIdx(v0) * v1[2]);
         break;
     default:
         GF_ASSERT(FALSE);
     }
 
-    sub_02016C54(param0->unk_2C, &(param0->unk_30), param0->unk_24, param0->unk_28);
+    sub_02016C54(motionData->unk_2C, &(motionData->unk_30), motionData->unk_24, motionData->unk_28);
 
     v1[6]++;
 
     if (v1[6] >= v1[5]) {
-        param0->unk_00 = 0;
+        motionData->active = 0;
     }
 }
 
-static void sub_02016F24(UnkStruct_02016DAC *param0, PokemonAnim *monAnim)
+static void sub_02016F24(MotionFuncData *motionData, PokemonAnim *monAnim)
 {
     int v0;
-    int *v1 = param0->unk_04;
+    int *v1 = motionData->unk_04;
     v0 = v1[1] + (v1[2] * v1[4]);
 
-    (*param0->unk_24) += v0;
+    (*motionData->unk_24) += v0;
 
-    sub_02016C54(param0->unk_2C, &(param0->unk_30), param0->unk_24, param0->unk_28);
+    sub_02016C54(motionData->unk_2C, &(motionData->unk_30), motionData->unk_24, motionData->unk_28);
 
     v1[4]++;
 
     if (v1[4] >= v1[3]) {
-        param0->unk_00 = 0;
+        motionData->active = 0;
     }
 }
 
-static void sub_02016F60(UnkStruct_02016DAC *param0, PokemonAnim *monAnim)
+static void sub_02016F60(MotionFuncData *motionData, PokemonAnim *monAnim)
 {
     int v0;
-    int *v1 = param0->unk_04;
+    int *v1 = motionData->unk_04;
     v0 = ((v1[3] + 1) * v1[1]) / v1[2];
 
-    (*param0->unk_24) = v0;
+    (*motionData->unk_24) = v0;
 
-    sub_02016C54(param0->unk_2C, &(param0->unk_30), param0->unk_24, param0->unk_28);
+    sub_02016C54(motionData->unk_2C, &(motionData->unk_30), motionData->unk_24, motionData->unk_28);
 
     v1[3]++;
 
     if (v1[3] >= v1[2]) {
-        param0->unk_00 = 0;
+        motionData->active = 0;
     }
 }
 
-static void sub_02016F9C(UnkStruct_02016DAC *param0, PokemonAnim *monAnim)
+static void sub_02016F9C(MotionFuncData *motionData, PokemonAnim *monAnim)
 {
     int v0;
-    int *v1 = param0->unk_04;
+    int *v1 = motionData->unk_04;
     v0 = v1[1] + (v1[2] * v1[4]);
 
-    (*param0->unk_24) += v0;
+    (*motionData->unk_24) += v0;
 
-    if ((param0->unk_2C == 24) || (param0->unk_2C == 26)) {
+    if ((motionData->unk_2C == 24) || (motionData->unk_2C == 26)) {
         if (v0 < 0) {
-            if ((*param0->unk_24) <= v1[3]) {
-                (*param0->unk_24) = v1[3];
-                param0->unk_00 = 0;
+            if ((*motionData->unk_24) <= v1[3]) {
+                (*motionData->unk_24) = v1[3];
+                motionData->active = 0;
             }
         } else {
-            if ((*param0->unk_24) >= v1[3]) {
-                (*param0->unk_24) = v1[3];
-                param0->unk_00 = 0;
+            if ((*motionData->unk_24) >= v1[3]) {
+                (*motionData->unk_24) = v1[3];
+                motionData->active = 0;
             }
         }
-    } else if (param0->unk_2C == 25) {
-        int v2 = param0->unk_30 + (*param0->unk_24);
+    } else if (motionData->unk_2C == 25) {
+        int v2 = motionData->unk_30 + (*motionData->unk_24);
 
         if (v0 < 0) {
             if (v2 <= v1[3]) {
-                (*param0->unk_24) += (v1[3] - v2);
-                param0->unk_00 = 0;
+                (*motionData->unk_24) += (v1[3] - v2);
+                motionData->active = 0;
             }
         } else {
             if (v2 >= v1[3]) {
-                (*param0->unk_24) -= (v2 - v1[3]);
-                param0->unk_00 = 0;
+                (*motionData->unk_24) -= (v2 - v1[3]);
+                motionData->active = 0;
             }
         }
     } else {
         GF_ASSERT(0);
     }
 
-    sub_02016C54(param0->unk_2C, &(param0->unk_30), param0->unk_24, param0->unk_28);
+    sub_02016C54(motionData->unk_2C, &(motionData->unk_30), motionData->unk_24, motionData->unk_28);
 
     v1[4]++;
 }
