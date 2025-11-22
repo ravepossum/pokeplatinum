@@ -13,11 +13,17 @@
 #include "sys_task.h"
 #include "sys_task_manager.h"
 
-enum AnimCalcType {
-    ANIM_CALC_TYPE_VALUE = 18,
-    ANIM_CALC_TYPE_VAR,
-    ANIM_CALC_TYPE_TRIG_VALUES,
-    ANIM_CALC_TYPE_TRIG_VARS,
+// The first/third & second/fourth entries here seem to be used interchangeably.
+enum AnimScriptReadType {
+    ANIM_READ_TYPE_VALUE = 18,
+    ANIM_READ_TYPE_VAR,
+    ANIM_READ_TYPE_VALUE2,
+    ANIM_READ_TYPE_VAR2,
+};
+
+enum SpriteAttributeUpdateType {
+    SPRITE_ATTRIBUTE_SET = 22,
+    SPRITE_ATTRIBUTE_ADD,
 };
 
 enum YNormalizationType {
@@ -29,6 +35,41 @@ enum YNormalizationType {
 enum TranslationType {
     TRANSLATION_TYPE_X = 8,
     TRANSLATION_TYPE_Y,
+};
+
+enum TransformFuncType {
+    TRANSFORM_FUNC_CURVE = 0,
+    TRANSFORM_FUNC_CURVE_EVEN,
+    TRANSFORM_FUNC_LINEAR,
+    TRANSFORM_FUNC_LINEAR_EVEN,
+    TRANSFORM_FUNC_LINEAR_BOUNDED,
+};
+
+enum TransformType {
+    TRANSFORM_TYPE_OFFSET_X = 35,
+    TRANSFORM_TYPE_OFFSET_Y,
+    TRANSFORM_TYPE_SCALE_X,
+    TRANSFORM_TYPE_SCALE_Y,
+    TRANSFORM_TYPE_ROTATION_Z,
+};
+
+enum TransformCurveType {
+    TRANSFORM_CURVE_SIN = 30,
+    TRANSFORM_CURVE_COS,
+    TRANSFORM_CURVE_NEGATIVE_SIN,
+    TRANSFORM_CURVE_NEGATIVE_COS,
+};
+
+enum TransformCalcType {
+    TRANSFORM_CALC_SET = 24,
+    TRANSFORM_CALC_ADD,
+    TRANSFORM_CALC_INCREMENT,
+};
+
+enum ComparisonResult {
+    COMPARISON_RESULT_LESS_THAN = 15,
+    COMPARISON_RESULT_GREATER_THAN,
+    COMPARISON_RESULT_EQUAL,
 };
 
 #define NUM_POKEMON_ANIMS       143
@@ -47,18 +88,18 @@ typedef void (*TransformFunc)(TransformData *, PokemonAnim *);
 typedef struct TransformData {
     BOOL active;
     int vars[MAX_TRANSFORM_DATA_VARS];
-    int *unk_24;
-    int *unk_28;
-    u8 unk_2C;
+    int *transformMemberPtr;
+    int *animMemberPtr;
+    u8 calcType;
     u8 startDelay;
-    int unk_30;
-    int unk_34;
-    int unk_38;
-    int unk_3C;
-    int unk_40;
-    int unk_44;
-    int unk_48;
-    int unk_4C;
+    int originalValue;
+    int dummy_34;
+    int dummy_38;
+    int offsetX;
+    int offsetY;
+    int scaleX;
+    int scaleY;
+    int rotationZ;
     TransformFunc func;
 } TransformData;
 
@@ -74,9 +115,9 @@ typedef struct PokemonAnim {
     BOOL completed;
     int vars[MAX_POKEMON_ANIM_VARS];
     int commandCount;
-    int unk_48;
-    int unk_4C;
-    u32 *unk_50;
+    int loopMax;
+    int loopCounter;
+    u32 *loopStart;
     int startDelay;
     int originalX;
     int originalY;
@@ -104,19 +145,19 @@ typedef struct PokemonAnimManager {
 typedef struct {
     TransformFunc func;
     int paramCount;
-    int unk_08;
+    int transformTypeIndex;
 } TransformFuncParameters;
 
 static int ReadScript_WordIndex(u32 *scriptPtr, u8 index, u8 one);
 static int ReadScript_WordIndexZero(u32 *scriptPtr, u8 one);
 static int ReadScript_Word(u32 *scriptPtr);
-static void sub_02016D04(PokemonAnim *monAnim, const int param1);
+static void ReadScript_TransformFunc(PokemonAnim *monAnim, const int param1);
 static void Task_RunPokemonAnim(SysTask *task, void *monAnim);
 static void RunPokemonAnimScript(PokemonAnim *monAnim);
 static void PokemonAnimFunc_End(PokemonAnim *monAnim);
 static void PokemonAnimFunc_WaitFrame(PokemonAnim *monAnim);
 static void PokemonAnimFunc_SetOriginalPosition(PokemonAnim *monAnim);
-static void sub_02016678(PokemonAnim *monAnim);
+static void PokemonAnimFunc_SetVarIf(PokemonAnim *monAnim);
 static void PokemonAnimFunc_SetVar(PokemonAnim *monAnim);
 static void PokemonAnimFunc_CopyVar(PokemonAnim *monAnim);
 static void PokemonAnimFunc_Add(PokemonAnim *monAnim);
@@ -124,11 +165,11 @@ static void PokemonAnimFunc_Multiply(PokemonAnim *monAnim);
 static void PokemonAnimFunc_Subtract(PokemonAnim *monAnim);
 static void PokemonAnimFunc_Divide(PokemonAnim *monAnim);
 static void PokemonAnimFunc_Modulo(PokemonAnim *monAnim);
-static void sub_0201677C(PokemonAnim *monAnim);
-static void sub_020167A0(PokemonAnim *monAnim);
+static void PokemonAnimFunc_Loop(PokemonAnim *monAnim);
+static void PokemonAnimFunc_LoopEnd(PokemonAnim *monAnim);
 static void PokemonAnimFunc_SetSpriteAttribute(PokemonAnim *monAnim);
 static void PokemonAnimFunc_AddSpriteAttribute(PokemonAnim *monAnim);
-static void sub_02016814(PokemonAnim *monAnim);
+static void PokemonAnimFunc_SetOrAddAttribute(PokemonAnim *monAnim);
 static void PokemonAnimFunc_Sin(PokemonAnim *monAnim);
 static void PokemonAnimFunc_Cos(PokemonAnim *monAnim);
 static void PokemonAnimFunc_SetTranslation(PokemonAnim *monAnim);
@@ -142,22 +183,22 @@ static void PokemonAnimFunc_Fade(PokemonAnim *monAnim);
 static void PokemonAnimFunc_WaitFade(PokemonAnim *monAnim);
 static void PokemonAnimFunc_WaitTransform(PokemonAnim *monAnim);
 static void PokemonAnimFunc_SetYNormalization(PokemonAnim *monAnim);
-static void sub_02016C18(PokemonAnim *monAnim);
-static void sub_02016C24(PokemonAnim *monAnim);
-static void sub_02016C30(PokemonAnim *monAnim);
-static void sub_02016C3C(PokemonAnim *monAnim);
-static void sub_02016C48(PokemonAnim *monAnim);
-static void sub_02016DAC(TransformData *transform, PokemonAnim *monAnim);
-static void sub_02016E64(TransformData *transform, PokemonAnim *monAnim);
-static void sub_02016F24(TransformData *transform, PokemonAnim *monAnim);
-static void sub_02016F60(TransformData *transform, PokemonAnim *monAnim);
-static void sub_02016F9C(TransformData *transform, PokemonAnim *monAnim);
+static void PokemonAnimFunc_Transform_Curve(PokemonAnim *monAnim);
+static void PokemonAnimFunc_Transform_CurveEven(PokemonAnim *monAnim);
+static void PokemonAnimFunc_Transform_Linear(PokemonAnim *monAnim);
+static void PokemonAnimFunc_Transform_LinearEven(PokemonAnim *monAnim);
+static void PokemonAnimFunc_Transform_LinearBounded(PokemonAnim *monAnim);
+static void TransformFunc_Curve(TransformData *transform, PokemonAnim *monAnim);
+static void TransformFunc_CurveEven(TransformData *transform, PokemonAnim *monAnim);
+static void TransformFunc_Linear(TransformData *transform, PokemonAnim *monAnim);
+static void TransformFunc_LinearEven(TransformData *transform, PokemonAnim *monAnim);
+static void TransformFunc_LinearBounded(TransformData *transform, PokemonAnim *monAnim);
 
 static const PokemonAnimFunc sPokemonAnimFuncs[NUM_POKEMON_ANIM_FUNCS] = {
     PokemonAnimFunc_End,
     PokemonAnimFunc_WaitFrame,
     PokemonAnimFunc_SetOriginalPosition,
-    sub_02016678,
+    PokemonAnimFunc_SetVarIf,
     PokemonAnimFunc_SetVar,
     PokemonAnimFunc_CopyVar,
     PokemonAnimFunc_Add,
@@ -165,11 +206,11 @@ static const PokemonAnimFunc sPokemonAnimFuncs[NUM_POKEMON_ANIM_FUNCS] = {
     PokemonAnimFunc_Subtract,
     PokemonAnimFunc_Divide,
     PokemonAnimFunc_Modulo,
-    sub_0201677C,
-    sub_020167A0,
+    PokemonAnimFunc_Loop,
+    PokemonAnimFunc_LoopEnd,
     PokemonAnimFunc_SetSpriteAttribute,
     PokemonAnimFunc_AddSpriteAttribute,
-    sub_02016814,
+    PokemonAnimFunc_SetOrAddAttribute,
     PokemonAnimFunc_Sin,
     PokemonAnimFunc_Cos,
     PokemonAnimFunc_SetTranslation,
@@ -180,22 +221,22 @@ static const PokemonAnimFunc sPokemonAnimFuncs[NUM_POKEMON_ANIM_FUNCS] = {
     sub_02016B10,
     PokemonAnimFunc_WaitTransform,
     PokemonAnimFunc_SetYNormalization,
-    sub_02016C18,
-    sub_02016C24,
-    sub_02016C30,
-    sub_02016C3C,
-    sub_02016C48,
+    PokemonAnimFunc_Transform_Curve,
+    PokemonAnimFunc_Transform_CurveEven,
+    PokemonAnimFunc_Transform_Linear,
+    PokemonAnimFunc_Transform_LinearEven,
+    PokemonAnimFunc_Transform_LinearBounded,
     PokemonAnimFunc_SetStartDelay,
     PokemonAnimFunc_Fade,
     PokemonAnimFunc_WaitFade
 };
 
 static const TransformFuncParameters sTransformFuncToParams[] = {
-    { sub_02016DAC, 6, 0x1 },
-    { sub_02016E64, 6, 0x1 },
-    { sub_02016F24, 4, 0x0 },
-    { sub_02016F60, 3, 0x0 },
-    { sub_02016F9C, 4, 0x0 }
+    [TRANSFORM_FUNC_CURVE] = { TransformFunc_Curve, 6, 1 },
+    [TRANSFORM_FUNC_CURVE_EVEN] = { TransformFunc_CurveEven, 6, 1 },
+    [TRANSFORM_FUNC_LINEAR] = { TransformFunc_Linear, 4, 0 },
+    [TRANSFORM_FUNC_LINEAR_EVEN] = { TransformFunc_LinearEven, 3, 0 },
+    [TRANSFORM_FUNC_LINEAR_BOUNDED] = { TransformFunc_LinearBounded, 4, 0 },
 };
 
 // PokemonAnimManager_New
@@ -397,7 +438,7 @@ static int ReadScript_Word(u32 *scriptPtr)
     return ReadScript_WordIndexZero(scriptPtr, 1);
 }
 
-static TransformData *TransformFuncData_New(PokemonAnim *monAnim, const u8 param1)
+static TransformData *TransformFuncData_New(PokemonAnim *monAnim, const u8 funcType)
 {
     for (u8 i = 0; i < MAX_ANIM_TRANSFORMS; i++) {
         TransformData *retPtr = &(monAnim->transforms[i]);
@@ -406,7 +447,7 @@ static TransformData *TransformFuncData_New(PokemonAnim *monAnim, const u8 param
             MI_CpuClear8(retPtr, sizeof(TransformData));
 
             retPtr->active = TRUE;
-            retPtr->func = sTransformFuncToParams[param1].func;
+            retPtr->func = sTransformFuncToParams[funcType].func;
 
             return retPtr;
         }
@@ -443,16 +484,16 @@ static void ReadScript_TwoVarIndexes(PokemonAnim *monAnim, u8 *outIndex1, u8 *ou
 
 static void ReadScript_VarAndIntOrVar(PokemonAnim *monAnim, u8 *outDestIndex, int *outOperand1, int *outOperand2)
 {
-    u8 index1, index2, calcType;
+    u8 index1, index2, readType;
 
     ReadScript_VarIndex(monAnim, outDestIndex);
-    ReadScript_U8(monAnim, &calcType);
+    ReadScript_U8(monAnim, &readType);
 
-    if (calcType == ANIM_CALC_TYPE_VALUE) {
+    if (readType == ANIM_READ_TYPE_VALUE) {
         ReadScript_VarIndex(monAnim, &index1);
         *outOperand1 = monAnim->vars[index1];
         ReadScript_Int(monAnim, outOperand2);
-    } else if (calcType == ANIM_CALC_TYPE_VAR) {
+    } else if (readType == ANIM_READ_TYPE_VAR) {
         ReadScript_TwoVarIndexes(monAnim, &index1, &index2);
         *outOperand1 = monAnim->vars[index1];
         *outOperand2 = monAnim->vars[index2];
@@ -463,24 +504,24 @@ static void ReadScript_VarAndIntOrVar(PokemonAnim *monAnim, u8 *outDestIndex, in
 
 static void ReadScript_TwoIntOrVar(PokemonAnim *monAnim, u8 *outDestIndex, int *outOperand1, int *outOperand2)
 {
-    u8 index1, index2, calcType1, calcType2;
+    u8 index1, index2, readType1, readType2;
 
     ReadScript_VarIndex(monAnim, outDestIndex);
-    ReadScript_U8(monAnim, &calcType1);
-    ReadScript_U8(monAnim, &calcType2);
+    ReadScript_U8(monAnim, &readType1);
+    ReadScript_U8(monAnim, &readType2);
 
-    if (calcType1 == ANIM_CALC_TYPE_VALUE) {
+    if (readType1 == ANIM_READ_TYPE_VALUE) {
         ReadScript_Int(monAnim, outOperand1);
-    } else if (calcType1 == ANIM_CALC_TYPE_VAR) {
+    } else if (readType1 == ANIM_READ_TYPE_VAR) {
         ReadScript_VarIndex(monAnim, &index1);
         *outOperand1 = monAnim->vars[index1];
     } else {
         GF_ASSERT(0);
     }
 
-    if (calcType2 == ANIM_CALC_TYPE_VALUE) {
+    if (readType2 == ANIM_READ_TYPE_VALUE) {
         ReadScript_Int(monAnim, outOperand2);
-    } else if (calcType2 == ANIM_CALC_TYPE_VAR) {
+    } else if (readType2 == ANIM_READ_TYPE_VAR) {
         ReadScript_VarIndex(monAnim, &index2);
         *outOperand2 = monAnim->vars[index2];
     } else {
@@ -490,27 +531,27 @@ static void ReadScript_TwoIntOrVar(PokemonAnim *monAnim, u8 *outDestIndex, int *
 
 static void ReadScript_TrigOperands(PokemonAnim *monAnim, u8 *outDestIndex, int *outRadians, int *outAmplitude)
 {
-    u8 radiansIndex, amplitudeIndex, offsetIndex, calcType;
+    u8 radiansIndex, amplitudeIndex, offsetIndex, readType;
     int radians, offset;
 
     ReadScript_TwoVarIndexes(monAnim, outDestIndex, &radiansIndex);
     radians = monAnim->vars[radiansIndex];
-    ReadScript_U8(monAnim, &calcType);
+    ReadScript_U8(monAnim, &readType);
 
-    if (calcType == ANIM_CALC_TYPE_TRIG_VALUES) {
+    if (readType == ANIM_READ_TYPE_VALUE2) {
         ReadScript_Int(monAnim, outAmplitude);
-    } else if (calcType == ANIM_CALC_TYPE_TRIG_VARS) {
+    } else if (readType == ANIM_READ_TYPE_VAR2) {
         ReadScript_VarIndex(monAnim, &amplitudeIndex);
         (*outAmplitude) = monAnim->vars[amplitudeIndex];
     } else {
         GF_ASSERT(0);
     }
 
-    ReadScript_U8(monAnim, &calcType);
+    ReadScript_U8(monAnim, &readType);
 
-    if (calcType == ANIM_CALC_TYPE_TRIG_VALUES) {
+    if (readType == ANIM_READ_TYPE_VALUE2) {
         ReadScript_Int(monAnim, &offset);
-    } else if (calcType == ANIM_CALC_TYPE_TRIG_VARS) {
+    } else if (readType == ANIM_READ_TYPE_VAR2) {
         ReadScript_VarIndex(monAnim, &offsetIndex);
         offset = monAnim->vars[offsetIndex];
     } else {
@@ -521,16 +562,16 @@ static void ReadScript_TrigOperands(PokemonAnim *monAnim, u8 *outDestIndex, int 
     (*outRadians) %= 0x10000;
 }
 
-static u8 sub_020164FC(const int *param0, const int *param1)
+static u8 CompareValues(const int *value1, const int *value2)
 {
-    int v0 = (*param0) - (*param1);
+    int result = *value1 - *value2;
 
-    if (v0 < 0) {
-        return 15;
-    } else if (v0 > 0) {
-        return 16;
+    if (result < 0) {
+        return COMPARISON_RESULT_LESS_THAN;
+    } else if (result > 0) {
+        return COMPARISON_RESULT_GREATER_THAN;
     } else {
-        return 17;
+        return COMPARISON_RESULT_EQUAL;
     }
 }
 
@@ -618,82 +659,78 @@ static void PokemonAnimFunc_Modulo(PokemonAnim *monAnim)
     monAnim->vars[index] = operand1 % operand2;
 }
 
-static void sub_02016678(PokemonAnim *monAnim)
+static void PokemonAnimFunc_SetVarIf(PokemonAnim *monAnim)
 {
-    u8 v0, v1;
-    u8 v2, v3;
-    u8 v4;
+    u8 index1, index2, condition, comparisonResult, readType;
+    int value1, value2;
 
-    int v5, v6;
+    ReadScript_U8(monAnim, &readType);
 
-    ReadScript_U8(monAnim, &v4);
-
-    if (v4 == 20) {
-        ReadScript_VarIndex(monAnim, &v0);
-        v5 = monAnim->vars[v0];
-        ReadScript_Int(monAnim, &v6);
-    } else if (v4 == 21) {
-        ReadScript_TwoVarIndexes(monAnim, &v0, &v1);
-        v5 = monAnim->vars[v0];
-        v6 = monAnim->vars[v1];
+    if (readType == ANIM_READ_TYPE_VALUE2) {
+        ReadScript_VarIndex(monAnim, &index1);
+        value1 = monAnim->vars[index1];
+        ReadScript_Int(monAnim, &value2);
+    } else if (readType == ANIM_READ_TYPE_VAR2) {
+        ReadScript_TwoVarIndexes(monAnim, &index1, &index2);
+        value1 = monAnim->vars[index1];
+        value2 = monAnim->vars[index2];
     } else {
         GF_ASSERT(0);
     }
 
-    ReadScript_U8(monAnim, &v2);
-    GF_ASSERT(v2 <= 17);
+    ReadScript_U8(monAnim, &condition);
+    GF_ASSERT(condition <= COMPARISON_RESULT_EQUAL);
 
-    v3 = sub_020164FC(&v5, &v6);
+    comparisonResult = CompareValues(&value1, &value2);
 
-    int v7;
+    int newValue;
 
-    ReadScript_U8(monAnim, &v4);
+    ReadScript_U8(monAnim, &readType);
 
-    if (v4 == 20) {
-        ReadScript_VarIndex(monAnim, &v0);
-        ReadScript_Int(monAnim, &v7);
-    } else if (v4 == 21) {
-        ReadScript_TwoVarIndexes(monAnim, &v0, &v1);
-        v7 = monAnim->vars[v1];
+    if (readType == ANIM_READ_TYPE_VALUE2) {
+        ReadScript_VarIndex(monAnim, &index1);
+        ReadScript_Int(monAnim, &newValue);
+    } else if (readType == ANIM_READ_TYPE_VAR2) {
+        ReadScript_TwoVarIndexes(monAnim, &index1, &index2);
+        newValue = monAnim->vars[index2];
     } else {
         GF_ASSERT(0);
     }
 
-    if (v2 == v3) {
-        monAnim->vars[v0] = v7;
+    if (condition == comparisonResult) {
+        monAnim->vars[index1] = newValue;
     }
 }
 
 static void PokemonAnimFunc_SetVar(PokemonAnim *monAnim)
 {
     u8 index;
-
     ReadScript_VarIndex(monAnim, &index);
 
     monAnim->scriptPtr++;
     monAnim->vars[index] = (int)ReadScript_Word(monAnim->scriptPtr);
 }
 
-static void sub_0201677C(PokemonAnim *monAnim)
+static void PokemonAnimFunc_Loop(PokemonAnim *monAnim)
 {
-    GF_ASSERT(monAnim->unk_50 == NULL);
+    GF_ASSERT(monAnim->loopStart == NULL);
 
     monAnim->scriptPtr++;
-    monAnim->unk_50 = monAnim->scriptPtr;
-    monAnim->unk_48 = (int)ReadScript_Word(monAnim->scriptPtr);
-    monAnim->unk_4C = 0;
+    monAnim->loopStart = monAnim->scriptPtr;
+    monAnim->loopMax = (int)ReadScript_Word(monAnim->scriptPtr);
+    monAnim->loopCounter = 0;
 }
 
-static void sub_020167A0(PokemonAnim *monAnim)
+static void PokemonAnimFunc_LoopEnd(PokemonAnim *monAnim)
 {
-    monAnim->unk_4C++;
+    monAnim->loopCounter++;
 
-    if (monAnim->unk_4C >= monAnim->unk_48) {
-        monAnim->unk_50 = NULL;
-        monAnim->unk_4C = 0;
-        monAnim->unk_48 = 0;
+    if (monAnim->loopCounter >= monAnim->loopMax) {
+        monAnim->loopStart = NULL;
+        monAnim->loopCounter = 0;
+        monAnim->loopMax = 0;
     } else {
-        monAnim->scriptPtr = monAnim->unk_50;
+        monAnim->scriptPtr = monAnim->loopStart;
     }
 }
 
@@ -717,35 +754,33 @@ static void PokemonAnimFunc_AddSpriteAttribute(PokemonAnim *monAnim)
     PokemonSprite_AddAttribute(monAnim->sprite, attribute, monAnim->vars[index]);
 }
 
-static void sub_02016814(PokemonAnim *monAnim)
+static void PokemonAnimFunc_SetOrAddAttribute(PokemonAnim *monAnim)
 {
-    int v0;
-    int v1;
+    int attribute, value;
 
-    ReadScript_Int(monAnim, &v0);
+    ReadScript_Int(monAnim, &attribute);
 
-    u8 v2;
-    u8 v3;
+    u8 index, readType;
 
-    ReadScript_U8(monAnim, &v3);
+    ReadScript_U8(monAnim, &readType);
 
-    if (v3 == 20) {
-        ReadScript_Int(monAnim, &v1);
-    } else if (v3 == 21) {
-        ReadScript_VarIndex(monAnim, &v2);
-        v1 = monAnim->vars[v2];
+    if (readType == ANIM_READ_TYPE_VALUE2) {
+        ReadScript_Int(monAnim, &value);
+    } else if (readType == ANIM_READ_TYPE_VAR2) {
+        ReadScript_VarIndex(monAnim, &index);
+        value = monAnim->vars[index];
     } else {
         GF_ASSERT(0);
     }
 
-    u8 v4;
+    u8 updateType;
 
-    ReadScript_U8(monAnim, &v4);
+    ReadScript_U8(monAnim, &updateType);
 
-    if (v4 == 22) {
-        PokemonSprite_SetAttribute(monAnim->sprite, v0, v1);
-    } else if (v4 == 23) {
-        PokemonSprite_AddAttribute(monAnim->sprite, v0, v1);
+    if (updateType == SPRITE_ATTRIBUTE_SET) {
+        PokemonSprite_SetAttribute(monAnim->sprite, attribute, value);
+    } else if (updateType == SPRITE_ATTRIBUTE_ADD) {
+        PokemonSprite_AddAttribute(monAnim->sprite, attribute, value);
     } else {
         GF_ASSERT(0);
     }
@@ -947,90 +982,90 @@ static void PokemonAnimFunc_SetYNormalization(PokemonAnim *monAnim)
             && TRUE));
 }
 
-static void sub_02016C18(PokemonAnim *monAnim)
+static void PokemonAnimFunc_Transform_Curve(PokemonAnim *monAnim)
 {
-    sub_02016D04(monAnim, 0);
+    ReadScript_TransformFunc(monAnim, TRANSFORM_FUNC_CURVE);
 }
 
-static void sub_02016C24(PokemonAnim *monAnim)
+static void PokemonAnimFunc_Transform_CurveEven(PokemonAnim *monAnim)
 {
-    sub_02016D04(monAnim, 1);
+    ReadScript_TransformFunc(monAnim, TRANSFORM_FUNC_CURVE_EVEN);
 }
 
-static void sub_02016C30(PokemonAnim *monAnim)
+static void PokemonAnimFunc_Transform_Linear(PokemonAnim *monAnim)
 {
-    sub_02016D04(monAnim, 2);
+    ReadScript_TransformFunc(monAnim, TRANSFORM_FUNC_LINEAR);
 }
 
-static void sub_02016C3C(PokemonAnim *monAnim)
+static void PokemonAnimFunc_Transform_LinearEven(PokemonAnim *monAnim)
 {
-    sub_02016D04(monAnim, 3);
+    ReadScript_TransformFunc(monAnim, TRANSFORM_FUNC_LINEAR_EVEN);
 }
 
-static void sub_02016C48(PokemonAnim *monAnim)
+static void PokemonAnimFunc_Transform_LinearBounded(PokemonAnim *monAnim)
 {
-    sub_02016D04(monAnim, 4);
+    ReadScript_TransformFunc(monAnim, TRANSFORM_FUNC_LINEAR_BOUNDED);
 }
 
-static void sub_02016C54(const u8 param0, const int *param1, const int *param2, int *param3)
+static void CalcNextTransformValue(const u8 calcType, const int *originalValue, const int *currentValue, int *nextValue)
 {
-    if (param0 == 24) {
-        (*param3) = (*param2);
-    } else if (param0 == 25) {
-        (*param3) = (*param1) + (*param2);
-    } else if (param0 == 26) {
-        (*param3) += (*param2);
+    if (calcType == TRANSFORM_CALC_SET) {
+        *nextValue = *currentValue;
+    } else if (calcType == TRANSFORM_CALC_ADD) {
+        *nextValue = *originalValue + *currentValue;
+    } else if (calcType == TRANSFORM_CALC_INCREMENT) {
+        *nextValue += *currentValue;
     } else {
         GF_ASSERT(0);
     }
 }
 
-static void sub_02016C84(const u8 param0, TransformData *transform, PokemonAnim *monAnim)
+static void SetTransformFuncPtrs(const u8 transformType, TransformData *transform, PokemonAnim *monAnim)
 {
-    switch (param0) {
-    case 35:
-        transform->unk_24 = &transform->unk_3C;
-        transform->unk_28 = &monAnim->offsetX;
-        transform->unk_30 = monAnim->offsetX;
+    switch (transformType) {
+    case TRANSFORM_TYPE_OFFSET_X:
+        transform->transformMemberPtr = &transform->offsetX;
+        transform->animMemberPtr = &monAnim->offsetX;
+        transform->originalValue = monAnim->offsetX;
         break;
-    case 36:
-        transform->unk_24 = &transform->unk_40;
-        transform->unk_28 = &monAnim->offsetY;
-        transform->unk_30 = monAnim->offsetY;
+    case TRANSFORM_TYPE_OFFSET_Y:
+        transform->transformMemberPtr = &transform->offsetY;
+        transform->animMemberPtr = &monAnim->offsetY;
+        transform->originalValue = monAnim->offsetY;
         break;
-    case 37:
-        transform->unk_24 = &transform->unk_44;
-        transform->unk_28 = &monAnim->scaleX;
-        transform->unk_30 = monAnim->scaleX;
+    case TRANSFORM_TYPE_SCALE_X:
+        transform->transformMemberPtr = &transform->scaleX;
+        transform->animMemberPtr = &monAnim->scaleX;
+        transform->originalValue = monAnim->scaleX;
         break;
-    case 38:
-        transform->unk_24 = &transform->unk_48;
-        transform->unk_28 = &monAnim->scaleY;
-        transform->unk_30 = monAnim->scaleY;
+    case TRANSFORM_TYPE_SCALE_Y:
+        transform->transformMemberPtr = &transform->scaleY;
+        transform->animMemberPtr = &monAnim->scaleY;
+        transform->originalValue = monAnim->scaleY;
         break;
-    case 39:
-        transform->unk_24 = &transform->unk_4C;
-        transform->unk_28 = &monAnim->rotationZ;
-        transform->unk_30 = monAnim->rotationZ;
+    case TRANSFORM_TYPE_ROTATION_Z:
+        transform->transformMemberPtr = &transform->rotationZ;
+        transform->animMemberPtr = &monAnim->rotationZ;
+        transform->originalValue = monAnim->rotationZ;
         break;
     default:
         GF_ASSERT(FALSE);
     }
 }
 
-static void sub_02016D04(PokemonAnim *monAnim, const int param1)
+static void ReadScript_TransformFunc(PokemonAnim *monAnim, const int funcType)
 {
-    TransformData *transform = TransformFuncData_New(monAnim, param1);
+    TransformData *transform = TransformFuncData_New(monAnim, funcType);
 
-    ReadScript_U8(monAnim, &transform->unk_2C);
+    ReadScript_U8(monAnim, &transform->calcType);
     ReadScript_U8(monAnim, &transform->startDelay);
 
-    for (u8 i = 0; i < sTransformFuncToParams[param1].paramCount; i++) {
+    for (u8 i = 0; i < sTransformFuncToParams[funcType].paramCount; i++) {
         ReadScript_Int(monAnim, &transform->vars[i]);
     }
 
-    int v2 = sTransformFuncToParams[param1].unk_08;
-    sub_02016C84(transform->vars[v2], transform, monAnim);
+    int index = sTransformFuncToParams[funcType].transformTypeIndex;
+    SetTransformFuncPtrs(transform->vars[index], transform, monAnim);
 
     if (transform->startDelay == 0) {
         transform->func(transform, monAnim);
@@ -1039,143 +1074,138 @@ static void sub_02016D04(PokemonAnim *monAnim, const int param1)
     }
 }
 
-static void sub_02016DAC(TransformData *transform, PokemonAnim *monAnim)
+static void TransformFunc_Curve(TransformData *transform, PokemonAnim *monAnim)
 {
-    u16 v0;
-    int *v1 = transform->vars;
-    v0 = (v1[3] * (v1[6] + 1)) + v1[4];
+    int *vars = transform->vars;
+    u16 radians = (vars[3] * (vars[6] + 1)) + vars[4];
 
-    switch (v1[0]) {
-    case 30:
-        (*transform->unk_24) = FX_Whole(FX_SinIdx(v0) * v1[2]);
+    switch (vars[0]) {
+    case TRANSFORM_CURVE_SIN:
+        *transform->transformMemberPtr = FX_Whole(FX_SinIdx(radians) * vars[2]);
         break;
-    case 31:
-        (*transform->unk_24) = FX_Whole(FX_CosIdx(v0) * v1[2]);
+    case TRANSFORM_CURVE_COS:
+        *transform->transformMemberPtr = FX_Whole(FX_CosIdx(radians) * vars[2]);
         break;
-    case 32:
-        (*transform->unk_24) = -FX_Whole(FX_SinIdx(v0) * v1[2]);
+    case TRANSFORM_CURVE_NEGATIVE_SIN:
+        *transform->transformMemberPtr = -FX_Whole(FX_SinIdx(radians) * vars[2]);
         break;
-    case 33:
-        (*transform->unk_24) = -FX_Whole(FX_CosIdx(v0) * v1[2]);
+    case TRANSFORM_CURVE_NEGATIVE_COS:
+        *transform->transformMemberPtr = -FX_Whole(FX_CosIdx(radians) * vars[2]);
         break;
     default:
         GF_ASSERT(FALSE);
     }
 
-    sub_02016C54(transform->unk_2C, &(transform->unk_30), transform->unk_24, transform->unk_28);
+    CalcNextTransformValue(transform->calcType, &(transform->originalValue), transform->transformMemberPtr, transform->animMemberPtr);
 
-    v1[6]++;
+    vars[6]++;
 
-    if (v1[6] >= v1[5]) {
-        transform->active = 0;
+    if (vars[6] >= vars[5]) {
+        transform->active = FALSE;
     }
 }
 
-static void sub_02016E64(TransformData *transform, PokemonAnim *monAnim)
+static void TransformFunc_CurveEven(TransformData *transform, PokemonAnim *monAnim)
 {
-    u16 v0;
-    int *v1 = transform->vars;
-    v0 = ((v1[3] * (v1[6] + 1)) / v1[5]) + v1[4];
+    int *vars = transform->vars;
+    u16 radians = ((vars[3] * (vars[6] + 1)) / vars[5]) + vars[4];
 
-    switch (v1[0]) {
-    case 30:
-        (*transform->unk_24) = FX_Whole(FX_SinIdx(v0) * v1[2]);
+    switch (vars[0]) {
+    case TRANSFORM_CURVE_SIN:
+        *transform->transformMemberPtr = FX_Whole(FX_SinIdx(radians) * vars[2]);
         break;
-    case 31:
-        (*transform->unk_24) = FX_Whole(FX_CosIdx(v0) * v1[2]);
+    case TRANSFORM_CURVE_COS:
+        *transform->transformMemberPtr = FX_Whole(FX_CosIdx(radians) * vars[2]);
         break;
-    case 32:
-        (*transform->unk_24) = -FX_Whole(FX_SinIdx(v0) * v1[2]);
+    case TRANSFORM_CURVE_NEGATIVE_SIN:
+        *transform->transformMemberPtr = -FX_Whole(FX_SinIdx(radians) * vars[2]);
         break;
-    case 33:
-        (*transform->unk_24) = -FX_Whole(FX_CosIdx(v0) * v1[2]);
+    case TRANSFORM_CURVE_NEGATIVE_COS:
+        *transform->transformMemberPtr = -FX_Whole(FX_CosIdx(radians) * vars[2]);
         break;
     default:
         GF_ASSERT(FALSE);
     }
 
-    sub_02016C54(transform->unk_2C, &(transform->unk_30), transform->unk_24, transform->unk_28);
+    CalcNextTransformValue(transform->calcType, &(transform->originalValue), transform->transformMemberPtr, transform->animMemberPtr);
 
-    v1[6]++;
+    vars[6]++;
 
-    if (v1[6] >= v1[5]) {
-        transform->active = 0;
+    if (vars[6] >= vars[5]) {
+        transform->active = FALSE;
     }
 }
 
-static void sub_02016F24(TransformData *transform, PokemonAnim *monAnim)
+static void TransformFunc_Linear(TransformData *transform, PokemonAnim *monAnim)
 {
-    int v0;
-    int *v1 = transform->vars;
-    v0 = v1[1] + (v1[2] * v1[4]);
+    int *vars = transform->vars;
+    int distance = vars[1] + (vars[2] * vars[4]);
 
-    (*transform->unk_24) += v0;
+    *transform->transformMemberPtr += distance;
 
-    sub_02016C54(transform->unk_2C, &(transform->unk_30), transform->unk_24, transform->unk_28);
+    CalcNextTransformValue(transform->calcType, &(transform->originalValue), transform->transformMemberPtr, transform->animMemberPtr);
 
-    v1[4]++;
+    vars[4]++;
 
-    if (v1[4] >= v1[3]) {
-        transform->active = 0;
+    if (vars[4] >= vars[3]) {
+        transform->active = FALSE;
     }
 }
 
-static void sub_02016F60(TransformData *transform, PokemonAnim *monAnim)
+static void TransformFunc_LinearEven(TransformData *transform, PokemonAnim *monAnim)
 {
-    int v0;
-    int *v1 = transform->vars;
-    v0 = ((v1[3] + 1) * v1[1]) / v1[2];
+    int *vars = transform->vars;
+    int distance = ((vars[3] + 1) * vars[1]) / vars[2];
 
-    (*transform->unk_24) = v0;
+    *transform->transformMemberPtr = distance;
 
-    sub_02016C54(transform->unk_2C, &(transform->unk_30), transform->unk_24, transform->unk_28);
+    CalcNextTransformValue(transform->calcType, &(transform->originalValue), transform->transformMemberPtr, transform->animMemberPtr);
 
-    v1[3]++;
+    vars[3]++;
 
-    if (v1[3] >= v1[2]) {
-        transform->active = 0;
+    if (vars[3] >= vars[2]) {
+        transform->active = FALSE;
     }
 }
 
-static void sub_02016F9C(TransformData *transform, PokemonAnim *monAnim)
+static void TransformFunc_LinearBounded(TransformData *transform, PokemonAnim *monAnim)
 {
-    int v0;
-    int *v1 = transform->vars;
-    v0 = v1[1] + (v1[2] * v1[4]);
+    int *vars = transform->vars;
+    int distance = vars[1] + (vars[2] * vars[4]);
 
-    (*transform->unk_24) += v0;
+    *transform->transformMemberPtr += distance;
 
-    if ((transform->unk_2C == 24) || (transform->unk_2C == 26)) {
-        if (v0 < 0) {
-            if ((*transform->unk_24) <= v1[3]) {
-                (*transform->unk_24) = v1[3];
-                transform->active = 0;
+    if (transform->calcType == TRANSFORM_CALC_SET || transform->calcType == TRANSFORM_CALC_INCREMENT) {
+        if (distance < 0) {
+            if (*transform->transformMemberPtr <= vars[3]) {
+                *transform->transformMemberPtr = vars[3];
+                transform->active = FALSE;
             }
         } else {
-            if ((*transform->unk_24) >= v1[3]) {
-                (*transform->unk_24) = v1[3];
-                transform->active = 0;
+            if (*transform->transformMemberPtr >= vars[3]) {
+                *transform->transformMemberPtr = vars[3];
+                transform->active = FALSE;
             }
         }
-    } else if (transform->unk_2C == 25) {
-        int v2 = transform->unk_30 + (*transform->unk_24);
+    } else if (transform->calcType == TRANSFORM_CALC_ADD) {
+        int v2 = transform->originalValue + *transform->transformMemberPtr;
 
-        if (v0 < 0) {
-            if (v2 <= v1[3]) {
-                (*transform->unk_24) += (v1[3] - v2);
-                transform->active = 0;
+        if (distance < 0) {
+            if (v2 <= vars[3]) {
+                *transform->transformMemberPtr += (vars[3] - v2);
+                transform->active = FALSE;
             }
         } else {
-            if (v2 >= v1[3]) {
-                (*transform->unk_24) -= (v2 - v1[3]);
-                transform->active = 0;
+            if (v2 >= vars[3]) {
+                *transform->transformMemberPtr -= (v2 - vars[3]);
+                transform->active = FALSE;
             }
         }
     } else {
         GF_ASSERT(0);
     }
 
-    sub_02016C54(transform->unk_2C, &(transform->unk_30), transform->unk_24, transform->unk_28);
+    CalcNextTransformValue(transform->calcType, &(transform->originalValue), transform->transformMemberPtr, transform->animMemberPtr);
 
-    v1[4]++;
+    vars[4]++;
 }
