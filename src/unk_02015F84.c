@@ -21,9 +21,9 @@ enum AnimScriptReadType {
     ANIM_READ_TYPE_VAR2,
 };
 
-enum SpriteAttributeUpdateType {
-    SPRITE_ATTRIBUTE_SET = 22,
-    SPRITE_ATTRIBUTE_ADD,
+enum AnimAttributeUpdateType {
+    ANIM_ATTRIBUTE_SET = 22,
+    ANIM_ATTRIBUTE_ADD,
 };
 
 enum YNormalizationType {
@@ -32,9 +32,14 @@ enum YNormalizationType {
     Y_NORMALIZATION_ON,
 };
 
-enum TranslationType {
-    TRANSLATION_TYPE_X = 8,
-    TRANSLATION_TYPE_Y,
+enum AnimAttributeType {
+    ANIM_TRANSLATE_X = 8,
+    ANIM_TRANSLATE_Y,
+    ANIM_OFFSET_X,
+    ANIM_OFFSET_Y,
+    ANIM_SCALE_X,
+    ANIM_SCALE_Y,
+    ANIM_ROTATION_Z,
 };
 
 enum TransformFuncType {
@@ -73,16 +78,18 @@ enum ComparisonResult {
 };
 
 #define NUM_POKEMON_ANIMS       143
-#define NUM_POKEMON_ANIM_FUNCS  34
+#define NUM_POKEMON_ANIM_COMMANDS 34
+
 #define MAX_ANIM_TRANSFORMS     4
 #define MAX_POKEMON_ANIM_VARS   8
 #define MAX_TRANSFORM_DATA_VARS 8
-#define MAX_ANIM_COMMANDS       256
+#define MAX_ANIM_SCRIPT_COMMANDS 256
+#define MAX_ANIM_RADIANS         0x10000
 
 typedef struct TransformData TransformData;
 typedef struct PokemonAnim PokemonAnim;
 
-typedef void (*PokemonAnimFunc)(PokemonAnim *);
+typedef void (*PokemonAnimCmd)(PokemonAnim *);
 typedef void (*TransformFunc)(TransformData *, PokemonAnim *);
 
 typedef struct TransformData {
@@ -154,81 +161,81 @@ static int ReadScript_Word(u32 *scriptPtr);
 static void ReadScript_TransformFunc(PokemonAnim *monAnim, const int param1);
 static void Task_RunPokemonAnim(SysTask *task, void *monAnim);
 static void RunPokemonAnimScript(PokemonAnim *monAnim);
-static void PokemonAnimFunc_End(PokemonAnim *monAnim);
-static void PokemonAnimFunc_WaitFrame(PokemonAnim *monAnim);
-static void PokemonAnimFunc_SetOriginalPosition(PokemonAnim *monAnim);
-static void PokemonAnimFunc_SetVarIf(PokemonAnim *monAnim);
-static void PokemonAnimFunc_SetVar(PokemonAnim *monAnim);
-static void PokemonAnimFunc_CopyVar(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Add(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Multiply(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Subtract(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Divide(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Modulo(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Loop(PokemonAnim *monAnim);
-static void PokemonAnimFunc_LoopEnd(PokemonAnim *monAnim);
-static void PokemonAnimFunc_SetSpriteAttribute(PokemonAnim *monAnim);
-static void PokemonAnimFunc_AddSpriteAttribute(PokemonAnim *monAnim);
-static void PokemonAnimFunc_SetOrAddAttribute(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Sin(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Cos(PokemonAnim *monAnim);
-static void PokemonAnimFunc_SetTranslation(PokemonAnim *monAnim);
-static void PokemonAnimFunc_AddTranslation(PokemonAnim *monAnim);
-static void sub_02016998(PokemonAnim *monAnim);
-static void PokemonAnimFunc_ApplyTranslation(PokemonAnim *monAnim);
-static void PokemonAnimFunc_ApplyScaleAndRotation(PokemonAnim *monAnim);
-static void sub_02016B10(PokemonAnim *monAnim);
-static void PokemonAnimFunc_SetStartDelay(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Fade(PokemonAnim *monAnim);
-static void PokemonAnimFunc_WaitFade(PokemonAnim *monAnim);
-static void PokemonAnimFunc_WaitTransform(PokemonAnim *monAnim);
-static void PokemonAnimFunc_SetYNormalization(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Transform_Curve(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Transform_CurveEven(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Transform_Linear(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Transform_LinearEven(PokemonAnim *monAnim);
-static void PokemonAnimFunc_Transform_LinearBounded(PokemonAnim *monAnim);
+static void PokemonAnimCmd_End(PokemonAnim *monAnim);
+static void PokemonAnimCmd_WaitFrame(PokemonAnim *monAnim);
+static void PokemonAnimCmd_SetOriginalPosition(PokemonAnim *monAnim);
+static void PokemonAnimCmd_SetVarIf(PokemonAnim *monAnim);
+static void PokemonAnimCmd_SetVar(PokemonAnim *monAnim);
+static void PokemonAnimCmd_CopyVar(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Add(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Multiply(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Subtract(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Divide(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Modulo(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Loop(PokemonAnim *monAnim);
+static void PokemonAnimCmd_LoopEnd(PokemonAnim *monAnim);
+static void PokemonAnimCmd_SetSpriteAttribute(PokemonAnim *monAnim);
+static void PokemonAnimCmd_AddSpriteAttribute(PokemonAnim *monAnim);
+static void PokemonAnimCmd_UpdateSpriteAttribute(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Sin(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Cos(PokemonAnim *monAnim);
+static void PokemonAnimCmd_SetTranslation(PokemonAnim *monAnim);
+static void PokemonAnimCmd_AddTranslation(PokemonAnim *monAnim);
+static void PokemonAnimCmd_UpdateAttribute(PokemonAnim *monAnim);
+static void PokemonAnimCmd_ApplyTranslation(PokemonAnim *monAnim);
+static void PokemonAnimCmd_ApplyScaleAndRotation(PokemonAnim *monAnim);
+static void PokemonAnimCmd_SetOffset(PokemonAnim *monAnim);
+static void PokemonAnimCmd_SetStartDelay(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Fade(PokemonAnim *monAnim);
+static void PokemonAnimCmd_WaitFade(PokemonAnim *monAnim);
+static void PokemonAnimCmd_WaitTransform(PokemonAnim *monAnim);
+static void PokemonAnimCmd_SetYNormalization(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Transform_Curve(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Transform_CurveEven(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Transform_Linear(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Transform_LinearEven(PokemonAnim *monAnim);
+static void PokemonAnimCmd_Transform_LinearBounded(PokemonAnim *monAnim);
 static void TransformFunc_Curve(TransformData *transform, PokemonAnim *monAnim);
 static void TransformFunc_CurveEven(TransformData *transform, PokemonAnim *monAnim);
 static void TransformFunc_Linear(TransformData *transform, PokemonAnim *monAnim);
 static void TransformFunc_LinearEven(TransformData *transform, PokemonAnim *monAnim);
 static void TransformFunc_LinearBounded(TransformData *transform, PokemonAnim *monAnim);
 
-static const PokemonAnimFunc sPokemonAnimFuncs[NUM_POKEMON_ANIM_FUNCS] = {
-    PokemonAnimFunc_End,
-    PokemonAnimFunc_WaitFrame,
-    PokemonAnimFunc_SetOriginalPosition,
-    PokemonAnimFunc_SetVarIf,
-    PokemonAnimFunc_SetVar,
-    PokemonAnimFunc_CopyVar,
-    PokemonAnimFunc_Add,
-    PokemonAnimFunc_Multiply,
-    PokemonAnimFunc_Subtract,
-    PokemonAnimFunc_Divide,
-    PokemonAnimFunc_Modulo,
-    PokemonAnimFunc_Loop,
-    PokemonAnimFunc_LoopEnd,
-    PokemonAnimFunc_SetSpriteAttribute,
-    PokemonAnimFunc_AddSpriteAttribute,
-    PokemonAnimFunc_SetOrAddAttribute,
-    PokemonAnimFunc_Sin,
-    PokemonAnimFunc_Cos,
-    PokemonAnimFunc_SetTranslation,
-    PokemonAnimFunc_AddTranslation,
-    sub_02016998,
-    PokemonAnimFunc_ApplyTranslation,
-    PokemonAnimFunc_ApplyScaleAndRotation,
-    sub_02016B10,
-    PokemonAnimFunc_WaitTransform,
-    PokemonAnimFunc_SetYNormalization,
-    PokemonAnimFunc_Transform_Curve,
-    PokemonAnimFunc_Transform_CurveEven,
-    PokemonAnimFunc_Transform_Linear,
-    PokemonAnimFunc_Transform_LinearEven,
-    PokemonAnimFunc_Transform_LinearBounded,
-    PokemonAnimFunc_SetStartDelay,
-    PokemonAnimFunc_Fade,
-    PokemonAnimFunc_WaitFade
+static const PokemonAnimCmd sPokemonAnimCmds[NUM_POKEMON_ANIM_COMMANDS] = {
+    PokemonAnimCmd_End,
+    PokemonAnimCmd_WaitFrame,
+    PokemonAnimCmd_SetOriginalPosition,
+    PokemonAnimCmd_SetVarIf,
+    PokemonAnimCmd_SetVar,
+    PokemonAnimCmd_CopyVar,
+    PokemonAnimCmd_Add,
+    PokemonAnimCmd_Multiply,
+    PokemonAnimCmd_Subtract,
+    PokemonAnimCmd_Divide,
+    PokemonAnimCmd_Modulo,
+    PokemonAnimCmd_Loop,
+    PokemonAnimCmd_LoopEnd,
+    PokemonAnimCmd_SetSpriteAttribute,
+    PokemonAnimCmd_AddSpriteAttribute,
+    PokemonAnimCmd_UpdateSpriteAttribute,
+    PokemonAnimCmd_Sin,
+    PokemonAnimCmd_Cos,
+    PokemonAnimCmd_SetTranslation,
+    PokemonAnimCmd_AddTranslation,
+    PokemonAnimCmd_UpdateAttribute,
+    PokemonAnimCmd_ApplyTranslation,
+    PokemonAnimCmd_ApplyScaleAndRotation,
+    PokemonAnimCmd_SetOffset,
+    PokemonAnimCmd_WaitTransform,
+    PokemonAnimCmd_SetYNormalization,
+    PokemonAnimCmd_Transform_Curve,
+    PokemonAnimCmd_Transform_CurveEven,
+    PokemonAnimCmd_Transform_Linear,
+    PokemonAnimCmd_Transform_LinearEven,
+    PokemonAnimCmd_Transform_LinearBounded,
+    PokemonAnimCmd_SetStartDelay,
+    PokemonAnimCmd_Fade,
+    PokemonAnimCmd_WaitFade
 };
 
 static const TransformFuncParameters sTransformFuncToParams[] = {
@@ -373,8 +380,8 @@ static void RunPokemonAnimScript(PokemonAnim *monAnim)
     }
 
     if (monAnim->waitForTransform) {
-        PokemonAnimFunc_ApplyTranslation(monAnim);
-        PokemonAnimFunc_ApplyScaleAndRotation(monAnim);
+        PokemonAnimCmd_ApplyTranslation(monAnim);
+        PokemonAnimCmd_ApplyScaleAndRotation(monAnim);
         return;
     }
 
@@ -389,10 +396,10 @@ static void RunPokemonAnimScript(PokemonAnim *monAnim)
     while (TRUE) {
         monAnim->commandCount++;
 
-        GF_ASSERT(*(monAnim->scriptPtr) < NUM_POKEMON_ANIM_FUNCS);
+        GF_ASSERT(*(monAnim->scriptPtr) < NUM_POKEMON_ANIM_COMMANDS);
 
-        PokemonAnimFunc currAnimFunc = sPokemonAnimFuncs[*(monAnim->scriptPtr)];
-        currAnimFunc(monAnim);
+        PokemonAnimCmd currAnimCmd = sPokemonAnimCmds[*(monAnim->scriptPtr)];
+        currAnimCmd(monAnim);
 
         if (monAnim->endAnim) {
             break;
@@ -402,13 +409,13 @@ static void RunPokemonAnimScript(PokemonAnim *monAnim)
             if (monAnim->waitFrame) {
                 break;
             } else if (monAnim->waitForTransform) {
-                PokemonAnimFunc_ApplyTranslation(monAnim);
-                PokemonAnimFunc_ApplyScaleAndRotation(monAnim);
+                PokemonAnimCmd_ApplyTranslation(monAnim);
+                PokemonAnimCmd_ApplyScaleAndRotation(monAnim);
                 break;
             }
         }
 
-        if (monAnim->commandCount >= MAX_ANIM_COMMANDS) {
+        if (monAnim->commandCount >= MAX_ANIM_SCRIPT_COMMANDS) {
             GF_ASSERT(FALSE);
 
             monAnim->endAnim = TRUE;
@@ -417,6 +424,7 @@ static void RunPokemonAnimScript(PokemonAnim *monAnim)
     }
 }
 
+// The final parameter here is only ever invoked with a value of 1.
 static int ReadScript_WordIndex(u32 *scriptPtr, u8 index, u8 one)
 {
     int ret = scriptPtr[index];
@@ -559,7 +567,7 @@ static void ReadScript_TrigOperands(PokemonAnim *monAnim, u8 *outDestIndex, int 
     }
 
     (*outRadians) = radians + offset;
-    (*outRadians) %= 0x10000;
+    (*outRadians) %= MAX_ANIM_RADIANS;
 }
 
 static u8 CompareValues(const int *value1, const int *value2)
@@ -581,20 +589,20 @@ static void ApplyYNormalization(PokemonAnim *monAnim)
     PokemonSprite_AddAttribute(monAnim->sprite, MON_SPRITE_Y_CENTER, y);
 }
 
-static void PokemonAnimFunc_End(PokemonAnim *monAnim)
+static void PokemonAnimCmd_End(PokemonAnim *monAnim)
 {
-    PokemonAnimFunc_SetOriginalPosition(monAnim);
+    PokemonAnimCmd_SetOriginalPosition(monAnim);
 
     monAnim->waitFrame = TRUE;
     monAnim->endAnim = TRUE;
 }
 
-static void PokemonAnimFunc_WaitFrame(PokemonAnim *monAnim)
+static void PokemonAnimCmd_WaitFrame(PokemonAnim *monAnim)
 {
     monAnim->waitFrame = TRUE;
 }
 
-static void PokemonAnimFunc_SetOriginalPosition(PokemonAnim *monAnim)
+static void PokemonAnimCmd_SetOriginalPosition(PokemonAnim *monAnim)
 {
     PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_X_CENTER, monAnim->originalX);
     PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_Y_CENTER, monAnim->originalY);
@@ -606,7 +614,7 @@ static void PokemonAnimFunc_SetOriginalPosition(PokemonAnim *monAnim)
     PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_SCALE_Y, MON_AFFINE_SCALE(1));
 }
 
-static void PokemonAnimFunc_CopyVar(PokemonAnim *monAnim)
+static void PokemonAnimCmd_CopyVar(PokemonAnim *monAnim)
 {
     u8 destIndex, originIndex;
 
@@ -614,7 +622,7 @@ static void PokemonAnimFunc_CopyVar(PokemonAnim *monAnim)
     monAnim->vars[destIndex] = monAnim->vars[originIndex];
 }
 
-static void PokemonAnimFunc_Add(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Add(PokemonAnim *monAnim)
 {
     u8 index;
     int operand1, operand2;
@@ -623,7 +631,7 @@ static void PokemonAnimFunc_Add(PokemonAnim *monAnim)
     monAnim->vars[index] = operand1 + operand2;
 }
 
-static void PokemonAnimFunc_Multiply(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Multiply(PokemonAnim *monAnim)
 {
     u8 index;
     int operand1, operand2;
@@ -632,7 +640,7 @@ static void PokemonAnimFunc_Multiply(PokemonAnim *monAnim)
     monAnim->vars[index] = operand1 * operand2;
 }
 
-static void PokemonAnimFunc_Subtract(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Subtract(PokemonAnim *monAnim)
 {
     u8 index;
     int operand1, operand2;
@@ -641,7 +649,7 @@ static void PokemonAnimFunc_Subtract(PokemonAnim *monAnim)
     monAnim->vars[index] = operand1 - operand2;
 }
 
-static void PokemonAnimFunc_Divide(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Divide(PokemonAnim *monAnim)
 {
     u8 index;
     int operand1, operand2;
@@ -650,7 +658,7 @@ static void PokemonAnimFunc_Divide(PokemonAnim *monAnim)
     monAnim->vars[index] = operand1 / operand2;
 }
 
-static void PokemonAnimFunc_Modulo(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Modulo(PokemonAnim *monAnim)
 {
     u8 index;
     int operand1, operand2;
@@ -659,7 +667,7 @@ static void PokemonAnimFunc_Modulo(PokemonAnim *monAnim)
     monAnim->vars[index] = operand1 % operand2;
 }
 
-static void PokemonAnimFunc_SetVarIf(PokemonAnim *monAnim)
+static void PokemonAnimCmd_SetVarIf(PokemonAnim *monAnim)
 {
     u8 index1, index2, condition, comparisonResult, readType;
     int value1, value2;
@@ -702,7 +710,7 @@ static void PokemonAnimFunc_SetVarIf(PokemonAnim *monAnim)
     }
 }
 
-static void PokemonAnimFunc_SetVar(PokemonAnim *monAnim)
+static void PokemonAnimCmd_SetVar(PokemonAnim *monAnim)
 {
     u8 index;
     ReadScript_VarIndex(monAnim, &index);
@@ -711,7 +719,7 @@ static void PokemonAnimFunc_SetVar(PokemonAnim *monAnim)
     monAnim->vars[index] = (int)ReadScript_Word(monAnim->scriptPtr);
 }
 
-static void PokemonAnimFunc_Loop(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Loop(PokemonAnim *monAnim)
 {
     GF_ASSERT(monAnim->loopStart == NULL);
 
@@ -721,7 +729,7 @@ static void PokemonAnimFunc_Loop(PokemonAnim *monAnim)
     monAnim->loopCounter = 0;
 }
 
-static void PokemonAnimFunc_LoopEnd(PokemonAnim *monAnim)
+static void PokemonAnimCmd_LoopEnd(PokemonAnim *monAnim)
 {
     monAnim->loopCounter++;
 
@@ -734,7 +742,7 @@ static void PokemonAnimFunc_LoopEnd(PokemonAnim *monAnim)
     }
 }
 
-static void PokemonAnimFunc_SetSpriteAttribute(PokemonAnim *monAnim)
+static void PokemonAnimCmd_SetSpriteAttribute(PokemonAnim *monAnim)
 {
     u8 index;
     int attribute;
@@ -744,7 +752,7 @@ static void PokemonAnimFunc_SetSpriteAttribute(PokemonAnim *monAnim)
     PokemonSprite_SetAttribute(monAnim->sprite, attribute, monAnim->vars[index]);
 }
 
-static void PokemonAnimFunc_AddSpriteAttribute(PokemonAnim *monAnim)
+static void PokemonAnimCmd_AddSpriteAttribute(PokemonAnim *monAnim)
 {
     u8 index;
     int attribute;
@@ -754,7 +762,7 @@ static void PokemonAnimFunc_AddSpriteAttribute(PokemonAnim *monAnim)
     PokemonSprite_AddAttribute(monAnim->sprite, attribute, monAnim->vars[index]);
 }
 
-static void PokemonAnimFunc_SetOrAddAttribute(PokemonAnim *monAnim)
+static void PokemonAnimCmd_UpdateSpriteAttribute(PokemonAnim *monAnim)
 {
     int attribute, value;
 
@@ -777,16 +785,16 @@ static void PokemonAnimFunc_SetOrAddAttribute(PokemonAnim *monAnim)
 
     ReadScript_U8(monAnim, &updateType);
 
-    if (updateType == SPRITE_ATTRIBUTE_SET) {
+    if (updateType == ANIM_ATTRIBUTE_SET) {
         PokemonSprite_SetAttribute(monAnim->sprite, attribute, value);
-    } else if (updateType == SPRITE_ATTRIBUTE_ADD) {
+    } else if (updateType == ANIM_ATTRIBUTE_ADD) {
         PokemonSprite_AddAttribute(monAnim->sprite, attribute, value);
     } else {
         GF_ASSERT(0);
     }
 }
 
-static void PokemonAnimFunc_Sin(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Sin(PokemonAnim *monAnim)
 {
     u8 index;
     int radians, amplitude;
@@ -795,7 +803,7 @@ static void PokemonAnimFunc_Sin(PokemonAnim *monAnim)
     monAnim->vars[index] = FX_Whole(FX_SinIdx(radians) * amplitude);
 }
 
-static void PokemonAnimFunc_Cos(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Cos(PokemonAnim *monAnim)
 {
     u8 index;
     int radians, amplitude;
@@ -804,92 +812,91 @@ static void PokemonAnimFunc_Cos(PokemonAnim *monAnim)
     monAnim->vars[index] = FX_Whole(FX_CosIdx(radians) * amplitude);
 }
 
-static void PokemonAnimFunc_SetTranslation(PokemonAnim *monAnim)
+static void PokemonAnimCmd_SetTranslation(PokemonAnim *monAnim)
 {
     u8 index, translationType;
 
     ReadScript_VarIndex(monAnim, &index);
     ReadScript_U8(monAnim, &translationType);
 
-    if (translationType == TRANSLATION_TYPE_X) {
+    if (translationType == ANIM_TRANSLATE_X) {
         monAnim->translateX = monAnim->vars[index];
-    } else if (translationType == TRANSLATION_TYPE_Y) {
+    } else if (translationType == ANIM_TRANSLATE_Y) {
         monAnim->translateY = monAnim->vars[index];
     } else {
         GF_ASSERT(0);
     }
 }
 
-static void PokemonAnimFunc_AddTranslation(PokemonAnim *monAnim)
+static void PokemonAnimCmd_AddTranslation(PokemonAnim *monAnim)
 {
     u8 index, translationType;
 
     ReadScript_VarIndex(monAnim, &index);
     ReadScript_U8(monAnim, &translationType);
 
-    if (translationType == TRANSLATION_TYPE_X) {
+    if (translationType == ANIM_TRANSLATE_X) {
         monAnim->translateX += monAnim->vars[index];
-    } else if (translationType == TRANSLATION_TYPE_Y) {
+    } else if (translationType == ANIM_TRANSLATE_Y) {
         monAnim->translateY += monAnim->vars[index];
     } else {
         GF_ASSERT(0);
     }
 }
 
-static void sub_02016998(PokemonAnim *monAnim)
+static void PokemonAnimCmd_UpdateAttribute(PokemonAnim *monAnim)
 {
-    int *v0;
-    int v1;
-    u8 v2;
+    int *attributePtr;
+    u8 attribute;
 
-    ReadScript_U8(monAnim, &v2);
+    ReadScript_U8(monAnim, &attribute);
 
-    if (v2 == 8) {
-        v0 = &monAnim->translateX;
-    } else if (v2 == 9) {
-        v0 = &monAnim->translateY;
-    } else if (v2 == 10) {
-        v0 = &monAnim->offsetX;
-    } else if (v2 == 11) {
-        v0 = &monAnim->offsetY;
-    } else if (v2 == 12) {
-        v0 = &monAnim->scaleX;
-    } else if (v2 == 13) {
-        v0 = &monAnim->scaleY;
-    } else if (v2 == 14) {
-        v0 = &monAnim->rotationZ;
+    if (attribute == ANIM_TRANSLATE_X) {
+        attributePtr = &monAnim->translateX;
+    } else if (attribute == ANIM_TRANSLATE_Y) {
+        attributePtr = &monAnim->translateY;
+    } else if (attribute == ANIM_OFFSET_X) {
+        attributePtr = &monAnim->offsetX;
+    } else if (attribute == ANIM_OFFSET_Y) {
+        attributePtr = &monAnim->offsetY;
+    } else if (attribute == ANIM_SCALE_X) {
+        attributePtr = &monAnim->scaleX;
+    } else if (attribute == ANIM_SCALE_Y) {
+        attributePtr = &monAnim->scaleY;
+    } else if (attribute == ANIM_ROTATION_Z) {
+        attributePtr = &monAnim->rotationZ;
     } else {
         GF_ASSERT(0);
     }
 
-    u8 v3;
-    u8 v4;
+    u8 index, readType;
+    int value;
 
-    ReadScript_U8(monAnim, &v4);
+    ReadScript_U8(monAnim, &readType);
 
-    if (v4 == 20) {
-        ReadScript_Int(monAnim, &v1);
-    } else if (v4 == 21) {
-        ReadScript_VarIndex(monAnim, &v3);
-        v1 = monAnim->vars[v3];
+    if (readType == ANIM_READ_TYPE_VALUE2) {
+        ReadScript_Int(monAnim, &value);
+    } else if (readType == ANIM_READ_TYPE_VAR2) {
+        ReadScript_VarIndex(monAnim, &index);
+        value = monAnim->vars[index];
     } else {
         GF_ASSERT(0);
     }
 
-    u8 v5;
+    u8 updateType;
 
-    ReadScript_U8(monAnim, &v5);
+    ReadScript_U8(monAnim, &updateType);
 
-    if (v5 == 22) {
-        (*v0) = v1;
-    } else if (v5 == 23) {
-        (*v0) += v1;
+    if (updateType == ANIM_ATTRIBUTE_SET) {
+        *attributePtr = value;
+    } else if (updateType == ANIM_ATTRIBUTE_ADD) {
+        *attributePtr += value;
     } else {
         GF_ASSERT(0);
     }
 }
 
-static void PokemonAnimFunc_ApplyTranslation(PokemonAnim *monAnim)
+static void PokemonAnimCmd_ApplyTranslation(PokemonAnim *monAnim)
 {
     if (monAnim->reverse) {
         PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_X_CENTER, monAnim->originalX - (monAnim->translateX + monAnim->offsetX));
@@ -900,7 +907,7 @@ static void PokemonAnimFunc_ApplyTranslation(PokemonAnim *monAnim)
     PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_Y_CENTER, monAnim->originalY + monAnim->translateY + monAnim->offsetY);
 }
 
-static void PokemonAnimFunc_ApplyScaleAndRotation(PokemonAnim *monAnim)
+static void PokemonAnimCmd_ApplyScaleAndRotation(PokemonAnim *monAnim)
 {
     PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_SCALE_X, MON_AFFINE_SCALE(1) + monAnim->scaleX);
     PokemonSprite_SetAttribute(monAnim->sprite, MON_SPRITE_SCALE_Y, MON_AFFINE_SCALE(1) + monAnim->scaleY);
@@ -921,32 +928,31 @@ static void PokemonAnimFunc_ApplyScaleAndRotation(PokemonAnim *monAnim)
     }
 }
 
-static void sub_02016B10(PokemonAnim *monAnim)
+static void PokemonAnimCmd_SetOffset(PokemonAnim *monAnim)
 {
-    u8 v0;
-    u8 v1;
+    u8 index, attribute;
 
-    ReadScript_VarIndex(monAnim, &v0);
+    ReadScript_VarIndex(monAnim, &index);
 
     monAnim->scriptPtr++;
-    v1 = (int)ReadScript_Word(monAnim->scriptPtr);
+    attribute = ReadScript_Word(monAnim->scriptPtr);
 
-    if ((v1 == 8) || (v1 == 10)) {
-        monAnim->offsetX = monAnim->vars[v0];
-    } else if ((v1 == 9) || (v1 == 11)) {
-        monAnim->offsetY = monAnim->vars[v0];
+    if (attribute == ANIM_TRANSLATE_X || attribute == ANIM_OFFSET_X) {
+        monAnim->offsetX = monAnim->vars[index];
+    } else if (attribute == ANIM_TRANSLATE_Y || attribute == ANIM_OFFSET_Y) {
+        monAnim->offsetY = monAnim->vars[index];
     } else {
         GF_ASSERT(0);
     }
 }
 
-static void PokemonAnimFunc_SetStartDelay(PokemonAnim *monAnim)
+static void PokemonAnimCmd_SetStartDelay(PokemonAnim *monAnim)
 {
     ReadScript_Int(monAnim, &monAnim->startDelay);
     monAnim->waitFrame = TRUE;
 }
 
-static void PokemonAnimFunc_Fade(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Fade(PokemonAnim *monAnim)
 {
     u8 initAlpha, targetAlpha, delay;
     int color;
@@ -958,7 +964,7 @@ static void PokemonAnimFunc_Fade(PokemonAnim *monAnim)
     PokemonSprite_StartFade(monAnim->sprite, initAlpha, targetAlpha, delay, color);
 }
 
-static void PokemonAnimFunc_WaitFade(PokemonAnim *monAnim)
+static void PokemonAnimCmd_WaitFade(PokemonAnim *monAnim)
 {
     if (PokemonSprite_IsFadeActive(monAnim->sprite)) {
         monAnim->fadeActive = TRUE;
@@ -966,12 +972,12 @@ static void PokemonAnimFunc_WaitFade(PokemonAnim *monAnim)
     }
 }
 
-static void PokemonAnimFunc_WaitTransform(PokemonAnim *monAnim)
+static void PokemonAnimCmd_WaitTransform(PokemonAnim *monAnim)
 {
     monAnim->waitForTransform = TRUE;
 }
 
-static void PokemonAnimFunc_SetYNormalization(PokemonAnim *monAnim)
+static void PokemonAnimCmd_SetYNormalization(PokemonAnim *monAnim)
 {
     ReadScript_U8(monAnim, &monAnim->yNormalization);
     GF_ASSERT(
@@ -982,27 +988,27 @@ static void PokemonAnimFunc_SetYNormalization(PokemonAnim *monAnim)
             && TRUE));
 }
 
-static void PokemonAnimFunc_Transform_Curve(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Transform_Curve(PokemonAnim *monAnim)
 {
     ReadScript_TransformFunc(monAnim, TRANSFORM_FUNC_CURVE);
 }
 
-static void PokemonAnimFunc_Transform_CurveEven(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Transform_CurveEven(PokemonAnim *monAnim)
 {
     ReadScript_TransformFunc(monAnim, TRANSFORM_FUNC_CURVE_EVEN);
 }
 
-static void PokemonAnimFunc_Transform_Linear(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Transform_Linear(PokemonAnim *monAnim)
 {
     ReadScript_TransformFunc(monAnim, TRANSFORM_FUNC_LINEAR);
 }
 
-static void PokemonAnimFunc_Transform_LinearEven(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Transform_LinearEven(PokemonAnim *monAnim)
 {
     ReadScript_TransformFunc(monAnim, TRANSFORM_FUNC_LINEAR_EVEN);
 }
 
-static void PokemonAnimFunc_Transform_LinearBounded(PokemonAnim *monAnim)
+static void PokemonAnimCmd_Transform_LinearBounded(PokemonAnim *monAnim)
 {
     ReadScript_TransformFunc(monAnim, TRANSFORM_FUNC_LINEAR_BOUNDED);
 }
