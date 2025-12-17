@@ -1,0 +1,29 @@
+#include "macros/pokemon_anim_cmd.inc"
+#include "generated/pokemon_anim_constants.h"
+#include "generated/pokemon_sprite_constants.h"
+
+PokemonAnimScript_unk_075:
+    TransformLinear TRANSFORM_CALC_SET, 0, TRANSFORM_TYPE_OFFSET_X, 4, 0, 3
+    TransformLinear TRANSFORM_CALC_SET, 0, TRANSFORM_TYPE_OFFSET_Y, 4, 0, 3
+    WaitTransform
+    UpdateAttribute ANIM_TRANSLATE_X, ANIM_READ_TYPE_VALUE2, 12, ANIM_ATTRIBUTE_SET
+    UpdateAttribute ANIM_TRANSLATE_Y, ANIM_READ_TYPE_VALUE2, 12, ANIM_ATTRIBUTE_SET
+    UpdateAttribute ANIM_OFFSET_X, ANIM_READ_TYPE_VALUE2, 0, ANIM_ATTRIBUTE_SET
+    UpdateAttribute ANIM_OFFSET_Y, ANIM_READ_TYPE_VALUE2, 0, ANIM_ATTRIBUTE_SET
+    ApplyTranslation
+    TransformLinear TRANSFORM_CALC_SET, 0, TRANSFORM_TYPE_OFFSET_X, 4294967288, 0, 3
+    WaitTransform
+    UpdateAttribute ANIM_TRANSLATE_X, ANIM_READ_TYPE_VALUE2, 4294967284, ANIM_ATTRIBUTE_SET
+    UpdateAttribute ANIM_TRANSLATE_Y, ANIM_READ_TYPE_VALUE2, 12, ANIM_ATTRIBUTE_SET
+    UpdateAttribute ANIM_OFFSET_X, ANIM_READ_TYPE_VALUE2, 0, ANIM_ATTRIBUTE_SET
+    UpdateAttribute ANIM_OFFSET_Y, ANIM_READ_TYPE_VALUE2, 0, ANIM_ATTRIBUTE_SET
+    ApplyTranslation
+    TransformLinear TRANSFORM_CALC_SET, 0, TRANSFORM_TYPE_OFFSET_X, 4, 0, 3
+    TransformLinear TRANSFORM_CALC_SET, 0, TRANSFORM_TYPE_OFFSET_Y, 4294967292, 0, 3
+    WaitTransform
+    UpdateAttribute ANIM_TRANSLATE_X, ANIM_READ_TYPE_VALUE2, 0, ANIM_ATTRIBUTE_SET
+    UpdateAttribute ANIM_TRANSLATE_Y, ANIM_READ_TYPE_VALUE2, 0, ANIM_ATTRIBUTE_SET
+    UpdateAttribute ANIM_OFFSET_X, ANIM_READ_TYPE_VALUE2, 0, ANIM_ATTRIBUTE_SET
+    UpdateAttribute ANIM_OFFSET_Y, ANIM_READ_TYPE_VALUE2, 0, ANIM_ATTRIBUTE_SET
+    ApplyTranslation
+    End
