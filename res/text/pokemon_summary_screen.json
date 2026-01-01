@@ -895,6 +895,18 @@
     {
       "id": "PokemonSummary_Text_RibbonMaxNumber",
       "en_US": "{STRVAR_1 52, 0, 0}"
+    },
+    {
+      "id": "PokemonSummary_Text_EVs",
+      "en_US": "EVs"
+    },
+    {
+      "id": "PokemonSummary_Text_IVs",
+      "en_US": "IVs"
+    },
+    {
+      "id": "PokemonSummary_Text_Stats",
+      "en_US": "Stats"
     }
   ]
 }
