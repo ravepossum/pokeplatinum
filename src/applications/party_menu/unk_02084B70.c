@@ -1122,10 +1122,6 @@ static void TeachMove(PartyMenuApplication *application, Pokemon *mon, u32 moveS
     Pokemon_SetValue(mon, MON_DATA_MOVE1_PP + moveSlot, &tempVar);
 
     if (application->partyMenu->usedItemID != 0) {
-        if (Item_IsHMMove(application->partyMenu->learnedMove) == FALSE) {
-            Bag_TryRemoveItem(application->partyMenu->bag, application->partyMenu->usedItemID, 1, HEAP_ID_PARTY_MENU);
-        }
-
         Pokemon_UpdateFriendship(mon, 4, (u16)GetCurrentMapLabel(application));
     }
 }
