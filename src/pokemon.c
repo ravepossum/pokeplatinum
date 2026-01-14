@@ -2747,7 +2747,7 @@ static u8 BoxPokemon_IsShiny(BoxPokemon *boxMon)
 
 static inline BOOL Pokemon_InlineIsPersonalityShiny(u32 monOTID, u32 monPersonality)
 {
-    return (((monOTID & 0xFFFF0000) >> 16) ^ (monOTID & 0xFFFF) ^ ((monPersonality & 0xFFFF0000) >> 16) ^ (monPersonality & 0xFFFF)) < 8;
+    return (((monOTID & 0xFFFF0000) >> 16) ^ (monOTID & 0xFFFF) ^ ((monPersonality & 0xFFFF0000) >> 16) ^ (monPersonality & 0xFFFF)) < 16;
 }
 
 u8 Pokemon_IsPersonalityShiny(u32 monOTID, u32 monPersonality)
