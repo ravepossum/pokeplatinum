@@ -217,13 +217,6 @@
     {
       "id": "pl_msg_00000543_00038",
       "en_US": "{STRVAR_1 53, 0, 0} BP"
-    },
-    {
-      "id": "ShopMenu_Text_AlreadyHaveTM",
-      "en_US": [
-        "I’m sorry.\n",
-        "You already have this TM."
-      ]
     }
   ]
 }

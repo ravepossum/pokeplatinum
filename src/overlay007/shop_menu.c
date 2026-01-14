@@ -901,18 +901,6 @@ static u8 Shop_SelectBuyMenu(ShopMenu *shopMenu)
 
         currMoney = Shop_GetCurrentMoney(shopMenu);
 
-        Bag *bag = SaveData_GetBag(shopMenu->saveData);
-
-        if (Item_LoadParam(input, ITEM_PARAM_FIELD_POCKET, HEAP_ID_FIELD2) == POCKET_TMHMS
-            && Bag_GetItemQuantity(bag, input, HEAP_ID_FIELD2) > 0) {
-            string = MessageLoader_GetNewString(shopMenu->msgLoader, ShopMenu_Text_AlreadyHaveTM);
-            StringTemplate_Format(shopMenu->strTemplate, shopMenu->string, string);
-            String_Free(string);
-
-            shopMenu->fieldMsgPrinterId = FieldMessage_Print(&shopMenu->windows[SHOP_WINDOW_MESSAGE], shopMenu->string, shopMenu->options, TRUE);
-            return SHOP_STATE_FINISH_PURCHASE;
-        }
-
         if (currMoney < shopMenu->itemPrice) {
             if (shopMenu->martType == MART_TYPE_FRONTIER) {
                 string = MessageLoader_GetNewString(shopMenu->msgLoader, pl_msg_00000543_00037);
