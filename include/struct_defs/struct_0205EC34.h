@@ -3,8 +3,7 @@
 
 typedef struct {
     u16 cyclingGear;
-    u16 runningShoes:15;
-    u16 autoRun:1;
+    u16 runningShoes;
     u32 form;
 } PlayerData;
 
