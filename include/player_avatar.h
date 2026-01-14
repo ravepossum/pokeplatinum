@@ -121,5 +121,7 @@ void PlayerAvatar_SetDistortionState(PlayerAvatar *playerAvatar, enum AvatarDist
 enum AvatarDistortionState PlayerAvatar_MapDistortionState(PlayerAvatar *const playerAvatar);
 BOOL PlayerAvatar_DistortionGravityChanged(PlayerAvatar *const playerAvatar);
 BOOL PlayerAvatar_DistortionStateOnFloor(PlayerAvatar *const playerAvatar);
+u16 PlayerData_GetAutoRun(PlayerData *playerData);
+u16 PlayerData_SetAutoRun(PlayerData *playerData, u16 value);
 
 #endif // POKEPLATINUM_PLAYER_AVATAR_H

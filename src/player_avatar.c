@@ -911,3 +911,13 @@ BOOL PlayerAvatar_DistortionStateOnFloor(PlayerAvatar *const playerAvatar)
         || state == AVATAR_DISTORTION_STATE_ACTIVE
         || state == AVATAR_DISTORTION_STATE_FLOOR;
 }
+
+u16 PlayerData_GetAutoRun(PlayerData *playerData)
+{
+    return playerData->autoRun;
+}
+
+u16 PlayerData_SetAutoRun(PlayerData *playerData, u16 value)
+{
+    playerData->autoRun = value;
+}

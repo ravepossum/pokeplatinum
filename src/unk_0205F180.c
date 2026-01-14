@@ -2191,11 +2191,7 @@ static BOOL IsMovementWalkOnSpotSlow(enum MovementAction movementAction)
 
 int sub_020613FC(PlayerAvatar *playerAvatar, u16 pad)
 {
-    if (pad & PAD_BUTTON_B) {
-        return 1;
-    }
-
-    return 0;
+    return PlayerData_GetAutoRun(PlayerAvatar_PlayerData(playerAvatar));
 }
 
 int sub_0206140C(PlayerAvatar *playerAvatar)

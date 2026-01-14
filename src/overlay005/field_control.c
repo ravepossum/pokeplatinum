@@ -121,9 +121,14 @@ void FieldInput_Update(FieldInput *input, FieldSystem *fieldSystem, u16 pressedK
     int moveState = Player_MoveState(fieldSystem->playerAvatar);
     int avatarState = PlayerAvatar_MoveState(fieldSystem->playerAvatar);
     int playerDir = PlayerAvatar_GetDir(fieldSystem->playerAvatar);
+    PlayerData *playerData = PlayerAvatar_PlayerData(fieldSystem->playerAvatar);
 
     input->pressedKeys = pressedKeys;
     input->heldKeys = heldKeys;
+
+    if (pressedKeys & PAD_BUTTON_B && PlayerData_HasRunningShoes(playerData)) {
+        PlayerData_SetAutoRun(playerData, !PlayerData_GetAutoRun(playerData));
+    }
 
     if (moveState == PLAYER_MOVE_STATE_END || moveState == PLAYER_MOVE_STATE_NONE) {
         if (pressedKeys & PAD_BUTTON_X) {
