@@ -1442,30 +1442,7 @@ _1361:
 _138C:
     PlayFanfare SEQ_SE_CONFIRM
     LockAll
-    CheckItem VAR_LAST_USED_REPEL, 1, VAR_RESULT
-    GoToIfEq VAR_RESULT, TRUE, CommonScript_UseRepelPrompt
     Message pl_msg_00000213_00079
-    WaitABPress
-    CloseMessage
-    ReleaseAll
-    End
-
-CommonScript_UseRepelPrompt:
-    Message CommonScript_Text_UseAnotherRepel
-    ShowYesNoMenu VAR_RESULT
-    GoToIfEq VAR_RESULT, MENU_YES, CommonScript_UseRepel
-    CloseMessage
-    ReleaseAll
-    End
-
-CommonScript_UseRepel:
-    CloseMessage
-    PlayFanfare SEQ_SE_DP_CARD2
-    SetRepelSteps VAR_LAST_USED_REPEL
-    RemoveItem VAR_LAST_USED_REPEL, 1, VAR_RESULT
-    BufferPlayerName 0
-    BufferItemName 1, VAR_LAST_USED_REPEL
-    Message CommonScript_Text_UsedRepel
     WaitABPress
     CloseMessage
     ReleaseAll
