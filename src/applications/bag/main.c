@@ -6,6 +6,7 @@
 #include "constants/field/map_load.h"
 #include "constants/heap.h"
 #include "constants/items.h"
+#include "generated/vars_flags.h"
 
 #include "struct_defs/special_encounter.h"
 #include "struct_defs/struct_02099F80.h"
@@ -49,6 +50,7 @@
 #include "trainer_info.h"
 #include "unk_020393C8.h"
 #include "unk_0208C098.h"
+#include "vars_flags.h"
 #include "vram_transfer.h"
 
 #include "res/graphics/bag/bag_graphics.naix.h"
@@ -2266,6 +2268,9 @@ static String *TryUseRepel(BagController *controller, u16 item)
     SetRepelSteps(controller, stepCount);
     controller->selectedItemCount = 1;
     Sound_PlayEffect(SEQ_SE_DP_CARD2);
+
+    u16 *lastUsedRepelVar = VarsFlags_GetVarAddress(SaveData_GetVarsFlags(controller->bagCtx->saveData), VAR_LAST_USED_REPEL);
+    *lastUsedRepelVar = item;
 
     return MessageLoader_GetNewString(controller->bagStringsLoader, Bag_Text_UsedRepel);
 }

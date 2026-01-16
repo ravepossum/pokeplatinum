@@ -11,6 +11,7 @@
 #include "field_script_context.h"
 #include "inlines.h"
 #include "item.h"
+#include "special_encounter.h"
 #include "unk_0205DFC4.h"
 
 BOOL ScrCmd_AddItem(ScriptContext *ctx)
@@ -94,5 +95,17 @@ BOOL ScrCmd_Dummy081(ScriptContext *ctx)
 
 BOOL ScrCmd_Dummy082(ScriptContext *ctx)
 {
+    return FALSE;
+}
+
+BOOL ScrCmd_SetRepelSteps(ScriptContext *ctx)
+{
+    u16 item = ScriptContext_GetVar(ctx);
+    SaveData *saveData = ctx->fieldSystem->saveData;
+    u8 *repelSteps = SpecialEncounter_GetRepelSteps(SaveData_GetSpecialEncounters(saveData));
+
+    u32 stepCount = Item_LoadParam(item, ITEM_PARAM_HOLD_EFFECT_PARAM, HEAP_ID_FIELD2);
+    *repelSteps = stepCount;
+
     return FALSE;
 }
