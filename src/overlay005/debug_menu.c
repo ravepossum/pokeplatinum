@@ -49,6 +49,9 @@
 #define BAG_MAX_QUANTITY_ITEM 999
 #define BAG_MAX_QUANTITY_TMHM 99
 
+// same here, if it does get one I guess
+#define FLAGS_START 0
+
 #define ITEM_ICON_CHAR 49407
 #define ITEM_ICON_PLTT 49404
 
@@ -95,6 +98,11 @@ static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *fieldSystem, DebugMen
 static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data);
 
 static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu);
+
+static void DebugFunction_SetFlag(SysTask *task, DebugMenu *menu);
+static void SubMenuChoice_SetFlag(DebugSubMenu *subMenu);
+static void SubMenuRender_SetFlag(DebugSubMenu *subMenu);
+
 static void DebugFunction_ExecuteFunction(SysTask *task, DebugMenu *menu);
 
 static const WindowTemplate DebugMenu_List_WindowTemplate = {
@@ -146,6 +154,7 @@ static const DebugMenuItem DebugMenu_ItemList[] = {
     { DEBUG_ITEM_EDIT_MON,          DebugFunction_EditMon },
     { DEBUG_ITEM_ADD_ITEM,          DebugFunction_AddItem },
     { DEBUG_ITEM_TOGGLE_COLLISION,  DebugFunction_ToggleCollision },
+    { DEBUG_ITEM_SET_FLAG,          DebugFunction_SetFlag },
     { DEBUG_ITEM_ADJUST_CAMERA,     DebugFunction_AdjustCamera },
     { DEBUG_ITEM_EXECUTE_FUNCTION,  DebugFunction_ExecuteFunction },
     // clang-format on
@@ -167,6 +176,14 @@ static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUB_MENU_TYPE_COUNT] = {
         .preserveSprite = TRUE,
         .min = 1,
         .max = BAG_MAX_QUANTITY_ITEM,
+    },
+    [DEBUG_SUB_MENU_SET_FLAG] = {
+        .choiceFunc = SubMenuChoice_SetFlag,
+        .renderFunc = SubMenuRender_SetFlag,
+        .closeOnChoice = FALSE,
+        .preserveSprite = FALSE,
+        .min = FLAGS_START,
+        .max = NUM_FLAGS - 1,
     },
 };
 
@@ -740,7 +757,7 @@ static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data)
 
 #undef tCameraFOV
 
-// Smaller functionality
+// Toggle collision
 
 static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu)
 {
@@ -757,6 +774,46 @@ static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu)
     DebugMenu_ExitToField(task, menu);
 }
 
+// Set Flag
+
+static void DebugFunction_SetFlag(SysTask *task, DebugMenu *menu)
+{
+    DebugMenu_CreateSubMenu(menu, DEBUG_SUB_MENU_SET_FLAG);
+    SysTask_Done(task);
+}
+
+static void SubMenuChoice_SetFlag(DebugSubMenu *subMenu)
+{
+    VarsFlags *varsFlags = SaveData_GetVarsFlags(subMenu->debugMenu->fieldSystem->saveData);
+    if (VarsFlags_CheckFlag(varsFlags, subMenu->value)) {
+        VarsFlags_ClearFlag(varsFlags, subMenu->value);
+    } else {
+        VarsFlags_SetFlag(varsFlags, subMenu->value);
+    }
+    sSubMenuConfigs[subMenu->type].renderFunc(subMenu);
+}
+
+static void SubMenuRender_SetFlag(DebugSubMenu *subMenu)
+{
+    Window_FillTilemap(subMenu->window, DEBUG_COLOR_WHITE);
+
+    String *string;
+    VarsFlags *varsFlags = SaveData_GetVarsFlags(subMenu->debugMenu->fieldSystem->saveData);
+    if (VarsFlags_CheckFlag(varsFlags, subMenu->value)) {
+        string = MessageLoader_GetNewString(subMenu->msgLoader, DebugMenu_Text_True);
+    } else {
+        string = MessageLoader_GetNewString(subMenu->msgLoader, DebugMenu_Text_False);
+    }
+
+    StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
+    StringTemplate_SetString(subMenu->template, 1, string, 0, 0, 0);
+    StringTemplate_SetNumber(subMenu->template, 2, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
+    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_SetFlag, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
+
+    String_Free(string);
+}
+
+// Execute function
 // shell function to run any arbitrary code you need
 static void DebugFunction_ExecuteFunction(SysTask *task, DebugMenu *menu)
 {
