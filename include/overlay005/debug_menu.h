@@ -5,11 +5,13 @@
 
 #include "applications/town_map/main.h"
 #include "field/field_system_decl.h"
+#include "overlay005/sprite_resource_manager.h"
 
 #include "list_menu.h"
 #include "message.h"
 #include "string_template.h"
 #include "sys_task_manager.h"
+#include "sprite_system.h"
 
 #define DEBUG_KEY               PAD_BUTTON_R
 #define DEBUG_FLAG_NO_COLLISION FLAG_UNUSED_2420
@@ -24,7 +26,27 @@ typedef struct DebugMenu {
     StringList *stringList;
 } DebugMenu;
 
+typedef struct DebugSubMenu {
+    SpriteResourceManager spriteResMan;
+    ManagedSprite *sprite;
+    DebugMenu *debugMenu;
+    Window *window;
+    MessageLoader *msgLoader;
+    StringTemplate *template;
+    int type;
+    int value;
+    int digits;
+} DebugSubMenu;
+
 typedef void (*DebugFunction)(SysTask *, DebugMenu *);
+typedef void (*DebugSubFunction)(SysTask *, DebugSubMenu *);
+
+typedef struct DebugSubMenuConfig {
+    int min;
+    int max;
+    DebugSubFunction choiceFunc;
+    DebugSubFunction renderFunc;
+} DebugSubMenuConfig;
 
 typedef struct DebugMenuItem {
     u32 index;
@@ -36,9 +58,15 @@ enum DebugItem {
     DEBUG_ITEM_FLY,
     DEBUG_ITEM_CREATE_MON,
     DEBUG_ITEM_EDIT_MON,
+    DEBUG_ITEM_ADD_ITEM,
     DEBUG_ITEM_TOGGLE_COLLISION,
     DEBUG_ITEM_ADJUST_CAMERA,
     DEBUG_ITEM_EXECUTE_FUNCTION,
+};
+
+enum DebugSubMenuType {
+    DEBUG_SUB_MENU_ADD_ITEM,
+    DEBUG_SUB_MENU_TYPE_COUNT,
 };
 
 enum DebugFlyState {

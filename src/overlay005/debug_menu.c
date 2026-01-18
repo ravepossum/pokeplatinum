@@ -18,9 +18,11 @@
 #include "overlay005/debug_mon_menu.h"
 #include "overlay006/hm_cut_in.h"
 
+#include "bag.h"
 #include "camera.h"
 #include "field_map_change.h"
 #include "field_system.h"
+#include "item.h"
 #include "message.h"
 #include "move_table.h"
 #include "party.h"
@@ -34,6 +36,11 @@
 #include "unk_0203D1B8.h"
 #include "unk_02092494.h"
 #include "vars_flags.h"
+#include "vram_transfer.h"
+#include "debug.h"
+#include "res/text/bank/unk_0336.h"
+
+#define DEBUG_COLOR_BLACK TEXT_COLOR(1, 2, 15)
 
 static void DebugMenu_Free(DebugMenu *menu);
 static void DebugMenu_Close(SysTask *task, DebugMenu *menu);
@@ -43,6 +50,11 @@ static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, in
 static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc);
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data);
 
+static void DebugSubMenu_Free(DebugSubMenu *subMenu);
+static void Task_DebugSubMenu_HandleInput(SysTask *task, void *data);
+static void DebugSubMenu_PrintString(DebugSubMenu *subMenu, u32 entryID, u32 x, u32 y, u32 delay, u32 color);
+static void DebugSubMenu_InitSpriteResMan(DebugSubMenu *subMenu);
+
 static void DebugFunction_Fly(SysTask *task, DebugMenu *menu);
 static void DebugMenu_Fly_CreateTask(FieldSystem *fieldSystem);
 static void Task_DebugMenu_Fly(SysTask *task, void *data);
@@ -51,6 +63,12 @@ static void DebugFunction_CreateMon(SysTask *task, DebugMenu *menu);
 static void DebugFunction_EditMon(SysTask *task, DebugMenu *menu);
 static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *fieldSystem, enum DebugMonMenuMode mode);
 static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data);
+
+static void DebugFunction_AddItem(SysTask *task, DebugMenu *menu);
+static void SubMenuChoice_AddItem(SysTask *task, DebugSubMenu *subMenu);
+static void SubMenuRender_AddItem(SysTask *task, DebugSubMenu *subMenu);
+static void AddItem_InitSprite(DebugSubMenu *subMenu);
+static void AddItem_UpdateItemIcon(DebugSubMenu *subMenu);
 
 static void DebugFunction_AdjustCamera(SysTask *task, DebugMenu *menu);
 static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *fieldSystem, DebugMenu *menu);
@@ -67,6 +85,16 @@ static const WindowTemplate DebugMenu_List_WindowTemplate = {
     .height = 17,
     .palette = 13,
     .baseTile = 8,
+};
+
+static const WindowTemplate DebugMenu_SubMenu_WindowTemplate = {
+    .bgLayer = BG_LAYER_MAIN_3,
+    .tilemapLeft = 18,
+    .tilemapTop = 1,
+    .width = 11,
+    .height = 7,
+    .palette = 13,
+    .baseTile = 229,
 };
 
 static const ListMenuTemplate DebugMenu_List_Header = {
@@ -96,10 +124,20 @@ static const DebugMenuItem DebugMenu_ItemList[] = {
     { DEBUG_ITEM_FLY,               DebugFunction_Fly },
     { DEBUG_ITEM_CREATE_MON,        DebugFunction_CreateMon },
     { DEBUG_ITEM_EDIT_MON,          DebugFunction_EditMon },
+    { DEBUG_ITEM_ADD_ITEM,          DebugFunction_AddItem },
     { DEBUG_ITEM_TOGGLE_COLLISION,  DebugFunction_ToggleCollision },
     { DEBUG_ITEM_ADJUST_CAMERA,     DebugFunction_AdjustCamera },
     { DEBUG_ITEM_EXECUTE_FUNCTION,  DebugFunction_ExecuteFunction },
     // clang-format on
+};
+
+static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUB_MENU_TYPE_COUNT] = {
+    [DEBUG_SUB_MENU_ADD_ITEM] = {
+        .min = ITEM_NONE + 1,
+        .max = MAX_ITEMS - 1,
+        .choiceFunc = SubMenuChoice_AddItem,
+        .renderFunc = SubMenuRender_AddItem,
+    },
 };
 
 void DebugMenu_Init(FieldSystem *fieldSystem)
@@ -118,6 +156,24 @@ static void DebugMenu_Free(DebugMenu *menu)
     Heap_Free(menu->window);
 }
 
+static void DebugSubMenu_Free(DebugSubMenu *subMenu)
+{
+    
+    if (subMenu->sprite != NULL) {
+        Sprite_DeleteAndFreeResources(subMenu->sprite);
+    }
+    SpriteResourceManager_Cleanup(&subMenu->spriteResMan);
+
+    MessageLoader_Free(subMenu->msgLoader);
+    StringTemplate_Free(subMenu->template);
+
+    Window_EraseStandardFrame(subMenu->window, TRUE);
+    Window_ClearAndCopyToVRAM(subMenu->window);
+    Window_Remove(subMenu->window);
+
+    Heap_Free(subMenu->window);
+}
+
 static void DebugMenu_Close(SysTask *task, DebugMenu *menu)
 {
     DebugMenu_Free(menu);
@@ -125,10 +181,28 @@ static void DebugMenu_Close(SysTask *task, DebugMenu *menu)
     SysTask_Done(task);
 }
 
+static void DebugSubMenu_Close(SysTask *task, DebugSubMenu *subMenu)
+{
+    SysTask_Start(Task_DebugMenu_HandleInput, subMenu->debugMenu, 0);
+    DebugSubMenu_Free(subMenu);
+    Heap_Free(subMenu);
+    SysTask_Done(task);
+}
+
 static void DebugMenu_ExitToField(SysTask *task, DebugMenu *menu)
 {
     DebugMenu_Free(menu);
     SysTask_SetCallback(task, Task_DebugMenu_ExitToField);
+}
+
+static void DebugSubMenu_ExitToField(SysTask *task, DebugSubMenu *subMenu)
+{
+    DebugMenu_Free(subMenu->debugMenu);
+    Heap_Free(subMenu->debugMenu);
+    DebugSubMenu_Free(subMenu);
+    Heap_Free(subMenu);
+    SysTask_Done(task);
+    FieldSystem_ResumeProcessing();
 }
 
 static void Task_DebugMenu_ExitToField(SysTask *task, void *data)
@@ -192,6 +266,39 @@ static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, in
     return stringList;
 }
 
+static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuType type)
+{
+    DebugSubMenu *subMenu = Heap_Alloc(HEAP_ID_FIELD1, sizeof(DebugSubMenu));
+    FieldSystem *fieldSystem = menu->fieldSystem;
+
+    if (subMenu == NULL) {
+        return NULL;
+    }
+
+    MI_CpuClear8(subMenu, sizeof(DebugSubMenu));
+
+    const DebugSubMenuConfig *config = &sSubMenuConfigs[type];
+    subMenu->type = type;
+    subMenu->debugMenu = menu;
+    subMenu->msgLoader = MessageLoader_Init(MSG_LOADER_LOAD_ON_DEMAND, NARC_INDEX_MSGDATA__PL_MSG, DEBUG_MON_MENU_MESSAGE_BANK, HEAP_ID_FIELD1);
+    subMenu->template = StringTemplate_Default(HEAP_ID_FIELD1); 
+    subMenu->value = config->min;
+    subMenu->sprite = NULL;
+    DebugSubMenu_InitSpriteResMan(subMenu);
+
+    SysTask *task = SysTask_Start(Task_DebugSubMenu_HandleInput, subMenu, 0);
+
+    subMenu->window = Window_New(HEAP_ID_FIELD1, 1);
+    Window_AddFromTemplate(fieldSystem->bgConfig, subMenu->window, &DebugMenu_SubMenu_WindowTemplate);
+    Window_DrawStandardFrame(subMenu->window, TRUE, 660, 11);
+
+    Window_FillTilemap(subMenu->window, 15);
+    config->renderFunc(task, subMenu);
+    Window_CopyToVRAM(subMenu->window);
+
+    return subMenu;
+}
+
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
 {
     DebugMenu *menu = (DebugMenu *)data;
@@ -209,6 +316,92 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
     if (JOY_NEW(PAD_BUTTON_B)) {
         DebugMenu_ExitToField(task, menu);
     }
+}
+
+#define MAX_SUBMENU_DIGITS 4
+
+static const int sPowersOfTen[MAX_SUBMENU_DIGITS] = {
+             1,
+            10,
+           100,
+          1000,
+};
+
+static void Task_DebugSubMenu_HandleInput(SysTask *task, void *data)
+{
+    DebugSubMenu *subMenu = (DebugSubMenu *)data;
+    const DebugSubMenuConfig *config = &sSubMenuConfigs[subMenu->type];
+
+    if (JOY_NEW(PAD_KEY_UP)) {
+        subMenu->value += sPowersOfTen[subMenu->digits]; 
+        if (subMenu->value > config->max) {
+            subMenu->value = config->max;
+        }
+    } else if (JOY_NEW(PAD_KEY_DOWN)) {
+        subMenu->value -= sPowersOfTen[subMenu->digits]; 
+        if (subMenu->value < config->min) {
+            subMenu->value = config->min;
+        }
+    } else if (JOY_NEW(PAD_KEY_LEFT)) {
+        if (subMenu->digits > 0) subMenu->digits--;
+    } else if (JOY_NEW(PAD_KEY_RIGHT)) {
+        if (subMenu->digits < (MAX_SUBMENU_DIGITS - 1)) subMenu->digits++;
+    } else if (JOY_NEW(PAD_BUTTON_A)) {
+        if (config->choiceFunc != NULL) {
+            config->choiceFunc(task, subMenu);
+            DebugSubMenu_ExitToField(task, subMenu);    
+        }
+    } else if (JOY_NEW(PAD_BUTTON_B)) {
+        DebugSubMenu_Close(task, subMenu);
+    }
+
+    if (JOY_NEW(PAD_KEY)) {
+        config->renderFunc(task, subMenu);
+    }
+
+    SpriteList_Update(subMenu->spriteResMan.spriteList);
+}
+
+static void DebugSubMenu_PrintString(DebugSubMenu *subMenu, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
+{
+    String *buf = MessageLoader_GetNewString(subMenu->msgLoader, entryID);
+    String *bufExp = String_Init(128, HEAP_ID_FIELD1);
+    StringTemplate_Format(subMenu->template, bufExp, buf);
+    Text_AddPrinterWithParamsAndColor(subMenu->window, FONT_SYSTEM, bufExp, x, y, delay, color, NULL);
+    String_Free(buf);
+    String_Free(bufExp);
+}
+
+static void DebugSubMenu_InitSpriteResMan(DebugSubMenu *subMenu)
+{
+    SpriteResourceCapacities capacities = { 10, 6, 9, 9, 0, 0 };
+    SpriteResourceManager_SetCapacities(&subMenu->spriteResMan, &capacities, 8, HEAP_ID_FIELD2);
+    GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, TRUE);
+}
+
+static void AddItem_InitSprite(DebugSubMenu *subMenu)
+{
+    NARC *narc = NARC_ctor(NARC_INDEX_ITEMTOOL__ITEMDATA__ITEM_ICON, HEAP_ID_FIELD2);
+    SpriteResourceManager_LoadTiles(&subMenu->spriteResMan, narc, Item_FileID(ITEM_NONE, ITEM_FILE_TYPE_ICON), FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, 49407);
+    SpriteResourceManager_LoadPalette(&subMenu->spriteResMan, narc, Item_FileID(ITEM_NONE, ITEM_FILE_TYPE_PALETTE), FALSE, PLTT_1, NNS_G2D_VRAM_TYPE_2DMAIN, 49404);
+    SpriteResourceManager_LoadCell(&subMenu->spriteResMan, narc, Item_IconNCERFile(), FALSE, 49407);
+    SpriteResourceManager_LoadAnimation(&subMenu->spriteResMan, narc, Item_IconNANRFile(), FALSE, 49407);
+    NARC_dtor(narc);
+
+    const SpriteTemplate itemIconTemplate = {
+        .x = 222,
+        .y = 57,
+        .z = 0,
+        .animIdx = 0,
+        .priority = 0,
+        .plttIdx = 0,
+        .vramType = NNS_G2D_VRAM_TYPE_2DMAIN,
+        .resources = { 49407, 49404, 49407, 49407, 0, 0 },
+        .bgPriority = 0,
+        .vramTransfer = FALSE,
+    };
+
+    subMenu->sprite = SpriteResourceManager_CreateManagedSprite(&subMenu->spriteResMan, &itemIconTemplate);
 }
 
 // Fly section
@@ -370,6 +563,46 @@ static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
         DebugMonMenu_WaitButtonPress(monMenu, PAD_BUTTON_X | PAD_BUTTON_Y);
         break;
     }
+}
+
+// Add Item
+
+static void DebugFunction_AddItem(SysTask *task, DebugMenu *menu)
+{
+    DebugMenu_CreateSubMenu(menu, DEBUG_SUB_MENU_ADD_ITEM);
+    SysTask_Done(task);
+}
+
+static void SubMenuChoice_AddItem(SysTask *task, DebugSubMenu *subMenu)
+{
+    Bag *bag = SaveData_GetBag(subMenu->debugMenu->fieldSystem->saveData);
+    Bag_TryAddItem(bag, subMenu->value, 1, HEAP_ID_FIELD1);
+}
+
+static void SubMenuRender_AddItem(SysTask *task, DebugSubMenu *subMenu)
+{
+    if (subMenu->sprite == NULL) {
+        AddItem_InitSprite(subMenu);
+    }
+
+    Window_FillTilemap(subMenu->window, 15);
+    StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, 4, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
+    StringTemplate_SetItemName(subMenu->template, 1, subMenu->value);
+    StringTemplate_SetNumber(subMenu->template, 2, sPowersOfTen[subMenu->digits], 4, PADDING_MODE_NONE, CHARSET_MODE_EN);
+    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_AddItem, 0, 0, TEXT_SPEED_INSTANT, DEBUG_COLOR_BLACK);
+    
+    AddItem_UpdateItemIcon(subMenu);
+}
+
+static void AddItem_UpdateItemIcon(DebugSubMenu *subMenu)
+{
+    SpriteResource *spriteRes = SpriteResourceCollection_Find(subMenu->spriteResMan.resourceCollections[SPRITE_RESOURCE_CHAR], 49407);
+    SpriteResourceCollection_ModifyTiles(subMenu->spriteResMan.resourceCollections[SPRITE_RESOURCE_CHAR], spriteRes, NARC_INDEX_ITEMTOOL__ITEMDATA__ITEM_ICON, Item_FileID(subMenu->value, ITEM_FILE_TYPE_ICON), FALSE, HEAP_ID_FIELD2);
+    SpriteTransfer_RetransferCharData(spriteRes);
+
+    spriteRes = SpriteResourceCollection_Find(subMenu->spriteResMan.resourceCollections[SPRITE_RESOURCE_PLTT], 49404);
+    SpriteResourceCollection_ModifyPalette(subMenu->spriteResMan.resourceCollections[SPRITE_RESOURCE_PLTT], spriteRes, NARC_INDEX_ITEMTOOL__ITEMDATA__ITEM_ICON, Item_FileID(subMenu->value, ITEM_FILE_TYPE_PALETTE), FALSE, HEAP_ID_FIELD2);
+    SpriteTransfer_ReplacePlttData(spriteRes);
 }
 
 // Adjust Camera section

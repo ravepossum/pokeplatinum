@@ -501,6 +501,14 @@
     {
       "id": "pl_msg_00000336_00122",
       "en_US": "Take a ribbon off"
+    },
+    {
+      "id": "DebugMenu_Text_AddItem",
+      "en_US": [
+        "Item: {STRVAR_1 52, 0, 0}\n",
+        "{STRVAR_1 8, 1, 0}\n",
+        "← +{STRVAR_1 52, 2, 0} →"
+      ]
     }
   ]
 }

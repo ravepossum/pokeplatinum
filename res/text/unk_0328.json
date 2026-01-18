@@ -22,6 +22,10 @@
       "en_US": "Edit Mon"
     },
     {
+      "id": "pl_msg_00000328_00008",
+      "en_US": "Add Item"
+    },
+    {
       "id": "pl_msg_00000328_00005",
       "en_US": "Toggle Collision"
     },
@@ -32,10 +36,6 @@
     {
       "id": "pl_msg_00000328_00007",
       "en_US": "Debug Function"
-    },
-    {
-      "id": "pl_msg_00000328_00008",
-      "en_US": "Before the Counter stops"
     },
     {
       "id": "pl_msg_00000328_00009",
