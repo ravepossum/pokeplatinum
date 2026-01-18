@@ -509,6 +509,14 @@
         "{STRVAR_1 8, 1, 0}\n",
         "← +{STRVAR_1 52, 2, 0} →"
       ]
+    },
+    {
+      "id": "DebugMenu_Text_ItemQuantity",
+      "en_US": [
+        "Quantity:\n",
+        "{STRVAR_1 52, 0, 0}\n",
+        "← +{STRVAR_1 52, 1, 0} →"
+      ]
     }
   ]
 }

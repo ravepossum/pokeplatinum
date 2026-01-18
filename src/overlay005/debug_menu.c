@@ -40,7 +40,21 @@
 #include "debug.h"
 #include "res/text/bank/unk_0336.h"
 
-#define DEBUG_COLOR_BLACK TEXT_COLOR(1, 2, 15)
+#define DEBUG_TEXT_BLACK TEXT_COLOR(1, 2, 15)
+
+#define DEBUG_COLOR_WHITE 15
+#define DEBUG_COLOR_BLACK 11
+
+// if these are lifted from bag.c into bag.h, these constants should be removed
+#define BAG_MAX_QUANTITY_ITEM 999
+#define BAG_MAX_QUANTITY_TMHM 99
+
+#define ITEM_ICON_CHAR 49407
+#define ITEM_ICON_PLTT 49404
+
+#define MAX_SUBMENU_DIGITS    4
+#define MAX_SUBMENU_SPRITES   4
+#define MAX_SUBMENU_RESOURCES 4
 
 static void DebugMenu_Free(DebugMenu *menu);
 static void DebugMenu_Close(SysTask *task, DebugMenu *menu);
@@ -49,8 +63,12 @@ static void Task_DebugMenu_ExitToField(SysTask *task, void *data);
 static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count);
 static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc);
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data);
+static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuType type);
 
+static void DebugSubMenu_Close(SysTask *task, DebugSubMenu *subMenu);
 static void DebugSubMenu_Free(DebugSubMenu *subMenu);
+static void DebugSubMenu_ExitToField(SysTask *task, DebugSubMenu *subMenu);
+static void DebugSubMenu_ChangeType(DebugSubMenu *subMenu, enum DebugSubMenuType type);
 static void Task_DebugSubMenu_HandleInput(SysTask *task, void *data);
 static void DebugSubMenu_PrintString(DebugSubMenu *subMenu, u32 entryID, u32 x, u32 y, u32 delay, u32 color);
 static void DebugSubMenu_InitSpriteResMan(DebugSubMenu *subMenu);
@@ -65,10 +83,12 @@ static void DebugMenu_CreateOrEditMon_CreateTask(FieldSystem *fieldSystem, enum 
 static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data);
 
 static void DebugFunction_AddItem(SysTask *task, DebugMenu *menu);
-static void SubMenuChoice_AddItem(SysTask *task, DebugSubMenu *subMenu);
-static void SubMenuRender_AddItem(SysTask *task, DebugSubMenu *subMenu);
+static void SubMenuChoice_AddItem(DebugSubMenu *subMenu);
+static void SubMenuRender_AddItem(DebugSubMenu *subMenu);
 static void AddItem_InitSprite(DebugSubMenu *subMenu);
 static void AddItem_UpdateItemIcon(DebugSubMenu *subMenu);
+static void SubMenuChoice_ItemQuantity(DebugSubMenu *subMenu);
+static void SubMenuRender_ItemQuantity(DebugSubMenu *subMenu);
 
 static void DebugFunction_AdjustCamera(SysTask *task, DebugMenu *menu);
 static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *fieldSystem, DebugMenu *menu);
@@ -91,7 +111,7 @@ static const WindowTemplate DebugMenu_SubMenu_WindowTemplate = {
     .bgLayer = BG_LAYER_MAIN_3,
     .tilemapLeft = 18,
     .tilemapTop = 1,
-    .width = 11,
+    .width = 12,
     .height = 7,
     .palette = 13,
     .baseTile = 229,
@@ -107,9 +127,9 @@ static const ListMenuTemplate DebugMenu_List_Header = {
     .headerXOffset = 2,
     .textXOffset = 12,
     .cursorXOffset = 1,
-    .yOffset = 8,
-    .textColorFg = 11, // white
-    .textColorBg = 15, // black
+    .yOffset = 0,
+    .textColorFg = DEBUG_COLOR_BLACK,
+    .textColorBg = DEBUG_COLOR_WHITE,
     .textColorShadow = 2, // black shadow
     .letterSpacing = 0,
     .lineSpacing = 0,
@@ -133,10 +153,20 @@ static const DebugMenuItem DebugMenu_ItemList[] = {
 
 static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUB_MENU_TYPE_COUNT] = {
     [DEBUG_SUB_MENU_ADD_ITEM] = {
-        .min = ITEM_NONE + 1,
-        .max = MAX_ITEMS - 1,
         .choiceFunc = SubMenuChoice_AddItem,
         .renderFunc = SubMenuRender_AddItem,
+        .closeOnChoice = FALSE,
+        .preserveSprite = FALSE,
+        .min = ITEM_NONE + 1,
+        .max = MAX_ITEMS - 1,
+    },
+    [DEBUG_SUB_MENU_ITEM_QUANTITY] = {
+        .choiceFunc = SubMenuChoice_ItemQuantity,
+        .renderFunc = SubMenuRender_ItemQuantity,
+        .closeOnChoice = TRUE,
+        .preserveSprite = TRUE,
+        .min = 1,
+        .max = BAG_MAX_QUANTITY_ITEM,
     },
 };
 
@@ -181,28 +211,10 @@ static void DebugMenu_Close(SysTask *task, DebugMenu *menu)
     SysTask_Done(task);
 }
 
-static void DebugSubMenu_Close(SysTask *task, DebugSubMenu *subMenu)
-{
-    SysTask_Start(Task_DebugMenu_HandleInput, subMenu->debugMenu, 0);
-    DebugSubMenu_Free(subMenu);
-    Heap_Free(subMenu);
-    SysTask_Done(task);
-}
-
 static void DebugMenu_ExitToField(SysTask *task, DebugMenu *menu)
 {
     DebugMenu_Free(menu);
     SysTask_SetCallback(task, Task_DebugMenu_ExitToField);
-}
-
-static void DebugSubMenu_ExitToField(SysTask *task, DebugSubMenu *subMenu)
-{
-    DebugMenu_Free(subMenu->debugMenu);
-    Heap_Free(subMenu->debugMenu);
-    DebugSubMenu_Free(subMenu);
-    Heap_Free(subMenu);
-    SysTask_Done(task);
-    FieldSystem_ResumeProcessing();
 }
 
 static void Task_DebugMenu_ExitToField(SysTask *task, void *data)
@@ -266,39 +278,6 @@ static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, in
     return stringList;
 }
 
-static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuType type)
-{
-    DebugSubMenu *subMenu = Heap_Alloc(HEAP_ID_FIELD1, sizeof(DebugSubMenu));
-    FieldSystem *fieldSystem = menu->fieldSystem;
-
-    if (subMenu == NULL) {
-        return NULL;
-    }
-
-    MI_CpuClear8(subMenu, sizeof(DebugSubMenu));
-
-    const DebugSubMenuConfig *config = &sSubMenuConfigs[type];
-    subMenu->type = type;
-    subMenu->debugMenu = menu;
-    subMenu->msgLoader = MessageLoader_Init(MSG_LOADER_LOAD_ON_DEMAND, NARC_INDEX_MSGDATA__PL_MSG, DEBUG_MON_MENU_MESSAGE_BANK, HEAP_ID_FIELD1);
-    subMenu->template = StringTemplate_Default(HEAP_ID_FIELD1); 
-    subMenu->value = config->min;
-    subMenu->sprite = NULL;
-    DebugSubMenu_InitSpriteResMan(subMenu);
-
-    SysTask *task = SysTask_Start(Task_DebugSubMenu_HandleInput, subMenu, 0);
-
-    subMenu->window = Window_New(HEAP_ID_FIELD1, 1);
-    Window_AddFromTemplate(fieldSystem->bgConfig, subMenu->window, &DebugMenu_SubMenu_WindowTemplate);
-    Window_DrawStandardFrame(subMenu->window, TRUE, 660, 11);
-
-    Window_FillTilemap(subMenu->window, 15);
-    config->renderFunc(task, subMenu);
-    Window_CopyToVRAM(subMenu->window);
-
-    return subMenu;
-}
-
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
 {
     DebugMenu *menu = (DebugMenu *)data;
@@ -318,7 +297,51 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
     }
 }
 
-#define MAX_SUBMENU_DIGITS 4
+static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuType type)
+{
+    DebugSubMenu *subMenu = Heap_Alloc(HEAP_ID_FIELD1, sizeof(DebugSubMenu));
+    FieldSystem *fieldSystem = menu->fieldSystem;
+
+    if (subMenu == NULL) {
+        return NULL;
+    }
+
+    MI_CpuClear8(subMenu, sizeof(DebugSubMenu));
+
+    const DebugSubMenuConfig *config = &sSubMenuConfigs[type];
+    subMenu->type = type;
+    subMenu->debugMenu = menu;
+    subMenu->msgLoader = MessageLoader_Init(MSG_LOADER_LOAD_ON_DEMAND, NARC_INDEX_MSGDATA__PL_MSG, DEBUG_MON_MENU_MESSAGE_BANK, HEAP_ID_FIELD1);
+    subMenu->template = StringTemplate_Default(HEAP_ID_FIELD1); 
+    subMenu->value = config->min;
+    subMenu->sprite = NULL;
+
+    SpriteResourceCapacities capacities = {
+        .asStruct = {
+            .charCapacity = MAX_SUBMENU_RESOURCES,
+            .plttCapacity = MAX_SUBMENU_RESOURCES,
+            .cellCapacity = MAX_SUBMENU_RESOURCES,
+            .animCapacity = MAX_SUBMENU_RESOURCES,
+            .mcellCapacity = 0,
+            .manimCapacity = 0,
+        },
+    };
+
+    SpriteResourceManager_SetCapacities(&subMenu->spriteResMan, &capacities, MAX_SUBMENU_SPRITES, HEAP_ID_FIELD2);
+    GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, TRUE);
+
+    SysTask *task = SysTask_Start(Task_DebugSubMenu_HandleInput, subMenu, 0);
+
+    subMenu->window = Window_New(HEAP_ID_FIELD1, 1);
+    Window_AddFromTemplate(fieldSystem->bgConfig, subMenu->window, &DebugMenu_SubMenu_WindowTemplate);
+    Window_DrawStandardFrame(subMenu->window, TRUE, 660, 11);
+
+    Window_FillTilemap(subMenu->window, DEBUG_COLOR_WHITE);
+    config->renderFunc(subMenu);
+    Window_CopyToVRAM(subMenu->window);
+
+    return subMenu;
+}
 
 static const int sPowersOfTen[MAX_SUBMENU_DIGITS] = {
              1,
@@ -348,18 +371,34 @@ static void Task_DebugSubMenu_HandleInput(SysTask *task, void *data)
         if (subMenu->digits < (MAX_SUBMENU_DIGITS - 1)) subMenu->digits++;
     } else if (JOY_NEW(PAD_BUTTON_A)) {
         if (config->choiceFunc != NULL) {
-            config->choiceFunc(task, subMenu);
-            DebugSubMenu_ExitToField(task, subMenu);    
+            config->choiceFunc(subMenu);
+            if (config->closeOnChoice) {
+                DebugSubMenu_ExitToField(task, subMenu);
+            }
         }
     } else if (JOY_NEW(PAD_BUTTON_B)) {
         DebugSubMenu_Close(task, subMenu);
     }
 
     if (JOY_NEW(PAD_KEY)) {
-        config->renderFunc(task, subMenu);
+        config->renderFunc(subMenu);
     }
 
     SpriteList_Update(subMenu->spriteResMan.spriteList);
+}
+
+static void DebugSubMenu_ChangeType(DebugSubMenu *subMenu, enum DebugSubMenuType type)
+{
+    // subMenu->data is explicitly preserved
+    const DebugSubMenuConfig *config = &sSubMenuConfigs[type];
+    subMenu->type = type;
+    subMenu->value = config->min;
+    subMenu->digits = 0;
+    if (subMenu->sprite != NULL && !config->preserveSprite) {
+        Sprite_DeleteAndFreeResources(subMenu->sprite);
+        subMenu->sprite = NULL;
+    }
+    config->renderFunc(subMenu);
 }
 
 static void DebugSubMenu_PrintString(DebugSubMenu *subMenu, u32 entryID, u32 x, u32 y, u32 delay, u32 color)
@@ -372,36 +411,22 @@ static void DebugSubMenu_PrintString(DebugSubMenu *subMenu, u32 entryID, u32 x, 
     String_Free(bufExp);
 }
 
-static void DebugSubMenu_InitSpriteResMan(DebugSubMenu *subMenu)
+static void DebugSubMenu_Close(SysTask *task, DebugSubMenu *subMenu)
 {
-    SpriteResourceCapacities capacities = { 10, 6, 9, 9, 0, 0 };
-    SpriteResourceManager_SetCapacities(&subMenu->spriteResMan, &capacities, 8, HEAP_ID_FIELD2);
-    GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, TRUE);
+    SysTask_Start(Task_DebugMenu_HandleInput, subMenu->debugMenu, 0);
+    DebugSubMenu_Free(subMenu);
+    Heap_Free(subMenu);
+    SysTask_Done(task);
 }
 
-static void AddItem_InitSprite(DebugSubMenu *subMenu)
+static void DebugSubMenu_ExitToField(SysTask *task, DebugSubMenu *subMenu)
 {
-    NARC *narc = NARC_ctor(NARC_INDEX_ITEMTOOL__ITEMDATA__ITEM_ICON, HEAP_ID_FIELD2);
-    SpriteResourceManager_LoadTiles(&subMenu->spriteResMan, narc, Item_FileID(ITEM_NONE, ITEM_FILE_TYPE_ICON), FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, 49407);
-    SpriteResourceManager_LoadPalette(&subMenu->spriteResMan, narc, Item_FileID(ITEM_NONE, ITEM_FILE_TYPE_PALETTE), FALSE, PLTT_1, NNS_G2D_VRAM_TYPE_2DMAIN, 49404);
-    SpriteResourceManager_LoadCell(&subMenu->spriteResMan, narc, Item_IconNCERFile(), FALSE, 49407);
-    SpriteResourceManager_LoadAnimation(&subMenu->spriteResMan, narc, Item_IconNANRFile(), FALSE, 49407);
-    NARC_dtor(narc);
-
-    const SpriteTemplate itemIconTemplate = {
-        .x = 222,
-        .y = 57,
-        .z = 0,
-        .animIdx = 0,
-        .priority = 0,
-        .plttIdx = 0,
-        .vramType = NNS_G2D_VRAM_TYPE_2DMAIN,
-        .resources = { 49407, 49404, 49407, 49407, 0, 0 },
-        .bgPriority = 0,
-        .vramTransfer = FALSE,
-    };
-
-    subMenu->sprite = SpriteResourceManager_CreateManagedSprite(&subMenu->spriteResMan, &itemIconTemplate);
+    DebugMenu_Free(subMenu->debugMenu);
+    Heap_Free(subMenu->debugMenu);
+    DebugSubMenu_Free(subMenu);
+    Heap_Free(subMenu);
+    SysTask_Done(task);
+    FieldSystem_ResumeProcessing();
 }
 
 // Fly section
@@ -573,36 +598,89 @@ static void DebugFunction_AddItem(SysTask *task, DebugMenu *menu)
     SysTask_Done(task);
 }
 
-static void SubMenuChoice_AddItem(SysTask *task, DebugSubMenu *subMenu)
+static void SubMenuChoice_AddItem(DebugSubMenu *subMenu)
 {
-    Bag *bag = SaveData_GetBag(subMenu->debugMenu->fieldSystem->saveData);
-    Bag_TryAddItem(bag, subMenu->value, 1, HEAP_ID_FIELD1);
+    subMenu->data[0] = subMenu->value;
+    DebugSubMenu_ChangeType(subMenu, DEBUG_SUB_MENU_ITEM_QUANTITY);
 }
 
-static void SubMenuRender_AddItem(SysTask *task, DebugSubMenu *subMenu)
+static void SubMenuRender_AddItem(DebugSubMenu *subMenu)
 {
     if (subMenu->sprite == NULL) {
         AddItem_InitSprite(subMenu);
     }
 
-    Window_FillTilemap(subMenu->window, 15);
-    StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, 4, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
+    Window_FillTilemap(subMenu->window, DEBUG_COLOR_WHITE);
+    StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
     StringTemplate_SetItemName(subMenu->template, 1, subMenu->value);
-    StringTemplate_SetNumber(subMenu->template, 2, sPowersOfTen[subMenu->digits], 4, PADDING_MODE_NONE, CHARSET_MODE_EN);
-    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_AddItem, 0, 0, TEXT_SPEED_INSTANT, DEBUG_COLOR_BLACK);
-    
+    StringTemplate_SetNumber(subMenu->template, 2, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
+    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_AddItem, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
+
     AddItem_UpdateItemIcon(subMenu);
+}
+
+static void AddItem_InitSprite(DebugSubMenu *subMenu)
+{
+    NARC *narc = NARC_ctor(NARC_INDEX_ITEMTOOL__ITEMDATA__ITEM_ICON, HEAP_ID_FIELD2);
+    SpriteResourceManager_LoadTiles(&subMenu->spriteResMan, narc, Item_FileID(ITEM_NONE, ITEM_FILE_TYPE_ICON), FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, ITEM_ICON_CHAR);
+    SpriteResourceManager_LoadPalette(&subMenu->spriteResMan, narc, Item_FileID(ITEM_NONE, ITEM_FILE_TYPE_PALETTE), FALSE, PLTT_1, NNS_G2D_VRAM_TYPE_2DMAIN, ITEM_ICON_PLTT);
+    SpriteResourceManager_LoadCell(&subMenu->spriteResMan, narc, Item_IconNCERFile(), FALSE, ITEM_ICON_CHAR);
+    SpriteResourceManager_LoadAnimation(&subMenu->spriteResMan, narc, Item_IconNANRFile(), FALSE, ITEM_ICON_CHAR);
+    NARC_dtor(narc);
+
+    const SpriteTemplate itemIconTemplate = {
+        .x = 230,
+        .y = 57,
+        .z = 0,
+        .animIdx = 0,
+        .priority = 0,
+        .plttIdx = 0,
+        .vramType = NNS_G2D_VRAM_TYPE_2DMAIN,
+        .resources = { ITEM_ICON_CHAR, ITEM_ICON_PLTT, ITEM_ICON_CHAR, ITEM_ICON_CHAR, 0, 0 },
+        .bgPriority = 0,
+        .vramTransfer = FALSE,
+    };
+
+    subMenu->sprite = SpriteResourceManager_CreateManagedSprite(&subMenu->spriteResMan, &itemIconTemplate);
 }
 
 static void AddItem_UpdateItemIcon(DebugSubMenu *subMenu)
 {
-    SpriteResource *spriteRes = SpriteResourceCollection_Find(subMenu->spriteResMan.resourceCollections[SPRITE_RESOURCE_CHAR], 49407);
+    SpriteResource *spriteRes = SpriteResourceCollection_Find(subMenu->spriteResMan.resourceCollections[SPRITE_RESOURCE_CHAR], ITEM_ICON_CHAR);
     SpriteResourceCollection_ModifyTiles(subMenu->spriteResMan.resourceCollections[SPRITE_RESOURCE_CHAR], spriteRes, NARC_INDEX_ITEMTOOL__ITEMDATA__ITEM_ICON, Item_FileID(subMenu->value, ITEM_FILE_TYPE_ICON), FALSE, HEAP_ID_FIELD2);
     SpriteTransfer_RetransferCharData(spriteRes);
 
-    spriteRes = SpriteResourceCollection_Find(subMenu->spriteResMan.resourceCollections[SPRITE_RESOURCE_PLTT], 49404);
+    spriteRes = SpriteResourceCollection_Find(subMenu->spriteResMan.resourceCollections[SPRITE_RESOURCE_PLTT], ITEM_ICON_PLTT);
     SpriteResourceCollection_ModifyPalette(subMenu->spriteResMan.resourceCollections[SPRITE_RESOURCE_PLTT], spriteRes, NARC_INDEX_ITEMTOOL__ITEMDATA__ITEM_ICON, Item_FileID(subMenu->value, ITEM_FILE_TYPE_PALETTE), FALSE, HEAP_ID_FIELD2);
     SpriteTransfer_ReplacePlttData(spriteRes);
+}
+
+static void SubMenuChoice_ItemQuantity(DebugSubMenu *subMenu)
+{
+    Bag *bag = SaveData_GetBag(subMenu->debugMenu->fieldSystem->saveData);
+    u32 item = subMenu->data[0];
+    u32 quantity = subMenu->value;
+    u32 actualMax = BAG_MAX_QUANTITY_ITEM;
+
+    if (Item_TMHMNumber(item) != ITEM_NONE) {
+        actualMax = BAG_MAX_QUANTITY_TMHM;
+    }
+
+    u32 currentQuantity = Bag_GetItemQuantity(bag, item, HEAP_ID_FIELD1);
+
+    if ((currentQuantity + quantity) > actualMax) {
+        Bag_TryAddItem(bag, item, actualMax - currentQuantity, HEAP_ID_FIELD1);
+    } else {
+        Bag_TryAddItem(bag, item, quantity, HEAP_ID_FIELD1);
+    }
+}
+
+static void SubMenuRender_ItemQuantity(DebugSubMenu *subMenu)
+{
+    Window_FillTilemap(subMenu->window, DEBUG_COLOR_WHITE);
+    StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
+    StringTemplate_SetNumber(subMenu->template, 1, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
+    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_ItemQuantity, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
 }
 
 // Adjust Camera section

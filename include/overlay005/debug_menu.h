@@ -15,15 +15,16 @@
 
 #define DEBUG_KEY               PAD_BUTTON_R
 #define DEBUG_FLAG_NO_COLLISION FLAG_UNUSED_2420
+#define MAX_SUBMENU_DATA        8
 
 typedef struct DebugMenu {
-    u16 data;
-    u16 listPos;
-    u16 cursor;
     ListMenu *listMenu;
     FieldSystem *fieldSystem;
     Window *window;
     StringList *stringList;
+    u16 data;
+    u16 listPos;
+    u16 cursor;
 } DebugMenu;
 
 typedef struct DebugSubMenu {
@@ -33,19 +34,22 @@ typedef struct DebugSubMenu {
     Window *window;
     MessageLoader *msgLoader;
     StringTemplate *template;
-    int type;
+    int data[MAX_SUBMENU_DATA];
+    u32 type;
     int value;
-    int digits;
+    u32 digits;
 } DebugSubMenu;
 
 typedef void (*DebugFunction)(SysTask *, DebugMenu *);
-typedef void (*DebugSubFunction)(SysTask *, DebugSubMenu *);
+typedef void (*DebugSubMenuFunc)(DebugSubMenu *);
 
 typedef struct DebugSubMenuConfig {
+    DebugSubMenuFunc choiceFunc;
+    DebugSubMenuFunc renderFunc;
+    BOOL closeOnChoice;
+    BOOL preserveSprite;
     int min;
     int max;
-    DebugSubFunction choiceFunc;
-    DebugSubFunction renderFunc;
 } DebugSubMenuConfig;
 
 typedef struct DebugMenuItem {
@@ -54,7 +58,7 @@ typedef struct DebugMenuItem {
 } DebugMenuItem;
 
 enum DebugItem {
-    DEBUG_ITEM_NONE,
+    DEBUG_ITEM_NONE = 0,
     DEBUG_ITEM_FLY,
     DEBUG_ITEM_CREATE_MON,
     DEBUG_ITEM_EDIT_MON,
@@ -65,7 +69,8 @@ enum DebugItem {
 };
 
 enum DebugSubMenuType {
-    DEBUG_SUB_MENU_ADD_ITEM,
+    DEBUG_SUB_MENU_ADD_ITEM = 0,
+    DEBUG_SUB_MENU_ITEM_QUANTITY,
     DEBUG_SUB_MENU_TYPE_COUNT,
 };
 
