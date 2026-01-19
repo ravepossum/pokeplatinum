@@ -53,13 +53,12 @@ typedef struct DebugSubMenuConfig {
 } DebugSubMenuConfig;
 
 typedef struct DebugMenuItem {
-    u32 index;
     DebugFunction function;
+    u32 name;
 } DebugMenuItem;
 
 enum DebugItem {
-    DEBUG_ITEM_NONE = 0,
-    DEBUG_ITEM_FLY,
+    DEBUG_ITEM_FLY = 0,
     DEBUG_ITEM_CREATE_MON,
     DEBUG_ITEM_EDIT_MON,
     DEBUG_ITEM_ADD_ITEM,
@@ -68,6 +67,7 @@ enum DebugItem {
     DEBUG_ITEM_SET_VAR,
     DEBUG_ITEM_ADJUST_CAMERA,
     DEBUG_ITEM_EXECUTE_FUNCTION,
+    DEBUG_ITEM_COUNT,
 };
 
 enum DebugSubMenuType {

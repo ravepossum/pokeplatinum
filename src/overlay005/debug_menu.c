@@ -20,6 +20,7 @@
 
 #include "bag.h"
 #include "camera.h"
+#include "debug.h"
 #include "field_map_change.h"
 #include "field_system.h"
 #include "item.h"
@@ -37,7 +38,8 @@
 #include "unk_02092494.h"
 #include "vars_flags.h"
 #include "vram_transfer.h"
-#include "debug.h"
+
+#include "res/text/bank/unk_0328.h"
 #include "res/text/bank/unk_0336.h"
 
 #define DEBUG_TEXT_BLACK TEXT_COLOR(1, 2, 15)
@@ -154,18 +156,43 @@ static const ListMenuTemplate DebugMenu_List_Header = {
     .parent = NULL,
 };
 
-static const DebugMenuItem DebugMenu_ItemList[] = {
-    // clang-format off
-    { DEBUG_ITEM_FLY,               DebugFunction_Fly },
-    { DEBUG_ITEM_CREATE_MON,        DebugFunction_CreateMon },
-    { DEBUG_ITEM_EDIT_MON,          DebugFunction_EditMon },
-    { DEBUG_ITEM_ADD_ITEM,          DebugFunction_AddItem },
-    { DEBUG_ITEM_TOGGLE_COLLISION,  DebugFunction_ToggleCollision },
-    { DEBUG_ITEM_SET_FLAG,          DebugFunction_SetFlag },
-    { DEBUG_ITEM_SET_VAR,           DebugFunction_SetVar },
-    { DEBUG_ITEM_ADJUST_CAMERA,     DebugFunction_AdjustCamera },
-    { DEBUG_ITEM_EXECUTE_FUNCTION,  DebugFunction_ExecuteFunction },
-    // clang-format on
+static const DebugMenuItem sMainMenuItems[DEBUG_ITEM_COUNT] = {
+    [DEBUG_ITEM_FLY] = {
+        .function = DebugFunction_Fly,
+        .name = DebugMenu_ItemName_Fly,
+    },
+    [DEBUG_ITEM_CREATE_MON] = {
+        .function = DebugFunction_CreateMon,
+        .name = DebugMenu_ItemName_CreateMon,
+    },
+    [DEBUG_ITEM_EDIT_MON] = {
+        .function = DebugFunction_EditMon,
+        .name = DebugMenu_ItemName_EditMon,
+    },
+    [DEBUG_ITEM_ADD_ITEM] = {
+        .function = DebugFunction_AddItem,
+        .name = DebugMenu_ItemName_AddItem,
+    },
+    [DEBUG_ITEM_TOGGLE_COLLISION] = {
+        .function = DebugFunction_ToggleCollision,
+        .name = DebugMenu_ItemName_ToggleCollision,
+    },
+    [DEBUG_ITEM_SET_FLAG] = {
+        .function = DebugFunction_SetFlag,
+        .name = DebugMenu_ItemName_SetFlag,
+    },
+    [DEBUG_ITEM_SET_VAR] = {
+        .function = DebugFunction_SetVar,
+        .name = DebugMenu_ItemName_SetVar,
+    },
+    [DEBUG_ITEM_ADJUST_CAMERA] = {
+        .function = DebugFunction_AdjustCamera,
+        .name = DebugMenu_ItemName_AdjustCamera,
+    },
+    [DEBUG_ITEM_EXECUTE_FUNCTION] = {
+        .function = DebugFunction_ExecuteFunction,
+        .name = DebugMenu_ItemName_ExecuteFunction,
+    },
 };
 
 static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUBMENU_TYPE_COUNT] = {
@@ -213,7 +240,7 @@ static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUBMENU_TYPE_COUNT] = {
 
 void DebugMenu_Init(FieldSystem *fieldSystem)
 {
-    DebugMenu *menu = DebugMenu_CreateMultichoice(fieldSystem, TEXT_BANK_UNK_0328, DebugMenu_ItemList, NELEMS(DebugMenu_ItemList), NULL);
+    DebugMenu *menu = DebugMenu_CreateMultichoice(fieldSystem, TEXT_BANK_UNK_0328, sMainMenuItems, NELEMS(sMainMenuItems), NULL);
     FieldSystem_PauseProcessing();
 }
 
@@ -306,13 +333,13 @@ static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, int arcI
     return menu;
 }
 
-static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count)
+static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *itemList, int count)
 {
     StringList *stringList = StringList_New(count, HEAP_ID_FIELD1);
     MessageLoader *msgLoader = MessageLoader_Init(MSG_LOADER_PRELOAD_ENTIRE_BANK, NARC_INDEX_MSGDATA__PL_MSG, arcID, HEAP_ID_FIELD1);
 
     for (int i = 0; i < count; i++) {
-        StringList_AddFromMessageBank(stringList, msgLoader, list[i].index + 1, list[i].function);
+        StringList_AddFromMessageBank(stringList, msgLoader, itemList[i].name, itemList[i].function);
     }
     MessageLoader_Free(msgLoader);
 

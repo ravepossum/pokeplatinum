@@ -10,39 +10,39 @@
       "en_US": "For Staff use"
     },
     {
-      "id": "pl_msg_00000328_00002",
+      "id": "DebugMenu_ItemName_Fly",
       "en_US": "Fly"
     },
     {
-      "id": "pl_msg_00000328_00003",
+      "id": "DebugMenu_ItemName_CreateMon",
       "en_US": "Create Mon"
     },
     {
-      "id": "pl_msg_00000328_00004",
+      "id": "DebugMenu_ItemName_EditMon",
       "en_US": "Edit Mon"
     },
     {
-      "id": "pl_msg_00000328_00008",
+      "id": "DebugMenu_ItemName_AddItem",
       "en_US": "Add Item"
     },
     {
-      "id": "pl_msg_00000328_00005",
+      "id": "DebugMenu_ItemName_ToggleCollision",
       "en_US": "Toggle Collision"
     },
     {
-      "id": "pl_msg_00000328_00009",
+      "id": "DebugMenu_ItemName_SetFlag",
       "en_US": "Set Flag"
     },
     {
-      "id": "pl_msg_00000328_00010",
+      "id": "DebugMenu_ItemName_SetVar",
       "en_US": "Set Var"
     },
     {
-      "id": "pl_msg_00000328_00006",
+      "id": "DebugMenu_ItemName_AdjustCamera",
       "en_US": "Adjust Camera"
     },
     {
-      "id": "pl_msg_00000328_00007",
+      "id": "DebugMenu_ItemName_ExecuteFunction",
       "en_US": "Debug Function"
     },
     {
