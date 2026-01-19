@@ -10,40 +10,40 @@
       "en_US": "For Staff use"
     },
     {
-      "id": "DebugMenu_ItemName_Fly",
-      "en_US": "Fly"
+      "id": "pl_msg_00000328_00002",
+      "en_US": "Jump"
     },
     {
-      "id": "DebugMenu_ItemName_CreateMon",
-      "en_US": "Create Mon"
+      "id": "pl_msg_00000328_00003",
+      "en_US": "Out-of-range drawing"
     },
     {
-      "id": "DebugMenu_ItemName_EditMon",
-      "en_US": "Edit Mon"
+      "id": "pl_msg_00000328_00004",
+      "en_US": "Create data"
     },
     {
-      "id": "DebugMenu_ItemName_AddItem",
-      "en_US": "Add Item"
+      "id": "pl_msg_00000328_00005",
+      "en_US": "System"
     },
     {
-      "id": "DebugMenu_ItemName_ToggleCollision",
-      "en_US": "Toggle Collision"
+      "id": "pl_msg_00000328_00006",
+      "en_US": "Enter value"
     },
     {
-      "id": "DebugMenu_ItemName_SetFlag",
-      "en_US": "Set Flag"
+      "id": "pl_msg_00000328_00007",
+      "en_US": "Forced-saving process"
     },
     {
-      "id": "DebugMenu_ItemName_SetVar",
-      "en_US": "Set Var"
+      "id": "pl_msg_00000328_00008",
+      "en_US": "Before the Counter stops"
     },
     {
-      "id": "DebugMenu_ItemName_AdjustCamera",
-      "en_US": "Adjust Camera"
+      "id": "pl_msg_00000328_00009",
+      "en_US": "no use"
     },
     {
-      "id": "DebugMenu_ItemName_ExecuteFunction",
-      "en_US": "Debug Function"
+      "id": "pl_msg_00000328_00010",
+      "en_US": "Naming/GTS/DayCare"
     },
     {
       "id": "pl_msg_00000328_00011",

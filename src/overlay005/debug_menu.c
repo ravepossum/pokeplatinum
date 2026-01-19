@@ -39,7 +39,7 @@
 #include "vars_flags.h"
 #include "vram_transfer.h"
 
-#include "res/text/bank/unk_0328.h"
+#include "res/text/bank/debug_menu.h"
 #include "res/text/bank/unk_0336.h"
 
 #define DEBUG_TEXT_BLACK TEXT_COLOR(1, 2, 15)
@@ -66,8 +66,8 @@ static void DebugMenu_Free(DebugMenu *menu);
 static void DebugMenu_Close(SysTask *task, DebugMenu *menu);
 static void DebugMenu_ExitToField(SysTask *task, DebugMenu *menu);
 static void Task_DebugMenu_ExitToField(SysTask *task, void *data);
-static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count);
-static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc);
+static StringList *DebugMenu_CreateList(const DebugMenuItem *list, int count);
+static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, const DebugMenuItem *list, int count, SysTaskFunc taskFunc);
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data);
 static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuType type, int initialValue);
 
@@ -240,7 +240,7 @@ static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUBMENU_TYPE_COUNT] = {
 
 void DebugMenu_Init(FieldSystem *fieldSystem)
 {
-    DebugMenu *menu = DebugMenu_CreateMultichoice(fieldSystem, TEXT_BANK_UNK_0328, sMainMenuItems, NELEMS(sMainMenuItems), NULL);
+    DebugMenu *menu = DebugMenu_CreateMultichoice(fieldSystem, sMainMenuItems, NELEMS(sMainMenuItems), NULL);
     FieldSystem_PauseProcessing();
 }
 
@@ -292,7 +292,7 @@ static void Task_DebugMenu_ExitToField(SysTask *task, void *data)
     FieldSystem_ResumeProcessing();
 }
 
-static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc)
+static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, const DebugMenuItem *list, int count, SysTaskFunc taskFunc)
 {
     DebugMenu *menu = Heap_Alloc(HEAP_ID_FIELD1, sizeof(DebugMenu));
 
@@ -320,7 +320,7 @@ static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, int arcI
     Window_DrawStandardFrame(menu->window, TRUE, 660, 11);
 
     if (list != NULL) {
-        menu->stringList = DebugMenu_CreateList(arcID, list, count);
+        menu->stringList = DebugMenu_CreateList(list, count);
     }
 
     ListMenuTemplate listHeader = DebugMenu_List_Header;
@@ -333,10 +333,10 @@ static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, int arcI
     return menu;
 }
 
-static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *itemList, int count)
+static StringList *DebugMenu_CreateList(const DebugMenuItem *itemList, int count)
 {
     StringList *stringList = StringList_New(count, HEAP_ID_FIELD1);
-    MessageLoader *msgLoader = MessageLoader_Init(MSG_LOADER_PRELOAD_ENTIRE_BANK, NARC_INDEX_MSGDATA__PL_MSG, arcID, HEAP_ID_FIELD1);
+    MessageLoader *msgLoader = MessageLoader_Init(MSG_LOADER_PRELOAD_ENTIRE_BANK, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_DEBUG_MENU, HEAP_ID_FIELD1);
 
     for (int i = 0; i < count; i++) {
         StringList_AddFromMessageBank(stringList, msgLoader, itemList[i].name, itemList[i].function);
@@ -379,7 +379,7 @@ static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuT
     const DebugSubMenuConfig *config = &sSubMenuConfigs[type];
     subMenu->type = type;
     subMenu->debugMenu = menu;
-    subMenu->msgLoader = MessageLoader_Init(MSG_LOADER_LOAD_ON_DEMAND, NARC_INDEX_MSGDATA__PL_MSG, DEBUG_MON_MENU_MESSAGE_BANK, HEAP_ID_FIELD1);
+    subMenu->msgLoader = MessageLoader_Init(MSG_LOADER_LOAD_ON_DEMAND, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_DEBUG_MENU, HEAP_ID_FIELD1);
     subMenu->template = StringTemplate_Default(HEAP_ID_FIELD1);
     subMenu->value = (initialValue == SUBMENU_VALUE_SET_MIN) ? config->min : initialValue;
     subMenu->sprite = NULL;
@@ -683,7 +683,7 @@ static void SubMenuRender_AddItem(DebugSubMenu *subMenu)
     StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
     StringTemplate_SetItemName(subMenu->template, 1, subMenu->value);
     StringTemplate_SetNumber(subMenu->template, 2, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
-    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_AddItem, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
+    DebugSubMenu_PrintString(subMenu, DebugSubMenu_Template_AddItem, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
 
     AddItem_UpdateItemIcon(subMenu);
 }
@@ -749,7 +749,7 @@ static void SubMenuRender_ItemQuantity(DebugSubMenu *subMenu)
     Window_FillTilemap(subMenu->window, DEBUG_COLOR_WHITE);
     StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
     StringTemplate_SetNumber(subMenu->template, 1, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
-    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_ItemQuantity, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
+    DebugSubMenu_PrintString(subMenu, DebugSubMenu_Template_ItemQuantity, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
 }
 
 // Adjust Camera section
@@ -861,7 +861,7 @@ static void SubMenuRender_SetFlag(DebugSubMenu *subMenu)
     StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
     StringTemplate_SetString(subMenu->template, 1, string, 0, 0, 0);
     StringTemplate_SetNumber(subMenu->template, 2, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
-    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_SetFlag, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
+    DebugSubMenu_PrintString(subMenu, DebugSubMenu_Template_SetFlag, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
 
     String_Free(string);
 }
@@ -894,7 +894,7 @@ static void SubMenuRender_SelectVar(DebugSubMenu *subMenu)
     StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
     StringTemplate_SetNumber(subMenu->template, 1, *var, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
     StringTemplate_SetNumber(subMenu->template, 2, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
-    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_SelectVar, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
+    DebugSubMenu_PrintString(subMenu, DebugSubMenu_Template_SelectVar, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
 }
 
 static void SubMenuChoice_VarValue(DebugSubMenu *subMenu)
@@ -913,7 +913,7 @@ static void SubMenuRender_VarValue(DebugSubMenu *subMenu)
     StringTemplate_SetNumber(subMenu->template, 0, varIndex, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
     StringTemplate_SetNumber(subMenu->template, 1, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
     StringTemplate_SetNumber(subMenu->template, 2, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
-    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_VarValue, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
+    DebugSubMenu_PrintString(subMenu, DebugSubMenu_Template_VarValue, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
 }
 
 // Execute function
