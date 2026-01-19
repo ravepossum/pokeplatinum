@@ -168,8 +168,8 @@ static const DebugMenuItem DebugMenu_ItemList[] = {
     // clang-format on
 };
 
-static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUB_MENU_TYPE_COUNT] = {
-    [DEBUG_SUB_MENU_ADD_ITEM] = {
+static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUBMENU_TYPE_COUNT] = {
+    [DEBUG_SUBMENU_ADD_ITEM] = {
         .choiceFunc = SubMenuChoice_AddItem,
         .renderFunc = SubMenuRender_AddItem,
         .closeOnChoice = FALSE,
@@ -177,7 +177,7 @@ static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUB_MENU_TYPE_COUNT] = {
         .min = ITEM_NONE + 1,
         .max = MAX_ITEMS - 1,
     },
-    [DEBUG_SUB_MENU_ITEM_QUANTITY] = {
+    [DEBUG_SUBMENU_ITEM_QUANTITY] = {
         .choiceFunc = SubMenuChoice_ItemQuantity,
         .renderFunc = SubMenuRender_ItemQuantity,
         .closeOnChoice = TRUE,
@@ -185,7 +185,7 @@ static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUB_MENU_TYPE_COUNT] = {
         .min = 1,
         .max = BAG_MAX_QUANTITY_ITEM,
     },
-    [DEBUG_SUB_MENU_SET_FLAG] = {
+    [DEBUG_SUBMENU_SET_FLAG] = {
         .choiceFunc = SubMenuChoice_SetFlag,
         .renderFunc = SubMenuRender_SetFlag,
         .closeOnChoice = FALSE,
@@ -193,7 +193,7 @@ static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUB_MENU_TYPE_COUNT] = {
         .min = FLAGS_START,
         .max = NUM_FLAGS - 1,
     },
-    [DEBUG_SUB_MENU_SELECT_VAR] = {
+    [DEBUG_SUBMENU_SELECT_VAR] = {
         .choiceFunc = SubMenuChoice_SelectVar,
         .renderFunc = SubMenuRender_SelectVar,
         .closeOnChoice = FALSE,
@@ -201,7 +201,7 @@ static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUB_MENU_TYPE_COUNT] = {
         .min = VARS_START,
         .max = VARS_END - 1,
     },
-    [DEBUG_SUB_MENU_VAR_VALUE] = {
+    [DEBUG_SUBMENU_VAR_VALUE] = {
         .choiceFunc = SubMenuChoice_VarValue,
         .renderFunc = SubMenuRender_VarValue,
         .closeOnChoice = TRUE,
@@ -636,14 +636,14 @@ static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
 
 static void DebugFunction_AddItem(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu_CreateSubMenu(menu, DEBUG_SUB_MENU_ADD_ITEM, SUBMENU_VALUE_SET_MIN);
+    DebugMenu_CreateSubMenu(menu, DEBUG_SUBMENU_ADD_ITEM, SUBMENU_VALUE_SET_MIN);
     SysTask_Done(task);
 }
 
 static void SubMenuChoice_AddItem(DebugSubMenu *subMenu)
 {
     subMenu->data[0] = subMenu->value;
-    DebugSubMenu_ChangeType(subMenu, DEBUG_SUB_MENU_ITEM_QUANTITY, SUBMENU_VALUE_SET_MIN);
+    DebugSubMenu_ChangeType(subMenu, DEBUG_SUBMENU_ITEM_QUANTITY, SUBMENU_VALUE_SET_MIN);
 }
 
 static void SubMenuRender_AddItem(DebugSubMenu *subMenu)
@@ -803,7 +803,7 @@ static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu)
 
 static void DebugFunction_SetFlag(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu_CreateSubMenu(menu, DEBUG_SUB_MENU_SET_FLAG, SUBMENU_VALUE_SET_MIN);
+    DebugMenu_CreateSubMenu(menu, DEBUG_SUBMENU_SET_FLAG, SUBMENU_VALUE_SET_MIN);
     SysTask_Done(task);
 }
 
@@ -843,7 +843,7 @@ static void SubMenuRender_SetFlag(DebugSubMenu *subMenu)
 
 static void DebugFunction_SetVar(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu_CreateSubMenu(menu, DEBUG_SUB_MENU_SELECT_VAR, SUBMENU_VALUE_SET_MIN);
+    DebugMenu_CreateSubMenu(menu, DEBUG_SUBMENU_SELECT_VAR, SUBMENU_VALUE_SET_MIN);
     SysTask_Done(task);
 }
 
@@ -853,7 +853,7 @@ static void SubMenuChoice_SelectVar(DebugSubMenu *subMenu)
     u16 *var = VarsFlags_GetVarAddress(varsFlags, subMenu->value);
 
     subMenu->data[0] = subMenu->value;
-    DebugSubMenu_ChangeType(subMenu, DEBUG_SUB_MENU_VAR_VALUE, *var);
+    DebugSubMenu_ChangeType(subMenu, DEBUG_SUBMENU_VAR_VALUE, *var);
 }
 
 static void SubMenuRender_SelectVar(DebugSubMenu *subMenu)
