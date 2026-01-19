@@ -533,6 +533,22 @@
     {
       "id": "DebugMenu_Text_False",
       "en_US": "FALSE"
+    },
+    {
+      "id": "DebugMenu_Text_SelectVar",
+      "en_US": [
+        "Var: {STRVAR_1 52, 0, 0}\n",
+        "Value: {STRVAR_1 52, 1, 0}\n",
+        "← +{STRVAR_1 52, 2, 0} →"
+      ]
+    },
+    {
+      "id": "DebugMenu_Text_VarValue",
+      "en_US": [
+        "Var: {STRVAR_1 52, 0, 0}\n",
+        "New Value: {STRVAR_1 52, 1, 0}\n",
+        "← +{STRVAR_1 52, 2, 0} →"
+      ]
     }
   ]
 }

@@ -34,16 +34,16 @@
       "en_US": "Set Flag"
     },
     {
+      "id": "pl_msg_00000328_00010",
+      "en_US": "Set Var"
+    },
+    {
       "id": "pl_msg_00000328_00006",
       "en_US": "Adjust Camera"
     },
     {
       "id": "pl_msg_00000328_00007",
       "en_US": "Debug Function"
-    },
-    {
-      "id": "pl_msg_00000328_00010",
-      "en_US": "Naming/GTS/DayCare"
     },
     {
       "id": "pl_msg_00000328_00011",

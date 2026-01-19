@@ -55,9 +55,10 @@
 #define ITEM_ICON_CHAR 49407
 #define ITEM_ICON_PLTT 49404
 
-#define MAX_SUBMENU_DIGITS    4
+#define MAX_SUBMENU_DIGITS    5
 #define MAX_SUBMENU_SPRITES   4
 #define MAX_SUBMENU_RESOURCES 4
+#define SUBMENU_VALUE_SET_MIN -1
 
 static void DebugMenu_Free(DebugMenu *menu);
 static void DebugMenu_Close(SysTask *task, DebugMenu *menu);
@@ -66,12 +67,12 @@ static void Task_DebugMenu_ExitToField(SysTask *task, void *data);
 static StringList *DebugMenu_CreateList(int arcID, const DebugMenuItem *list, int count);
 static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, int arcID, const DebugMenuItem *list, int count, SysTaskFunc taskFunc);
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data);
-static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuType type);
+static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuType type, int initialValue);
 
 static void DebugSubMenu_Close(SysTask *task, DebugSubMenu *subMenu);
 static void DebugSubMenu_Free(DebugSubMenu *subMenu);
 static void DebugSubMenu_ExitToField(SysTask *task, DebugSubMenu *subMenu);
-static void DebugSubMenu_ChangeType(DebugSubMenu *subMenu, enum DebugSubMenuType type);
+static void DebugSubMenu_ChangeType(DebugSubMenu *subMenu, enum DebugSubMenuType type, int initialValue);
 static void Task_DebugSubMenu_HandleInput(SysTask *task, void *data);
 static void DebugSubMenu_PrintString(DebugSubMenu *subMenu, u32 entryID, u32 x, u32 y, u32 delay, u32 color);
 static void DebugSubMenu_InitSpriteResMan(DebugSubMenu *subMenu);
@@ -102,6 +103,12 @@ static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu);
 static void DebugFunction_SetFlag(SysTask *task, DebugMenu *menu);
 static void SubMenuChoice_SetFlag(DebugSubMenu *subMenu);
 static void SubMenuRender_SetFlag(DebugSubMenu *subMenu);
+
+static void DebugFunction_SetVar(SysTask *task, DebugMenu *menu);
+static void SubMenuChoice_SelectVar(DebugSubMenu *subMenu);
+static void SubMenuRender_SelectVar(DebugSubMenu *subMenu);
+static void SubMenuChoice_VarValue(DebugSubMenu *subMenu);
+static void SubMenuRender_VarValue(DebugSubMenu *subMenu);
 
 static void DebugFunction_ExecuteFunction(SysTask *task, DebugMenu *menu);
 
@@ -155,6 +162,7 @@ static const DebugMenuItem DebugMenu_ItemList[] = {
     { DEBUG_ITEM_ADD_ITEM,          DebugFunction_AddItem },
     { DEBUG_ITEM_TOGGLE_COLLISION,  DebugFunction_ToggleCollision },
     { DEBUG_ITEM_SET_FLAG,          DebugFunction_SetFlag },
+    { DEBUG_ITEM_SET_VAR,           DebugFunction_SetVar },
     { DEBUG_ITEM_ADJUST_CAMERA,     DebugFunction_AdjustCamera },
     { DEBUG_ITEM_EXECUTE_FUNCTION,  DebugFunction_ExecuteFunction },
     // clang-format on
@@ -184,6 +192,22 @@ static const DebugSubMenuConfig sSubMenuConfigs[DEBUG_SUB_MENU_TYPE_COUNT] = {
         .preserveSprite = FALSE,
         .min = FLAGS_START,
         .max = NUM_FLAGS - 1,
+    },
+    [DEBUG_SUB_MENU_SELECT_VAR] = {
+        .choiceFunc = SubMenuChoice_SelectVar,
+        .renderFunc = SubMenuRender_SelectVar,
+        .closeOnChoice = FALSE,
+        .preserveSprite = FALSE,
+        .min = VARS_START,
+        .max = VARS_END - 1,
+    },
+    [DEBUG_SUB_MENU_VAR_VALUE] = {
+        .choiceFunc = SubMenuChoice_VarValue,
+        .renderFunc = SubMenuRender_VarValue,
+        .closeOnChoice = TRUE,
+        .preserveSprite = FALSE,
+        .min = 0,
+        .max = 0xFFFF,
     },
 };
 
@@ -314,7 +338,7 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
     }
 }
 
-static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuType type)
+static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuType type, int initialValue)
 {
     DebugSubMenu *subMenu = Heap_Alloc(HEAP_ID_FIELD1, sizeof(DebugSubMenu));
     FieldSystem *fieldSystem = menu->fieldSystem;
@@ -329,8 +353,8 @@ static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuT
     subMenu->type = type;
     subMenu->debugMenu = menu;
     subMenu->msgLoader = MessageLoader_Init(MSG_LOADER_LOAD_ON_DEMAND, NARC_INDEX_MSGDATA__PL_MSG, DEBUG_MON_MENU_MESSAGE_BANK, HEAP_ID_FIELD1);
-    subMenu->template = StringTemplate_Default(HEAP_ID_FIELD1); 
-    subMenu->value = config->min;
+    subMenu->template = StringTemplate_Default(HEAP_ID_FIELD1);
+    subMenu->value = (initialValue == SUBMENU_VALUE_SET_MIN) ? config->min : initialValue;
     subMenu->sprite = NULL;
 
     SpriteResourceCapacities capacities = {
@@ -361,10 +385,11 @@ static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuT
 }
 
 static const int sPowersOfTen[MAX_SUBMENU_DIGITS] = {
-             1,
-            10,
-           100,
-          1000,
+    1,
+    10,
+    100,
+    1000,
+    10000,
 };
 
 static void Task_DebugSubMenu_HandleInput(SysTask *task, void *data)
@@ -404,12 +429,12 @@ static void Task_DebugSubMenu_HandleInput(SysTask *task, void *data)
     SpriteList_Update(subMenu->spriteResMan.spriteList);
 }
 
-static void DebugSubMenu_ChangeType(DebugSubMenu *subMenu, enum DebugSubMenuType type)
+static void DebugSubMenu_ChangeType(DebugSubMenu *subMenu, enum DebugSubMenuType type, int initialValue)
 {
     // subMenu->data is explicitly preserved
     const DebugSubMenuConfig *config = &sSubMenuConfigs[type];
     subMenu->type = type;
-    subMenu->value = config->min;
+    subMenu->value = (initialValue == SUBMENU_VALUE_SET_MIN) ? config->min : initialValue;
     subMenu->digits = 0;
     if (subMenu->sprite != NULL && !config->preserveSprite) {
         Sprite_DeleteAndFreeResources(subMenu->sprite);
@@ -611,14 +636,14 @@ static void Task_DebugMenu_CreateOrEditMon(SysTask *task, void *data)
 
 static void DebugFunction_AddItem(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu_CreateSubMenu(menu, DEBUG_SUB_MENU_ADD_ITEM);
+    DebugMenu_CreateSubMenu(menu, DEBUG_SUB_MENU_ADD_ITEM, SUBMENU_VALUE_SET_MIN);
     SysTask_Done(task);
 }
 
 static void SubMenuChoice_AddItem(DebugSubMenu *subMenu)
 {
     subMenu->data[0] = subMenu->value;
-    DebugSubMenu_ChangeType(subMenu, DEBUG_SUB_MENU_ITEM_QUANTITY);
+    DebugSubMenu_ChangeType(subMenu, DEBUG_SUB_MENU_ITEM_QUANTITY, SUBMENU_VALUE_SET_MIN);
 }
 
 static void SubMenuRender_AddItem(DebugSubMenu *subMenu)
@@ -778,7 +803,7 @@ static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu)
 
 static void DebugFunction_SetFlag(SysTask *task, DebugMenu *menu)
 {
-    DebugMenu_CreateSubMenu(menu, DEBUG_SUB_MENU_SET_FLAG);
+    DebugMenu_CreateSubMenu(menu, DEBUG_SUB_MENU_SET_FLAG, SUBMENU_VALUE_SET_MIN);
     SysTask_Done(task);
 }
 
@@ -805,12 +830,63 @@ static void SubMenuRender_SetFlag(DebugSubMenu *subMenu)
         string = MessageLoader_GetNewString(subMenu->msgLoader, DebugMenu_Text_False);
     }
 
+    // this should probably display in hex instead but I can't be assed to do that right now
     StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
     StringTemplate_SetString(subMenu->template, 1, string, 0, 0, 0);
     StringTemplate_SetNumber(subMenu->template, 2, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
     DebugSubMenu_PrintString(subMenu, DebugMenu_Text_SetFlag, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
 
     String_Free(string);
+}
+
+// Set Var
+
+static void DebugFunction_SetVar(SysTask *task, DebugMenu *menu)
+{
+    DebugMenu_CreateSubMenu(menu, DEBUG_SUB_MENU_SELECT_VAR, SUBMENU_VALUE_SET_MIN);
+    SysTask_Done(task);
+}
+
+static void SubMenuChoice_SelectVar(DebugSubMenu *subMenu)
+{
+    VarsFlags *varsFlags = SaveData_GetVarsFlags(subMenu->debugMenu->fieldSystem->saveData);
+    u16 *var = VarsFlags_GetVarAddress(varsFlags, subMenu->value);
+
+    subMenu->data[0] = subMenu->value;
+    DebugSubMenu_ChangeType(subMenu, DEBUG_SUB_MENU_VAR_VALUE, *var);
+}
+
+static void SubMenuRender_SelectVar(DebugSubMenu *subMenu)
+{
+    Window_FillTilemap(subMenu->window, DEBUG_COLOR_WHITE);
+
+    VarsFlags *varsFlags = SaveData_GetVarsFlags(subMenu->debugMenu->fieldSystem->saveData);
+    u16 *var = VarsFlags_GetVarAddress(varsFlags, subMenu->value);
+
+    // this should probably display in hex instead but I can't be assed to do that right now
+    StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
+    StringTemplate_SetNumber(subMenu->template, 1, *var, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
+    StringTemplate_SetNumber(subMenu->template, 2, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
+    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_SelectVar, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
+}
+
+static void SubMenuChoice_VarValue(DebugSubMenu *subMenu)
+{
+    u16 varIndex = subMenu->data[0];
+    VarsFlags *varsFlags = SaveData_GetVarsFlags(subMenu->debugMenu->fieldSystem->saveData);
+    u16 *var = VarsFlags_GetVarAddress(varsFlags, varIndex);
+    *var = subMenu->value;
+}
+
+static void SubMenuRender_VarValue(DebugSubMenu *subMenu)
+{
+    u16 varIndex = subMenu->data[0];
+    Window_FillTilemap(subMenu->window, DEBUG_COLOR_WHITE);
+
+    StringTemplate_SetNumber(subMenu->template, 0, varIndex, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
+    StringTemplate_SetNumber(subMenu->template, 1, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
+    StringTemplate_SetNumber(subMenu->template, 2, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
+    DebugSubMenu_PrintString(subMenu, DebugMenu_Text_VarValue, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
 }
 
 // Execute function
