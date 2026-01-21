@@ -1,0 +1,319 @@
+{
+  "key": 0,
+  "messages": [
+    {
+      "id": "DebugMonMenu_Text_Species",
+      "en_US": "Species"
+    },
+    {
+      "id": "DebugMonMenu_Text_Level",
+      "en_US": "Level"
+    },
+    {
+      "id": "DebugMonMenu_Text_ExpPoints",
+      "en_US": "Exp. Points"
+    },
+    {
+      "id": "DebugMonMenu_Text_OTID",
+      "en_US": "OT ID"
+    },
+    {
+      "id": "DebugMonMenu_Text_Personality",
+      "en_US": "Personality"
+    },
+    {
+      "id": "DebugMonMenu_Text_Gender",
+      "en_US": "Gender"
+    },
+    {
+      "id": "DebugMonMenu_Text_Nature",
+      "en_US": "Nature"
+    },
+    {
+      "id": "DebugMonMenu_Text_Move1",
+      "en_US": "Move 1"
+    },
+    {
+      "id": "DebugMonMenu_Text_Move2",
+      "en_US": "Move 2"
+    },
+    {
+      "id": "DebugMonMenu_Text_Move3",
+      "en_US": "Move 3"
+    },
+    {
+      "id": "DebugMonMenu_Text_Move4",
+      "en_US": "Move 4"
+    },
+    {
+      "id": "DebugMonMenu_Text_HeldItem",
+      "en_US": "Held item"
+    },
+    {
+      "id": "DebugMonMenu_Text_Ability",
+      "en_US": "Ability"
+    },
+    {
+      "id": "DebugMonMenu_Text_HP_IV",
+      "en_US": "HP IV"
+    },
+    {
+      "id": "DebugMonMenu_Text_HP_EV",
+      "en_US": "HP EV"
+    },
+    {
+      "id": "DebugMonMenu_Text_Attack_IV",
+      "en_US": "Attack IV"
+    },
+    {
+      "id": "DebugMonMenu_Text_Attack_EV",
+      "en_US": "Attack EV"
+    },
+    {
+      "id": "DebugMonMenu_Text_Defense_IV",
+      "en_US": "Defense IV"
+    },
+    {
+      "id": "DebugMonMenu_Text_Defense_EV",
+      "en_US": "Defense EV"
+    },
+    {
+      "id": "DebugMonMenu_Text_Speed_IV",
+      "en_US": "Speed IV"
+    },
+    {
+      "id": "DebugMonMenu_Text_Speed_EV",
+      "en_US": "Speed EV"
+    },
+    {
+      "id": "DebugMonMenu_Text_SpAtk_IV",
+      "en_US": "Sp. Atk IV"
+    },
+    {
+      "id": "DebugMonMenu_Text_SpAtk_EV",
+      "en_US": "Sp. Atk EV"
+    },
+    {
+      "id": "DebugMonMenu_Text_SpDef_IV",
+      "en_US": "Sp. Def IV"
+    },
+    {
+      "id": "DebugMonMenu_Text_SpDef_EV",
+      "en_US": "Sp. Def EV"
+    },
+    {
+      "id": "DebugMonMenu_Text_Cool",
+      "en_US": "Cool"
+    },
+    {
+      "id": "DebugMonMenu_Text_Beauty",
+      "en_US": "Beauty"
+    },
+    {
+      "id": "DebugMonMenu_Text_Cute",
+      "en_US": "Cute"
+    },
+    {
+      "id": "DebugMonMenu_Text_Smart",
+      "en_US": "Smart"
+    },
+    {
+      "id": "DebugMonMenu_Text_Tough",
+      "en_US": "Tough"
+    },
+    {
+      "id": "DebugMonMenu_Text_Sheen",
+      "en_US": "Sheen"
+    },
+    {
+      "id": "DebugMonMenu_Text_Friendship",
+      "en_US": "Friendship"
+    },
+    {
+      "id": "DebugMonMenu_Text_Pokerus",
+      "en_US": "POKéRUS"
+    },
+    {
+      "id": "DebugMonMenu_Text_Egg",
+      "en_US": "Egg"
+    },
+    {
+      "id": "DebugMonMenu_Text_Status",
+      "en_US": "Status"
+    },
+    {
+      "id": "DebugMonMenu_Text_HP",
+      "en_US": "HP"
+    },
+    {
+      "id": "DebugMonMenu_Text_Attack",
+      "en_US": "Attack"
+    },
+    {
+      "id": "DebugMonMenu_Text_Defense",
+      "en_US": "Defense"
+    },
+    {
+      "id": "DebugMonMenu_Text_Speed",
+      "en_US": "Speed"
+    },
+    {
+      "id": "DebugMonMenu_Text_SpAtk",
+      "en_US": "Sp. Atk"
+    },
+    {
+      "id": "DebugMonMenu_Text_SpDef",
+      "en_US": "Sp. Def"
+    },
+    {
+      "id": "DebugMonMenu_Text_FatefulEncounter",
+      "en_US": "Fateful Enc."
+    },
+    {
+      "id": "DebugMonMenu_Text_EggLocation",
+      "en_US": "Egg Location"
+    },
+    {
+      "id": "DebugMonMenu_Text_MetLevel",
+      "en_US": "Met Level"
+    },
+    {
+      "id": "DebugMonMenu_Text_MetGame",
+      "en_US": "Met Game"
+    },
+    {
+      "id": "DebugMonMenu_Text_Pokeball",
+      "en_US": "Pokeball"
+    },
+    {
+      "id": "DebugMonMenu_Text_Form",
+      "en_US": "Form"
+    },
+    {
+      "id": "DebugMonMenu_Text_MetLocation",
+      "en_US": "Met Location"
+    },
+    {
+      "id": "DebugMonMenu_Text_Year",
+      "en_US": "Year"
+    },
+    {
+      "id": "DebugMonMenu_Text_Month",
+      "en_US": "Month"
+    },
+    {
+      "id": "DebugMonMenu_Text_Day",
+      "en_US": "Day"
+    },
+    {
+      "id": "DebugMonMenu_Text_Nickname",
+      "en_US": "Nickname"
+    },
+    {
+      "id": "DebugMonMenu_Text_Normal",
+      "en_US": "Normal"
+    },
+    {
+      "id": "DebugMonMenu_Text_Sleep",
+      "en_US": "Sleep"
+    },
+    {
+      "id": "DebugMonMenu_Text_Poison",
+      "en_US": "Poison"
+    },
+    {
+      "id": "DebugMonMenu_Text_Burned",
+      "en_US": "Burned"
+    },
+    {
+      "id": "DebugMonMenu_Text_Frozen",
+      "en_US": "Frozen"
+    },
+    {
+      "id": "DebugMonMenu_Text_Paralyzed",
+      "en_US": "Paralyzed"
+    },
+    {
+      "id": "DebugMonMenu_Text_BadlyPoisoned",
+      "en_US": "Badly poisoned"
+    },
+    {
+      "id": "DebugMonMenu_Text_None",
+      "en_US": "None"
+    },
+    {
+      "id": "DebugMonMenu_Text_SymbolMale",
+      "en_US": "㊚"
+    },
+    {
+      "id": "DebugMonMenu_Text_SymbolFemale",
+      "en_US": "㊛"
+    },
+    {
+      "id": "DebugMonMenu_Text_Hyphen",
+      "en_US": "-"
+    },
+    {
+      "id": "DebugMonMenu_Text_On",
+      "en_US": "ON"
+    },
+    {
+      "id": "DebugMonMenu_Text_Off",
+      "en_US": "OFF"
+    },
+    {
+      "id": "DebugMonMenu_Template_Number",
+      "en_US": "{STRVAR_1 59, 0, 0}"
+    },
+    {
+      "id": "DebugMonMenu_Template_MoveName",
+      "en_US": "{STRVAR_1 6, 0, 0}"
+    },
+    {
+      "id": "DebugMonMenu_Template_HeldItem",
+      "en_US": "{STRVAR_1 8, 0, 0}"
+    },
+    {
+      "id": "DebugMonMenu_Template_Ability",
+      "en_US": "{STRVAR_1 5, 0, 0}"
+    },
+    {
+      "id": "DebugMonMenu_Template_Nature",
+      "en_US": "{STRVAR_1 7, 0, 0}"
+    },
+    {
+      "id": "DebugMonMenu_Text_MonAddedToParty",
+      "en_US": "Added a Pokémon to your party."
+    },
+    {
+      "id": "DebugMonMenu_Text_MonAddedToPC",
+      "en_US": "Added a Pokémon to a PC box."
+    },
+    {
+      "id": "DebugMonMenu_Text_CreateInstructions",
+      "en_US": [
+        "Create Pokémon      XY: View Memo\n",
+        " LR: Switch Page    START: Create Mon"
+      ]
+    },
+    {
+      "id": "DebugMonMenu_Text_DebugOT",
+      "en_US": "DebugOT"
+    },
+    {
+      "id": "DebugMonMenu_Text_DebugEggName",
+      "en_US": "Egg"
+    },
+    {
+      "id": "DebugMonMenu_Text_EditInstructions",
+      "en_US": [
+        "Edit Pokémon          XY: Switch Party Slot\n",
+        "  LR: Switch Page    START: Save Mon"
+      ]
+    },
+    {
+      "id": "DebugMonMenu_Text_MonEdited",
+      "en_US": "Edited a Pokémon in your party."
+    }
+  ]
+}

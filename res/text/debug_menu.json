@@ -1,0 +1,89 @@
+{
+  "key": 0,
+  "messages": [
+    {
+      "id": "DebugMenu_ItemName_Fly",
+      "en_US": "Fly"
+    },
+    {
+      "id": "DebugMenu_ItemName_CreateMon",
+      "en_US": "Create Mon"
+    },
+    {
+      "id": "DebugMenu_ItemName_EditMon",
+      "en_US": "Edit Mon"
+    },
+    {
+      "id": "DebugMenu_ItemName_AddItem",
+      "en_US": "Add Item"
+    },
+    {
+      "id": "DebugMenu_ItemName_ToggleCollision",
+      "en_US": "Toggle Collision"
+    },
+    {
+      "id": "DebugMenu_ItemName_SetFlag",
+      "en_US": "Set Flag"
+    },
+    {
+      "id": "DebugMenu_ItemName_SetVar",
+      "en_US": "Set Var"
+    },
+    {
+      "id": "DebugMenu_ItemName_AdjustCamera",
+      "en_US": "Adjust Camera"
+    },
+    {
+      "id": "DebugMenu_ItemName_ExecuteFunction",
+      "en_US": "Debug Function"
+    },
+    {
+      "id": "DebugSubMenu_Template_AddItem",
+      "en_US": [
+        "Item: {STRVAR_1 52, 0, 0}\n",
+        "{STRVAR_1 8, 1, 0}\n",
+        "← +{STRVAR_1 52, 2, 0} →"
+      ]
+    },
+    {
+      "id": "DebugSubMenu_Template_ItemQuantity",
+      "en_US": [
+        "Quantity:\n",
+        "{STRVAR_1 52, 0, 0}\n",
+        "← +{STRVAR_1 52, 1, 0} →"
+      ]
+    },
+    {
+      "id": "DebugSubMenu_Template_SetFlag",
+      "en_US": [
+        "Flag: {STRVAR_1 52, 0, 0}\n",
+        "{STRVAR_1 0, 1, 0}\n",
+        "← +{STRVAR_1 52, 2, 0} →"
+      ]
+    },
+    {
+      "id": "DebugMenu_Text_True",
+      "en_US": "TRUE"
+    },
+    {
+      "id": "DebugMenu_Text_False",
+      "en_US": "FALSE"
+    },
+    {
+      "id": "DebugSubMenu_Template_SelectVar",
+      "en_US": [
+        "Var: {STRVAR_1 52, 0, 0}\n",
+        "Value: {STRVAR_1 52, 1, 0}\n",
+        "← +{STRVAR_1 52, 2, 0} →"
+      ]
+    },
+    {
+      "id": "DebugSubMenu_Template_VarValue",
+      "en_US": [
+        "Var: {STRVAR_1 52, 0, 0}\n",
+        "New Value: {STRVAR_1 52, 1, 0}\n",
+        "← +{STRVAR_1 52, 2, 0} →"
+      ]
+    }
+  ]
+}

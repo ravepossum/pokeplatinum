@@ -12,6 +12,7 @@
 #include "struct_defs/struct_0205EC34.h"
 
 #include "field/field_system.h"
+#include "overlay005/debug_menu.h"
 #include "overlay005/land_data_manager_decl.h"
 #include "overlay005/ov5_021DFB54.h"
 #include "overlay009/ov9_02249960.h"
@@ -25,6 +26,7 @@
 #include "persisted_map_features_init.h"
 #include "player_avatar.h"
 #include "sound_playback.h"
+#include "system.h"
 #include "terrain_collision_manager.h"
 #include "unk_020655F4.h"
 
@@ -788,6 +790,15 @@ static void inline_0205F180(PlayerAvatar *playerAvatar, const LandDataManager *p
 
 static void inline_0205F180_sub(PlayerAvatar *playerAvatar, MapObject *mapObj, const LandDataManager *param2, int param3, u16 param4, u16 param5)
 {
+    FieldSystem *fsys = MapObject_FieldSystem(mapObj);
+
+    // param5 = pressKey, param3 = dir
+    if (VarsFlags_CheckFlag(SaveData_GetVarsFlags(fsys->saveData), DEBUG_FLAG_NO_COLLISION) && (param5 & PAD_KEY)) {
+        int newAnim = MovementAction_TurnActionTowardsDir(param3, MOVEMENT_ACTION_RUN_NORTH); // set player to run in the given dir
+        sub_02060B64(playerAvatar, mapObj, newAnim, AVATAR_MOVE_STATE_MOVING); // set moving state
+        return;
+    }
+
     int v0 = sub_0205FC48(playerAvatar, param3);
 
     switch (v0) {

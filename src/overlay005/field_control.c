@@ -16,6 +16,7 @@
 #include "field/field_system.h"
 #include "field/field_system_sub2_t.h"
 #include "overlay005/daycare.h"
+#include "overlay005/debug_menu.h"
 #include "overlay005/honey_tree.h"
 #include "overlay005/ov5_021DFB54.h"
 #include "overlay005/ov5_021E1154.h"
@@ -112,6 +113,8 @@ static void FieldInput_Clear(FieldInput *input)
     input->dummy5 = FALSE;
     input->playerDir = DIR_NONE;
     input->transitionDir = DIR_NONE;
+    input->debugMenu = FALSE;
+    input->debugKey = FALSE;
 }
 
 void FieldInput_Update(FieldInput *input, FieldSystem *fieldSystem, u16 pressedKeys, u16 heldKeys)
@@ -170,6 +173,21 @@ void FieldInput_Update(FieldInput *input, FieldSystem *fieldSystem, u16 pressedK
     }
 
     input->playerDir = PlayerAvatar_CalcFaceDirection(fieldSystem->playerAvatar, pressedKeys, heldKeys);
+
+    // start debug menu
+    if (heldKeys & DEBUG_KEY) {
+        input->debugKey = TRUE;
+
+        input->movement = FALSE;
+        input->endMovement = FALSE;
+        input->sign = FALSE;
+        input->mapTransition = FALSE;
+
+        if (input->menu) {
+            input->menu = FALSE;
+            input->debugMenu = TRUE;
+        }
+    }
 }
 
 BOOL FieldInput_Process(const FieldInput *input, FieldSystem *fieldSystem)
@@ -335,6 +353,12 @@ BOOL FieldInput_Process(const FieldInput *input, FieldSystem *fieldSystem)
         return TRUE;
     }
 
+    if (input->debugMenu) {
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        DebugMenu_Init(fieldSystem);
+        return TRUE;
+    }
+
     return FALSE;
 }
 
@@ -383,6 +407,12 @@ BOOL FieldInput_Process_Underground(FieldInput *input, FieldSystem *fieldSystem)
         return FALSE;
     }
 
+    if (input->debugMenu) {
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        DebugMenu_Init(fieldSystem);
+        return FALSE;
+    }
+
     return FALSE;
 }
 
@@ -422,6 +452,12 @@ BOOL FieldInput_Process_Colosseum(FieldInput *input, FieldSystem *fieldSystem)
         Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
         sub_0203AABC(fieldSystem);
         return TRUE;
+    }
+
+    if (input->debugMenu) {
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        DebugMenu_Init(fieldSystem);
+        return FALSE;
     }
 
     return FALSE;
@@ -483,6 +519,12 @@ BOOL FieldInput_Process_UnionRoom(const FieldInput *input, FieldSystem *fieldSys
         return TRUE;
     }
 
+    if (input->debugMenu) {
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        DebugMenu_Init(fieldSystem);
+        return TRUE;
+    }
+
     return FALSE;
 }
 
@@ -535,6 +577,12 @@ int FieldInput_Process_BattleTower(const FieldInput *input, FieldSystem *fieldSy
     if (input->menu) {
         Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
         StartMenu_Init(fieldSystem);
+        return TRUE;
+    }
+
+    if (input->debugMenu) {
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        DebugMenu_Init(fieldSystem);
         return TRUE;
     }
 
