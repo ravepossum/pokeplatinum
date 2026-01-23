@@ -13,6 +13,8 @@
 #include "string_template.h"
 #include "sys_task_manager.h"
 
+#define DEBUG_MENU_ENABLED TRUE
+
 #define DEBUG_TEXT_BLACK TEXT_COLOR(1, 2, 15)
 #define DEBUG_TEXT_RED   TEXT_COLOR(3, 4, 15)
 #define DEBUG_TEXT_GREEN TEXT_COLOR(5, 6, 15)

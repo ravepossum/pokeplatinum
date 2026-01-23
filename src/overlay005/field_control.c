@@ -175,7 +175,7 @@ void FieldInput_Update(FieldInput *input, FieldSystem *fieldSystem, u16 pressedK
     input->playerDir = PlayerAvatar_CalcFaceDirection(fieldSystem->playerAvatar, pressedKeys, heldKeys);
 
     // start debug menu
-    if (heldKeys & DEBUG_KEY) {
+    if (DEBUG_MENU_ENABLED && (heldKeys & DEBUG_KEY)) {
         input->debugKey = TRUE;
 
         input->movement = FALSE;
