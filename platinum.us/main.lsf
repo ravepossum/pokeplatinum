@@ -1101,6 +1101,7 @@ Overlay game_start
 {
 	After main
 	Object main.nef.p/src_game_start.c.o
+	Object main.nef.p/src_debug_game_start.c.o
 }
 
 Overlay overlay58

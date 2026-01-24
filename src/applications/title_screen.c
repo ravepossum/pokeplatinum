@@ -10,15 +10,18 @@
 #include "struct_defs/struct_02099F80.h"
 
 #include "game_opening/const_ov77_021D742C.h"
+#include "overlay005/debug_menu.h"
 
 #include "bg_window.h"
 #include "brightness_controller.h"
 #include "camera.h"
+#include "debug_game_start.h"
 #include "easy3d.h"
 #include "easy3d_object.h"
 #include "font.h"
 #include "fx_util.h"
 #include "g3d_pipeline.h"
+#include "game_start.h"
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
@@ -41,6 +44,7 @@ FS_EXTERN_OVERLAY(game_opening);
 FS_EXTERN_OVERLAY(overlay89);
 FS_EXTERN_OVERLAY(main_menu);
 FS_EXTERN_OVERLAY(d_startmenu);
+FS_EXTERN_OVERLAY(game_start);
 
 #define LIGHT_COLOR(r, g, b) ((((r) << 0) & GX_RGB_R_MASK) | (((g) << 5) & GX_RGB_G_MASK) | (((b) << 10) & GX_RGB_B_MASK))
 #define ANGLE(angle)         FX_DEG_TO_IDX(FX32_CONST(angle))
@@ -130,6 +134,8 @@ enum TitleScreenNextApp {
     NEXT_APP_START_MENU,
     NEXT_APP_CLEAR_SAVE_FILE,
     NEXT_APP_REPLAY_OPENING,
+    NEXT_APP_LOAD_SAVE,
+    NEXT_APP_DEBUG_START,
 };
 
 typedef struct TitleScreenGraphics {
@@ -399,6 +405,18 @@ static BOOL TitleScreen_Main(ApplicationManager *appMan, int *state)
             break;
         }
 
+        if (DEBUG_MENU_ENABLED && JOY_HELD_ONLY(DEBUG_KEY | PAD_BUTTON_X)) {
+            SaveData *saveData = ((ApplicationArgs *)ApplicationManager_Args(appMan))->saveData;
+            if (!SaveData_DataExists(saveData)) {
+                appData->nextApp = NEXT_APP_DEBUG_START;
+            } else {
+                appData->nextApp = NEXT_APP_LOAD_SAVE;
+            }
+
+            *state = TITLE_SCREEN_APP_STATE_CLEANUP;
+            break;
+        }
+
         if (appData->titleScreenTimer > TITLE_SCREEN_REPLAY_OPENING_FRAMES) {
             appData->nextApp = NEXT_APP_REPLAY_OPENING;
             gSystem.showTitleScreenIntro = TRUE;
@@ -473,6 +491,12 @@ static BOOL TitleScreen_Exit(ApplicationManager *appMan, int *state)
     case NEXT_APP_REPLAY_OPENING:
         Sound_SetScene(SOUND_SCENE_NONE);
         EnqueueApplication(FS_OVERLAY_ID(game_opening), &gOpeningCutsceneAppTemplate);
+        break;
+    case NEXT_APP_LOAD_SAVE:
+        EnqueueApplication(FS_OVERLAY_ID(game_start), &gGameStartLoadSaveAppTemplate);
+        break;
+    case NEXT_APP_DEBUG_START:
+        EnqueueApplication(FS_OVERLAY_ID(game_start), &gDebugMenuGameStartAppTemplate);
         break;
     }
 

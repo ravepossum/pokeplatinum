@@ -1,7 +1,7 @@
 #ifndef POKEPLATINUM_DEBUG_MENU_H
 #define POKEPLATINUM_DEBUG_MENU_H
 
-#include "generated/vars_flags.h"
+#include "constants/debug_menu.h"
 
 #include "applications/town_map/main.h"
 #include "field/field_system_decl.h"
@@ -13,20 +13,11 @@
 #include "string_template.h"
 #include "sys_task_manager.h"
 
-#define DEBUG_MENU_ENABLED TRUE
-
 #define DEBUG_TEXT_BLACK TEXT_COLOR(1, 2, 15)
 #define DEBUG_TEXT_RED   TEXT_COLOR(3, 4, 15)
 #define DEBUG_TEXT_GREEN TEXT_COLOR(5, 6, 15)
 #define DEBUG_TEXT_BLUE  TEXT_COLOR(7, 8, 15)
 #define DEBUG_TEXT_PINK  TEXT_COLOR(9, 10, 15)
-
-#define DEBUG_COLOR_WHITE 15
-#define DEBUG_COLOR_BLACK 11
-
-#define DEBUG_KEY               PAD_BUTTON_R
-#define DEBUG_FLAG_NO_COLLISION FLAG_UNUSED_2420
-#define MAX_SUBMENU_DATA        8
 
 typedef struct DebugMenu {
     ListMenu *listMenu;

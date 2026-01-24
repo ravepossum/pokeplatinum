@@ -48,6 +48,7 @@
 #include "constants/scrcmd.h"
 #include "constants/tv_broadcast.h"
 #include "constants/battle.h"
+#include "constants/debug_menu.h"
 
 #include "macros/movement.inc"
 

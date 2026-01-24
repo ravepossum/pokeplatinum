@@ -123,4 +123,23 @@ _0006:
     SetFlag FLAG_UNK_0x01E3
     SetFlag FLAG_UNK_0x02C5
     SetFlag FLAG_UNK_0x02C7
+    GoToIfSet FLAG_DEBUG_GAME_START, DebugNewGame
+    End
+
+@ This is probably not exhaustive, might add more, idk
+DebugNewGame:
+    SetFlag FLAG_HAS_POKEDEX
+    SetFlag FLAG_HIDE_TWINLEAF_TOWN_RIVAL_HOUSE_2F_RIVAL
+    SetFlag FLAG_UNK_0x0172
+    SetFlag FLAG_HIDE_SANDGEM_TOWN_COUNTERPART
+    SetFlag FLAG_UNK_0x0199
+    SetVar VAR_TWINLEAF_TOWN_GUITARIST_TRIGGER_STATE,  2
+    SetVar VAR_TWINLEAF_TOWN_RIVAL_TRIGGER_STATE, 1
+    SetVar VAR_FOLLOWER_RIVAL_STATE, 4
+    SetVar VAR_PLAYER_HOUSE_STATE, 2
+    SetVar VAR_RIVAL_HOUSE_STATE, 1
+    SetVar VAR_UNK_0x4082, 1
+    SetVar VAR_UNK_0x4071, 2
+    SetVar VAR_UNK_0x40A6, 1
+    SetVar VAR_UNK_0x4097, 1
     End

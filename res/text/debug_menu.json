@@ -84,6 +84,14 @@
         "New Value: {STRVAR_1 52, 1, 0}\n",
         "← +{STRVAR_1 52, 2, 0} →"
       ]
+    },
+    {
+      "id": "DebugMenu_Text_PlayerName",
+      "en_US": "Debug"
+    },
+    {
+      "id": "DebugMenu_Text_RivalName",
+      "en_US": "Rival"
     }
   ]
 }
