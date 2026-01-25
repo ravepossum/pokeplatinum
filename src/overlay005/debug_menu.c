@@ -29,6 +29,7 @@
 #include "party.h"
 #include "render_window.h"
 #include "screen_fade.h"
+#include "sound_playback.h"
 #include "string_gf.h"
 #include "sys_task.h"
 #include "system.h"
@@ -420,18 +421,24 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
     s32 choice = ListMenu_ProcessInput(menu->listNode->listMenu);
 
     if (JOY_NEW(PAD_BUTTON_A)) {
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
         DebugFunction debugFunc = menu->listNode->items[choice].function;
         debugFunc(task, data);
         return;
     }
 
     if (JOY_NEW(PAD_BUTTON_B)) {
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
         if (menu->listNode->prev == NULL) {
             DebugMenu_ExitToField(task, menu);
         } else {
             DebugMenu_CloseSubList(menu);
         }
         return;
+    }
+    
+    if (JOY_NEW(PAD_KEY)) {
+        Sound_PlayEffect(SEQ_SE_DP_SELECT78);
     }
 }
 

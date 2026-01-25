@@ -27,6 +27,7 @@
 #include "pc_boxes.h"
 #include "render_window.h"
 #include "screen_fade.h"
+#include "sound_playback.h"
 #include "string_gf.h"
 #include "sys_task.h"
 #include "system.h"
@@ -325,6 +326,7 @@ static void Task_DebugMonMenu_Main(SysTask *task, void *data)
 static void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
 {
     if (JOY_NEW(PAD_BUTTON_A)) {
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
         monMenu->mon.statBackup = monMenu->mon.stats[sDebugMonMenuPages[monMenu->page].page[monMenu->cursor]];
         monMenu->digits = 0;
         DebugMonMenu_DisplayValues(monMenu);
@@ -333,11 +335,13 @@ static void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
     }
 
     if (JOY_NEW(PAD_BUTTON_B)) {
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
         monMenu->state = DMM_STATE_EXIT_MENU;
         return;
     }
 
     if (JOY_NEW(PAD_BUTTON_START)) {
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
         if (monMenu->mode != DEBUG_MON_MENU_MODE_EDIT) {
             DebugMon_CalcFullStats(monMenu, &monMenu->mon);
         } else {
@@ -363,16 +367,19 @@ static void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
     }
 
     if (JOY_NEW(PAD_KEY_UP)) {
+        Sound_PlayEffect(SEQ_SE_DP_SELECT78);
         DebugMonMenu_DisplayCursor(monMenu, DMV_DIR_DECREASE);
         return;
     }
 
     if (JOY_NEW(PAD_KEY_DOWN)) {
+        Sound_PlayEffect(SEQ_SE_DP_SELECT78);
         DebugMonMenu_DisplayCursor(monMenu, DMV_DIR_INCREASE);
         return;
     }
 
     if (JOY_NEW(PAD_BUTTON_L) && monMenu->page > 0) {
+        Sound_PlayEffect(SEQ_SE_DP_SELECT5);
         monMenu->page--;
         monMenu->cursor = 0;
         monMenu->state = DMM_STATE_DRAW_MENU;
@@ -380,6 +387,7 @@ static void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
     }
 
     if (JOY_NEW(PAD_BUTTON_R) && monMenu->page < DEBUG_MON_MENU_MAX_PAGES - 1) {
+        Sound_PlayEffect(SEQ_SE_DP_SELECT5);
         monMenu->page++;
         monMenu->cursor = 0;
         monMenu->state = DMM_STATE_DRAW_MENU;
@@ -388,6 +396,7 @@ static void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
 
     if (JOY_NEW(PAD_BUTTON_X)) {
         if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
+            Sound_PlayEffect(SEQ_SE_DP_SELECT5);
             int partyCount = Party_GetCurrentCount(SaveData_GetParty(monMenu->fieldSystem->saveData));
 
             if (monMenu->partySlot == 0) {
@@ -399,6 +408,7 @@ static void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
             DebugMonMenu_SetEditMon(monMenu, monMenu->partySlot);
             monMenu->state = DMM_STATE_DRAW_MENU;
         } else {
+            Sound_PlayEffect(SEQ_SE_CONFIRM);
             DebugMonMenu_SetTrainerMemo(monMenu, TRUE);
             monMenu->state = DMM_STATE_WAIT_XY_BUTTON_PRESS;
         }
@@ -407,6 +417,7 @@ static void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
 
     if (JOY_NEW(PAD_BUTTON_Y)) {
         if (monMenu->mode == DEBUG_MON_MENU_MODE_EDIT) {
+            Sound_PlayEffect(SEQ_SE_DP_SELECT5);
             int partyCount = Party_GetCurrentCount(SaveData_GetParty(monMenu->fieldSystem->saveData));
 
             if (monMenu->partySlot == partyCount - 1) {
@@ -418,6 +429,7 @@ static void DebugMonMenu_HandleInput(DebugMonMenu *monMenu)
             DebugMonMenu_SetEditMon(monMenu, monMenu->partySlot);
             monMenu->state = DMM_STATE_DRAW_MENU;
         } else {
+            Sound_PlayEffect(SEQ_SE_CONFIRM);
             DebugMonMenu_SetTrainerMemo(monMenu, TRUE);
             monMenu->state = DMM_STATE_WAIT_XY_BUTTON_PRESS;
         }
@@ -429,23 +441,27 @@ static void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu)
     u8 statID = sDebugMonMenuPages[monMenu->page].page[monMenu->cursor];
 
     if (JOY_NEW(PAD_BUTTON_A)) {
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
         monMenu->state = DMM_STATE_DRAW_MENU;
         return;
     }
 
     if (JOY_NEW(PAD_BUTTON_B)) {
+        Sound_PlayEffect(SEQ_SE_CONFIRM);
         monMenu->mon.stats[statID] = monMenu->mon.statBackup;
         monMenu->state = DMM_STATE_DRAW_MENU;
         return;
     }
 
     if (JOY_REPEAT(PAD_KEY_UP)) {
+        Sound_PlayEffect(SEQ_SE_DP_SELECT78);
         DebugMonMenu_ChangeValue(monMenu, DMV_DIR_INCREASE);
         DebugMonMenu_DisplayValues(monMenu);
         return;
     }
 
     if (JOY_REPEAT(PAD_KEY_DOWN)) {
+        Sound_PlayEffect(SEQ_SE_DP_SELECT78);
         DebugMonMenu_ChangeValue(monMenu, DMV_DIR_DECREASE);
         DebugMonMenu_DisplayValues(monMenu);
         return;
@@ -453,11 +469,13 @@ static void DebugMonMenu_HandleValueInput(DebugMonMenu *monMenu)
 
     if (sDebugMonStats[statID].bounds->digits != 0) {
         if (JOY_NEW(PAD_KEY_LEFT) && monMenu->digits < sDebugMonStats[statID].bounds->digits - 1) {
+            Sound_PlayEffect(SEQ_SE_DP_SELECT78);
             monMenu->digits++;
             DebugMonMenu_DisplayValues(monMenu);
             return;
         }
         if (JOY_NEW(PAD_KEY_RIGHT) && monMenu->digits > 0) {
+            Sound_PlayEffect(SEQ_SE_DP_SELECT78);
             monMenu->digits--;
             DebugMonMenu_DisplayValues(monMenu);
         }
