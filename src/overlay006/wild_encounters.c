@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "constants/battle.h"
+#include "constants/debug_menu.h"
 #include "constants/forms.h"
 #include "constants/heap.h"
 #include "constants/overworld_weather.h"
@@ -749,6 +750,11 @@ static BOOL TryGenerateFishingEncounter(FieldSystem *fieldSystem, Pokemon *param
 
 static BOOL ShouldGetRandomEncounter(FieldSystem *fieldSystem, const u32 encounterRate, const u8 tileBehavior)
 {
+    VarsFlags *varsFlags = SaveData_GetVarsFlags(fieldSystem->saveData);
+    if (VarsFlags_CheckFlag(varsFlags, FLAG_DEBUG_NO_ENCOUNTERS)) {
+        return FALSE;
+    }
+
     u32 encRate = encounterRate << 8;
 
     // lowers effective encounter rate by 95% for the first few steps after each encounter.

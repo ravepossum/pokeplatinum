@@ -103,6 +103,7 @@ static void FlagVarList_PrintCB(ListMenu *menu, u32 index, u8 onInit);
 static void ToggleDebugFlag(VarsFlags *varsFlags, u16 flagID);
 static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu);
 static void DebugFunction_ToggleTrainerSee(SysTask *task, DebugMenu *menu);
+static void DebugFunction_ToggleEncounters(SysTask *task, DebugMenu *menu);
 static void DebugFunction_SetFlag(SysTask *task, DebugMenu *menu);
 static void SubMenuChoice_SetFlag(DebugSubMenu *subMenu);
 static void SubMenuRender_SetFlag(DebugSubMenu *subMenu);
@@ -195,6 +196,10 @@ static const DebugMenuItem sFlagVarItems[DEBUG_FLAG_VAR_ITEM_COUNT] = {
     [DEBUG_ITEM_TOGGLE_TRAINER_SEE] = {
         .function = DebugFunction_ToggleTrainerSee,
         .name = DebugMenu_ItemName_ToggleTrainerSee,
+    },
+    [DEBUG_ITEM_TOGGLE_ENCOUNTERS] = {
+        .function = DebugFunction_ToggleEncounters,
+        .name = DebugMenu_ItemName_ToggleEncounters,
     },
     [DEBUG_ITEM_SET_FLAG] = {
         .function = DebugFunction_SetFlag,
@@ -801,6 +806,9 @@ static void FlagVarList_PrintCB(ListMenu *menu, u32 index, u8 onInit)
     case DEBUG_ITEM_TOGGLE_TRAINER_SEE:
         textState = VarsFlags_CheckFlag(varsFlags, FLAG_DEBUG_NO_TRAINER_SEE);
         break;
+    case DEBUG_ITEM_TOGGLE_ENCOUNTERS:
+        textState = VarsFlags_CheckFlag(varsFlags, FLAG_DEBUG_NO_ENCOUNTERS);
+        break;
     }
 
     switch (textState) {
@@ -894,6 +902,12 @@ static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu)
 static void DebugFunction_ToggleTrainerSee(SysTask *task, DebugMenu *menu)
 {
     ToggleDebugFlag(SaveData_GetVarsFlags(menu->fieldSystem->saveData), FLAG_DEBUG_NO_TRAINER_SEE);
+    DebugMenu_ExitToField(task, menu);
+}
+
+static void DebugFunction_ToggleEncounters(SysTask *task, DebugMenu *menu)
+{
+    ToggleDebugFlag(SaveData_GetVarsFlags(menu->fieldSystem->saveData), FLAG_DEBUG_NO_ENCOUNTERS);
     DebugMenu_ExitToField(task, menu);
 }
 

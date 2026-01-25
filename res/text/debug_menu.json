@@ -23,11 +23,15 @@
     },
     {
       "id": "DebugMenu_ItemName_ToggleCollision",
-      "en_US": "Toggle Collision"
+      "en_US": "No Collision"
     },
     {
       "id": "DebugMenu_ItemName_ToggleTrainerSee",
-      "en_US": "Toggle Trainers"
+      "en_US": "No Trainer See"
+    },
+    {
+      "id": "DebugMenu_ItemName_ToggleEncounters",
+      "en_US": "No Encounters"
     },
     {
       "id": "DebugMenu_ItemName_SetFlag",
