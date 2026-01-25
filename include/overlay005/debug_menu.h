@@ -19,15 +19,35 @@
 #define DEBUG_TEXT_BLUE  TEXT_COLOR(7, 8, 15)
 #define DEBUG_TEXT_PINK  TEXT_COLOR(9, 10, 15)
 
+typedef struct DebugMenu DebugMenu;
+typedef struct DebugMenuItem DebugMenuItem;
+typedef struct DebugSubMenu DebugSubMenu;
+typedef struct DebugListNode DebugListNode;
+typedef void (*DebugFunction)(SysTask *, DebugMenu *);
+typedef void (*DebugSubMenuFunc)(DebugSubMenu *);
+
+typedef struct DebugMenuItem {
+    DebugFunction function;
+    u32 name;
+} DebugMenuItem;
+
 typedef struct DebugMenu {
-    ListMenu *listMenu;
+    DebugListNode *listNode;
     FieldSystem *fieldSystem;
     Window *window;
-    StringList *stringList;
     u16 data;
     u16 listPos;
     u16 cursor;
 } DebugMenu;
+
+typedef struct DebugListNode {
+    ListMenuTemplate template;
+    DebugMenuItem *items;
+    DebugMenu *debugMenu;
+    DebugListNode *prev;
+    ListMenu *listMenu;
+    StringList *stringList;
+} DebugListNode;
 
 typedef struct DebugSubMenu {
     SpriteResourceManager spriteResMan;
@@ -42,9 +62,6 @@ typedef struct DebugSubMenu {
     u32 digits;
 } DebugSubMenu;
 
-typedef void (*DebugFunction)(SysTask *, DebugMenu *);
-typedef void (*DebugSubMenuFunc)(DebugSubMenu *);
-
 typedef struct DebugSubMenuConfig {
     DebugSubMenuFunc choiceFunc;
     DebugSubMenuFunc renderFunc;
@@ -54,23 +71,23 @@ typedef struct DebugSubMenuConfig {
     int max;
 } DebugSubMenuConfig;
 
-typedef struct DebugMenuItem {
-    DebugFunction function;
-    u32 name;
-} DebugMenuItem;
-
-enum DebugItem {
+enum DebugMainItem {
     DEBUG_ITEM_FLY = 0,
     DEBUG_ITEM_CREATE_MON,
     DEBUG_ITEM_EDIT_MON,
     DEBUG_ITEM_ADD_ITEM,
-    DEBUG_ITEM_TOGGLE_COLLISION,
+    DEBUG_ITEM_FLAG_VAR_LIST,
+    DEBUG_ITEM_ADJUST_CAMERA,
+    DEBUG_ITEM_EXECUTE_FUNCTION,
+    DEBUG_MAIN_ITEM_COUNT,
+};
+
+enum DebugFlagVarItem {
+    DEBUG_ITEM_TOGGLE_COLLISION = 0,
     DEBUG_ITEM_TOGGLE_TRAINER_SEE,
     DEBUG_ITEM_SET_FLAG,
     DEBUG_ITEM_SET_VAR,
-    DEBUG_ITEM_ADJUST_CAMERA,
-    DEBUG_ITEM_EXECUTE_FUNCTION,
-    DEBUG_ITEM_COUNT,
+    DEBUG_FLAG_VAR_ITEM_COUNT,
 };
 
 enum DebugSubMenuType {
@@ -90,6 +107,12 @@ enum DebugFlyState {
     DEBUG_FLY_WAIT_FADE_AND_CUTIN,
     DEBUG_FLY_WAIT_CUTIN_AND_START_FLY,
     DEBUG_FLY_EXIT,
+};
+
+enum DebugTextState {
+    DEBUG_TEXT_STATE_DEFAULT = -1,
+    DEBUG_TEXT_STATE_INACTIVE,
+    DEBUG_TEXT_STATE_ACTIVE,
 };
 
 typedef struct DebugFly {

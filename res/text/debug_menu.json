@@ -18,6 +18,10 @@
       "en_US": "Add Item"
     },
     {
+      "id": "DebugMenu_ItemName_FlagVarList",
+      "en_US": "Flags/Vars →"
+    },
+    {
       "id": "DebugMenu_ItemName_ToggleCollision",
       "en_US": "Toggle Collision"
     },

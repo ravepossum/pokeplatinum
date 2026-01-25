@@ -61,9 +61,14 @@ static void DebugMenu_Close(SysTask *task, DebugMenu *menu);
 static void DebugMenu_ExitToField(SysTask *task, DebugMenu *menu);
 static void Task_DebugMenu_ExitToField(SysTask *task, void *data);
 static StringList *DebugMenu_CreateList(const DebugMenuItem *list, int count);
+static void DebugMenu_CreateSubList(DebugMenu *menu, const DebugMenuItem *list, int count, PrintCallback printCB);
+static void DebugMenu_CloseSubList(DebugMenu *menu);
 static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, const DebugMenuItem *list, int count, SysTaskFunc taskFunc);
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data);
 static DebugSubMenu *DebugMenu_CreateSubMenu(DebugMenu *menu, enum DebugSubMenuType type, int initialValue);
+static DebugListNode *DebugListNode_New(DebugMenu *menu, const DebugMenuItem *list);
+static void *DebugListNode_Free(DebugListNode *node);
+static void *DebugListNode_FreeAll(DebugListNode *node);
 
 static void DebugSubMenu_Close(SysTask *task, DebugSubMenu *subMenu);
 static void DebugSubMenu_Free(DebugSubMenu *subMenu);
@@ -92,14 +97,14 @@ static void DebugFunction_AdjustCamera(SysTask *task, DebugMenu *menu);
 static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *fieldSystem, DebugMenu *menu);
 static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data);
 
+static void DebugFunction_FlagVarList(SysTask *task, DebugMenu *menu);
+static void FlagVarList_PrintCB(ListMenu *menu, u32 index, u8 onInit);
 static void ToggleDebugFlag(VarsFlags *varsFlags, u16 flagID);
 static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu);
 static void DebugFunction_ToggleTrainerSee(SysTask *task, DebugMenu *menu);
-
 static void DebugFunction_SetFlag(SysTask *task, DebugMenu *menu);
 static void SubMenuChoice_SetFlag(DebugSubMenu *subMenu);
 static void SubMenuRender_SetFlag(DebugSubMenu *subMenu);
-
 static void DebugFunction_SetVar(SysTask *task, DebugMenu *menu);
 static void SubMenuChoice_SelectVar(DebugSubMenu *subMenu);
 static void SubMenuRender_SelectVar(DebugSubMenu *subMenu);
@@ -150,7 +155,7 @@ static const ListMenuTemplate DebugMenu_List_Header = {
     .parent = NULL,
 };
 
-static const DebugMenuItem sMainMenuItems[DEBUG_ITEM_COUNT] = {
+static const DebugMenuItem sMainMenuItems[DEBUG_MAIN_ITEM_COUNT] = {
     [DEBUG_ITEM_FLY] = {
         .function = DebugFunction_Fly,
         .name = DebugMenu_ItemName_Fly,
@@ -167,6 +172,21 @@ static const DebugMenuItem sMainMenuItems[DEBUG_ITEM_COUNT] = {
         .function = DebugFunction_AddItem,
         .name = DebugMenu_ItemName_AddItem,
     },
+    [DEBUG_ITEM_FLAG_VAR_LIST] = {
+        .function = DebugFunction_FlagVarList,
+        .name = DebugMenu_ItemName_FlagVarList,
+    },
+    [DEBUG_ITEM_ADJUST_CAMERA] = {
+        .function = DebugFunction_AdjustCamera,
+        .name = DebugMenu_ItemName_AdjustCamera,
+    },
+    [DEBUG_ITEM_EXECUTE_FUNCTION] = {
+        .function = DebugFunction_ExecuteFunction,
+        .name = DebugMenu_ItemName_ExecuteFunction,
+    },
+};
+
+static const DebugMenuItem sFlagVarItems[DEBUG_FLAG_VAR_ITEM_COUNT] = {
     [DEBUG_ITEM_TOGGLE_COLLISION] = {
         .function = DebugFunction_ToggleCollision,
         .name = DebugMenu_ItemName_ToggleCollision,
@@ -182,14 +202,6 @@ static const DebugMenuItem sMainMenuItems[DEBUG_ITEM_COUNT] = {
     [DEBUG_ITEM_SET_VAR] = {
         .function = DebugFunction_SetVar,
         .name = DebugMenu_ItemName_SetVar,
-    },
-    [DEBUG_ITEM_ADJUST_CAMERA] = {
-        .function = DebugFunction_AdjustCamera,
-        .name = DebugMenu_ItemName_AdjustCamera,
-    },
-    [DEBUG_ITEM_EXECUTE_FUNCTION] = {
-        .function = DebugFunction_ExecuteFunction,
-        .name = DebugMenu_ItemName_ExecuteFunction,
     },
 };
 
@@ -246,8 +258,7 @@ static void DebugMenu_Free(DebugMenu *menu)
 {
     Window_EraseStandardFrame(menu->window, TRUE);
     Window_ClearAndCopyToVRAM(menu->window);
-    StringList_Free(menu->stringList);
-    ListMenu_Free(menu->listMenu, &(menu->listPos), &(menu->cursor));
+    DebugListNode_FreeAll(menu->listNode);
     Window_Remove(menu->window);
     Heap_Free(menu->window);
 }
@@ -290,6 +301,32 @@ static void Task_DebugMenu_ExitToField(SysTask *task, void *data)
     FieldSystem_ResumeProcessing();
 }
 
+static DebugListNode *DebugListNode_New(DebugMenu *menu, const DebugMenuItem *list)
+{
+    DebugListNode *node = Heap_Alloc(HEAP_ID_FIELD1, sizeof(DebugListNode));
+    node->prev = NULL;
+    node->items = list;
+    node->debugMenu = menu;
+    return node;
+}
+
+static void *DebugListNode_Free(DebugListNode *node)
+{
+    ListMenu_Free(node->listMenu, NULL, NULL);
+    StringList_Free(node->stringList);
+}
+
+static void *DebugListNode_FreeAll(DebugListNode *node)
+{
+    DebugListNode *tmpNode;
+    while (node != NULL) {
+        tmpNode = node;
+        node = node->prev;
+        DebugListNode_Free(tmpNode);
+        Heap_Free(tmpNode);
+    }
+}
+
 static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, const DebugMenuItem *list, int count, SysTaskFunc taskFunc)
 {
     DebugMenu *menu = Heap_Alloc(HEAP_ID_FIELD1, sizeof(DebugMenu));
@@ -317,16 +354,15 @@ static DebugMenu *DebugMenu_CreateMultichoice(FieldSystem *fieldSystem, const De
     Window_AddFromTemplate(menu->fieldSystem->bgConfig, menu->window, &DebugMenu_List_WindowTemplate);
     Window_DrawStandardFrame(menu->window, TRUE, 660, 11);
 
-    if (list != NULL) {
-        menu->stringList = DebugMenu_CreateList(list, count);
-    }
+    menu->listNode = DebugListNode_New(menu, list);
+    menu->listNode->stringList = DebugMenu_CreateList(list, count);
 
-    ListMenuTemplate listHeader = DebugMenu_List_Header;
-    listHeader.choices = menu->stringList;
-    listHeader.window = menu->window;
-    listHeader.count = count;
+    MI_CpuCopy8((void *)&DebugMenu_List_Header, (void *)&(menu->listNode->template), sizeof(ListMenuTemplate));
+    menu->listNode->template.choices = menu->listNode->stringList;
+    menu->listNode->template.window = menu->window;
+    menu->listNode->template.count = count;
 
-    menu->listMenu = ListMenu_New(&listHeader, menu->listPos, menu->cursor, HEAP_ID_FIELD1);
+    menu->listNode->listMenu = ListMenu_New(&(menu->listNode->template), menu->listPos, menu->cursor, HEAP_ID_FIELD1);
 
     return menu;
 }
@@ -337,29 +373,65 @@ static StringList *DebugMenu_CreateList(const DebugMenuItem *itemList, int count
     MessageLoader *msgLoader = MessageLoader_Init(MSG_LOADER_PRELOAD_ENTIRE_BANK, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_DEBUG_MENU, HEAP_ID_FIELD1);
 
     for (int i = 0; i < count; i++) {
-        StringList_AddFromMessageBank(stringList, msgLoader, itemList[i].name, itemList[i].function);
+        StringList_AddFromMessageBank(stringList, msgLoader, itemList[i].name, i);
     }
     MessageLoader_Free(msgLoader);
 
     return stringList;
 }
 
+static void DebugMenu_CreateSubList(DebugMenu *menu, const DebugMenuItem *list, int count, PrintCallback printCB)
+{
+    Window_FillTilemap(menu->window, DEBUG_COLOR_WHITE);
+
+    DebugListNode *newNode = DebugListNode_New(menu, list);
+    newNode->prev = menu->listNode;
+    newNode->stringList = DebugMenu_CreateList(sFlagVarItems, NELEMS(sFlagVarItems));
+
+    MI_CpuCopy8((void *)&DebugMenu_List_Header, (void *)&(newNode->template), sizeof(ListMenuTemplate));
+    newNode->template.choices = newNode->stringList;
+    newNode->template.window = menu->window;
+    newNode->template.count = count;
+    newNode->template.parent = newNode;
+    if (printCB != NULL) {
+        newNode->template.printCallback = printCB;
+    }
+
+    newNode->listMenu = ListMenu_New(&(newNode->template), menu->listPos, menu->cursor, HEAP_ID_FIELD1);
+
+    menu->listNode = newNode;
+}
+
+static void DebugMenu_CloseSubList(DebugMenu *menu)
+{
+    Window_FillTilemap(menu->window, DEBUG_COLOR_WHITE);
+
+    DebugListNode *tmpNode = menu->listNode;
+    menu->listNode = menu->listNode->prev;
+    DebugListNode_Free(tmpNode);
+    Heap_Free(tmpNode);
+
+    ListMenu_Draw(menu->listNode->listMenu);
+}
+
 static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
 {
     DebugMenu *menu = (DebugMenu *)data;
-    s32 choice = ListMenu_ProcessInput(menu->listMenu);
-    SysTaskFunc taskFunc;
+    s32 choice = ListMenu_ProcessInput(menu->listNode->listMenu);
 
     if (JOY_NEW(PAD_BUTTON_A)) {
-        if (choice) {
-            taskFunc = (SysTaskFunc)choice;
-            taskFunc(task, data);
-        }
+        DebugFunction debugFunc = menu->listNode->items[choice].function;
+        debugFunc(task, data);
         return;
     }
 
     if (JOY_NEW(PAD_BUTTON_B)) {
-        DebugMenu_ExitToField(task, menu);
+        if (menu->listNode->prev == NULL) {
+            DebugMenu_ExitToField(task, menu);
+        } else {
+            DebugMenu_CloseSubList(menu);
+        }
+        return;
     }
 }
 
@@ -700,6 +772,40 @@ static void SubMenuRender_ItemQuantity(DebugSubMenu *subMenu)
     StringTemplate_SetNumber(subMenu->template, 0, subMenu->value, MAX_SUBMENU_DIGITS, PADDING_MODE_ZEROES, CHARSET_MODE_EN);
     StringTemplate_SetNumber(subMenu->template, 1, sPowersOfTen[subMenu->digits], MAX_SUBMENU_DIGITS, PADDING_MODE_NONE, CHARSET_MODE_EN);
     DebugSubMenu_PrintString(subMenu, DebugSubMenu_Template_ItemQuantity, 0, 0, TEXT_SPEED_INSTANT, DEBUG_TEXT_BLACK);
+}
+
+// Flag var list section
+
+static void DebugFunction_FlagVarList(SysTask *task, DebugMenu *menu)
+{
+    DebugMenu_CreateSubList(menu, sFlagVarItems, NELEMS(sFlagVarItems), FlagVarList_PrintCB);
+}
+
+static void FlagVarList_PrintCB(ListMenu *menu, u32 index, u8 onInit)
+{
+    DebugListNode *node = (DebugListNode *)ListMenu_GetAttribute(menu, LIST_MENU_PARENT);
+    VarsFlags *varsFlags = SaveData_GetVarsFlags(node->debugMenu->fieldSystem->saveData);
+    int textState = DEBUG_TEXT_STATE_DEFAULT;
+
+    switch (index) {
+    case DEBUG_ITEM_TOGGLE_COLLISION:
+        textState = VarsFlags_CheckFlag(varsFlags, FLAG_DEBUG_NO_COLLISION);
+        break;
+    case DEBUG_ITEM_TOGGLE_TRAINER_SEE:
+        textState = VarsFlags_CheckFlag(varsFlags, FLAG_DEBUG_NO_TRAINER_SEE);
+        break;
+    }
+
+    switch (textState) {
+    case DEBUG_TEXT_STATE_INACTIVE:
+        ListMenu_SetAltTextColors(menu, 3, 15, 4);
+        break;
+    case DEBUG_TEXT_STATE_ACTIVE:
+        ListMenu_SetAltTextColors(menu, 5, 15, 6);
+        break;
+    case DEBUG_TEXT_STATE_DEFAULT:
+        ListMenu_SetAltTextColors(menu, 1, 15, 2);
+    }
 }
 
 // Adjust Camera section
