@@ -92,7 +92,9 @@ static void DebugFunction_AdjustCamera(SysTask *task, DebugMenu *menu);
 static void DebugMenu_AdjustCamera_CreateTask(FieldSystem *fieldSystem, DebugMenu *menu);
 static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data);
 
+static void ToggleDebugFlag(VarsFlags *varsFlags, u16 flagID);
 static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu);
+static void DebugFunction_ToggleTrainerSee(SysTask *task, DebugMenu *menu);
 
 static void DebugFunction_SetFlag(SysTask *task, DebugMenu *menu);
 static void SubMenuChoice_SetFlag(DebugSubMenu *subMenu);
@@ -168,6 +170,10 @@ static const DebugMenuItem sMainMenuItems[DEBUG_ITEM_COUNT] = {
     [DEBUG_ITEM_TOGGLE_COLLISION] = {
         .function = DebugFunction_ToggleCollision,
         .name = DebugMenu_ItemName_ToggleCollision,
+    },
+    [DEBUG_ITEM_TOGGLE_TRAINER_SEE] = {
+        .function = DebugFunction_ToggleTrainerSee,
+        .name = DebugMenu_ItemName_ToggleTrainerSee,
     },
     [DEBUG_ITEM_SET_FLAG] = {
         .function = DebugFunction_SetFlag,
@@ -753,20 +759,28 @@ static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data)
 
 #undef tCameraFOV
 
-// Toggle collision
+// Flag toggles
+
+static void ToggleDebugFlag(VarsFlags *varsFlags, u16 flagID)
+{
+    if (VarsFlags_CheckFlag(varsFlags, flagID)) {
+        VarsFlags_ClearFlag(varsFlags, flagID);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF);
+    } else {
+        VarsFlags_SetFlag(varsFlags, flagID);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
+    }
+}
 
 static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu)
 {
-    VarsFlags *varsFlags = SaveData_GetVarsFlags(menu->fieldSystem->saveData);
+    ToggleDebugFlag(SaveData_GetVarsFlags(menu->fieldSystem->saveData), FLAG_DEBUG_NO_COLLISION);
+    DebugMenu_ExitToField(task, menu);
+}
 
-    if (VarsFlags_CheckFlag(varsFlags, DEBUG_FLAG_NO_COLLISION)) {
-        VarsFlags_ClearFlag(varsFlags, DEBUG_FLAG_NO_COLLISION);
-        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF);
-    } else {
-        VarsFlags_SetFlag(varsFlags, DEBUG_FLAG_NO_COLLISION);
-        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
-    }
-
+static void DebugFunction_ToggleTrainerSee(SysTask *task, DebugMenu *menu)
+{
+    ToggleDebugFlag(SaveData_GetVarsFlags(menu->fieldSystem->saveData), FLAG_DEBUG_NO_TRAINER_SEE);
     DebugMenu_ExitToField(task, menu);
 }
 

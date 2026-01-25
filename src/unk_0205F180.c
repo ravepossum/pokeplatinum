@@ -793,7 +793,7 @@ static void inline_0205F180_sub(PlayerAvatar *playerAvatar, MapObject *mapObj, c
     FieldSystem *fsys = MapObject_FieldSystem(mapObj);
 
     // param5 = pressKey, param3 = dir
-    if (VarsFlags_CheckFlag(SaveData_GetVarsFlags(fsys->saveData), DEBUG_FLAG_NO_COLLISION) && (param5 & PAD_KEY)) {
+    if (VarsFlags_CheckFlag(SaveData_GetVarsFlags(fsys->saveData), FLAG_DEBUG_NO_COLLISION) && (param5 & PAD_KEY)) {
         int newAnim = MovementAction_TurnActionTowardsDir(param3, MOVEMENT_ACTION_RUN_NORTH); // set player to run in the given dir
         sub_02060B64(playerAvatar, mapObj, newAnim, AVATAR_MOVE_STATE_MOVING); // set moving state
         return;

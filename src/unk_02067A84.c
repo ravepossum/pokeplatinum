@@ -12,6 +12,7 @@
 #include "struct_decls/struct_02061AB4_decl.h"
 
 #include "field/field_system.h"
+#include "overlay005/debug_menu.h"
 #include "overlay005/ov5_021ECC20.h"
 #include "overlay005/ov5_021F5A10.h"
 #include "overlay008/ov8_02249960.h"
@@ -26,6 +27,7 @@
 #include "sys_task.h"
 #include "sys_task_manager.h"
 #include "unk_020655F4.h"
+#include "vars_flags.h"
 
 typedef struct {
     int unk_00;
@@ -170,6 +172,11 @@ static int sub_02067C54(const MapObject *param0)
 
 static int sub_02067C80(const MapObject *param0, PlayerAvatar *playerAvatar, int *param2)
 {
+    FieldSystem *fieldSystem = MapObject_FieldSystem(param0);
+    if (VarsFlags_CheckFlag(SaveData_GetVarsFlags(fieldSystem->saveData), FLAG_DEBUG_NO_TRAINER_SEE)) {
+        return -1;
+    }
+
     int v0, v1, v2, v3, v4, v5;
 
     v0 = sub_02067C54(param0);

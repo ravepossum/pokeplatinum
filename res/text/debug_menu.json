@@ -22,6 +22,10 @@
       "en_US": "Toggle Collision"
     },
     {
+      "id": "DebugMenu_ItemName_ToggleTrainerSee",
+      "en_US": "Toggle Trainers"
+    },
+    {
       "id": "DebugMenu_ItemName_SetFlag",
       "en_US": "Set Flag"
     },
