@@ -100,7 +100,7 @@ static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data);
 
 static void DebugFunction_FlagVarList(SysTask *task, DebugMenu *menu);
 static void FlagVarList_PrintCB(ListMenu *menu, u32 index, u8 onInit);
-static void ToggleDebugFlag(VarsFlags *varsFlags, u16 flagID);
+static void ToggleDebugFlag(DebugMenu *menu, u16 flagID);
 static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu);
 static void DebugFunction_ToggleTrainerSee(SysTask *task, DebugMenu *menu);
 static void DebugFunction_ToggleEncounters(SysTask *task, DebugMenu *menu);
@@ -882,8 +882,10 @@ static void Task_DebugMenu_AdjustCamera(SysTask *task, void *data)
 
 // Flag toggles
 
-static void ToggleDebugFlag(VarsFlags *varsFlags, u16 flagID)
+static void ToggleDebugFlag(DebugMenu *menu, u16 flagID)
 {
+    VarsFlags *varsFlags = SaveData_GetVarsFlags(menu->fieldSystem->saveData);
+
     if (VarsFlags_CheckFlag(varsFlags, flagID)) {
         VarsFlags_ClearFlag(varsFlags, flagID);
         Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF);
@@ -891,24 +893,23 @@ static void ToggleDebugFlag(VarsFlags *varsFlags, u16 flagID)
         VarsFlags_SetFlag(varsFlags, flagID);
         Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
     }
+
+    ListMenu_Draw(menu->listNode->listMenu);
 }
 
 static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu)
 {
-    ToggleDebugFlag(SaveData_GetVarsFlags(menu->fieldSystem->saveData), FLAG_DEBUG_NO_COLLISION);
-    DebugMenu_ExitToField(task, menu);
+    ToggleDebugFlag(menu, FLAG_DEBUG_NO_COLLISION);
 }
 
 static void DebugFunction_ToggleTrainerSee(SysTask *task, DebugMenu *menu)
 {
-    ToggleDebugFlag(SaveData_GetVarsFlags(menu->fieldSystem->saveData), FLAG_DEBUG_NO_TRAINER_SEE);
-    DebugMenu_ExitToField(task, menu);
+    ToggleDebugFlag(menu, FLAG_DEBUG_NO_TRAINER_SEE);
 }
 
 static void DebugFunction_ToggleEncounters(SysTask *task, DebugMenu *menu)
 {
-    ToggleDebugFlag(SaveData_GetVarsFlags(menu->fieldSystem->saveData), FLAG_DEBUG_NO_ENCOUNTERS);
-    DebugMenu_ExitToField(task, menu);
+    ToggleDebugFlag(menu, FLAG_DEBUG_NO_ENCOUNTERS);
 }
 
 // Set Flag
