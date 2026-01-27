@@ -1419,7 +1419,7 @@ static void sub_020606C8(PlayerAvatar *playerAvatar, MapObject *mapObj, int dir,
         v2 = MovementAction_TurnActionTowardsDir(dir, MOVEMENT_ACTION_JUMP_FAR_NORTH);
         v1 = 3;
     } else if (v0 & (1 << 7)) {
-        v2 = MovementAction_TurnActionTowardsDir(dir, MOVEMENT_ACTION_117);
+        v2 = MovementAction_TurnActionTowardsDir(dir, MOVEMENT_ACTION_JUMP_DISTORTION_WORLD_NORTH);
         v1 = 2;
     } else if (v0 & (1 << 6)) {
         v2 = MovementAction_TurnActionTowardsDir(dir, MOVEMENT_ACTION_FACE_NORTH);
@@ -1549,7 +1549,7 @@ static void sub_020608E4(PlayerAvatar *playerAvatar, MapObject *mapObj, int para
         sub_020615C8(playerAvatar);
         sub_0205F048(playerAvatar);
     } else if (v0 & (1 << 7)) {
-        v1 = MovementAction_TurnActionTowardsDir(param2, MOVEMENT_ACTION_117);
+        v1 = MovementAction_TurnActionTowardsDir(param2, MOVEMENT_ACTION_JUMP_DISTORTION_WORLD_NORTH);
         v2 = 2;
         sub_020603BC(playerAvatar);
         sub_020615C8(playerAvatar);
@@ -1636,7 +1636,7 @@ static void sub_02060AA0(PlayerAvatar *playerAvatar, MapObject *mapObj, int para
         v2 = MovementAction_TurnActionTowardsDir(param2, MOVEMENT_ACTION_JUMP_FAR_NORTH);
         v1 = 3;
     } else if (v0 & (1 << 7)) {
-        v2 = MovementAction_TurnActionTowardsDir(param2, MOVEMENT_ACTION_117);
+        v2 = MovementAction_TurnActionTowardsDir(param2, MOVEMENT_ACTION_JUMP_DISTORTION_WORLD_NORTH);
         v1 = 2;
     } else if (v0 & (1 << 6)) {
         v2 = MovementAction_TurnActionTowardsDir(param2, MOVEMENT_ACTION_FACE_NORTH);

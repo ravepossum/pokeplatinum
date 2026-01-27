@@ -5,6 +5,7 @@
 
 #include "constants/map_object.h"
 #include "generated/movement_actions.h"
+#include "generated/sdat.h"
 
 #include "struct_decls/struct_02061AB4_decl.h"
 
@@ -781,7 +782,7 @@ static BOOL MovementAction_WalkOnSpotFasterEast_Step0(MapObject *mapObj)
     return TRUE;
 }
 
-static void MovementAction_InitJumpCustomSound(MapObject *mapObj, int dir, fx32 distance, s16 duration, u16 param4, s16 param5, u16 param6, u32 param7)
+static void MovementAction_InitJumpCustomSound(MapObject *mapObj, int dir, fx32 distance, s16 duration, u16 param4, s16 param5, u16 param6, u32 seqID)
 {
     JumpMovementData *data = MapObject_InitMovementData(mapObj, sizeof(JumpMovementData));
 
@@ -803,14 +804,14 @@ static void MovementAction_InitJumpCustomSound(MapObject *mapObj, int dir, fx32 
     sub_02062A0C(mapObj, param4);
     MapObject_AdvanceMovementStep(mapObj);
 
-    if (param7) {
-        Sound_PlayEffect(param7);
+    if (seqID) {
+        Sound_PlayEffect(seqID);
     }
 }
 
 static void MovementAction_InitJump(MapObject *mapObj, int dir, fx32 distance, s16 duration, u16 param4, s16 param5, u16 param6)
 {
-    MovementAction_InitJumpCustomSound(mapObj, dir, distance, duration, param4, param5, param6, 1547);
+    MovementAction_InitJumpCustomSound(mapObj, dir, distance, duration, param4, param5, param6, SEQ_SE_DP_DANSA);
 }
 
 static BOOL MovementAction_Jump_Step1(MapObject *mapObj)
@@ -996,27 +997,27 @@ static BOOL MovementAction_JumpFartherEast_Step0(MapObject *mapObj)
     return TRUE;
 }
 
-static BOOL sub_0206621C(MapObject *mapObj)
+static BOOL MovementAction_JumpDistortionWorldNorth_Step0(MapObject *mapObj)
 {
-    MovementAction_InitJumpCustomSound(mapObj, DIR_NORTH, FX32_CONST(2), 8 * 3, MAP_OBJ_UNK_A0_03, JUMP_HEIGHT_HIGH, 0xA0, 0);
+    MovementAction_InitJumpCustomSound(mapObj, DIR_NORTH, FX32_CONST(2), 8 * 3, MAP_OBJ_UNK_A0_03, JUMP_HEIGHT_HIGH, 0xA0, SEQ_NONE);
     return TRUE;
 }
 
-static BOOL sub_02066240(MapObject *mapObj)
+static BOOL MovementAction_JumpDistortionWorldSouth_Step0(MapObject *mapObj)
 {
-    MovementAction_InitJumpCustomSound(mapObj, DIR_SOUTH, FX32_CONST(2), 8 * 3, MAP_OBJ_UNK_A0_03, JUMP_HEIGHT_HIGH, 0xA0, 0);
+    MovementAction_InitJumpCustomSound(mapObj, DIR_SOUTH, FX32_CONST(2), 8 * 3, MAP_OBJ_UNK_A0_03, JUMP_HEIGHT_HIGH, 0xA0, SEQ_NONE);
     return TRUE;
 }
 
-static BOOL sub_02066264(MapObject *mapObj)
+static BOOL MovementAction_JumpDistortionWorldWest_Step0(MapObject *mapObj)
 {
-    MovementAction_InitJumpCustomSound(mapObj, DIR_WEST, FX32_CONST(2), 8 * 3, MAP_OBJ_UNK_A0_03, JUMP_HEIGHT_HIGH, 0xA0, 0);
+    MovementAction_InitJumpCustomSound(mapObj, DIR_WEST, FX32_CONST(2), 8 * 3, MAP_OBJ_UNK_A0_03, JUMP_HEIGHT_HIGH, 0xA0, SEQ_NONE);
     return TRUE;
 }
 
-static BOOL sub_02066288(MapObject *mapObj)
+static BOOL MovementAction_JumpDistortionWorldEast_Step0(MapObject *mapObj)
 {
-    MovementAction_InitJumpCustomSound(mapObj, DIR_EAST, FX32_CONST(2), 8 * 3, MAP_OBJ_UNK_A0_03, JUMP_HEIGHT_HIGH, 0xA0, 0);
+    MovementAction_InitJumpCustomSound(mapObj, DIR_EAST, FX32_CONST(2), 8 * 3, MAP_OBJ_UNK_A0_03, JUMP_HEIGHT_HIGH, 0xA0, SEQ_NONE);
     return TRUE;
 }
 
@@ -2746,26 +2747,26 @@ BOOL (*const gMovementActionFuncs_152[])(MapObject *) = {
     MovementAction_End,
 };
 
-BOOL (*const gMovementActionFuncs_117[])(MapObject *) = {
-    sub_0206621C,
+BOOL (*const gMovementActionFuncs_JumpDistortionWorldNorth[])(MapObject *) = {
+    MovementAction_JumpDistortionWorldNorth_Step0,
     MovementAction_Jump_Step1,
     MovementAction_End,
 };
 
-BOOL (*const gMovementActionFuncs_118[])(MapObject *) = {
-    sub_02066240,
+BOOL (*const gMovementActionFuncs_JumpDistortionWorldSouth[])(MapObject *) = {
+    MovementAction_JumpDistortionWorldSouth_Step0,
     MovementAction_Jump_Step1,
     MovementAction_End,
 };
 
-BOOL (*const gMovementActionFuncs_119[])(MapObject *) = {
-    sub_02066264,
+BOOL (*const gMovementActionFuncs_JumpDistortionWorldWest[])(MapObject *) = {
+    MovementAction_JumpDistortionWorldWest_Step0,
     MovementAction_Jump_Step1,
     MovementAction_End,
 };
 
-BOOL (*const gMovementActionFuncs_120[])(MapObject *) = {
-    sub_02066288,
+BOOL (*const gMovementActionFuncs_JumpDistortionWorldEast[])(MapObject *) = {
+    MovementAction_JumpDistortionWorldEast_Step0,
     MovementAction_Jump_Step1,
     MovementAction_End,
 };
