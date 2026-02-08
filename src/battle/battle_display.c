@@ -10,6 +10,7 @@
 #include "struct_decls/battle_system.h"
 #include "struct_defs/sprite_animation_frame.h"
 #include "struct_defs/trainer.h"
+#include "struct_defs/battle_system.h"
 
 #include "battle/battle_anim_battler_context.h"
 #include "battle/battle_context.h"
@@ -4795,6 +4796,37 @@ static void ov16_02262A9C(SysTask *param0, void *param1)
         }
         break;
     case 10:
+        BattleSystem *battleSys = v0->unk_00;
+        BattleContext *battleCtx = battleSys->battleCtx;
+        PokemonSpriteManager *monSpriteMan = BattleSystem_GetPokemonSpriteManager(battleSys);
+        PokemonAnimManager *monAnimMan = BattleSystem_GetPokemonAnimManager(battleSys);
+        
+        NARC *narc = NARC_ctor(NARC_INDEX_POKETOOL__POKE_EDIT__PL_POKE_DATA, HEAP_ID_BATTLE);
+
+        // v0->unk_65 is the battler who fainted
+        if (Battler_Side(battleSys, v0->unk_65) == BATTLE_SIDE_ENEMY) {
+            for (u32 i = BATTLER_PLAYER_1; i <= BATTLER_PLAYER_2; i += 2) {
+                if (!(battleCtx->battlersSwitchingMask & FlagIndex(i))) {
+                    // there's probably a more idiomatic way to get the sprites with a getter or something
+                    // but it gets the job done
+                    PokemonSprite_InitAnim(&monSpriteMan->sprites[i], 0);
+                    PokemonSprite_LoadAnim(narc, monAnimMan, &monSpriteMan->sprites[i], battleCtx->battleMons[i].species, FACE_BACK, FALSE, i);
+                }
+            }
+        } else {
+            for (u32 i = BATTLER_ENEMY_1; i <= BATTLER_ENEMY_2; i += 2) {
+                if (!(battleCtx->battlersSwitchingMask & FlagIndex(i))) {
+                    PokemonSprite_InitAnim(&monSpriteMan->sprites[i], 0);
+                    PokemonSprite_LoadAnim(narc, monAnimMan, &monSpriteMan->sprites[i], battleCtx->battleMons[i].species, FACE_FRONT, FALSE, i);
+                }
+            }
+        }
+
+        NARC_dtor(narc);
+
+        v0->unk_66++;
+        break;
+    case 11:
         BattleController_EmitClearCommand(v0->unk_00, v0->unk_65, v0->unk_64);
         Heap_Free(param1);
         SysTask_Done(param0);
