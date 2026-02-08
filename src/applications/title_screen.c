@@ -7,8 +7,6 @@
 #include "constants/heap.h"
 #include "constants/species.h"
 
-#include "struct_defs/struct_02099F80.h"
-
 #include "game_opening/const_ov77_021D742C.h"
 #include "overlay005/debug_menu.h"
 
@@ -41,7 +39,6 @@
 #include "res/graphics/title_screen/titledemo.naix.h"
 
 FS_EXTERN_OVERLAY(game_opening);
-FS_EXTERN_OVERLAY(overlay89);
 FS_EXTERN_OVERLAY(main_menu);
 FS_EXTERN_OVERLAY(d_startmenu);
 FS_EXTERN_OVERLAY(game_start);
@@ -511,7 +508,7 @@ static void TitleScreen_VBlank(void *param)
 
 static void TitleScreen_SetVRAMBanks(void)
 {
-    UnkStruct_02099F80 banks = {
+    GXBanks banks = {
         GX_VRAM_BG_128_B,
         GX_VRAM_BGEXTPLTT_NONE,
         GX_VRAM_SUB_BG_128_C,
