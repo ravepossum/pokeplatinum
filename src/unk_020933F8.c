@@ -30,6 +30,7 @@
 
 #include "assert.h"
 #include "brightness_controller.h"
+#include "chatot_cry.h"
 #include "communication_information.h"
 #include "communication_system.h"
 #include "field_task.h"
@@ -54,7 +55,6 @@
 #include "trainer_info.h"
 #include "tv_episode_segment.h"
 #include "unk_020298BC.h"
-#include "unk_0202CC64.h"
 #include "unk_020363E8.h"
 #include "unk_02094EDC.h"
 #include "unk_02095AF0.h"
@@ -443,7 +443,7 @@ UnkStruct_02095C48 *sub_02093800(const UnkStruct_02093800 *param0)
         v0->unk_14C[v2] = ChatotCry_New(HEAP_ID_20);
     }
 
-    CopyChatotCryData(v0->unk_14C[0], param0->unk_20);
+    ChatotCry_Copy(v0->unk_14C[0], param0->unk_20);
 
     {
         Pokemon_Copy(param0->unk_08, v0->unk_00.unk_00[0]);
@@ -1660,7 +1660,7 @@ u16 sub_02094EA0(u32 param0, u32 *param1)
     u32 v0 = ARNG_Next(param0);
     *param1 = v0;
 
-    return v0 / 65536L;
+    return v0 / LCRNG_DIVISOR;
 }
 
 static void sub_02094EB4(UnkStruct_02095C48 *param0, int param1, UnkStruct_ov6_02248DD8 *param2)

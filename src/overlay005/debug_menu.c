@@ -30,11 +30,11 @@
 #include "render_window.h"
 #include "screen_fade.h"
 #include "sound_playback.h"
+#include "spawn_locations.h"
 #include "string_gf.h"
 #include "sys_task.h"
 #include "system.h"
 #include "text.h"
-#include "unk_0203A7D8.h"
 #include "unk_0203D1B8.h"
 #include "unk_02092494.h"
 #include "vars_flags.h"
@@ -661,8 +661,7 @@ static void Task_DebugMenu_Fly(SysTask *task, void *data)
 
         mapCtx = fly->mapCtx;
 
-        // get warp data for heal spot?
-        u16 warpID = sub_0203A8A0(mapCtx->flyLocationMapHeader, mapCtx->flyLocationX, mapCtx->flyLocationZ);
+        u16 warpID = GetSpawnIdByMapAndCoords(mapCtx->flyLocationMapHeader, mapCtx->flyLocationX, mapCtx->flyLocationZ);
 
         Location destLoc;
         Location_InitFly(warpID, &destLoc);
