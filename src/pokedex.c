@@ -1090,6 +1090,12 @@ void Pokedex_ObtainNationalDex(Pokedex *pokedexData)
     pokedexData->nationalDexObtained = TRUE;
 }
 
+void Pokedex_DisableNationalDex(Pokedex *pokedexData)
+{
+    CheckPokedexIntegrity(pokedexData);
+    pokedexData->nationalDexObtained = FALSE;
+}
+
 BOOL Pokedex_IsNationalDexObtained(const Pokedex *pokedex)
 {
     CheckPokedexIntegrity(pokedex);
@@ -1142,6 +1148,22 @@ void Pokedex_ObtainPokedex(Pokedex *pokedex)
 {
     CheckPokedexIntegrity(pokedex);
     pokedex->pokedexObtained = TRUE;
+}
+
+void Pokedex_DisablePokedex(Pokedex *pokedex)
+{
+    CheckPokedexIntegrity(pokedex);
+    pokedex->pokedexObtained = FALSE;
+}
+
+void Pokedex_SetAllSeenCaught(Pokedex *pokedex)
+{
+    CheckPokedexIntegrity(pokedex);
+
+    for (u16 species = 1; species <= NATIONAL_DEX_COUNT; species++) {
+        Write_SeenSpecies(pokedex, species);
+        Write_CaughtSpecies(pokedex, species);
+    }
 }
 
 Pokedex *SaveData_GetPokedex(SaveData *saveData)

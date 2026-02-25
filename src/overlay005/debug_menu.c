@@ -17,6 +17,7 @@
 #include "field/field_system.h"
 #include "overlay005/debug_mon_menu.h"
 #include "overlay006/hm_cut_in.h"
+#include "savedata/save_table.h"
 
 #include "bag.h"
 #include "camera.h"
@@ -27,6 +28,8 @@
 #include "message.h"
 #include "move_table.h"
 #include "party.h"
+#include "pc_boxes.h"
+#include "pokedex.h"
 #include "render_window.h"
 #include "screen_fade.h"
 #include "sound_playback.h"
@@ -104,6 +107,10 @@ static void ToggleDebugFlag(DebugMenu *menu, u16 flagID);
 static void DebugFunction_ToggleCollision(SysTask *task, DebugMenu *menu);
 static void DebugFunction_ToggleTrainerSee(SysTask *task, DebugMenu *menu);
 static void DebugFunction_ToggleEncounters(SysTask *task, DebugMenu *menu);
+static void DebugFunction_TogglePokedex(SysTask *task, DebugMenu *menu);
+static void DebugFunction_ToggleNationalDex(SysTask *task, DebugMenu *menu);
+static void DebugFunction_PokedexFlagsAll(SysTask *task, DebugMenu *menu);
+static void DebugFunction_PokedexFlagsReset(SysTask *task, DebugMenu *menu);
 static void DebugFunction_SetFlag(SysTask *task, DebugMenu *menu);
 static void SubMenuChoice_SetFlag(DebugSubMenu *subMenu);
 static void SubMenuRender_SetFlag(DebugSubMenu *subMenu);
@@ -200,6 +207,22 @@ static const DebugMenuItem sFlagVarItems[DEBUG_FLAG_VAR_ITEM_COUNT] = {
     [DEBUG_ITEM_TOGGLE_ENCOUNTERS] = {
         .function = DebugFunction_ToggleEncounters,
         .name = DebugMenu_ItemName_ToggleEncounters,
+    },
+    [DEBUG_ITEM_TOGGLE_POKEDEX] = {
+        .function = DebugFunction_TogglePokedex,
+        .name = DebugMenu_ItemName_TogglePokedex,
+    },
+    [DEBUG_ITEM_TOGGLE_NATIONAL_DEX] = {
+        .function = DebugFunction_ToggleNationalDex,
+        .name = DebugMenu_ItemName_ToggleNationalDex,
+    },
+    [DEBUG_ITEM_POKEDEX_FLAGS_ALL] = {
+        .function = DebugFunction_PokedexFlagsAll,
+        .name = DebugMenu_ItemName_PokedexFlagsAll,
+    },
+    [DEBUG_ITEM_POKEDEX_FLAGS_RESET] = {
+        .function = DebugFunction_PokedexFlagsReset,
+        .name = DebugMenu_ItemName_PokedexFlagsReset,
     },
     [DEBUG_ITEM_SET_FLAG] = {
         .function = DebugFunction_SetFlag,
@@ -441,7 +464,7 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
         }
         return;
     }
-    
+
     if (JOY_NEW(PAD_KEY)) {
         Sound_PlayEffect(SEQ_SE_DP_SELECT78);
     }
@@ -796,6 +819,7 @@ static void FlagVarList_PrintCB(ListMenu *menu, u32 index, u8 onInit)
 {
     DebugListNode *node = (DebugListNode *)ListMenu_GetAttribute(menu, LIST_MENU_PARENT);
     VarsFlags *varsFlags = SaveData_GetVarsFlags(node->debugMenu->fieldSystem->saveData);
+    Pokedex *pokedex = SaveData_GetPokedex(node->debugMenu->fieldSystem->saveData);
     int textState = DEBUG_TEXT_STATE_DEFAULT;
 
     switch (index) {
@@ -807,6 +831,12 @@ static void FlagVarList_PrintCB(ListMenu *menu, u32 index, u8 onInit)
         break;
     case DEBUG_ITEM_TOGGLE_ENCOUNTERS:
         textState = VarsFlags_CheckFlag(varsFlags, FLAG_DEBUG_NO_ENCOUNTERS);
+        break;
+    case DEBUG_ITEM_TOGGLE_POKEDEX:
+        textState = Pokedex_IsObtained(pokedex);
+        break;
+    case DEBUG_ITEM_TOGGLE_NATIONAL_DEX:
+        textState = Pokedex_IsNationalDexObtained(pokedex);
         break;
     }
 
@@ -909,6 +939,81 @@ static void DebugFunction_ToggleTrainerSee(SysTask *task, DebugMenu *menu)
 static void DebugFunction_ToggleEncounters(SysTask *task, DebugMenu *menu)
 {
     ToggleDebugFlag(menu, FLAG_DEBUG_NO_ENCOUNTERS);
+}
+
+static void DebugFunction_TogglePokedex(SysTask *task, DebugMenu *menu)
+{
+    Pokedex *pokedex = SaveData_GetPokedex(menu->fieldSystem->saveData);
+
+    if (Pokedex_IsObtained(pokedex)) {
+        Pokedex_DisablePokedex(pokedex);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF);
+    } else {
+        Pokedex_ObtainPokedex(pokedex);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
+    }
+
+    ListMenu_Draw(menu->listNode->listMenu);
+}
+
+static void DebugFunction_ToggleNationalDex(SysTask *task, DebugMenu *menu)
+{
+    Pokedex *pokedex = SaveData_GetPokedex(menu->fieldSystem->saveData);
+
+    if (Pokedex_IsNationalDexObtained(pokedex)) {
+        Pokedex_DisableNationalDex(pokedex);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF);
+    } else {
+        Pokedex_ObtainNationalDex(pokedex);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
+    }
+
+    ListMenu_Draw(menu->listNode->listMenu);
+}
+
+static void DebugFunction_PokedexFlagsAll(SysTask *task, DebugMenu *menu)
+{
+    Pokedex *pokedex = SaveData_GetPokedex(menu->fieldSystem->saveData);
+    Pokedex_SetAllSeenCaught(pokedex);
+}
+
+static void DebugFunction_PokedexFlagsReset(SysTask *task, DebugMenu *menu)
+{
+    SaveData *saveData = menu->fieldSystem->saveData;
+    Pokedex *pokedex = SaveData_GetPokedex(saveData);
+    BOOL hadNationalDex = Pokedex_IsNationalDexObtained(pokedex);
+
+    Pokedex_Init(pokedex);
+    Pokedex_ObtainPokedex(pokedex);
+
+    if (hadNationalDex) {
+        Pokedex_ObtainNationalDex(pokedex);
+    }
+
+    Party *party = SaveData_GetParty(saveData);
+    int partyCount = Party_GetCurrentCount(party);
+    for (int i = 0; i < partyCount; i++) {
+        Pokemon *mon = Party_GetPokemonBySlotIndex(party, i);
+        if (Pokemon_GetValue(mon, MON_DATA_SPECIES, NULL) != SPECIES_NONE
+            && Pokemon_GetValue(mon, MON_DATA_IS_EGG, NULL) == FALSE) {
+            Pokedex_Encounter(pokedex, mon);
+            Pokedex_Capture(pokedex, mon);
+        }
+    }
+
+    PCBoxes *pcBoxes = SaveData_GetPCBoxes(saveData);
+    Pokemon boxMon;
+    for (int boxID = 0; boxID < MAX_PC_BOXES; boxID++) {
+        for (int slot = 0; slot < MAX_MONS_PER_BOX; slot++) {
+            BoxPokemon *boxPokemon = PCBoxes_GetBoxMonAt(pcBoxes, boxID, slot);
+            if (BoxPokemon_GetValue(boxPokemon, MON_DATA_SPECIES, NULL) != SPECIES_NONE
+                && BoxPokemon_GetValue(boxPokemon, MON_DATA_IS_EGG, NULL) == FALSE) {
+                Pokemon_FromBoxPokemon(boxPokemon, &boxMon);
+                Pokedex_Encounter(pokedex, &boxMon);
+                Pokedex_Capture(pokedex, &boxMon);
+            }
+        }
+    }
 }
 
 // Set Flag
