@@ -3,6 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/battle_frontier.h"
 #include "constants/species.h"
 
 #include "struct_defs/battle_frontier.h"
@@ -53,19 +54,19 @@ int sub_020308A8(SaveData *saveData, BattleFrontierStage *param1)
     return v0;
 }
 
-u16 sub_020308BC(SaveData *saveData, BattleFrontierStage *param1, int param2, int param3)
+u16 sub_020308BC(SaveData *saveData, BattleFrontierStage *frontierStage, int challengeType, int species)
 {
-    if (SaveData_MiscSaveBlock_InitFlag(saveData) == 0) {
+    if (!SaveData_MiscSaveBlock_InitFlag(saveData)) {
         return 0;
     }
 
-    switch (param2) {
-    case 0:
-        return param1->unk_04.unk_00[param3];
-    case 1:
-        return param1->unk_04.unk_3DE[param3];
-    case 2:
-        return param1->unk_04.unk_7BC[param3];
+    switch (challengeType) {
+    case FRONTIER_CHALLENGE_SINGLE:
+        return frontierStage->unk_04.unk_00[species];
+    case FRONTIER_CHALLENGE_DOUBLE:
+        return frontierStage->unk_04.unk_3DE[species];
+    case FRONTIER_CHALLENGE_MULTI:
+        return frontierStage->unk_04.unk_7BC[species];
     }
 
     GF_ASSERT(0);

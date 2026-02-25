@@ -457,7 +457,7 @@
     .endm
 
     /*
-     * selectedOptionVar is set to 0xeeee as part of initializing a FieldMenuManager.
+     * selectedOptionVar is set to 0xEEEE as part of initializing a FieldMenuManager.
      * Once ShowMenu or one of its variants is used, selectedOptionVar is set to the
      * entryIndex of the option the player selected.
      */
@@ -471,7 +471,7 @@
     .endm
 
     /*
-     * selectedOptionVar is set to 0xeeee as part of initializing a FieldMenuManager.
+     * selectedOptionVar is set to 0xEEEE as part of initializing a FieldMenuManager.
      * Once ShowMenu or one of its variants is used, selectedOptionVar is set to the
      * entryIndex of the option the player selected.
      */
@@ -500,7 +500,7 @@
     .endm
 
     /*
-     * selectedOptionVar is set to 0xeeee as part of initializing a FieldMenuManager.
+     * selectedOptionVar is set to 0xEEEE as part of initializing a FieldMenuManager.
      * Once ShowListMenu or one of its variants is used, selectedOptionVar is set to the
      * entryIndex of the option the player selected.
      */
@@ -514,7 +514,7 @@
     .endm
 
     /*
-     * selectedOptionVar is set to 0xeeee as part of initializing a FieldMenuManager.
+     * selectedOptionVar is set to 0xEEEE as part of initializing a FieldMenuManager.
      * Once ShowListMenu or one of its variants is used, selectedOptionVar is set to the
      * entryIndex of the option the player selected.
      */
@@ -1712,7 +1712,7 @@
     .short \destVarID
     .endm
 
-    /* destVar is used to initialize a FieldMenuManager, setting it to 0xeeee, but is otherwise left without a meaningful value */
+    /* destVar is used to initialize a FieldMenuManager, setting it to 0xEEEE, but is otherwise left without a meaningful value */
     .macro ShowCurrentFloor tilemapLeft, tilemapTop, destVarID
     .short 285
     .byte \tilemapLeft
@@ -4019,7 +4019,7 @@
     .short \arg2
     .endm
 
-    .macro TrySetUnusedUndergroundField item
+    .macro TrySetUnusedCollectedOrbFlag item
     .short 674
     .short \item
     .endm
@@ -4272,16 +4272,16 @@
     .short 718
     .endm
 
-    .macro ScrCmd_2CF arg0, arg1
+    .macro BattleHallCheckUsingSameSpeciesAsPartner species, result
     .short 719
-    .short \arg0
-    .short \arg1
+    .short \species
+    .short \result
     .endm
 
-    .macro ScrCmd_2D0 arg0, arg1
+    .macro GetBattleHallSelectedSlots slot1, slot2
     .short 720
-    .short \arg0
-    .short \arg1
+    .short \slot1
+    .short \slot2
     .endm
 
     .macro ScrCmd_2D1 arg0
@@ -4766,24 +4766,24 @@
     .short \arg0
     .endm
 
-    .macro ScrCmd_324 arg0, arg1, arg2, arg3, arg4, arg5
+    .macro GetBattleHallRecordKeeperStats curStreakIdx, passedMilestoneIdx, nextMilestoneIdx, earnedBPIdx, nextMilestone, response
     .short 804
-    .byte \arg0
-    .byte \arg1
-    .byte \arg2
-    .byte \arg3
-    .short \arg4
-    .short \arg5
+    .byte \curStreakIdx
+    .byte \passedMilestoneIdx
+    .byte \nextMilestoneIdx
+    .byte \earnedBPIdx
+    .short \nextMilestone
+    .short \response
     .endm
 
-    .macro ScrCmd_325 arg0
+    .macro GetNumSpeciesWithBattleHallRecords result
     .short 805
-    .short \arg0
+    .short \result
     .endm
 
-    .macro ScrCmd_326 arg0
+    .macro GetBattleHallTotalSinglesRecord result
     .short 806
-    .short \arg0
+    .short \result
     .endm
 
     .macro ShowListMenuSetWidth width

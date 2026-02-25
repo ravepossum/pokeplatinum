@@ -117,7 +117,7 @@ Static main
 	Object main.nef.p/src_persisted_map_features.c.o
 	Object main.nef.p/src_pal_pad.c.o
 	Object main.nef.p/src_mail.c.o
-	Object main.nef.p/src_unk_0202854C.c.o
+	Object main.nef.p/src_underground.c.o
 	Object main.nef.p/src_unk_020298BC.c.o
 	Object main.nef.p/src_poffin.c.o
 	Object main.nef.p/src_unk_0202ACE0.c.o
@@ -210,7 +210,7 @@ Static main
 	Object main.nef.p/src_scrcmd_party_mon_moves.c.o
 	Object main.nef.p/src_scrcmd_dummy_23F_242.c.o
 	Object main.nef.p/src_unk_0204F04C.c.o
-	Object main.nef.p/src_unk_0204F13C.c.o
+	Object main.nef.p/src_scrcmd_battle_hall.c.o
 	Object main.nef.p/src_unk_0204FA34.c.o
 	Object main.nef.p/src_unk_0204FAB4.c.o
 	Object main.nef.p/src_unk_0205001C.c.o
@@ -514,7 +514,7 @@ Overlay overlay5
 	Object main.nef.p/src_overlay005_ov5_021F007C.c.o
 	Object main.nef.p/src_overlay005_field_effect_renderer.c.o
 	Object main.nef.p/src_overlay005_resource_heap.c.o
-	Object main.nef.p/src_overlay005_ov5_021F0824.c.o
+	Object main.nef.p/src_overlay005_secret_base_props.c.o
 	Object main.nef.p/src_overlay005_fishing.c.o
 	Object main.nef.p/src_overlay005_footprint_type.c.o
 	Object main.nef.p/src_overlay005_ov5_021F0EB0.c.o
@@ -800,7 +800,7 @@ Overlay pokedex
 	Object main.nef.p/src_applications_pokedex_ov21_021DDD2C.c.o
 	Object main.nef.p/src_applications_pokedex_ov21_021DE668.c.o
 	Object main.nef.p/src_applications_pokedex_formmain.c.o
-	Object main.nef.p/src_applications_pokedex_ov21_021E0C68.c.o
+	Object main.nef.p/src_applications_pokedex_infomain_foreign.c.o
 	Object main.nef.p/src_applications_pokedex_ov21_021E1924.c.o
 	Object main.nef.p/src_applications_pokedex_ov21_021E29DC.c.o
 	Object main.nef.p/src_applications_pokedex_ov21_021E3FFC.c.o
@@ -834,29 +834,29 @@ Overlay overlay22
 	Object main.nef.p/src_overlay022_ov22_0225B660.c.o
 }
 
-Overlay overlay23
+Overlay underground
 {
 	After overlay5
-	Object main.nef.p/src_overlay023_ov23_0223E140.c.o
-	Object main.nef.p/src_overlay023_underground_spheres.c.o
-	Object main.nef.p/src_overlay023_underground_manager.c.o
-	Object main.nef.p/src_overlay023_underground_traps.c.o
-	Object main.nef.p/src_overlay023_underground_item_list_menu.c.o
-	Object main.nef.p/src_overlay023_underground_top_screen.c.o
-	Object main.nef.p/src_overlay023_underground_player_status.c.o
-	Object main.nef.p/src_overlay023_underground_comm_manager.c.o
-	Object main.nef.p/src_overlay023_underground_player.c.o
-	Object main.nef.p/src_overlay023_secret_bases.c.o
-	Object main.nef.p/src_overlay023_underground_player_talk.c.o
-	Object main.nef.p/src_overlay023_underground_menu.c.o
-	Object main.nef.p/src_overlay023_underground_pc.c.o
-	Object main.nef.p/src_overlay023_underground_vendors.c.o
-	Object main.nef.p/src_overlay023_underground_records.c.o
-	Object main.nef.p/src_overlay023_underground_text_printer.c.o
-	Object main.nef.p/src_overlay023_treasure_prices.c.o
-	Object main.nef.p/src_overlay023_trap_prices.c.o
-	Object main.nef.p/src_overlay023_decoration_menu.c.o
-	Object main.nef.p/src_overlay023_base_decoration.c.o
+	Object main.nef.p/src_underground_mining.c.o
+	Object main.nef.p/src_underground_spheres.c.o
+	Object main.nef.p/src_underground_manager.c.o
+	Object main.nef.p/src_underground_traps.c.o
+	Object main.nef.p/src_underground_item_list_menu.c.o
+	Object main.nef.p/src_underground_top_screen.c.o
+	Object main.nef.p/src_underground_player_status.c.o
+	Object main.nef.p/src_underground_comm_manager.c.o
+	Object main.nef.p/src_underground_player.c.o
+	Object main.nef.p/src_underground_secret_bases.c.o
+	Object main.nef.p/src_underground_player_talk.c.o
+	Object main.nef.p/src_underground_menus.c.o
+	Object main.nef.p/src_underground_pc.c.o
+	Object main.nef.p/src_underground_vendors.c.o
+	Object main.nef.p/src_underground_records.c.o
+	Object main.nef.p/src_underground_text_printer.c.o
+	Object main.nef.p/src_underground_treasure_prices.c.o
+	Object main.nef.p/src_underground_trap_prices.c.o
+	Object main.nef.p/src_underground_decoration_menu.c.o
+	Object main.nef.p/src_underground_base_decoration.c.o
 }
 
 Overlay poketch_unavailable
@@ -1543,7 +1543,7 @@ Overlay overlay104
 	Object main.nef.p/src_overlay104_frontier_script_context.c.o
 	Object main.nef.p/src_overlay104_ov104_0222EA90.c.o
 	Object main.nef.p/src_overlay104_ov104_0222ECE8.c.o
-	Object main.nef.p/src_overlay104_ov104_0222FBE4.c.o
+	Object main.nef.p/src_overlay104_frscrcmd.c.o
 	Object main.nef.p/src_overlay104_ov104_02231F74.c.o
 	Object main.nef.p/src_overlay104_ov104_022332B4.c.o
 	Object main.nef.p/src_overlay104_ov104_022339B4.c.o
@@ -1594,15 +1594,15 @@ Overlay battle_hall_app
 	Object main.nef.p/src_applications_frontier_battle_hall_windows.c.o
 }
 
-Overlay overlay107
+Overlay battle_castle_app
 {
 	After overlay104
-	Object main.nef.p/src_overlay107_battle_castle_self_app.c.o
-	Object main.nef.p/src_overlay107_battle_castle_opponent_app.c.o
-	Object main.nef.p/src_overlay107_battle_castle_app_sprite_manager.c.o
-	Object main.nef.p/src_overlay107_battle_castle_app_sprite.c.o
-	Object main.nef.p/src_overlay107_ov107_02249C98.c.o
-	Object main.nef.p/src_overlay107_battle_castle_app_windows.c.o
+	Object main.nef.p/src_applications_frontier_battle_castle_self_app.c.o
+	Object main.nef.p/src_applications_frontier_battle_castle_opponent_app.c.o
+	Object main.nef.p/src_applications_frontier_battle_castle_sprite_manager.c.o
+	Object main.nef.p/src_applications_frontier_battle_castle_sprites.c.o
+	Object main.nef.p/src_applications_frontier_battle_castle_helpers.c.o
+	Object main.nef.p/src_applications_frontier_battle_castle_windows.c.o
 }
 
 Overlay overlay108

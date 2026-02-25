@@ -3,6 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/battle_frontier.h"
+
 #include "struct_defs/battle_frontier.h"
 
 #include "overlay104/ov104_0222DCE0.h"
@@ -26,7 +28,6 @@
 
 static int ov104_0223B6F4(u8 param0, int param1, int param2);
 void ov104_0223B760(u8 param0, int param1, u16 param2[], u8 param3);
-u8 ov104_0223B7A8(u8 param0, BOOL param1);
 u8 ov104_0223B7DC(u8 param0, BOOL param1);
 FieldBattleDTO *ov104_0223B810(UnkStruct_ov104_0223BA10 *param0, UnkStruct_ov104_02230BE4 *param1);
 static u32 ov104_0223B9E4(u8 param0);
@@ -112,18 +113,18 @@ void ov104_0223B760(u8 param0, int param1, u16 param2[], u8 param3)
     } while (v0 < param3);
 }
 
-u8 ov104_0223B7A8(u8 param0, BOOL param1)
+u8 BattleCastle_GetPartySize(u8 challengeType, BOOL includePartnersMons)
 {
-    switch (param0) {
-    case 0:
-    case 1:
+    switch (challengeType) {
+    case FRONTIER_CHALLENGE_SINGLE:
+    case FRONTIER_CHALLENGE_DOUBLE:
         return 3;
-    case 2:
-    case 3:
-        if (param1 == 0) {
+    case FRONTIER_CHALLENGE_MULTI:
+    case FRONTIER_CHALLENGE_MULTI_WFC:
+        if (includePartnersMons == FALSE) {
             return 2;
         } else {
-            return 2 * 2;
+            return 4;
         }
     }
 
@@ -158,7 +159,7 @@ FieldBattleDTO *ov104_0223B810(UnkStruct_ov104_0223BA10 *param0, UnkStruct_ov104
     Pokemon *v6;
     FrontierTrainerDataDTO v7;
 
-    u8 v2 = ov104_0223B7A8(param0->unk_10, 0);
+    u8 v2 = BattleCastle_GetPartySize(param0->unk_10, 0);
     u8 v3 = ov104_0223B7DC(param0->unk_10, 0);
 
     Party_HealAllMembers(param0->unk_2C);
@@ -179,7 +180,7 @@ FieldBattleDTO *ov104_0223B810(UnkStruct_ov104_0223BA10 *param0, UnkStruct_ov104
     v6 = Pokemon_New(HEAP_ID_FIELD2);
 
     for (v0 = 0; v0 < v2; v0++) {
-        Pokemon_Copy(Party_GetPokemonBySlotIndex(param0->unk_28, (v4 + v0)), v6);
+        Pokemon_Copy(Party_GetPokemonBySlotIndex(param0->unk_28, v4 + v0), v6);
 
         FieldBattleDTO_AddPokemonToBattler(v5, v6, 0);
     }
@@ -219,7 +220,7 @@ FieldBattleDTO *ov104_0223B810(UnkStruct_ov104_0223BA10 *param0, UnkStruct_ov104
         v6 = Pokemon_New(HEAP_ID_FIELD2);
 
         for (v0 = 0; v0 < v3; v0++) {
-            Pokemon_Copy(Party_GetPokemonBySlotIndex(param0->unk_2C, (v3 + v0)), v6);
+            Pokemon_Copy(Party_GetPokemonBySlotIndex(param0->unk_2C, v3 + v0), v6);
             FieldBattleDTO_AddPokemonToBattler(v5, v6, 3);
         }
 
@@ -253,7 +254,7 @@ u8 ov104_0223BA10(UnkStruct_ov104_0223BA10 *param0)
 
 BOOL BattleCastle_IsMultiPlayerChallenge(u8 challengeType)
 {
-    return challengeType == 2 || challengeType == 3;
+    return challengeType == FRONTIER_CHALLENGE_MULTI || challengeType == FRONTIER_CHALLENGE_MULTI_WFC;
 }
 
 void ov104_0223BA24(Party *param0)
@@ -408,17 +409,17 @@ u16 ov104_0223BC24(u16 param0)
     return param0;
 }
 
-void ov104_0223BC2C(BattleFrontier *frontier, u8 param1, int param2)
+void ov104_0223BC2C(BattleFrontier *frontier, u8 challengeType, int castlePoints)
 {
     u16 v0;
 
-    sub_02030824(frontier, sub_0205E630(param1), sub_0205E6A8(sub_0205E630(param1)), param2);
-    v0 = sub_02030698(frontier, sub_0205E658(param1), sub_0205E6A8(sub_0205E658(param1)));
+    sub_02030824(frontier, sub_0205E630(challengeType), sub_0205E6A8(sub_0205E630(challengeType)), castlePoints);
+    v0 = sub_02030698(frontier, sub_0205E658(challengeType), sub_0205E6A8(sub_0205E658(challengeType)));
 
-    if (v0 + param2 > 9999) {
-        sub_020306E4(frontier, sub_0205E658(param1), sub_0205E6A8(sub_0205E658(param1)), 9999);
+    if (v0 + castlePoints > 9999) {
+        sub_020306E4(frontier, sub_0205E658(challengeType), sub_0205E6A8(sub_0205E658(challengeType)), 9999);
     } else {
-        sub_02030804(frontier, sub_0205E658(param1), sub_0205E6A8(sub_0205E658(param1)), param2);
+        sub_02030804(frontier, sub_0205E658(challengeType), sub_0205E6A8(sub_0205E658(challengeType)), castlePoints);
     }
 
     return;

@@ -53,7 +53,7 @@
 #include "text.h"
 #include "trainer_info.h"
 #include "tv_episode_segment.h"
-#include "unk_0202854C.h"
+#include "underground.h"
 #include "unk_0202C9F4.h"
 #include "unk_0202D05C.h"
 #include "unk_0203D1B8.h"
@@ -61,7 +61,7 @@
 #include "unk_02097B18.h"
 #include "vars_flags.h"
 
-#include "res/graphics/shop_menu/shop_gra.naix.h"
+#include "res/graphics/shop_menu/shop_gra.naix"
 #include "res/text/bank/location_names.h"
 #include "res/text/bank/underground_goods.h"
 #include "res/text/bank/unk_0543.h"
@@ -1228,7 +1228,7 @@ static u8 Shop_ConfirmItemPurchase(ShopMenu *shopMenu)
     Shop_TakeMoney(shopMenu, shopMenu->itemPrice * shopMenu->itemAmount);
 
     if (shopMenu->martType == MART_TYPE_FRONTIER) {
-        GameRecords_AddToRecordValue(shopMenu->records, RECORD_UNK_069, shopMenu->itemPrice * shopMenu->itemAmount);
+        GameRecords_AddToRecordValue(shopMenu->records, RECORD_BATTLE_POINTS_SPENT, shopMenu->itemPrice * shopMenu->itemAmount);
     } else {
         GameRecords_AddToRecordValue(shopMenu->records, RECORD_MONEY_SPENT, shopMenu->itemPrice * shopMenu->itemAmount);
     }
