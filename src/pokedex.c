@@ -1152,15 +1152,13 @@ void Pokedex_ObtainPokedex(Pokedex *pokedex)
 
 void Pokedex_DisablePokedex(Pokedex *pokedex)
 {
-    CheckPokedexIntegrity(pokedex);
     pokedex->pokedexObtained = FALSE;
 }
 
 void Pokedex_SetAllSeenCaught(Pokedex *pokedex)
 {
-    CheckPokedexIntegrity(pokedex);
-
-    for (u16 species = 1; species <= NATIONAL_DEX_COUNT; species++) {
+    for (u16 species = SPECIES_NONE + 1; species <= NATIONAL_DEX_COUNT; species++) {
+        UpdateGender(pokedex, Pokemon_GetGenderOf(species, 0), FALSE, species);
         Write_SeenSpecies(pokedex, species);
         Write_CaughtSpecies(pokedex, species);
     }
