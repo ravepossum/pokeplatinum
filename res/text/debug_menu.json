@@ -34,6 +34,22 @@
       "en_US": "No Encounters"
     },
     {
+      "id": "DebugMenu_ItemName_TogglePokedex",
+      "en_US": "Pokedex"
+    },
+    {
+      "id": "DebugMenu_ItemName_ToggleNationalDex",
+      "en_US": "National Dex"
+    },
+    {
+      "id": "DebugMenu_ItemName_PokedexFlagsAll",
+      "en_US": "Dex Flags All"
+    },
+    {
+      "id": "DebugMenu_ItemName_PokedexFlagsReset",
+      "en_US": "Dex Flags Reset"
+    },
+    {
       "id": "DebugMenu_ItemName_SetFlag",
       "en_US": "Set Flag"
     },
