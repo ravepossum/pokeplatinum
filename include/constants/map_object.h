@@ -14,7 +14,7 @@
 #define MAP_OBJ_STATUS_1                           (1 << 1)
 #define MAP_OBJ_STATUS_START_MOVEMENT              (1 << 2)
 #define MAP_OBJ_STATUS_END_MOVEMENT                (1 << 3)
-#define MAP_OBJ_STATUS_4                           (1 << 4)
+#define MAP_OBJ_STATUS_ANIM_IN_PROGRESS            (1 << 4)
 #define MAP_OBJ_STATUS_5                           (1 << 5)
 #define MAP_OBJ_STATUS_PAUSE_MOVEMENT              (1 << 6)
 #define MAP_OBJ_STATUS_LOCK_DIR                    (1 << 7)

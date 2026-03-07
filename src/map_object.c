@@ -98,7 +98,7 @@ typedef struct MapObject {
     u8 unk_D8[16];
     u8 unk_E8[16];
     u8 movementData[16];
-    u8 unk_108[32];
+    u8 gfxData[32]; // gfx-related data, is passed as byte data and later interpreted as structs specific to different obj event gfx IDs
 } MapObject;
 
 typedef struct {
@@ -1123,6 +1123,7 @@ MapObject *MapObjectMan_GetMapObject(const MapObjectManager *mapObjMan)
     return mapObjMan->mapObj;
 }
 
+// MapObjectMan_NextMapObject
 void sub_02062880(const MapObject **mapObj)
 {
     (*mapObj)++;
@@ -1479,21 +1480,21 @@ void *MapObject_GetMovementData(MapObject *mapObj)
     return mapObj->movementData;
 }
 
+// MapObject_InitGfxData
 void *sub_02062ACC(MapObject *mapObj, int size)
 {
-    u8 *v0;
-
     GF_ASSERT(size <= 32);
 
-    v0 = sub_02062AF0(mapObj);
-    memset(v0, 0, size);
+    u8 *gfxData = sub_02062AF0(mapObj);
+    memset(gfxData, 0, size);
 
-    return v0;
+    return gfxData;
 }
 
+// MapObject_GetGfxData
 void *sub_02062AF0(MapObject *mapObj)
 {
-    return mapObj->unk_108;
+    return mapObj->gfxData;
 }
 
 void sub_02062AF8(MapObject *mapObj, UnkFuncPtr_020EDF0C param1)
@@ -1950,9 +1951,10 @@ int sub_02062F64(const MapObject *mapObj)
     return FALSE;
 }
 
+// MapObject_AnimInProgress
 int sub_02062F7C(const MapObject *mapObj)
 {
-    if (MapObject_CheckStatus(mapObj, MAP_OBJ_STATUS_4)) {
+    if (MapObject_CheckStatus(mapObj, MAP_OBJ_STATUS_ANIM_IN_PROGRESS)) {
         return TRUE;
     }
 

@@ -87,7 +87,7 @@ void MapObject_Move(MapObject *mapObj)
     sub_020634F4(mapObj);
     MapObject_StartMove(mapObj);
 
-    if (MapObject_CheckStatus(mapObj, MAP_OBJ_STATUS_4)) {
+    if (MapObject_CheckStatus(mapObj, MAP_OBJ_STATUS_ANIM_IN_PROGRESS)) {
         MapObject_DoMovementAction(mapObj);
     } else if (MapObject_IsMovementPaused(mapObj) == FALSE && sub_02063478(mapObj) == TRUE && sub_020673C0(mapObj) == FALSE) {
         sub_02062B14(mapObj);

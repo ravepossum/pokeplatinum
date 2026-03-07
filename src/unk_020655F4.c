@@ -121,7 +121,7 @@ BOOL LocalMapObj_IsAnimationSet(const MapObject *mapObj)
         return FALSE;
     }
 
-    if (MapObject_CheckStatusFlag(mapObj, MAP_OBJ_STATUS_4) == TRUE && !MapObject_CheckStatusFlag(mapObj, MAP_OBJ_STATUS_5)) {
+    if (MapObject_CheckStatusFlag(mapObj, MAP_OBJ_STATUS_ANIM_IN_PROGRESS) == TRUE && !MapObject_CheckStatusFlag(mapObj, MAP_OBJ_STATUS_5)) {
         return FALSE;
     }
 
@@ -134,7 +134,7 @@ void LocalMapObj_SetAnimationCode(MapObject *mapObj, enum MovementAction movemen
 
     MapObject_SetMovementAction(mapObj, movementAction);
     MapObject_SetMovementStep(mapObj, 0);
-    MapObject_SetStatusFlagOn(mapObj, MAP_OBJ_STATUS_4);
+    MapObject_SetStatusFlagOn(mapObj, MAP_OBJ_STATUS_ANIM_IN_PROGRESS);
     MapObject_SetStatusFlagOff(mapObj, MAP_OBJ_STATUS_5);
 }
 
@@ -147,7 +147,7 @@ void sub_02065668(MapObject *mapObj, enum MovementAction movementAction)
 
 BOOL LocalMapObj_CheckAnimationFinished(const MapObject *mapObj)
 {
-    if (!MapObject_CheckStatusFlag(mapObj, MAP_OBJ_STATUS_4)) {
+    if (!MapObject_CheckStatusFlag(mapObj, MAP_OBJ_STATUS_ANIM_IN_PROGRESS)) {
         return TRUE;
     }
 
@@ -160,7 +160,7 @@ BOOL LocalMapObj_CheckAnimationFinished(const MapObject *mapObj)
 
 BOOL sub_020656AC(MapObject *mapObj)
 {
-    if (!MapObject_CheckStatusFlag(mapObj, MAP_OBJ_STATUS_4)) {
+    if (!MapObject_CheckStatusFlag(mapObj, MAP_OBJ_STATUS_ANIM_IN_PROGRESS)) {
         return TRUE;
     }
 
@@ -168,14 +168,14 @@ BOOL sub_020656AC(MapObject *mapObj)
         return FALSE;
     }
 
-    MapObject_SetStatusFlagOff(mapObj, MAP_OBJ_STATUS_4 | MAP_OBJ_STATUS_5);
+    MapObject_SetStatusFlagOff(mapObj, MAP_OBJ_STATUS_ANIM_IN_PROGRESS | MAP_OBJ_STATUS_5);
 
     return TRUE;
 }
 
 void sub_020656DC(MapObject *mapObj)
 {
-    MapObject_SetStatusFlagOff(mapObj, MAP_OBJ_STATUS_4);
+    MapObject_SetStatusFlagOff(mapObj, MAP_OBJ_STATUS_ANIM_IN_PROGRESS);
     MapObject_SetStatusFlagOn(mapObj, MAP_OBJ_STATUS_5);
     MapObject_SetMovementAction(mapObj, MOVEMENT_ACTION_NONE);
     MapObject_SetMovementStep(mapObj, 0);
