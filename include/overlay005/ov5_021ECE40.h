@@ -5,7 +5,7 @@
 #include "struct_decls/struct_02061AB4_decl.h"
 
 #include "overlay005/funcptr_ov5_021EE454.h"
-#include "overlay005/struct_ov5_021ED01C.h"
+#include "overlay005/ov5_021EB1A0.h"
 #include "overlay005/struct_ov5_021ED0A4.h"
 
 #include "billboard.h"
@@ -19,8 +19,8 @@ Billboard *ov5_021ECF1C(MapObject *param0, int param1);
 void ov5_021ECF70(const MapObject *param0, Billboard **param1, int param2);
 void ov5_021ECFA4(const MapObject *param0, Billboard **param1);
 void ov5_021ECFD8(const MapObject *param0, Billboard **param1, int param2);
-void ov5_021ED01C(Billboard *param0, UnkStruct_ov5_021ED01C *param1);
-void ov5_021ED03C(Billboard *param0, UnkStruct_ov5_021ED01C *param1);
+void ov5_021ED01C(Billboard *param0, BillboardAnimState *param1);
+void ov5_021ED03C(Billboard *param0, BillboardAnimState *param1);
 void ov5_021ED060(MapObject *param0, Billboard **param1, int param2);
 int ov5_021ED150(const MapObjectManager *param0, u32 param1, BillboardResources *param2);
 void ov5_021EDA38(MapObjectManager *param0, UnkStruct_ov5_021ED0A4 *param1);

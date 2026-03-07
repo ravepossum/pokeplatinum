@@ -5,16 +5,16 @@
 
 #include "struct_decls/struct_02061AB4_decl.h"
 
+#include "overlay005/ov5_021EB1A0.h"
 #include "overlay005/ov5_021ECE40.h"
 #include "overlay005/struct_ov5_021ECB8C_decl.h"
-#include "overlay005/struct_ov5_021ED01C.h"
 
 #include "billboard.h"
 #include "map_object.h"
 
 typedef struct UnkStruct_ov5_021ECB8C_t {
     Billboard *unk_00;
-    UnkStruct_ov5_021ED01C unk_04;
+    BillboardAnimState unk_04;
 };
 
 static void ov5_021ECB90(MapObject *param0);

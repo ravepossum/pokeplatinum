@@ -100,19 +100,18 @@ static const UnkStruct_ov5_021ECD10 *ov5_021ECD10(int param0)
     return NULL;
 }
 
-int ov5_021ECD38(const MapObject *param0)
+// MapObjGfx_ShouldPauseAnim
+int ov5_021ECD38(const MapObject *mapObj)
 {
-    if (MapObject_IsMovementPaused(param0) == 1) {
-        if (sub_02062F7C(param0) == 0) {
-            return 1;
-        }
+    if (MapObject_IsMovementPaused(mapObj) == TRUE && sub_02062F7C(mapObj) == FALSE) {
+        return TRUE;
     }
 
-    if (MapObject_CheckStatus(param0, MAP_OBJ_STATUS_PAUSE_ANIMATION)) {
-        return 1;
+    if (MapObject_CheckStatus(mapObj, MAP_OBJ_STATUS_PAUSE_ANIMATION)) {
+        return TRUE;
     }
 
-    return 0;
+    return FALSE;
 }
 
 void *ov5_021ECD68(const MapObjectManager *param0, u32 param1, int param2)
@@ -132,6 +131,7 @@ void *ov5_021ECD68(const MapObjectManager *param0, u32 param1, int param2)
     return v0;
 }
 
+// MapObject_ApplyPosOffsets
 void ov5_021ECDA0(const MapObject *param0, VecFx32 *adjustedObjectPos)
 {
     VecFx32 objectPosition, jumpOffset, posOffset, terrainSpriteOffset;
