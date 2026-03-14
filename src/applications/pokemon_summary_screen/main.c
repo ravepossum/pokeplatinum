@@ -1056,7 +1056,6 @@ static void SetMonDataFromBoxMon(PokemonSummaryScreen *summaryScreen, BoxPokemon
 
 static void SetMonDataFromMon(PokemonSummaryScreen *summaryScreen, Pokemon *mon, PokemonSummaryMonData *monData)
 {
-    BOOL reencrypt = Pokemon_EnterDecryptionContext(mon);
     monData->species = Pokemon_GetValue(mon, MON_DATA_SPECIES, NULL);
     BoxPokemon *boxMon = Pokemon_GetBoxPokemon(mon);
 
@@ -1165,8 +1164,6 @@ static void SetMonDataFromMon(PokemonSummaryScreen *summaryScreen, Pokemon *mon,
             summaryScreen->ribbonMax++;
         }
     }
-
-    Pokemon_ExitDecryptionContext(mon, reencrypt);
 }
 
 static void PlayMonCry(PokemonSummaryScreen *summaryScreen)

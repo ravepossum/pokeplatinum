@@ -796,7 +796,6 @@ void BoxMonGBAToBoxMon(GBABoxPokemon *gbaBoxMon, BoxPokemon *boxMon)
     u16 dsNickName[MON_NAME_LEN + 2];
 
     BoxPokemon_Init(boxMon);
-    reencrypt = BoxPokemon_EnterDecryptionContext(boxMon);
 
     value = GBABoxPokemon_GetData(gbaBoxMon, GBA_MON_DATA_PERSONALITY, NULL);
     BoxPokemon_SetValue(boxMon, MON_DATA_PERSONALITY, (u8 *)&value);
@@ -1041,5 +1040,4 @@ void BoxMonGBAToBoxMon(GBABoxPokemon *gbaBoxMon, BoxPokemon *boxMon)
 
     value = GBABoxPokemon_GetData(gbaBoxMon, GBA_MON_DATA_OT_GENDER, NULL);
     BoxPokemon_SetValue(boxMon, MON_DATA_OT_GENDER, &value);
-    BoxPokemon_ExitDecryptionContext(boxMon, reencrypt);
 }

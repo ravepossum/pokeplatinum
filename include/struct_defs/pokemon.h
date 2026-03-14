@@ -116,10 +116,8 @@ typedef union {
  */
 typedef struct BoxPokemon {
     /* 0x000 */ u32 personality;
-    /* 0x004 */ u16 partyDecrypted : 1;
-                u16 boxDecrypted : 1;
-                u16 checksumFailed : 1;
-                u16 unused : 13;
+    /* 0x004 */ u16 checksumFailed : 1;
+                u16 unused : 15;
     /* 0x006 */ u16 checksum;
     /* 0x008 */ PokemonDataBlock dataBlocks[4];
 } BoxPokemon;

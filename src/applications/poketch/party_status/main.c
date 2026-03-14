@@ -205,7 +205,6 @@ static void GetPartyMonInfo(PartyStatus *data, Party *party)
 
     for (int i = 0; i < data->partyCount; i++) {
         mon = Party_GetPokemonBySlotIndex(party, i);
-        decrypted = Pokemon_EnterDecryptionContext(mon);
 
         data->mons[i].iconSpriteIndex = BoxPokemon_IconSpriteIndex((const BoxPokemon *)mon);
         data->mons[i].species = Pokemon_GetValue(mon, MON_DATA_SPECIES, NULL);
@@ -215,7 +214,5 @@ static void GetPartyMonInfo(PartyStatus *data, Party *party)
         data->mons[i].hasStatus = Pokemon_GetValue(mon, MON_DATA_STATUS, NULL) != 0;
         data->mons[i].isEgg = Pokemon_GetValue(mon, MON_DATA_IS_EGG, NULL);
         data->mons[i].form = Pokemon_GetValue(mon, MON_DATA_FORM, NULL);
-
-        Pokemon_ExitDecryptionContext(mon, decrypted);
     }
 }

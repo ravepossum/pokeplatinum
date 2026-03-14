@@ -3,10 +3,8 @@
 
 typedef struct UnkStruct_02078B40_t {
     u32 personality;
-    u16 partyDecrypted : 1;
-    u16 boxDecrypted : 1;
     u16 checksumFailed : 1;
-    u16 : 13;
+    u16 unused : 15;
     u16 species;
     u16 heldItem;
     u32 otID;

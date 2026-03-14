@@ -85,40 +85,6 @@ int Pokemon_StructSize(void);
  */
 Pokemon *Pokemon_New(enum HeapID heapID);
 
-/**
- * @brief Decrypts a Pokemon data structure. PartyPokemon data is encrypted using the pokemons personality value, BoxPokemon data using a checksum value
- *
- * @param mon
- * @return Whether the pokemons data was decrypted by this call. Passed to EncryptMon() to decide whether to reencrypt the data or not
- */
-BOOL Pokemon_EnterDecryptionContext(Pokemon *mon);
-
-/**
- * @brief Encrypts a Pokemon data structure. PartyPokemon data is encrypted using the pokemons personality value, BoxPokemon data using a checksum value
- *
- * @param mon
- * @param encrypt Whether to encrypt the data or not. If this is false, the function does nothing and returns false.
- * @return Whether the pokemons data was encrypted by this call.
- */
-BOOL Pokemon_ExitDecryptionContext(Pokemon *mon, BOOL encrypt);
-
-/**
- * @brief Decrypts a BoxPokemon data structure
- *
- * @param boxMon
- * @return Whether the pokemons data was decrypted by this call. Passed to EncryptBoxMon() to decide whether to reencrypt the data or not
- */
-BOOL BoxPokemon_EnterDecryptionContext(BoxPokemon *boxMon);
-
-/**
- * @brief Encrypts a BoxPokemon data structure
- *
- * @param boxMon
- * @param encrypt Whether to encrypt the data or not. If this is false, the function does nothing and returns false.
- * @return Whether the pokemons data was encrypted by this call.
- */
-BOOL BoxPokemon_ExitDecryptionContext(BoxPokemon *boxMon, BOOL encrypt);
-
 void Pokemon_InitWith(Pokemon *mon, int monSpecies, int monLevel, int monIVs, BOOL useMonPersonalityParam, u32 monPersonality, int monOTIDSource, u32 monOTID);
 void sub_02074044(Pokemon *mon, u16 monSpecies, u8 monLevel, u8 monIVs, u8 monNature);
 void sub_02074088(Pokemon *mon, u16 monSpecies, u8 monLevel, u8 monIVs, u8 param4, u8 param5, u8 param6);

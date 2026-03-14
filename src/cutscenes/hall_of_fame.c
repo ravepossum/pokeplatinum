@@ -1865,7 +1865,6 @@ static BOOL HallOfFameMovement_IsDone(HallOfFameMovement *movement)
 
 static int HallOfFame_GetMetStringIndex(HallOfFameMan *hallOfFameMan, Pokemon *mon, const TrainerInfo *trainerInfo)
 {
-    BOOL reencrypt = Pokemon_EnterDecryptionContext(mon);
     int metStringIndex = HallOfFame_Text_ObtainedInFatefulEncounter - HallOfFame_Text_MetAt;
 
     do {
@@ -1918,8 +1917,6 @@ static int HallOfFame_GetMetStringIndex(HallOfFameMan *hallOfFameMan, Pokemon *m
             }
         }
     } while (FALSE);
-
-    Pokemon_ExitDecryptionContext(mon, reencrypt);
 
     return metStringIndex;
 }

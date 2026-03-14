@@ -1070,8 +1070,6 @@ static void ov94_02240EAC(BoxPokemon *boxMon, Sprite *param1, Sprite *param2, u1
 {
     int v0, item, isEgg, form;
 
-    BoxPokemon_EnterDecryptionContext(boxMon);
-
     v0 = BoxPokemon_GetValue(boxMon, MON_DATA_SPECIES_EXISTS, NULL);
     *species = BoxPokemon_GetValue(boxMon, MON_DATA_SPECIES, NULL);
 
@@ -1085,8 +1083,6 @@ static void ov94_02240EAC(BoxPokemon *boxMon, Sprite *param1, Sprite *param2, u1
     if (isEgg) {
         param6->level = 0;
     }
-
-    BoxPokemon_ExitDecryptionContext(boxMon, 1);
 
     if (v0) {
         ov94_02240DF8(*species, form, isEgg, param4, param1, param5, param7);
@@ -1226,13 +1222,10 @@ static const u16 sUnusedRibbons[] = {
 static int BoxPokemon_HasUnusedRibbons(BoxPokemon *boxMon)
 {
     int count = 0;
-    int reencrypt = BoxPokemon_EnterDecryptionContext(boxMon);
 
     for (int i = 0; i < (int)NELEMS(sUnusedRibbons); i++) {
         count += BoxPokemon_GetValue(boxMon, sUnusedRibbons[i], NULL);
     }
-
-    BoxPokemon_ExitDecryptionContext(boxMon, reencrypt);
 
     if (count) {
         return TRUE;
@@ -1243,11 +1236,8 @@ static int BoxPokemon_HasUnusedRibbons(BoxPokemon *boxMon)
 
 static BOOL BoxPokemon_FormNotInDP(BoxPokemon *boxMon)
 {
-    int reencrypt = BoxPokemon_EnterDecryptionContext(boxMon);
     int species = BoxPokemon_GetValue(boxMon, MON_DATA_SPECIES, NULL);
     int form = BoxPokemon_GetValue(boxMon, MON_DATA_FORM, NULL);
-
-    BoxPokemon_ExitDecryptionContext(boxMon, reencrypt);
 
     if (form > 0) {
         switch (species) {
@@ -1263,10 +1253,7 @@ static BOOL BoxPokemon_FormNotInDP(BoxPokemon *boxMon)
 
 static BOOL BoxPokemon_HeldItemNotInDP(BoxPokemon *boxMon)
 {
-    int reencrypt = BoxPokemon_EnterDecryptionContext(boxMon);
     int item = BoxPokemon_GetValue(boxMon, MON_DATA_HELD_ITEM, NULL);
-
-    BoxPokemon_ExitDecryptionContext(boxMon, reencrypt);
 
     switch (item) {
     case ITEM_GRISEOUS_ORB:

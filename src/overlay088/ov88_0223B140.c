@@ -742,8 +742,6 @@ static void ov88_0223BD18(Pokemon *param0, UnkStruct_ov88_0223C8AC *param1)
 {
     int v0, v1;
 
-    v0 = Pokemon_EnterDecryptionContext(param0);
-
     param1->unk_04 = Pokemon_GetValue(param0, MON_DATA_POKEBALL, NULL);
     param1->unk_00 = Pokemon_GetValue(param0, MON_DATA_SPECIES, NULL);
     param1->unk_06 = Pokemon_GetValue(param0, MON_DATA_FORM, NULL);
@@ -752,8 +750,6 @@ static void ov88_0223BD18(Pokemon *param0, UnkStruct_ov88_0223C8AC *param1)
     param1->unk_0C = Pokemon_GetValue(param0, MON_DATA_BALL_CAPSULE_ID, NULL);
 
     v1 = Pokemon_GetValue(param0, MON_DATA_HELD_ITEM, NULL);
-
-    Pokemon_ExitDecryptionContext(param0, v0);
 
     if (param1->unk_00 != 0) {
         param1->unk_0A = SpeciesData_GetFormValue(param1->unk_00, param1->unk_06, 28);
