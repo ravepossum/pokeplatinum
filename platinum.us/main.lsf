@@ -137,7 +137,7 @@ Static main
 	Object main.nef.p/src_mystery_gift.c.o
 	Object main.nef.p/src_hall_of_fame_entries.c.o
 	Object main.nef.p/src_unk_0202E2CC.c.o
-	Object main.nef.p/src_unk_0202E840.c.o
+	Object main.nef.p/src_rankings.c.o
 	Object main.nef.p/src_unk_0202EEC0.c.o
 	Object main.nef.p/src_link_contest_records.c.o
 	Object main.nef.p/src_unk_0202F180.c.o
@@ -243,7 +243,7 @@ Static main
 	Object main.nef.p/src_unk_0205A0D8.c.o
 	Object main.nef.p/src_unk_0205B33C.c.o
 	Object main.nef.p/src_unk_0205C22C.c.o
-	Object main.nef.p/src_unk_0205C980.c.o
+	Object main.nef.p/src_appearance.c.o
 	Object main.nef.p/src_unk_0205CA94.c.o
 	Object main.nef.p/src_field_message.c.o
 	Object main.nef.p/src_map_tile_behavior.c.o
@@ -273,9 +273,8 @@ Static main
 	Object main.nef.p/src_unk_0206C660.c.o
 	Object main.nef.p/src_cutscenes_boat_cutscene_boat_cutscene.c.o
 	Object main.nef.p/src_tv_episode_segment.c.o
-	Object main.nef.p/src_unk_0206F314.c.o
+	Object main.nef.p/src_rankings_machine.c.o
 	Object main.nef.p/src_unk_02070428.c.o
-	Object main.nef.p/src_unk_0207064C.c.o
 	Object main.nef.p/src_field_move_tasks.c.o
 	Object main.nef.p/src_unk_020711C8.c.o
 	Object main.nef.p/src_overworld_anim_manager.c.o
@@ -1605,13 +1604,13 @@ Overlay battle_castle_app
 	Object main.nef.p/src_applications_frontier_battle_castle_windows.c.o
 }
 
-Overlay overlay108
+Overlay battle_arcade_app
 {
 	After overlay104
-	Object main.nef.p/src_overlay108_ov108_02241AE0.c.o
-	Object main.nef.p/src_overlay108_ov108_02243030.c.o
-	Object main.nef.p/src_overlay108_ov108_0224351C.c.o
-	Object main.nef.p/src_overlay108_ov108_02243630.c.o
+	Object main.nef.p/src_applications_frontier_battle_arcade_main.c.o
+	Object main.nef.p/src_applications_frontier_battle_arcade_sprite_manager.c.o
+    Object main.nef.p/src_applications_frontier_battle_arcade_sprites.c.o
+	Object main.nef.p/src_applications_frontier_battle_arcade_windows.c.o
 }
 
 Overlay overlay109

@@ -1992,15 +1992,15 @@
     .short 340
     .endm
 
-    .macro ScrCmd_155 arg0, arg1
+    .macro GetTrainerInfoTrainerClass variant, destVar
     .short 341
-    .short \arg0
-    .short \arg1
+    .short \variant
+    .short \destVar
     .endm
 
-    .macro ScrCmd_156 arg0
+    .macro SetTrainerInfoAppearance appearance
     .short 342
-    .short \arg0
+    .short \appearance
     .endm
 
     .macro CheckPokedexAcquired destVarID
@@ -2279,11 +2279,11 @@
     .short \z
     .endm
 
-    .macro ScrCmd_18B arg0, arg1, arg2
+    .macro SetBgEventPos index, x, z
     .short 395
-    .short \arg0
-    .short \arg1
-    .short \arg2
+    .short \index
+    .short \x
+    .short \z
     .endm
 
     .macro ScrCmd_18C arg0, arg1
@@ -2504,9 +2504,9 @@
     .short \arg0
     .endm
 
-    .macro ScrCmd_1B5 listIndex
+    .macro StartRankingsMachine machineID
     .short 437
-    .short \listIndex
+    .short \machineID
     .endm
 
     .macro GetTimeOfDay destVarID
@@ -3928,10 +3928,10 @@
     .short \arg1
     .endm
 
-    .macro ScrCmd_292 arg0, arg1
+    .macro CheckShouldShowGhost percentChance, destVar
     .short 658
-    .byte \arg0
-    .short \arg1
+    .byte \percentChance
+    .short \destVar
     .endm
 
     .macro GetUndergroundTalkCounter destVarID
@@ -3982,10 +3982,10 @@
     .short \arg3
     .endm
 
-    .macro ScrCmd_29C arg0, arg1
+    .macro CalculateTrainerInfoAppearance variant, destVar
     .short 668
-    .short \arg0
-    .short \arg1
+    .short \variant
+    .short \destVar
     .endm
 
     .macro AddMenuEntry entryStringID, entryIndex

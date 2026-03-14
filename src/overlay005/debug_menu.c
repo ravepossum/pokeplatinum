@@ -672,15 +672,15 @@ static void Task_DebugMenu_Fly(SysTask *task, void *data)
         }
 
         Pokemon *mon = Party_GetPokemonBySlotIndex(SaveData_GetParty(fly->fieldSystem->saveData), 0);
-        fly->taskCutIn = SysTask_HMCutIn_New(fly->fieldSystem, TRUE, mon, PlayerAvatar_Gender(fly->fieldSystem->playerAvatar));
+        fly->taskCutIn = HMCutIn_StartTask(fly->fieldSystem, TRUE, mon, PlayerAvatar_Gender(fly->fieldSystem->playerAvatar));
 
         break;
     case DEBUG_FLY_WAIT_CUTIN_AND_START_FLY:
-        if (!CheckHMCutInFinished(fly->taskCutIn)) {
+        if (!HMCutIn_IsFinished(fly->taskCutIn)) {
             return;
         }
 
-        SysTask_HMCutIn_SetTaskDone(fly->taskCutIn);
+        HMCutIn_EndTask(fly->taskCutIn);
 
         mapCtx = fly->mapCtx;
 
