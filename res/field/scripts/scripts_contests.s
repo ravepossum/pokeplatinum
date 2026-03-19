@@ -154,7 +154,7 @@ ContestHallLobby_HideReporter:
     End
 
 _01B1:
-    GoToIfSet FLAG_UNK_0x0159, _01BE
+    GoToIfSet FLAG_TALKED_TO_CONTEST_HALL_LOBBY_RICH_BOY, _01BE
     Return
 
 _01BE:
@@ -670,7 +670,7 @@ ContestRegistration_StartPracticeContest:
     End
 
 Contest_DoContest:
-    ClearFlag FLAG_UNK_0x0220
+    ClearFlag FLAG_HIDE_HEARTHOME_HIKER_3
     SetVar VAR_ONGOING_CONTEST, TRUE
     Call OngoingContest_GetContestantGFX
     PlayFanfare SEQ_SE_DP_KAIDAN2
