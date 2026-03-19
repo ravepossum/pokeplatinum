@@ -122,23 +122,23 @@
       "en_US": "Choose a Pokémon."
     },
     {
-      "id": "pl_msg_00000453_00030",
+      "id": "PartyMenu_MoveToWhere",
       "en_US": "Move to where?"
     },
     {
-      "id": "pl_msg_00000453_00031",
+      "id": "Partymenu_Text_GiveToWhichMon",
       "en_US": "Give to which Pokémon?"
     },
     {
-      "id": "pl_msg_00000453_00032",
+      "id": "Partymenu_Text_UseOnWhichMon",
       "en_US": "Use on which Pokémon?"
     },
     {
-      "id": "pl_msg_00000453_00033",
+      "id": "Partymenu_Text_TeachWhichMon",
       "en_US": "Teach which Pokémon?"
     },
     {
-      "id": "pl_msg_00000453_00034",
+      "id": "Partymenu_Text_ChooseMonAndConfirm",
       "en_US": "Choose Pokémon and confirm."
     },
     {
@@ -146,7 +146,7 @@
       "garbage": 13
     },
     {
-      "id": "pl_msg_00000453_00036",
+      "id": "PartyMenu_Text_UseOnWhichPokemon",
       "en_US": "Use on which Pokémon?"
     },
     {
@@ -157,28 +157,28 @@
       ]
     },
     {
-      "id": "pl_msg_00000453_00038",
+      "id": "PartyMenu_Text_DoWhatWithAnItem",
       "en_US": [
         "Do what with\n",
         "an item?"
       ]
     },
     {
-      "id": "pl_msg_00000453_00039",
+      "id": "PartyMenu_Text_DoWhatWithMail",
       "en_US": [
         "Do what with\n",
         "the Mail?"
       ]
     },
     {
-      "id": "pl_msg_00000453_00040",
+      "id": "PartyMenu_Text_RestoreWhichMove",
       "en_US": [
         "Restore\n",
         "which move?"
       ]
     },
     {
-      "id": "pl_msg_00000453_00041",
+      "id": "PartyMenu_Text_BoostPPOfWhichMove",
       "en_US": [
         "Boost the PP\n",
         "of which move?"
@@ -192,7 +192,7 @@
       ]
     },
     {
-      "id": "pl_msg_00000453_00043",
+      "id": "PartyMenu_Text_SendMailToPC",
       "en_US": [
         "Send the removed Mail to\n",
         "your PC?"
@@ -207,11 +207,11 @@
       "en_US": "No"
     },
     {
-      "id": "pl_msg_00000453_00046",
+      "id": "PartyMenu_Text_MailWasSentToYourPC",
       "en_US": "The Mail was sent to your PC."
     },
     {
-      "id": "pl_msg_00000453_00047",
+      "id": "PartyMenu_Text_IfmailIsRemovedMessageWillBeLostConfirm",
       "en_US": [
         "If the Mail is removed, its written\n",
         "message will be lost. Is that OK?"
@@ -226,18 +226,18 @@
       "en_US": "No"
     },
     {
-      "id": "pl_msg_00000453_00050",
+      "id": "PartyMenu_Text_MailboxIsFull",
       "en_US": "Your PC’s Mailbox is full."
     },
     {
-      "id": "pl_msg_00000453_00051",
+      "id": "PartyMenu_Text_MailWasTakenFromMon",
       "en_US": [
         "Mail was taken from the\n",
         "Pokémon."
       ]
     },
     {
-      "id": "pl_msg_00000453_00052",
+      "id": "PartyMenu_Text_MonWantsToLearnMove",
       "en_US": [
         "{STRVAR_1 1, 0, 0} wants to learn the\n",
         "move {STRVAR_1 6, 1, 0}.\r",
@@ -256,7 +256,7 @@
       "en_US": "No"
     },
     {
-      "id": "pl_msg_00000453_00055",
+      "id": "PartyMenu_Text_StopTryingToTeachMove",
       "en_US": [
         "Stop trying to teach\n",
         "{STRVAR_1 6, 1, 0}?"
@@ -271,21 +271,21 @@
       "en_US": "No"
     },
     {
-      "id": "pl_msg_00000453_00058",
+      "id": "PartyMenu_Text_MonDidNotLearnMove",
       "en_US": [
         "{STRVAR_1 1, 0, 0} did not learn the\n",
         "move {STRVAR_1 6, 1, 0}."
       ]
     },
     {
-      "id": "pl_msg_00000453_00059",
+      "id": "PartyMenu_Text_WhichMoveShouldBeForgotten",
       "en_US": [
         "Which move should be\n",
         "forgotten?"
       ]
     },
     {
-      "id": "pl_msg_00000453_00060",
+      "id": "PartyMenu_Text_MonForgotMove",
       "en_US": [
         "1, {PAUSE 20}2, and{PAUSE 20}... {PAUSE 20}... {PAUSE 20}... Poof!{WAIT 3}{WAIT 5}\r",
         "{STRVAR_1 1, 0, 0} forgot how to\n",
@@ -294,14 +294,14 @@
       ]
     },
     {
-      "id": "pl_msg_00000453_00061",
+      "id": "PartyMenu_Text_MonLearnedMove",
       "en_US": [
         "{STRVAR_1 1, 0, 0} learned\n",
         "{STRVAR_1 6, 1, 0}!{WAIT 4}{WAIT 2}"
       ]
     },
     {
-      "id": "pl_msg_00000453_00062",
+      "id": "PartyMenu_Text_MonAndMoveAreNotCompatible",
       "en_US": [
         "{STRVAR_1 1, 0, 0} and {STRVAR_1 6, 1, 0}\n",
         "are not compatible.\r",
@@ -309,49 +309,49 @@
       ]
     },
     {
-      "id": "pl_msg_00000453_00063",
+      "id": "PartyMenu_Text_MonAlreadyKnowsMove",
       "en_US": [
         "{STRVAR_1 1, 0, 0} already knows\n",
         "{STRVAR_1 6, 1, 0}."
       ]
     },
     {
-      "id": "pl_msg_00000453_00064",
+      "id": "PartyMenu_Text_MonsHPWasRestored",
       "en_US": [
         "{STRVAR_1 1, 0, 0}’s HP was restored\n",
         "by {STRVAR_1 52, 1, 0} point(s)."
       ]
     },
     {
-      "id": "pl_msg_00000453_00065",
+      "id": "PartyMenu_Text_MonWasCuredOfPoison",
       "en_US": [
         "{STRVAR_1 1, 0, 0} was cured of its\n",
         "poisoning."
       ]
     },
     {
-      "id": "pl_msg_00000453_00066",
+      "id": "PartyMenu_Text_MonWasCuredOfParalysis",
       "en_US": [
         "{STRVAR_1 1, 0, 0} was cured of\n",
         "paralysis."
       ]
     },
     {
-      "id": "pl_msg_00000453_00067",
+      "id": "PartyMenu_Text_MonsBurnWasHealed",
       "en_US": [
         "{STRVAR_1 1, 0, 0}’s\n",
         "burn was healed."
       ]
     },
     {
-      "id": "pl_msg_00000453_00068",
+      "id": "PartyMenu_Text_MonWasThawedOut",
       "en_US": [
         "{STRVAR_1 1, 0, 0} was\n",
         "thawed out."
       ]
     },
     {
-      "id": "pl_msg_00000453_00069",
+      "id": "PartyMenu_Text_PPWasRestored",
       "en_US": "PP was restored."
     },
     {
@@ -362,56 +362,56 @@
       ]
     },
     {
-      "id": "pl_msg_00000453_00071",
+      "id": "PartyMenu_Text_MonBecameHealthy",
       "en_US": [
         "{STRVAR_1 1, 0, 0}\n",
         "became healthy."
       ]
     },
     {
-      "id": "pl_msg_00000453_00072",
+      "id": "PartyMenu_Text_MovesPPIncreased",
       "en_US": [
         "{STRVAR_1 6, 0, 0}’s PP\n",
         "increased."
       ]
     },
     {
-      "id": "pl_msg_00000453_00073",
+      "id": "PartyMenu_Text_MonSnappedOutOfConfusion",
       "en_US": [
         "{STRVAR_1 1, 0, 0} snapped out of its\n",
         "confusion."
       ]
     },
     {
-      "id": "pl_msg_00000453_00074",
+      "id": "PartyMenu_Text_MonGotOverInfatuation",
       "en_US": [
         "{STRVAR_1 1, 0, 0} got over its\n",
         "infatuation."
       ]
     },
     {
-      "id": "pl_msg_00000453_00075",
+      "id": "PartyMenu_Text_MonBaseStatRose",
       "en_US": [
         "{STRVAR_1 1, 0, 0}’s base {STRVAR_1 13, 1, 0}\n",
         "rose!"
       ]
     },
     {
-      "id": "pl_msg_00000453_00076",
+      "id": "PartyMenu_Text_CantBeUsedUntilBadgeIsObtained",
       "en_US": [
         "This can’t be used until a new\n",
         "Badge is obtained."
       ]
     },
     {
-      "id": "pl_msg_00000453_00077",
+      "id": "PartyMenu_Text_MustRemoveMail",
       "en_US": [
         "Must remove Mail before the\n",
         "Pokémon is allowed to hold an item."
       ]
     },
     {
-      "id": "pl_msg_00000453_00078",
+      "id": "PartyMenu_Text_MonAlreadyHoldingItemsSwitchItems",
       "en_US": [
         "{STRVAR_1 1, 0, 0} is already holding\n",
         "{STRVAR_1 8, 1, 0}.\r",
@@ -428,25 +428,25 @@
       "en_US": "No"
     },
     {
-      "id": "pl_msg_00000453_00081",
+      "id": "PartyMenu_Text_MonIsntHoldingAnything",
       "en_US": [
         "{STRVAR_1 1, 0, 0} isn’t holding\n",
         "anything."
       ]
     },
     {
-      "id": "pl_msg_00000453_00082",
+      "id": "PartyMenu_Text_ReceivedItemFromMon",
       "en_US": [
         "Received the {STRVAR_1 8, 1, 0}\n",
         "from {STRVAR_1 1, 0, 0}."
       ]
     },
     {
-      "id": "pl_msg_00000453_00083",
+      "id": "PartyMenu_Text_BagIsFull",
       "en_US": "The Bag is full."
     },
     {
-      "id": "pl_msg_00000453_00084",
+      "id": "PartyMenu_Text_ItemWasTakenAndReplacedWithItem",
       "en_US": [
         "The {STRVAR_1 8, 1, 0} was taken and\n",
         "replaced with the {STRVAR_1 8, 2, 0}."
@@ -477,7 +477,7 @@
       "garbage": 3
     },
     {
-      "id": "pl_msg_00000453_00091",
+      "id": "PartyMenu_Text_MonWokeUp",
       "en_US": [
         "{STRVAR_1 1, 0, 0}\n",
         "woke up."
@@ -516,7 +516,7 @@
       "garbage": 16
     },
     {
-      "id": "pl_msg_00000453_00100",
+      "id": "PartyMenu_Text_NoMoreThanTwoMon",
       "en_US": [
         "No more than two Pokémon\n",
         "may enter."
@@ -527,7 +527,7 @@
       "garbage": 10
     },
     {
-      "id": "pl_msg_00000453_00102",
+      "id": "PartyMenu_Text_YoureAlreadySurfing",
       "en_US": "You’re already surfing."
     },
     {
@@ -535,11 +535,11 @@
       "garbage": 13
     },
     {
-      "id": "pl_msg_00000453_00104",
+      "id": "PartyMenu_Text_CantUseThatHere",
       "en_US": "You can’t use that here."
     },
     {
-      "id": "pl_msg_00000453_00105",
+      "id": "Partymenu_Text_ItWontHaveAnyEffect",
       "en_US": "It won’t have any effect."
     },
     {
@@ -547,7 +547,7 @@
       "garbage": 14
     },
     {
-      "id": "pl_msg_00000453_00107",
+      "id": "Partymenu_Text_TwoMonAreNeeded",
       "en_US": "Two Pokémon are needed."
     },
     {
@@ -559,7 +559,7 @@
       "garbage": 15
     },
     {
-      "id": "pl_msg_00000453_00110",
+      "id": "PartyMenu_Text_MonBecameMoreFriendly",
       "en_US": [
         "{STRVAR_1 1, 0, 0} became more friendly.\r",
         "However, its base {STRVAR_1 13, 1, 0} fell!"
@@ -606,80 +606,80 @@
       ]
     },
     {
-      "id": "pl_msg_00000453_00118",
+      "id": "PartyMenu_Text_MonWasGivenItem",
       "en_US": [
         "{STRVAR_1 1, 0, 0} was given the\n",
         "{STRVAR_1 8, 1, 0} to hold."
       ]
     },
     {
-      "id": "pl_msg_00000453_00119",
+      "id": "Partymenu_Text_ThreeMonAreNeeded",
       "en_US": "Three Pokémon are needed."
     },
     {
-      "id": "pl_msg_00000453_00120",
+      "id": "Partymenu_Text_FourMonAreNeeded",
       "en_US": "Four Pokémon are needed."
     },
     {
-      "id": "pl_msg_00000453_00121",
+      "id": "Partymenu_Text_FiveMonAreNeeded",
       "en_US": "Five Pokémon are needed."
     },
     {
-      "id": "pl_msg_00000453_00122",
+      "id": "Partymenu_Text_SixMonAreNeeded",
       "en_US": "Six Pokémon are needed."
     },
     {
-      "id": "pl_msg_00000453_00123",
+      "id": "PartyMenu_Text_NoMoreThanOneMon",
       "en_US": [
         "No more than one Pokémon\n",
         "may enter."
       ]
     },
     {
-      "id": "pl_msg_00000453_00124",
+      "id": "PartyMenu_Text_NoMoreThanThreeMon",
       "en_US": [
         "No more than three Pokémon\n",
         "may enter."
       ]
     },
     {
-      "id": "pl_msg_00000453_00125",
+      "id": "PartyMenu_Text_NoMoreThanFourMon",
       "en_US": [
         "No more than four Pokémon\n",
         "may enter."
       ]
     },
     {
-      "id": "pl_msg_00000453_00126",
+      "id": "PartyMenu_Text_NoMoreThanFiveMon",
       "en_US": [
         "No more than five Pokémon\n",
         "may enter."
       ]
     },
     {
-      "id": "pl_msg_00000453_00127",
+      "id": "PartyMenu_Text_MailWasTransferredFromMailbox",
       "en_US": [
         "Mail was transferred from\n",
         "the Mailbox."
       ]
     },
     {
-      "id": "pl_msg_00000453_00128",
+      "id": "PartyMenu_Text_MonHoldingItemCannotHoldMail",
       "en_US": [
         "This Pokémon is holding an item.\n",
         "It cannot hold Mail."
       ]
     },
     {
-      "id": "pl_msg_00000453_00129",
+      "id": "PartyMenu_Text_BallCapsuleWasSet",
       "en_US": "The Ball Capsule was set."
     },
     {
-      "id": "pl_msg_00000453_00130",
+      "id": "PartyMenu_Text_TwoCapsulsesCantBeSet",
       "en_US": "Two capsules can’t be set."
     },
     {
-      "id": "pl_msg_00000453_00131",
+      "id": "PartyMenu_Text_ThisCantBeUsedOnThatPokemon",
       "en_US": [
         "This can’t be used on\n",
         "that Pokémon."
@@ -710,7 +710,7 @@
       "garbage": 3
     },
     {
-      "id": "pl_msg_00000453_00138",
+      "id": "PartyMenu_Text_NotEnoughHP",
       "en_US": "Not enough HP..."
     },
     {
@@ -806,19 +806,19 @@
       "en_US": "TAKE"
     },
     {
-      "id": "pl_msg_00000453_00162",
+      "id": "PartyMenu_Text_MoveSlot0",
       "en_US": "{STRVAR_1 6, 0, 0}"
     },
     {
-      "id": "pl_msg_00000453_00163",
+      "id": "PartyMenu_Text_MoveSlot1",
       "en_US": "{STRVAR_1 6, 0, 0}"
     },
     {
-      "id": "pl_msg_00000453_00164",
+      "id": "PartyMenu_Text_MoveSlot2",
       "en_US": "{STRVAR_1 6, 0, 0}"
     },
     {
-      "id": "pl_msg_00000453_00165",
+      "id": "PartyMenu_Text_MoveSlot3",
       "en_US": "{STRVAR_1 6, 0, 0}"
     },
     {
@@ -886,18 +886,18 @@
       "en_US": "UNABLE!"
     },
     {
-      "id": "pl_msg_00000453_00182",
+      "id": "PartyMenu_Text_IdenticalMonNotPermitted",
       "en_US": "Identical Pokémon are not permitted."
     },
     {
-      "id": "pl_msg_00000453_00183",
+      "id": "PartyMenu_Text_SomeMonHoldingIdenticalItems",
       "en_US": [
         "Some Pokémon are holding identical\n",
         "items."
       ]
     },
     {
-      "id": "pl_msg_00000453_00184",
+      "id": "PartyMenu_Text_TotalPartyLevelOverLimit",
       "en_US": [
         "The total of all party members’\n",
         "levels has gone over {STRVAR_1 52, 0, 0}."
@@ -950,21 +950,21 @@
       ]
     },
     {
-      "id": "pl_msg_00000453_00195",
+      "id": "PartyMenu_Text_BallCapsuleWillBeDetached",
       "en_US": [
         "The Ball Capsule will be detached.\n",
         "Will that be OK?"
       ]
     },
     {
-      "id": "pl_msg_00000453_00196",
+      "id": "PartyMenu_Text_CantUseWhenYouHaveSomeoneWithYou",
       "en_US": [
         "You can’t use that when you have\n",
         "someone with you."
       ]
     },
     {
-      "id": "pl_msg_00000453_00197",
+      "id": "Partymenu_Text_SelectEgg",
       "en_US": "Please select an Egg."
     },
     {
@@ -983,7 +983,7 @@
       "en_US": "CONFIRM"
     },
     {
-      "id": "pl_msg_00000453_00201",
+      "id": "PartyMenu_Text_MustUseSameKindOfMon",
       "en_US": [
         "You must use the same kind\n",
         "of Pokémon."
@@ -994,14 +994,14 @@
       "en_US": "{STRVAR_1 0, 0, 0} changed Forme!"
     },
     {
-      "id": "pl_msg_00000453_00203",
+      "id": "PartyMenu_Text_MonCannotHoldItem",
       "en_US": [
         "{STRVAR_1 1, 0, 0} cannot hold\n",
         "{STRVAR_1 8, 1, 0}!"
       ]
     },
     {
-      "id": "pl_msg_00000453_00204",
+      "id": "PartyMenu_Text_ItemCannotBeGivenHere",
       "en_US": [
         "The {STRVAR_1 8, 0, 0} cannot be\n",
         "given here.\n"
