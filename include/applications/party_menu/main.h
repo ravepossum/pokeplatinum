@@ -11,6 +11,45 @@
 #define PARTY_MENU_SELECTION_ELIGIBLE   1
 #define PARTY_MENU_SELECTION_ENTERED    2
 
+enum PartyMenuStates {
+    PARTY_MENU_STATE_0,
+    PARTY_MENU_STATE_1,
+    PARTY_MENU_STATE_2,
+    PARTY_MENU_STATE_3,
+    PARTY_MENU_STATE_4,
+    PARTY_MENU_STATE_5,
+    PARTY_MENU_STATE_6,
+    PARTY_MENU_STATE_7,
+    PARTY_MENU_STATE_8,
+    PARTY_MENU_STATE_9,
+    PARTY_MENU_STATE_10,
+    PARTY_MENU_STATE_11,
+    PARTY_MENU_STATE_12,
+    PARTY_MENU_STATE_13,
+    PARTY_MENU_STATE_14,
+    PARTY_MENU_STATE_15,
+    PARTY_MENU_STATE_16,
+    PARTY_MENU_STATE_17,
+    PARTY_MENU_STATE_18,
+    PARTY_MENU_STATE_19,
+    PARTY_MENU_STATE_20,
+    PARTY_MENU_STATE_21,
+    PARTY_MENU_STATE_22,
+    PARTY_MENU_STATE_23,
+    PARTY_MENU_STATE_24,
+    PARTY_MENU_STATE_25,
+    PARTY_MENU_STATE_26,
+    PARTY_MENU_STATE_27,
+    PARTY_MENU_STATE_28,
+    PARTY_MENU_STATE_29,
+    PARTY_MENU_STATE_30,
+    PARTY_MENU_STATE_31,
+    PARTY_MENU_STATE_32,
+    PARTY_MENU_STATE_33
+};
+
+typedef void (*PartyMenuAction)(PartyMenuApplication *application, int *partyMenuState);
+
 extern const ApplicationManagerTemplate gPokemonPartyAppTemplate;
 
 void PartyMenu_UpdateFormChangeGraphicsMode(PartyMenuApplication *application, BOOL isTeardown);

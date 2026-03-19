@@ -308,7 +308,7 @@ typedef struct PartyMenuApplication {
     FunctionPtrPair unk_B04;
     u8 unk_B0C;
     u8 unk_B0D;
-    u8 unk_B0E;
+    u8 unk_B0E; // a PartyMenuState in most contexts, but then turns into a local state in sub_02085804()
     u8 switchTargetSlot : 6;
     u8 inSwitchMode : 1;
     u8 hideCancel : 1;

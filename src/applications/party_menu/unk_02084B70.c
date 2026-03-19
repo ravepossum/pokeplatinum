@@ -589,7 +589,7 @@ int sub_02085804(PartyMenuApplication *application)
             PartyMenu_UpdateCursor(application, 0, 1);
             application->currPartySlot = 7;
 
-            return 5;
+            return PARTY_MENU_STATE_5;
         }
 
         if (application->currPartySlot != 0) {
@@ -651,13 +651,13 @@ int sub_02085804(PartyMenuApplication *application)
                 Bag_TryRemoveItem(application->partyMenu->bag, application->partyMenu->usedItemID, 1, HEAP_ID_PARTY_MENU);
                 application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
                 application->currPartySlot = 7;
-                return 32;
+                return PARTY_MENU_STATE_32;
             }
         }
         break;
     }
 
-    return 7;
+    return PARTY_MENU_STATE_7;
 }
 
 static int sub_02085A70(void *applicationPtr)
@@ -765,7 +765,7 @@ static int sub_02085C50(void *applicationPtr)
 
             application->unk_B04.unk_00 = sub_02085FB4;
             application->unk_B04.unk_04 = sub_02086008;
-            application->unk_B0E = 26;
+            application->unk_B0E = PARTY_MENU_STATE_26;
 
             return 24;
         case 0xfffe:
@@ -849,10 +849,10 @@ int sub_02085EF4(PartyMenuApplication *application)
     String_Free(string);
     PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
 
-    application->unk_B0E = 5;
+    application->unk_B0E = PARTY_MENU_STATE_5;
     application->unk_B13 = 5;
 
-    return 24;
+    return PARTY_MENU_STATE_24;
 }
 
 static int sub_02085FB4(void *applicationPtr)
@@ -865,7 +865,7 @@ static int sub_02085FB4(void *applicationPtr)
     PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, FALSE);
 
     application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_OVERWRITE_MOVE_LEVEL_UP;
-    application->unk_B0E = 25;
+    application->unk_B0E = PARTY_MENU_STATE_25;
 
     return 24;
 }
@@ -881,7 +881,7 @@ static int sub_02086008(void *applicationPtr)
 
     application->unk_B04.unk_00 = sub_02086060;
     application->unk_B04.unk_04 = sub_020860AC;
-    application->unk_B0E = 26;
+    application->unk_B0E = PARTY_MENU_STATE_26;
 
     return 24;
 }
@@ -895,7 +895,7 @@ static int sub_02086060(void *applicationPtr)
     String_Free(string);
     PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, FALSE);
 
-    application->unk_B0E = 5;
+    application->unk_B0E = PARTY_MENU_STATE_5;
     application->unk_B13 = 4;
 
     return 24;
@@ -912,7 +912,7 @@ static int sub_020860AC(void *applicationPtr)
 
     application->unk_B04.unk_00 = sub_02085FB4;
     application->unk_B04.unk_04 = sub_02086008;
-    application->unk_B0E = 26;
+    application->unk_B0E = PARTY_MENU_STATE_26;
 
     return 24;
 }
@@ -967,7 +967,7 @@ int sub_0208615C(PartyMenuApplication *application)
         String_Free(string);
         PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-        application->unk_B0E = 25;
+        application->unk_B0E = PARTY_MENU_STATE_25;
         break;
     case 0xfd:
         string = MessageLoader_GetNewString(application->messageLoader, 63);
@@ -975,7 +975,7 @@ int sub_0208615C(PartyMenuApplication *application)
         String_Free(string);
         PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-        application->unk_B0E = 25;
+        application->unk_B0E = PARTY_MENU_STATE_25;
         break;
     case 0xfe:
         string = MessageLoader_GetNewString(application->messageLoader, 52);
@@ -985,7 +985,7 @@ int sub_0208615C(PartyMenuApplication *application)
 
         application->unk_B04.unk_00 = sub_02086438;
         application->unk_B04.unk_04 = sub_0208648C;
-        application->unk_B0E = 26;
+        application->unk_B0E = PARTY_MENU_STATE_26;
         break;
     case 0xff:
         string = MessageLoader_GetNewString(application->messageLoader, 62);
@@ -994,7 +994,7 @@ int sub_0208615C(PartyMenuApplication *application)
         PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
 
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-        application->unk_B0E = 25;
+        application->unk_B0E = PARTY_MENU_STATE_25;
         break;
     }
 
@@ -1020,8 +1020,8 @@ int sub_020862F8(PartyMenuApplication *application)
     String_Free(string);
     PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
 
-    application->unk_B0E = 22;
-    return 24;
+    application->unk_B0E = PARTY_MENU_STATE_22;
+    return PARTY_MENU_STATE_24;
 }
 
 int sub_020863A0(PartyMenuApplication *application)
@@ -1040,12 +1040,12 @@ int sub_020863A0(PartyMenuApplication *application)
         PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, FALSE);
 
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-        application->unk_B0E = 25;
+        application->unk_B0E = PARTY_MENU_STATE_25;
 
-        return 24;
+        return PARTY_MENU_STATE_24;
     }
 
-    return 22;
+    return PARTY_MENU_STATE_22;
 }
 
 static int sub_02086438(void *applicationPtr)
@@ -1058,7 +1058,7 @@ static int sub_02086438(void *applicationPtr)
     PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, FALSE);
 
     application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_OVERWRITE_MOVE_TM_HM;
-    application->unk_B0E = 25;
+    application->unk_B0E = PARTY_MENU_STATE_25;
 
     return 24;
 }
@@ -1074,7 +1074,7 @@ static int sub_0208648C(void *applicationPtr)
 
     application->unk_B04.unk_00 = sub_020864E4;
     application->unk_B04.unk_04 = sub_02086538;
-    application->unk_B0E = 26;
+    application->unk_B0E = PARTY_MENU_STATE_26;
 
     return 24;
 }
@@ -1089,7 +1089,7 @@ static int sub_020864E4(void *applicationPtr)
     PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, FALSE);
 
     application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-    application->unk_B0E = 25;
+    application->unk_B0E = PARTY_MENU_STATE_25;
 
     return 24;
 }
@@ -1105,7 +1105,7 @@ static int sub_02086538(void *applicationPtr)
 
     application->unk_B04.unk_00 = sub_02086438;
     application->unk_B04.unk_04 = sub_0208648C;
-    application->unk_B0E = 26;
+    application->unk_B0E = PARTY_MENU_STATE_26;
 
     return 24;
 }
@@ -1202,7 +1202,7 @@ int sub_02086774(PartyMenuApplication *application)
         Menu_Free(application->contextMenu, NULL);
         StringList_Free(application->contextMenuChoices);
         PartyMenu_PrintShortMessage(application, pl_msg_00000453_00032, TRUE);
-        return 4;
+        return PARTY_MENU_STATE_4;
     default:
         Window_EraseMessageBox(&application->windows[33], 1);
         Window_EraseStandardFrame(&application->windows[36], 1);
@@ -1221,12 +1221,12 @@ int sub_02086774(PartyMenuApplication *application)
         PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
 
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-        application->unk_B0E = 25;
+        application->unk_B0E = PARTY_MENU_STATE_25;
 
-        return 24;
+        return PARTY_MENU_STATE_24;
     }
 
-    return 6;
+    return PARTY_MENU_STATE_6;
 }
 
 void sub_020868B0(PartyMenuApplication *application)
@@ -1244,7 +1244,7 @@ void sub_020868B0(PartyMenuApplication *application)
     PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
 
     application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-    application->unk_B0E = 25;
+    application->unk_B0E = PARTY_MENU_STATE_25;
 }
 
 static u16 GetCurrentMapLabel(PartyMenuApplication *application)

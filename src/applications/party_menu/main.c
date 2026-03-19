@@ -21,7 +21,6 @@
 #include "applications/party_menu/windows.h"
 #include "applications/pokemon_summary_screen/main.h"
 #include "field/field_system.h"
-#include "functypes/funcptr_0207E634.h"
 
 #include "bag.h"
 #include "battle_regulation.h"
@@ -117,7 +116,7 @@ static void InitAnimAndPaletteForSlot(PartyMenuApplication *application, u8 slot
 static void SetupMenuCursor(PartyMenuApplication *application);
 static void CheckCancellableMode(PartyMenuApplication *application);
 static int HandleGameWindowEvent(PartyMenuApplication *application);
-static u8 HandleWindowInputEvent(PartyMenuApplication *application, int *param1);
+static u8 HandleWindowInputEvent(PartyMenuApplication *application, int *partyMenuState);
 static u8 sub_020805E4(PartyMenuApplication *application);
 static void DrawMemberTouchScreenButton(PartyMenuApplication *application, u8 slot, u8 anim);
 static int GetValidWindowLayout(PartyMenuApplication *application);
@@ -347,125 +346,125 @@ static BOOL PartyMenu_Main(ApplicationManager *appMan, int *state)
     PartyMenuApplication *v0 = ApplicationManager_Data(appMan);
 
     switch (*state) {
-    case 0:
+    case PARTY_MENU_STATE_0:
         *state = sub_0207E490(v0);
         break;
-    case 1:
+    case PARTY_MENU_STATE_1:
         *state = sub_0207E518(v0);
         break;
-    case 2:
+    case PARTY_MENU_STATE_2:
         if (HandleWindowInputEvent(v0, state) == 1) {
-            *state = 1;
+            *state = PARTY_MENU_STATE_1;
         }
         break;
-    case 3:
+    case PARTY_MENU_STATE_3:
         *state = sub_02084B34(v0);
         break;
-    case 4:
+    case PARTY_MENU_STATE_4:
         *state = sub_0207E5B4(v0);
         break;
-    case 5:
+    case PARTY_MENU_STATE_5:
         *state = v0->unk_B00(v0);
         break;
-    case 6:
+    case PARTY_MENU_STATE_6:
         *state = sub_02086774(v0);
         break;
-    case 7:
+    case PARTY_MENU_STATE_7:
         *state = sub_02085804(v0);
         break;
-    case 8:
+    case PARTY_MENU_STATE_8:
         *state = sub_0207E5F4(v0);
         break;
-    case 9:
+    case PARTY_MENU_STATE_9:
         *state = FinalizeMessageProcessing(v0);
         break;
-    case 10:
+    case PARTY_MENU_STATE_10:
         *state = ProcessPokemonItemSwap(v0);
         break;
-    case 11:
+    case PARTY_MENU_STATE_11:
         *state = HandleMessageCompletion(v0);
         break;
-    case 12:
+    case PARTY_MENU_STATE_12:
         *state = ProcessMessageResult(v0);
         break;
-    case 13:
+    case PARTY_MENU_STATE_13:
         *state = HandleOverlayCompletion(v0);
         break;
-    case 14:
+    case PARTY_MENU_STATE_14:
         *state = UpdatePokemonFormWithItem(v0);
         break;
-    case 15:
+    case PARTY_MENU_STATE_15:
         *state = sub_0207E634(v0);
         break;
-    case 16:
+    case PARTY_MENU_STATE_16:
         *state = ProcessItemApplication(v0);
         break;
-    case 17:
+    case PARTY_MENU_STATE_17:
         *state = sub_02083658(v0);
         break;
-    case 18:
+    case PARTY_MENU_STATE_18:
         *state = sub_020836A8(v0);
         break;
-    case 19:
+    case PARTY_MENU_STATE_19:
         *state = sub_020836E4(v0);
         break;
-    case 20:
+    case PARTY_MENU_STATE_20:
         *state = sub_020839BC(v0);
         break;
-    case 21:
+    case PARTY_MENU_STATE_21:
         *state = sub_0207E750(v0);
         break;
-    case 22:
+    case PARTY_MENU_STATE_22:
         *state = sub_020863A0(v0);
         break;
-    case 23:
+    case PARTY_MENU_STATE_23:
         *state = sub_020845A8(v0);
         break;
-    case 24:
+    case PARTY_MENU_STATE_24:
         *state = sub_0207E6C0(v0);
         break;
-    case 25:
+    case PARTY_MENU_STATE_25:
         *state = sub_0207E6E4(v0);
         break;
-    case 26:
+    case PARTY_MENU_STATE_26:
         *state = sub_0207E708(v0);
         break;
-    case 27:
+    case PARTY_MENU_STATE_27:
         *state = sub_0207E714(v0);
         break;
-    case 28: {
+    case PARTY_MENU_STATE_28: {
         u8 v1 = sub_020805E4(v0);
 
         if (v1 == 0) {
-            *state = 29;
+            *state = PARTY_MENU_STATE_29;
         } else if (v1 == 3) {
-            *state = 1;
+            *state = PARTY_MENU_STATE_1;
         }
     } break;
-    case 29:
+    case PARTY_MENU_STATE_29:
         if (sub_02083D1C(v0) == 1) {
-            *state = 1;
+            *state = PARTY_MENU_STATE_1;
         }
         break;
-    case 30:
+    case PARTY_MENU_STATE_30:
         *state = ProcessWindowInput(v0);
         break;
-    case 31:
+    case PARTY_MENU_STATE_31:
         if (PartyMenuFormChange_ChangeForm(v0) == 1) {
             PartyMenu_TeardownFormChangeAnim(v0);
-            *state = 25;
+            *state = PARTY_MENU_STATE_25;
         } else {
-            *state = 31;
+            *state = PARTY_MENU_STATE_31;
         }
         break;
-    case 32:
+    case PARTY_MENU_STATE_32:
         App_StartScreenFade(TRUE, HEAP_ID_PARTY_MENU);
-        *state = 33;
+        *state = PARTY_MENU_STATE_33;
         break;
-    case 33:
+    case PARTY_MENU_STATE_33:
         if (IsScreenFadeDone() == TRUE) {
             v0->partyMenu->selectedMonSlot = v0->currPartySlot;
-            return 1;
+            return TRUE;
         }
         break;
     }
@@ -475,7 +474,7 @@ static BOOL PartyMenu_Main(ApplicationManager *appMan, int *state)
     sub_0207FE1C(v0);
     SpriteSystem_DrawSprites(v0->spriteMan);
 
-    return 0;
+    return FALSE;
 }
 
 static int sub_0207E490(PartyMenuApplication *application)
@@ -483,29 +482,29 @@ static int sub_0207E490(PartyMenuApplication *application)
     if (IsScreenFadeDone() == TRUE) {
         if ((application->partyMenu->mode == PARTY_MENU_MODE_USE_ITEM) || (application->partyMenu->mode == PARTY_MENU_MODE_USE_EVO_ITEM)) {
             if (CheckItemSacredAsh(application->partyMenu->usedItemID) == 1) {
-                application->unk_B0E = 0;
-                return 7;
+                application->unk_B0E = PARTY_MENU_STATE_0;
+                return PARTY_MENU_STATE_7;
             }
 
-            return 4;
+            return PARTY_MENU_STATE_4;
         } else if (application->partyMenu->mode == PARTY_MENU_MODE_TEACH_MOVE) {
-            return 21;
+            return PARTY_MENU_STATE_21;
         } else if (application->partyMenu->mode == PARTY_MENU_MODE_TEACH_MOVE_DONE) {
             return sub_020862F8(application);
         } else if (application->partyMenu->mode == PARTY_MENU_MODE_LEVEL_MOVE_DONE) {
             return sub_02085EF4(application);
         } else if ((application->partyMenu->mode == PARTY_MENU_MODE_GIVE_MAIL) || (application->partyMenu->mode == PARTY_MENU_MODE_GIVE_MAIL_DONE)) {
-            return 14;
+            return PARTY_MENU_STATE_14;
         } else if (application->partyMenu->mode == PARTY_MENU_MODE_GIVE_ITEM) {
-            return 8;
+            return PARTY_MENU_STATE_8;
         } else if (application->partyMenu->mode == PARTY_MENU_MODE_GIVE_ITEM_DONE) {
-            return 16;
+            return PARTY_MENU_STATE_16;
         } else {
-            return 1;
+            return PARTY_MENU_STATE_1;
         }
     }
 
-    return 0;
+    return PARTY_MENU_STATE_0;
 }
 
 static int sub_0207E518(PartyMenuApplication *application)
@@ -515,31 +514,31 @@ static int sub_0207E518(PartyMenuApplication *application)
     if (v0 == 0) {
         if ((application->partyMenu->mode == PARTY_MENU_MODE_SELECT_NO_PROMPT) || (application->partyMenu->mode == PARTY_MENU_MODE_FEED_POFFIN)) {
             application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-            return 32;
+            return PARTY_MENU_STATE_32;
         } else if (application->partyMenu->mode == PARTY_MENU_MODE_MAILBOX) {
             sub_020868B0(application);
-            return 24;
+            return PARTY_MENU_STATE_24;
         } else if (application->partyMenu->mode == PARTY_MENU_MODE_NPC_TRADE) {
             return CheckForItemApplication(application);
         } else {
-            return 2;
+            return PARTY_MENU_STATE_2;
         }
     } else if (v0 == 4) {
         return HandleGameWindowEvent(application);
     } else if (v0 == 3) {
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-        return 32;
+        return PARTY_MENU_STATE_32;
     } else if (v0 == 2) {
         if (application->partyMenu->mode != PARTY_MENU_MODE_BALL_SEAL) {
             application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_SUMMARY;
-            return 32;
+            return PARTY_MENU_STATE_32;
         } else {
             Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 1);
             return sub_02084780(application);
         }
     }
 
-    return 1;
+    return PARTY_MENU_STATE_1;
 }
 
 static int sub_0207E5B4(PartyMenuApplication *application)
@@ -551,10 +550,10 @@ static int sub_0207E5B4(PartyMenuApplication *application)
         return ApplyItemEffectOnPokemon(application);
     } else if (v0 == 3) {
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-        return 32;
+        return PARTY_MENU_STATE_32;
     }
 
-    return 4;
+    return PARTY_MENU_STATE_4;
 }
 
 static int sub_0207E5F4(PartyMenuApplication *application)
@@ -566,10 +565,10 @@ static int sub_0207E5F4(PartyMenuApplication *application)
         return ProcessItemApplication(application);
     } else if (v0 == 3) {
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-        return 32;
+        return PARTY_MENU_STATE_32;
     }
 
-    return 8;
+    return PARTY_MENU_STATE_8;
 }
 
 static int sub_0207E634(PartyMenuApplication *application)
@@ -589,17 +588,17 @@ static int sub_0207E634(PartyMenuApplication *application)
         Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
         return 1;
     default: {
-        UnkFuncPtr_0207E634 v1;
-        int v2;
+        PartyMenuAction v1;
+        int partyMenuState;
 
-        v1 = (UnkFuncPtr_0207E634)v0;
-        v1(application, &v2);
+        v1 = (PartyMenuAction)v0;
+        v1(application, &partyMenuState);
 
-        return v2;
+        return partyMenuState;
     }
     }
 
-    return 15;
+    return PARTY_MENU_STATE_15;
 }
 
 static int sub_0207E6C0(PartyMenuApplication *application)
@@ -608,23 +607,23 @@ static int sub_0207E6C0(PartyMenuApplication *application)
         return application->unk_B0E;
     }
 
-    return 24;
+    return PARTY_MENU_STATE_24;
 }
 
 static int sub_0207E6E4(PartyMenuApplication *application)
 {
     if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
         Sound_PlayEffect(SEQ_SE_CONFIRM);
-        return 32;
+        return PARTY_MENU_STATE_32;
     }
 
-    return 25;
+    return PARTY_MENU_STATE_25;
 }
 
 static int sub_0207E708(PartyMenuApplication *application)
 {
     PartyMenu_DrawYesNoChoice(application);
-    return 27;
+    return PARTY_MENU_STATE_27;
 }
 
 static int sub_0207E714(PartyMenuApplication *application)
@@ -636,7 +635,7 @@ static int sub_0207E714(PartyMenuApplication *application)
         return application->unk_B04.unk_04(application);
     }
 
-    return 27;
+    return PARTY_MENU_STATE_27;
 }
 
 static int sub_0207E750(PartyMenuApplication *application)
@@ -651,16 +650,16 @@ static int sub_0207E750(PartyMenuApplication *application)
         } else {
             PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
             application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-            application->unk_B0E = 25;
+            application->unk_B0E = PARTY_MENU_STATE_25;
             MessageLoader_GetString(application->messageLoader, pl_msg_00000453_00105, application->tmpString);
-            return 24;
+            return PARTY_MENU_STATE_24;
         }
     } else if (v0 == 3) {
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-        return 32;
+        return PARTY_MENU_STATE_32;
     }
 
-    return 21;
+    return PARTY_MENU_STATE_21;
 }
 
 static BOOL PartyMenu_Exit(ApplicationManager *appMan, int *state)
@@ -2147,9 +2146,9 @@ static int HandleGameWindowEvent(PartyMenuApplication *application)
                 break;
             }
 
-            application->unk_B0E = 23;
+            application->unk_B0E = PARTY_MENU_STATE_23;
             Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
-            return 24;
+            return PARTY_MENU_STATE_24;
         }
     }
 
@@ -2170,19 +2169,19 @@ static int HandleGameWindowEvent(PartyMenuApplication *application)
             String_Free(v1);
         }
             PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
-            application->unk_B0E = 23;
+            application->unk_B0E = PARTY_MENU_STATE_23;
             Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
-            return 24;
+            return PARTY_MENU_STATE_24;
         case BATTLE_REGULATION_VALIDATION_ERROR_DUPLICATE_SPECIES:
             PartyMenu_PrintLongMessage(application, pl_msg_00000453_00182, TRUE);
-            application->unk_B0E = 23;
+            application->unk_B0E = PARTY_MENU_STATE_23;
             Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
-            return 24;
+            return PARTY_MENU_STATE_24;
         case BATTLE_REGULATION_VALIDATION_ERROR_DUPLICATE_ITEMS:
             PartyMenu_PrintLongMessage(application, pl_msg_00000453_00183, TRUE);
-            application->unk_B0E = 23;
+            application->unk_B0E = PARTY_MENU_STATE_23;
             Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
-            return 24;
+            return PARTY_MENU_STATE_24;
         }
     }
 
@@ -2192,14 +2191,14 @@ static int HandleGameWindowEvent(PartyMenuApplication *application)
             break;
         case 1:
             PartyMenu_PrintLongMessage(application, pl_msg_00000453_00182, TRUE);
-            application->unk_B0E = 23;
+            application->unk_B0E = PARTY_MENU_STATE_23;
             Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
-            return 24;
+            return PARTY_MENU_STATE_24;
         case 2:
             PartyMenu_PrintLongMessage(application, pl_msg_00000453_00183, TRUE);
-            application->unk_B0E = 23;
+            application->unk_B0E = PARTY_MENU_STATE_23;
             Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
-            return 24;
+            return PARTY_MENU_STATE_24;
         }
     }
 
@@ -2209,9 +2208,9 @@ static int HandleGameWindowEvent(PartyMenuApplication *application)
             break;
         case 1:
             PartyMenu_PrintLongMessage(application, pl_msg_00000453_00201, TRUE);
-            application->unk_B0E = 23;
+            application->unk_B0E = PARTY_MENU_STATE_23;
             Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
-            return 24;
+            return PARTY_MENU_STATE_24;
         }
     }
 
@@ -2221,15 +2220,15 @@ static int HandleGameWindowEvent(PartyMenuApplication *application)
             break;
         case 1:
             PartyMenu_PrintLongMessage(application, pl_msg_00000453_00182, TRUE);
-            application->unk_B0E = 23;
+            application->unk_B0E = PARTY_MENU_STATE_23;
             Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
-            return 24;
+            return PARTY_MENU_STATE_24;
         }
     }
 
     application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
     Sound_PlayEffect(SEQ_SE_CONFIRM);
-    return 32;
+    return PARTY_MENU_STATE_32;
 }
 
 static u8 CheckDuplicateValues(PartyMenuApplication *application)
@@ -2378,7 +2377,7 @@ static int GetValidWindowLayout(PartyMenuApplication *application)
     return v0;
 }
 
-static u8 HandleWindowInputEvent(PartyMenuApplication *application, int *param1)
+static u8 HandleWindowInputEvent(PartyMenuApplication *application, int *partyMenuState)
 {
     u32 v0 = Menu_ProcessInput(application->contextMenu);
 
@@ -2403,8 +2402,8 @@ static u8 HandleWindowInputEvent(PartyMenuApplication *application, int *param1)
         Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
         return 1;
     default: {
-        UnkFuncPtr_0207E634 v1 = (UnkFuncPtr_0207E634)v0;
-        v1(application, param1);
+        PartyMenuAction v1 = (PartyMenuAction)v0;
+        v1(application, partyMenuState);
     }
     }
 
@@ -2429,10 +2428,10 @@ static int ProcessWindowInput(PartyMenuApplication *application)
     switch (application->monStats[1]) {
     case 0:
         if (gSystem.pressedKeys & PAD_BUTTON_A) {
-            if (application->currPartySlot >= 6) {
+            if (application->currPartySlot >= MAX_PARTY_SIZE) {
                 Sound_PlayEffect(SEQ_SE_CONFIRM);
                 sub_02083B88(application);
-                return 1;
+                return PARTY_MENU_STATE_1;
             } else {
                 switch (CheckPokemonCondition(application)) {
                 case 0:
@@ -2449,10 +2448,10 @@ static int ProcessWindowInput(PartyMenuApplication *application)
                 case 1:
                     Sound_PlayEffect(SEQ_SE_CONFIRM);
                     application->monStats[1] = 1;
-                    return 24;
+                    return PARTY_MENU_STATE_24;
                 case 2:
                     Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
-                    return 30;
+                    return PARTY_MENU_STATE_30;
                 }
             }
         }
@@ -2460,13 +2459,13 @@ static int ProcessWindowInput(PartyMenuApplication *application)
         if (gSystem.pressedKeys & PAD_BUTTON_B) {
             Sound_PlayEffect(SEQ_SE_CONFIRM);
             sub_02083B88(application);
-            return 1;
+            return PARTY_MENU_STATE_1;
         }
 
         if (sub_0207FA00(application) == 2) {
             if (application->currPartySlot == application->switchTargetSlot) {
                 sub_02083B88(application);
-                return 1;
+                return PARTY_MENU_STATE_1;
             } else {
                 switch (CheckPokemonCondition(application)) {
                 case 0:
@@ -2482,10 +2481,10 @@ static int ProcessWindowInput(PartyMenuApplication *application)
                     break;
                 case 1:
                     application->monStats[1] = 1;
-                    return 24;
+                    return PARTY_MENU_STATE_24;
                 case 2:
                     Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
-                    return 30;
+                    return PARTY_MENU_STATE_30;
                 }
             }
         }
@@ -2526,8 +2525,8 @@ static int ProcessWindowInput(PartyMenuApplication *application)
             fieldSystem = application->partyMenu->fieldSystem;
             JournalEntry_SaveData(fieldSystem->journalEntry, journalEntryLocationEvent, JOURNAL_LOCATION);
             application->monStats[1] = 4;
-            application->unk_B0E = 30;
-            return 24;
+            application->unk_B0E = PARTY_MENU_STATE_30;
+            return PARTY_MENU_STATE_24;
         }
         break;
     case 4:
@@ -2536,12 +2535,12 @@ static int ProcessWindowInput(PartyMenuApplication *application)
             Window_EraseMessageBox(&application->windows[34], 1);
             Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
             sub_02083B88(application);
-            return 1;
+            return PARTY_MENU_STATE_1;
         }
         break;
     }
 
-    return 30;
+    return PARTY_MENU_STATE_30;
 }
 
 static u8 CheckPokemonCondition(PartyMenuApplication *application)
@@ -2555,7 +2554,7 @@ static u8 CheckPokemonCondition(PartyMenuApplication *application)
         PartyMenu_PrintLongMessage(application, pl_msg_00000453_00131, TRUE);
 
         application->monStats[1] = 1;
-        application->unk_B0E = 30;
+        application->unk_B0E = PARTY_MENU_STATE_30;
 
         return 1;
     }
@@ -2710,13 +2709,13 @@ static int ProcessItemApplication(PartyMenuApplication *application)
             StringTemplate_SetNickname(application->template, 0, Pokemon_GetBoxPokemon(v0));
             StringTemplate_SetItemNameWithArticle(application->template, 1, application->partyMenu->usedItemID);
             StringTemplate_Format(application->template, application->tmpString, application->tmpFormat);
-            v2 = 11;
+            v2 = PARTY_MENU_STATE_11;
         } else if (fieldSystem != NULL) {
             if (fieldSystem->location->mapId == MAP_HEADER_UNION_ROOM) {
                 MessageLoader_GetString(application->messageLoader, pl_msg_00000453_00204, application->tmpFormat);
                 StringTemplate_SetItemName(application->template, 0, application->partyMenu->usedItemID);
                 StringTemplate_Format(application->template, application->tmpString, application->tmpFormat);
-                v2 = 11;
+                v2 = PARTY_MENU_STATE_11;
             }
         }
     }
@@ -2726,7 +2725,7 @@ static int ProcessItemApplication(PartyMenuApplication *application)
         case 0:
             if (Item_IsMail(application->partyMenu->usedItemID) == TRUE) {
                 application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_MAIL;
-                return 32;
+                return PARTY_MENU_STATE_32;
             }
 
             v2 = UpdatePokemonWithItem(application, v0, &v3);
@@ -2741,11 +2740,11 @@ static int ProcessItemApplication(PartyMenuApplication *application)
             StringTemplate_SetNickname(application->template, 0, Pokemon_GetBoxPokemon(v0));
             StringTemplate_SetItemNameWithArticle(application->template, 1, application->partyMembers[application->currPartySlot].heldItem);
             StringTemplate_Format(application->template, application->tmpString, application->tmpFormat);
-            v2 = 9;
+            v2 = PARTY_MENU_STATE_9;
             break;
         case 2:
             MessageLoader_GetString(application->messageLoader, pl_msg_00000453_00077, application->tmpString);
-            v2 = 11;
+            v2 = PARTY_MENU_STATE_11;
             break;
         }
     }
@@ -2778,10 +2777,10 @@ static int UpdatePokemonWithItem(PartyMenuApplication *application, Pokemon *mon
     PartyMenu_DrawMemberHeldItem(application, application->currPartySlot, application->partyMembers[application->currPartySlot].heldItem);
 
     if (item == ITEM_GRISEOUS_ORB && ((*param2) != -1)) {
-        return 12;
+        return PARTY_MENU_STATE_12;
     }
 
-    return 11;
+    return PARTY_MENU_STATE_11;
 }
 
 static void SwapPokemonItem(PartyMenuApplication *application, Pokemon *mon, u32 oldItem, u32 newItem)
@@ -2802,7 +2801,7 @@ static int HandleMessageCompletion(PartyMenuApplication *application)
         }
     }
 
-    return 11;
+    return PARTY_MENU_STATE_11;
 }
 
 static int ProcessMessageResult(PartyMenuApplication *application)
@@ -2811,11 +2810,11 @@ static int ProcessMessageResult(PartyMenuApplication *application)
         if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
             Window_EraseMessageBox(&application->windows[34], 1);
             PartyMenu_SetupFormChangeAnim(application);
-            return 13;
+            return PARTY_MENU_STATE_13;
         }
     }
 
-    return 12;
+    return PARTY_MENU_STATE_12;
 }
 
 static int HandleOverlayCompletion(PartyMenuApplication *application)
@@ -2823,20 +2822,20 @@ static int HandleOverlayCompletion(PartyMenuApplication *application)
     if (PartyMenuFormChange_ChangeForm(application) == 1) {
         PartyMenu_TeardownFormChangeAnim(application);
 
-        return 11;
+        return PARTY_MENU_STATE_11;
     }
 
-    return 13;
+    return PARTY_MENU_STATE_13;
 }
 
 static int FinalizeMessageProcessing(PartyMenuApplication *application)
 {
     if (Text_IsPrinterActive(application->textPrinterID) == 0) {
         PartyMenu_DrawYesNoChoice(application);
-        return 10;
+        return PARTY_MENU_STATE_10;
     }
 
-    return 9;
+    return PARTY_MENU_STATE_9;
 }
 
 static int ProcessPokemonItemSwap(PartyMenuApplication *application)
@@ -2855,13 +2854,13 @@ static int ProcessPokemonItemSwap(PartyMenuApplication *application)
         if (Bag_TryAddItem(application->partyMenu->bag, (u16)v5, 1, HEAP_ID_PARTY_MENU) == FALSE) {
             SwapPokemonItem(application, mon, v4, v5);
             MessageLoader_GetString(application->messageLoader, pl_msg_00000453_00083, application->tmpString);
-            v0 = 11;
+            v0 = PARTY_MENU_STATE_11;
         } else {
             if (Item_IsMail(application->partyMenu->usedItemID) == 1) {
                 Bag_TryRemoveItem(application->partyMenu->bag, (u16)v5, 1, HEAP_ID_PARTY_MENU);
                 SwapPokemonItem(application, mon, v4, v5);
                 application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_MAIL;
-                return 32;
+                return PARTY_MENU_STATE_32;
             }
 
             MessageLoader_GetString(application->messageLoader, pl_msg_00000453_00084, application->tmpFormat);
@@ -2870,9 +2869,9 @@ static int ProcessPokemonItemSwap(PartyMenuApplication *application)
             StringTemplate_Format(application->template, application->tmpString, application->tmpFormat);
 
             if ((v4 != ITEM_GRISEOUS_ORB) && (v5 == ITEM_GRISEOUS_ORB) && (v1 != -1)) {
-                v0 = 12;
+                v0 = PARTY_MENU_STATE_12;
             } else if ((v4 == ITEM_GRISEOUS_ORB) && (v5 == ITEM_GRISEOUS_ORB)) {
-                v0 = 11;
+                v0 = PARTY_MENU_STATE_11;
             }
         }
 
@@ -2884,7 +2883,7 @@ static int ProcessPokemonItemSwap(PartyMenuApplication *application)
         return ResetWindowOnInput(application);
     }
 
-    return 10;
+    return PARTY_MENU_STATE_10;
 }
 
 static int ResetWindowOnInput(PartyMenuApplication *application)
@@ -2916,7 +2915,7 @@ static int UpdatePokemonFormWithItem(PartyMenuApplication *application)
     v4 = UpdatePokemonWithItem(application, v0, &v5);
 
     if ((item == ITEM_GRISEOUS_ORB) && (v4 == 11) && (v5 == 0)) {
-        v4 = 12;
+        v4 = PARTY_MENU_STATE_12;
     }
 
     if (item == ITEM_NONE) {
@@ -2947,15 +2946,15 @@ static int CheckForItemApplication(PartyMenuApplication *application)
 {
     if (application->partyMembers[application->currPartySlot].ballSeal == 0) {
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-        return 32;
+        return PARTY_MENU_STATE_32;
     }
 
     Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 1);
     PartyMenu_PrintLongMessage(application, pl_msg_00000453_00195, TRUE);
     application->unk_B04.unk_00 = sub_02083A78;
     application->unk_B04.unk_04 = sub_02083AA4;
-    application->unk_B0E = 26;
-    return 24;
+    application->unk_B0E = PARTY_MENU_STATE_26;
+    return PARTY_MENU_STATE_24;
 }
 
 static BOOL ShouldShowSubscreen(PartyMenuApplication *application)

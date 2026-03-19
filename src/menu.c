@@ -70,7 +70,7 @@ u32 Menu_ProcessInput(Menu *menu)
 
     if (JOY_NEW(PAD_BUTTON_A)) {
         Sound_PlayEffect(SEQ_SE_CONFIRM);
-        return menu->template.choices[menu->cursorPos].index;
+        return menu->template.choices[menu->cursorPos].callbackFunction;
     }
 
     if (JOY_NEW(menu->cancelKeys)) {
