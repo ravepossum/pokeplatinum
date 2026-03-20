@@ -53,9 +53,9 @@ static void PartyMenu_SelectTeleport(PartyMenuApplication *application, int *par
 static void PartyMenu_SelectDig(PartyMenuApplication *application, int *partyMenuState);
 static void PartyMenu_SelectSweetScent(PartyMenuApplication *application, int *partyMenuState);
 static void PartyMenu_SelectChatter(PartyMenuApplication *application, int *partyMenuState);
-static void sub_020849E0(PartyMenuApplication *application, int *partyMenuState);
-static void sub_020849FC(PartyMenuApplication *application, int *partyMenuState);
-static int sub_02084A18(PartyMenuApplication *application);
+static void PartyMenu_SelectMilkDrink(PartyMenuApplication *application, int *partyMenuState);
+static void PartyMenu_SelectSoftboiled(PartyMenuApplication *application, int *partyMenuState);
+static int PartyMenu_StartFieldMoveHPTransfer(PartyMenuApplication *application);
 static void sub_02084760(PartyMenuApplication *application, int *partyMenuState);
 static void PartyMenu_SelectItem(PartyMenuApplication *application, int *partyMenuState);
 static void PartyMenu_SelectItemGive(PartyMenuApplication *application, int *partyMenuState);
@@ -103,8 +103,8 @@ static const PartyMenuAction sPartyMenuActions[32] = {
     PartyMenu_SelectDig,
     PartyMenu_SelectSweetScent,
     PartyMenu_SelectChatter,
-    sub_020849E0, // transfer HP, milk drink
-    sub_020849FC, // transfer HP2, softboiled
+    PartyMenu_SelectMilkDrink,
+    PartyMenu_SelectSoftboiled,
     0xFFFFFFFE
 };
 
@@ -469,7 +469,7 @@ void sub_02083BD4(PartyMenuApplication *application)
     u16 v6;
 
     application->orderSwitch.slots[0] = application->currPartySlot;
-    application->orderSwitch.slots[1] = application->switchTargetSlot;
+    application->orderSwitch.slots[1] = application->selectTargetSlot;
     application->orderSwitch.inProgress = TRUE;
     application->orderSwitch.unk_306 = 0;
     application->orderSwitch.unk_305 = 0;
@@ -554,10 +554,10 @@ BOOL sub_02083D1C(PartyMenuApplication *application)
         Sprite_SetDrawFlag(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], TRUE);
 
         v0->inProgress = FALSE;
-        application->inSwitchMode = 0;
+        application->inTargetSlotMode = FALSE;
 
         PartyMenu_UpdateSlotPalette(application, application->currPartySlot);
-        PartyMenu_UpdateSlotPalette(application, application->switchTargetSlot);
+        PartyMenu_UpdateSlotPalette(application, application->selectTargetSlot);
         PartyMenu_PrintShortMessage(application, PartyMenu_Text_ChooseAPokemon, FALSE);
 
         return 1;
@@ -978,50 +978,50 @@ static void PartyMenu_SelectChatter(PartyMenuApplication *application, int *part
     PartyMenu_SelectFieldMove(application, partyMenuState);
 }
 
-static void sub_020849E0(PartyMenuApplication *application, int *partyMenuState)
+static void PartyMenu_SelectMilkDrink(PartyMenuApplication *application, int *partyMenuState)
 {
-    *partyMenuState = sub_02084A18(application);
+    *partyMenuState = PartyMenu_StartFieldMoveHPTransfer(application);
 
     if (*partyMenuState == PARTY_MENU_STATE_HP_TRANSFER_FIELD_MOVE) {
-        application->monStats[3] = 24 - 11;
+        application->monHpTransfer[HP_TRANSFER_JOURNAL_MOVE_IDX] = 24 - 11;
     }
 }
 
-static void sub_020849FC(PartyMenuApplication *application, int *partyMenuState)
+static void PartyMenu_SelectSoftboiled(PartyMenuApplication *application, int *partyMenuState)
 {
-    *partyMenuState = sub_02084A18(application);
+    *partyMenuState = PartyMenu_StartFieldMoveHPTransfer(application);
 
     if (*partyMenuState == PARTY_MENU_STATE_HP_TRANSFER_FIELD_MOVE) {
-        application->monStats[3] = 25 - 11;
+        application->monHpTransfer[HP_TRANSFER_JOURNAL_MOVE_IDX] = 25 - 11;
     }
 }
 
-static int sub_02084A18(PartyMenuApplication *application)
+static int PartyMenu_StartFieldMoveHPTransfer(PartyMenuApplication *application)
 {
     Window_EraseMessageBox(&application->windows[PARTY_MENU_WIN_MEDIUM_MESSAGE], 1);
     PartyMenu_ClearContextWindow(application);
 
-    application->monStats[0] = application->partyMembers[application->currPartySlot].maxHP / 5;
+    application->monHpTransfer[HP_TRANSFER_HP_BUFFER] = application->partyMembers[application->currPartySlot].maxHP / 5; // 20% of user's health
 
-    if (application->partyMembers[application->currPartySlot].curHP <= application->monStats[0]) {
+    if (application->partyMembers[application->currPartySlot].curHP <= application->monHpTransfer[HP_TRANSFER_HP_BUFFER]) {
         PartyMenu_PrintLongMessage(application, PartyMenu_Text_NotEnoughHP, TRUE);
-        application->unk_B0E = PARTY_MENU_STATE_3;
+        application->stateAfterMessage = PARTY_MENU_STATE_3;
         return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
     } else {
-        s16 v0, v1;
+        s16 x, y;
 
-        application->inSwitchMode = 1;
-        application->switchTargetSlot = application->currPartySlot;
+        application->inTargetSlotMode = TRUE;
+        application->selectTargetSlot = application->currPartySlot;
 
         Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
-        Sprite_GetPositionXY(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], &v0, &v1);
-        Sprite_SetPositionXY(application->sprites[PARTY_MENU_SPRITE_CURSOR_SWITCH], v0, v1);
-        Sprite_SetAnim(application->sprites[PARTY_MENU_SPRITE_CURSOR_SWITCH], PartyMenu_GetMemberPanelAnim(application->partyMenu->type, application->switchTargetSlot) + 2);
+        Sprite_GetPositionXY(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], &x, &y);
+        Sprite_SetPositionXY(application->sprites[PARTY_MENU_SPRITE_CURSOR_SWITCH], x, y);
+        Sprite_SetAnim(application->sprites[PARTY_MENU_SPRITE_CURSOR_SWITCH], PartyMenu_GetMemberPanelAnim(application->partyMenu->type, application->selectTargetSlot) + 2);
         Sprite_SetDrawFlag(application->sprites[PARTY_MENU_SPRITE_CURSOR_SWITCH], TRUE);
-        PartyMenu_UpdateSlotPalette(application, application->switchTargetSlot);
+        PartyMenu_UpdateSlotPalette(application, application->selectTargetSlot);
         PartyMenu_PrintShortMessage(application, PartyMenu_Text_UseOnWhichPokemon, TRUE);
 
-        application->monStats[1] = 0;
+        application->monHpTransfer[HP_TRANSFER_STATE] = HP_TRANSFER_STATE_HANDLE_INPUT;
         return PARTY_MENU_STATE_HP_TRANSFER_FIELD_MOVE;
     }
 }

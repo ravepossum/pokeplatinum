@@ -166,8 +166,8 @@ static u8 sub_020801AC(PartyMenuApplication *application, u8 *param1);
 static u8 sub_020801B8(PartyMenuApplication *application, u8 *param1);
 u8 PartyMenu_CheckBattleHallEligibility(PartyMenuApplication *application, u8 param1);
 u8 PartyMenu_CheckBattleCastleEligibility(PartyMenuApplication *application, u8 param1);
-static u8 CheckPokemonCondition(PartyMenuApplication *application);
-static BOOL UpdatePokemonStatus(PartyMenuApplication *application, u8 param1, s8 param2);
+static u8 CheckCanUseHPTransferFieldMove(PartyMenuApplication *application);
+static BOOL Partymenu_HPTransferUpdateHP(PartyMenuApplication *application, u8 param1, s8 param2);
 
 const ApplicationManagerTemplate gPokemonPartyAppTemplate = {
     .init = PartyMenu_Init,
@@ -242,22 +242,22 @@ static const GridMenuCursorPosition sCursorPosTable_SelectEgg[] = {
 };
 // clang-format on
 
-static const u16 Unk_020F1CB0[] = {
-    0xF,
-    0x13,
-    0x39,
-    0x46,
-    0x1B0,
-    0xF9,
-    0x7F,
-    0x1AF,
-    0x94,
-    0x64,
-    0x5B,
-    0xE6,
-    0x1C0,
-    0xD0,
-    0x87,
+static const u16 sFieldMoves[] = {
+    MOVE_CUT,
+    MOVE_FLY,
+    MOVE_SURF,
+    MOVE_STRENGTH,
+    MOVE_DEFOG,
+    MOVE_ROCK_SMASH,
+    MOVE_WATERFALL,
+    MOVE_ROCK_CLIMB,
+    MOVE_FLASH,
+    MOVE_TELEPORT,
+    MOVE_DIG,
+    MOVE_SWEET_SCENT,
+    MOVE_CHATTER,
+    MOVE_MILK_DRINK,
+    MOVE_SOFTBOILED,
 };
 
 static BOOL PartyMenu_Init(ApplicationManager *appMan, int *state)
@@ -1416,7 +1416,7 @@ void PartyMenu_UpdateSlotPalette(PartyMenuApplication *application, u8 slot)
 
     mon = Party_GetPokemonBySlotIndex(application->partyMenu->party, slot);
 
-    if (application->inSwitchMode == TRUE && (slot == application->currPartySlot || slot == application->switchTargetSlot)) {
+    if (application->inTargetSlotMode == TRUE && (slot == application->currPartySlot || slot == application->selectTargetSlot)) {
         palette = 3 + 4;
     } else {
         if (slot == application->currPartySlot) {
@@ -1809,7 +1809,7 @@ static u8 GetContextMenuEntriesForPartyMon(PartyMenuApplication *application, u8
                     break;
                 }
 
-                fieldEffect = GetElementIndex(move);
+                fieldEffect = GetFieldMoveIndex(move);
 
                 if (fieldEffect != 0xff) {
                     menuEntriesBuffer[count] = fieldEffect;
@@ -2460,13 +2460,11 @@ static u8 HandleWindowInputEvent(PartyMenuApplication *application, int *partyMe
     return FALSE;
 }
 
-u8 GetElementIndex(u16 application)
+u8 GetFieldMoveIndex(u16 moveID)
 {
-    u8 v0;
-
-    for (v0 = 0; v0 < NELEMS(Unk_020F1CB0); v0++) {
-        if (application == Unk_020F1CB0[v0]) {
-            return v0 + 16;
+    for (u8 i = 0; i < NELEMS(sFieldMoves); i++) {
+        if (moveID == sFieldMoves[i]) {
+            return i + PARTY_MENU_STR_MOVE0;
         }
     }
 
@@ -2482,7 +2480,7 @@ enum FieldMoveTransferHPTarget {
 static int UseHPTransferFieldMove(PartyMenuApplication *application)
 {
     switch (application->monHpTransfer[HP_TRANSFER_STATE]) {
-    case HP_TRANSFER_STATE_0:
+    case HP_TRANSFER_STATE_HANDLE_INPUT:
         if (JOY_NEW(PAD_BUTTON_A)) {
             if (application->currPartySlot >= MAX_PARTY_SIZE) { // cancel button
                 Sound_PlayEffect(SEQ_SE_CONFIRM);
@@ -2498,7 +2496,7 @@ static int UseHPTransferFieldMove(PartyMenuApplication *application)
                         application->monHpTransfer[HP_TRANSFER_HP_BUFFER] = application->partyMembers[application->currPartySlot].maxHP - application->partyMembers[application->currPartySlot].curHP;
                     }
 
-                    application->monHpTransfer[HP_TRANSFER_STATE] = HP_TRANSFER_STATE_2;
+                    application->monHpTransfer[HP_TRANSFER_STATE] = HP_TRANSFER_STATE_DONATE_HP;
                     application->monHpTransfer[HP_TRANSFER_COUNTER] = 0;
                     break;
                 case HP_TRANSFER_INVALID_TARGET:
@@ -2519,78 +2517,73 @@ static int UseHPTransferFieldMove(PartyMenuApplication *application)
         }
 
         if (PartyMenu_HandleNavigationAndTouchScreen(application) == PARTY_MENU_INPUT_TOUCH_SCREEN) {
-            if (application->currPartySlot == application->switchTargetSlot) {
+            if (application->currPartySlot == application->selectTargetSlot) {
                 PartyMenu_ResetCursor(application);
                 return PARTY_MENU_STATE_DEFAULT;
             } else {
-                switch (CheckPokemonCondition(application)) {
-                case 0:
+                switch (CheckCanUseHPTransferFieldMove(application)) {
+                case HP_TRANSFER_VALID_TARGET:
                     Sound_PlayEffect(SEQ_SE_DP_KAIFUKU);
                     Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 1);
 
-                    if (application->partyMembers[application->currPartySlot].maxHP - application->partyMembers[application->currPartySlot].curHP < application->monStats[0]) {
-                        application->monStats[0] = application->partyMembers[application->currPartySlot].maxHP - application->partyMembers[application->currPartySlot].curHP;
+                    if (application->partyMembers[application->currPartySlot].maxHP - application->partyMembers[application->currPartySlot].curHP < application->monHpTransfer[HP_TRANSFER_HP_BUFFER]) {
+                        application->monHpTransfer[HP_TRANSFER_HP_BUFFER] = application->partyMembers[application->currPartySlot].maxHP - application->partyMembers[application->currPartySlot].curHP;
                     }
 
-                    application->monStats[1] = 2;
-                    application->monStats[2] = 0;
+                    application->monHpTransfer[HP_TRANSFER_STATE] = HP_TRANSFER_STATE_DONATE_HP;
+                    application->monHpTransfer[HP_TRANSFER_COUNTER] = 0;
                     break;
-                case 1:
-                    application->monStats[1] = 1;
+                case HP_TRANSFER_INVALID_TARGET:
+                    application->monHpTransfer[HP_TRANSFER_STATE] = HP_TRANSFER_STATE_SELECT_TARGET;
                     return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
-                case 2:
+                case HP_TRANSFER_EGG_TARGET:
                     Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
                     return PARTY_MENU_STATE_HP_TRANSFER_FIELD_MOVE;
                 }
             }
         }
         break;
-    case 1:
+    case HP_TRANSFER_STATE_SELECT_TARGET:
         if (JOY_NEW(PAD_BUTTON_A | PAD_BUTTON_B)) {
             Sound_PlayEffect(SEQ_SE_CONFIRM);
             Window_EraseMessageBox(&application->windows[34], 1);
             Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
             PartyMenu_PrintShortMessage(application, PartyMenu_Text_UseOnWhichPokemon, TRUE);
-            application->monStats[1] = 0;
+            application->monHpTransfer[HP_TRANSFER_STATE] = HP_TRANSFER_STATE_HANDLE_INPUT;
         }
         break;
-    case 2:
-        if (UpdatePokemonStatus(application, application->switchTargetSlot, -1) == 1) {
+    case HP_TRANSFER_STATE_DONATE_HP:
+        if (Partymenu_HPTransferUpdateHP(application, application->selectTargetSlot, -1) == TRUE) {
             Sound_PlayEffect(SEQ_SE_DP_KAIFUKU);
-            application->monStats[1] = 3;
-            application->monStats[2] = 0;
+            application->monHpTransfer[HP_TRANSFER_STATE] = HP_TRANSFER_STATE_RECEIVE_HP;
+            application->monHpTransfer[HP_TRANSFER_COUNTER] = 0;
         }
         break;
-    case 3:
-        if (UpdatePokemonStatus(application, application->currPartySlot, 1) == 1) {
-            Pokemon *mon;
-            String *v1;
-            void *journalEntryLocationEvent;
-            FieldSystem *fieldSystem;
-
-            mon = Party_GetPokemonBySlotIndex(application->partyMenu->party, application->currPartySlot);
-            v1 = MessageLoader_GetNewString(application->messageLoader, PartyMenu_Text_MonsHPWasRestored);
+    case HP_TRANSFER_STATE_RECEIVE_HP:
+        if (Partymenu_HPTransferUpdateHP(application, application->currPartySlot, 1) == TRUE) {
+            Pokemon *mon = Party_GetPokemonBySlotIndex(application->partyMenu->party, application->currPartySlot);
+            String *string = MessageLoader_GetNewString(application->messageLoader, PartyMenu_Text_MonsHPWasRestored);
 
             StringTemplate_SetNickname(application->template, 0, Pokemon_GetBoxPokemon(mon));
-            StringTemplate_SetNumber(application->template, 1, application->monStats[2], 3, 0, 1);
-            StringTemplate_Format(application->template, application->tmpString, v1);
-            String_Free(v1);
+            StringTemplate_SetNumber(application->template, 1, application->monHpTransfer[HP_TRANSFER_COUNTER], 3, 0, 1);
+            StringTemplate_Format(application->template, application->tmpString, string);
+            String_Free(string);
             PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
 
-            journalEntryLocationEvent = JournalEntry_CreateEventUsedMove((u8)application->monStats[3], 0, 12);
-            fieldSystem = application->partyMenu->fieldSystem;
+            void *journalEntryLocationEvent = JournalEntry_CreateEventUsedMove((u8)application->monHpTransfer[HP_TRANSFER_JOURNAL_MOVE_IDX], 0, HEAP_ID_PARTY_MENU);
+            FieldSystem *fieldSystem = application->partyMenu->fieldSystem;
             JournalEntry_SaveData(fieldSystem->journalEntry, journalEntryLocationEvent, JOURNAL_LOCATION);
-            application->monStats[1] = 4;
-            application->unk_B0E = PARTY_MENU_STATE_30;
+            application->monHpTransfer[HP_TRANSFER_STATE] = HP_TRANSFER_STATE_CONFIRM_DONE;
+            application->stateAfterMessage = PARTY_MENU_STATE_HP_TRANSFER_FIELD_MOVE;
             return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
         }
         break;
-    case 4:
-        if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+    case HP_TRANSFER_STATE_CONFIRM_DONE:
+        if (JOY_NEW(PAD_BUTTON_A | PAD_BUTTON_B)) {
             Sound_PlayEffect(SEQ_SE_CONFIRM);
             Window_EraseMessageBox(&application->windows[34], 1);
             Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
-            sub_02083B88(application);
+            PartyMenu_ResetCursor(application);
             return PARTY_MENU_STATE_DEFAULT;
         }
         break;
@@ -2599,46 +2592,47 @@ static int UseHPTransferFieldMove(PartyMenuApplication *application)
     return PARTY_MENU_STATE_HP_TRANSFER_FIELD_MOVE;
 }
 
-static u8 CheckPokemonCondition(PartyMenuApplication *application)
+static u8 CheckCanUseHPTransferFieldMove(PartyMenuApplication *application)
 {
     if (application->partyMembers[application->currPartySlot].isEgg != FALSE) {
-        return 2;
+        return HP_TRANSFER_EGG_TARGET;
     }
 
-    if ((application->currPartySlot == application->switchTargetSlot) || (application->partyMembers[application->currPartySlot].curHP == 0) || (application->partyMembers[application->currPartySlot].curHP == application->partyMembers[application->currPartySlot].maxHP)) {
+    if (application->currPartySlot == application->selectTargetSlot // can't use on itself
+        || application->partyMembers[application->currPartySlot].curHP == 0 // can't use on fainted mon
+        || application->partyMembers[application->currPartySlot].curHP == application->partyMembers[application->currPartySlot].maxHP) { // can't be used on full hp
         Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 1);
         PartyMenu_PrintLongMessage(application, PartyMenu_Text_ThisCantBeUsedOnThatPokemon, TRUE);
 
-        application->monStats[1] = 1;
-        application->unk_B0E = PARTY_MENU_STATE_30;
+        application->monHpTransfer[HP_TRANSFER_STATE] = HP_TRANSFER_STATE_SELECT_TARGET;
+        application->stateAfterMessage = PARTY_MENU_STATE_HP_TRANSFER_FIELD_MOVE;
 
-        return 1;
+        return HP_TRANSFER_INVALID_TARGET;
     }
 
-    return 0;
+    return HP_TRANSFER_VALID_TARGET;
 }
 
-static BOOL UpdatePokemonStatus(PartyMenuApplication *application, u8 slot, s8 param2)
+static BOOL Partymenu_HPTransferUpdateHP(PartyMenuApplication *application, u8 slot, s8 hpAmount)
 {
-    application->partyMembers[slot].curHP += param2;
-    application->monStats[2]++;
+    application->partyMembers[slot].curHP += hpAmount;
+    application->monHpTransfer[HP_TRANSFER_COUNTER]++;
 
     PartyMenu_ClearMemberHP(application, slot);
     Window_FillTilemap(&application->windows[3 + slot * 5], 0);
     PartyMenu_PrintMemberCurrentHP(application, slot);
     PartyMenu_DrawMemberHealthbar(application, slot);
 
-    if ((application->monStats[0] == application->monStats[2]) || (application->partyMembers[slot].curHP == application->partyMembers[slot].maxHP)) {
-        Pokemon *mon;
-        u32 v1;
+    if (application->monHpTransfer[HP_TRANSFER_HP_BUFFER] == application->monHpTransfer[HP_TRANSFER_COUNTER]
+        || application->partyMembers[slot].curHP == application->partyMembers[slot].maxHP) {
 
-        mon = Party_GetPokemonBySlotIndex(application->partyMenu->party, slot);
-        v1 = application->partyMembers[slot].curHP;
-        Pokemon_SetValue(mon, MON_DATA_HP, &v1);
-        return 1;
+        Pokemon *mon = Party_GetPokemonBySlotIndex(application->partyMenu->party, slot);
+        u32 currentHP = application->partyMembers[slot].curHP;
+        Pokemon_SetValue(mon, MON_DATA_HP, &currentHP);
+        return TRUE;
     }
 
-    return 0;
+    return FALSE;
 }
 
 static u8 HandleSpecialInput(PartyMenuApplication *application)
