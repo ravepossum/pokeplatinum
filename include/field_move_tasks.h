@@ -23,7 +23,7 @@ typedef struct FieldMovePokemon {
 
 enum FieldMoveList {
     FIELD_MOVE_CUT,
-    FIELD_MOVE_FLY, // unused
+    FIELD_MOVE_FLY,
     FIELD_MOVE_SURF,
     FIELD_MOVE_STRENGTH,
     FIELD_MOVE_DEFOG,
@@ -31,6 +31,13 @@ enum FieldMoveList {
     FIELD_MOVE_WATERFALL,
     FIELD_MOVE_ROCK_CLIMB,
     FIELD_MOVE_FLASH,
+    FIELD_MOVE_TELEPORT,
+    FIELD_MOVE_DIG,
+    FIELD_MOVE_SWEET_SCENT,
+    FIELD_MOVE_CHATTER,
+    FIELD_MOVE_MILK_DRINK,
+    FIELD_MOVE_SOFTBOILED,
+    FIELD_MOVE_MAX
 };
 
 enum FieldMoveError {

@@ -11,6 +11,7 @@
 #include "overlay006/hm_cut_in.h"
 
 #include "field_map_change.h"
+#include "field_move_tasks.h"
 #include "field_overworld_state.h"
 #include "field_task.h"
 #include "heap.h"
@@ -31,7 +32,7 @@ enum FieldWarpStateResult {
 typedef enum FieldWarpStateResult (*FieldWarpStateFunc)(FieldTask *, FieldSystem *, FieldWarp *);
 
 static FieldWarp *FieldWarp_New(enum HeapID heapID, u32 size);
-static void CreateJournalEntryForWarp(FieldSystem *fieldSystem, FieldWarp *fieldWarp);
+static void CreateJournalEntryForTeleport(FieldSystem *fieldSystem, FieldWarp *fieldWarp);
 static enum FieldWarpStateResult StartWarpOutSpinning(FieldTask *task, FieldSystem *fieldSystem, FieldWarp *fieldWarp);
 static enum FieldWarpStateResult StartFadeOut(FieldTask *task, FieldSystem *fieldSystem, FieldWarp *fieldWarp);
 static enum FieldWarpStateResult FinishFadeOut(FieldTask *task, FieldSystem *fieldSystem, FieldWarp *fieldWarp);
@@ -264,7 +265,7 @@ BOOL FieldWarp_FadeIn(FieldTask *task)
         stateResult = sFieldWarpFadeInStates[fieldWarp->state](task, fieldSystem, fieldWarp);
 
         if (stateResult == STATE_RESULT_END_TASK) {
-            CreateJournalEntryForWarp(fieldSystem, fieldWarp);
+            CreateJournalEntryForTeleport(fieldSystem, fieldWarp);
             Heap_Free(fieldWarp);
             return TRUE;
         }
@@ -273,13 +274,13 @@ BOOL FieldWarp_FadeIn(FieldTask *task)
     return FALSE;
 }
 
-static void CreateJournalEntryForWarp(FieldSystem *fieldSystem, FieldWarp *fieldWarp)
+static void CreateJournalEntryForTeleport(FieldSystem *fieldSystem, FieldWarp *fieldWarp)
 {
     if (fieldWarp->warpType != FIELD_WARP_TYPE_TELEPORT) {
         return;
     }
 
-    void *journalEntryLocationEvent = JournalEntry_CreateEventUsedMove(LOCATION_EVENT_WARPED_TO_LOCATION - LOCATION_EVENT_USED_CUT, fieldSystem->location->mapId, HEAP_ID_FIELD1);
+    void *journalEntryLocationEvent = JournalEntry_CreateEventUsedMove(FIELD_MOVE_TELEPORT, fieldSystem->location->mapId, HEAP_ID_FIELD1);
     JournalEntry_SaveData(fieldSystem->journalEntry, journalEntryLocationEvent, JOURNAL_LOCATION);
 }
 

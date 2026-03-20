@@ -126,19 +126,19 @@
       "en_US": "Move to where?"
     },
     {
-      "id": "Partymenu_Text_GiveToWhichMon",
+      "id": "PartyMenu_Text_GiveToWhichMon",
       "en_US": "Give to which Pokémon?"
     },
     {
-      "id": "Partymenu_Text_UseOnWhichMon",
+      "id": "PartyMenu_Text_UseOnWhichMon",
       "en_US": "Use on which Pokémon?"
     },
     {
-      "id": "Partymenu_Text_TeachWhichMon",
+      "id": "PartyMenu_Text_TeachWhichMon",
       "en_US": "Teach which Pokémon?"
     },
     {
-      "id": "Partymenu_Text_ChooseMonAndConfirm",
+      "id": "PartyMenu_Text_ChooseMonAndConfirm",
       "en_US": "Choose Pokémon and confirm."
     },
     {
@@ -539,7 +539,7 @@
       "en_US": "You can’t use that here."
     },
     {
-      "id": "Partymenu_Text_ItWontHaveAnyEffect",
+      "id": "PartyMenu_Text_ItWontHaveAnyEffect",
       "en_US": "It won’t have any effect."
     },
     {
@@ -547,7 +547,7 @@
       "garbage": 14
     },
     {
-      "id": "Partymenu_Text_TwoMonAreNeeded",
+      "id": "PartyMenu_Text_TwoMonAreNeeded",
       "en_US": "Two Pokémon are needed."
     },
     {
@@ -613,19 +613,19 @@
       ]
     },
     {
-      "id": "Partymenu_Text_ThreeMonAreNeeded",
+      "id": "PartyMenu_Text_ThreeMonAreNeeded",
       "en_US": "Three Pokémon are needed."
     },
     {
-      "id": "Partymenu_Text_FourMonAreNeeded",
+      "id": "PartyMenu_Text_FourMonAreNeeded",
       "en_US": "Four Pokémon are needed."
     },
     {
-      "id": "Partymenu_Text_FiveMonAreNeeded",
+      "id": "PartyMenu_Text_FiveMonAreNeeded",
       "en_US": "Five Pokémon are needed."
     },
     {
-      "id": "Partymenu_Text_SixMonAreNeeded",
+      "id": "PartyMenu_Text_SixMonAreNeeded",
       "en_US": "Six Pokémon are needed."
     },
     {
@@ -964,7 +964,7 @@
       ]
     },
     {
-      "id": "Partymenu_Text_SelectEgg",
+      "id": "PartyMenu_Text_SelectEgg",
       "en_US": "Please select an Egg."
     },
     {

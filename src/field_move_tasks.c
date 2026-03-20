@@ -785,7 +785,7 @@ static BOOL FieldMoves_DigTask(FieldTask *task)
     UnkStruct_020711C8 *v1 = FieldTask_GetEnv(task);
     FieldWarp *fieldWarp = FieldWarp_InitDig(fieldSystem, v1->unk_00, HEAP_ID_FIELD2);
 
-    void *journalEntryLocationEvent = JournalEntry_CreateEventUsedMove(LOCATION_EVENT_USED_DIG - LOCATION_EVENT_USED_CUT, fieldSystem->location->mapId, HEAP_ID_FIELD1);
+    void *journalEntryLocationEvent = JournalEntry_CreateEventUsedMove(FIELD_MOVE_DIG, fieldSystem->location->mapId, HEAP_ID_FIELD1);
     JournalEntry_SaveData(fieldSystem->journalEntry, journalEntryLocationEvent, JOURNAL_LOCATION);
 
     Heap_Free(v1);
@@ -821,7 +821,7 @@ static void FieldMoves_SetSweetScentTask(FieldMovePokemon *fieldMoveMon, const F
     startMenu->taskData = v2;
     startMenu->state = START_MENU_STATE_NEW_TASK;
 
-    v4 = JournalEntry_CreateEventUsedMove(LOCATION_EVENT_LURED_POKEMON - LOCATION_EVENT_USED_CUT, fieldSystem->location->mapId, HEAP_ID_FIELD2);
+    v4 = JournalEntry_CreateEventUsedMove(FIELD_MOVE_SWEET_SCENT, fieldSystem->location->mapId, HEAP_ID_FIELD2);
     JournalEntry_SaveData(fieldSystem->journalEntry, v4, JOURNAL_LOCATION);
 }
 

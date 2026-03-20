@@ -355,7 +355,7 @@ static void BufferUsedItemMessage(PartyMenuApplication *application, u16 param1,
         MessageLoader_GetString(application->messageLoader, PartyMenu_Text_PPWasRestored, application->tmpString);
         break;
     default:
-        MessageLoader_GetString(application->messageLoader, Partymenu_Text_ItWontHaveAnyEffect, application->tmpString);
+        MessageLoader_GetString(application->messageLoader, PartyMenu_Text_ItWontHaveAnyEffect, application->tmpString);
     }
 }
 
@@ -583,7 +583,7 @@ int sub_02085804(PartyMenuApplication *application)
         application->currPartySlot = GetFirstFaintedMon(application, 0);
 
         if (application->currPartySlot == 0xff) {
-            MessageLoader_GetString(application->messageLoader, Partymenu_Text_ItWontHaveAnyEffect, application->tmpString);
+            MessageLoader_GetString(application->messageLoader, PartyMenu_Text_ItWontHaveAnyEffect, application->tmpString);
             PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
             application->unk_B00 = sub_02085348;
             PartyMenu_UpdateCursor(application, 0, 1);
@@ -767,7 +767,7 @@ static int sub_02085C50(void *applicationPtr)
             application->unk_B04.unk_04 = sub_02086008;
             application->stateAfterMessage = PARTY_MENU_STATE_26;
 
-            return 24;
+            return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
         case 0xfffe:
             break;
         default:
@@ -852,7 +852,7 @@ int sub_02085EF4(PartyMenuApplication *application)
     application->stateAfterMessage = PARTY_MENU_STATE_5;
     application->unk_B13 = 5;
 
-    return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
+    return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
 }
 
 static int sub_02085FB4(void *applicationPtr)
@@ -867,7 +867,7 @@ static int sub_02085FB4(void *applicationPtr)
     application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_OVERWRITE_MOVE_LEVEL_UP;
     application->stateAfterMessage = PARTY_MENU_STATE_25;
 
-    return 24;
+    return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
 }
 
 static int sub_02086008(void *applicationPtr)
@@ -883,7 +883,7 @@ static int sub_02086008(void *applicationPtr)
     application->unk_B04.unk_04 = sub_020860AC;
     application->stateAfterMessage = PARTY_MENU_STATE_26;
 
-    return 24;
+    return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
 }
 
 static int sub_02086060(void *applicationPtr)
@@ -898,7 +898,7 @@ static int sub_02086060(void *applicationPtr)
     application->stateAfterMessage = PARTY_MENU_STATE_5;
     application->unk_B13 = 4;
 
-    return 24;
+    return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
 }
 
 static int sub_020860AC(void *applicationPtr)
@@ -914,7 +914,7 @@ static int sub_020860AC(void *applicationPtr)
     application->unk_B04.unk_04 = sub_02086008;
     application->stateAfterMessage = PARTY_MENU_STATE_26;
 
-    return 24;
+    return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
 }
 
 u8 PartyMenu_CanMonLearnMove(PartyMenuApplication *application, Pokemon *mon)
@@ -998,7 +998,7 @@ int sub_0208615C(PartyMenuApplication *application)
         break;
     }
 
-    return 24;
+    return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
 }
 
 int sub_020862F8(PartyMenuApplication *application)
@@ -1021,7 +1021,7 @@ int sub_020862F8(PartyMenuApplication *application)
     PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
 
     application->stateAfterMessage = PARTY_MENU_STATE_22;
-    return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
+    return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
 }
 
 int sub_020863A0(PartyMenuApplication *application)
@@ -1042,7 +1042,7 @@ int sub_020863A0(PartyMenuApplication *application)
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
         application->stateAfterMessage = PARTY_MENU_STATE_25;
 
-        return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
+        return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
     }
 
     return PARTY_MENU_STATE_22;
@@ -1060,7 +1060,7 @@ static int sub_02086438(void *applicationPtr)
     application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_OVERWRITE_MOVE_TM_HM;
     application->stateAfterMessage = PARTY_MENU_STATE_25;
 
-    return 24;
+    return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
 }
 
 static int sub_0208648C(void *applicationPtr)
@@ -1076,7 +1076,7 @@ static int sub_0208648C(void *applicationPtr)
     application->unk_B04.unk_04 = sub_02086538;
     application->stateAfterMessage = PARTY_MENU_STATE_26;
 
-    return 24;
+    return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
 }
 
 static int sub_020864E4(void *applicationPtr)
@@ -1091,7 +1091,7 @@ static int sub_020864E4(void *applicationPtr)
     application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
     application->stateAfterMessage = PARTY_MENU_STATE_25;
 
-    return 24;
+    return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
 }
 
 static int sub_02086538(void *applicationPtr)
@@ -1107,7 +1107,7 @@ static int sub_02086538(void *applicationPtr)
     application->unk_B04.unk_04 = sub_0208648C;
     application->stateAfterMessage = PARTY_MENU_STATE_26;
 
-    return 24;
+    return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
 }
 
 static void TeachMove(PartyMenuApplication *application, Pokemon *mon, u32 moveSlot)
@@ -1201,7 +1201,7 @@ int sub_02086774(PartyMenuApplication *application)
         Window_EraseStandardFrame(&application->windows[36], 1);
         Menu_Free(application->contextMenu, NULL);
         StringList_Free(application->contextMenuChoices);
-        PartyMenu_PrintShortMessage(application, Partymenu_Text_UseOnWhichMon, TRUE);
+        PartyMenu_PrintShortMessage(application, PartyMenu_Text_UseOnWhichMon, TRUE);
         return PARTY_MENU_STATE_USE_ITEM;
     default:
         Window_EraseMessageBox(&application->windows[33], 1);
@@ -1215,7 +1215,7 @@ int sub_02086774(PartyMenuApplication *application)
             Bag_TryRemoveItem(application->partyMenu->bag, application->partyMenu->usedItemID, 1, HEAP_ID_PARTY_MENU);
             Sound_PlayEffect(SEQ_SE_DP_KAIFUKU);
         } else {
-            MessageLoader_GetString(application->messageLoader, Partymenu_Text_ItWontHaveAnyEffect, application->tmpString);
+            MessageLoader_GetString(application->messageLoader, PartyMenu_Text_ItWontHaveAnyEffect, application->tmpString);
         }
 
         PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
@@ -1223,7 +1223,7 @@ int sub_02086774(PartyMenuApplication *application)
         application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
         application->stateAfterMessage = PARTY_MENU_STATE_25;
 
-        return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
+        return PARTY_MENU_STATE_SHOW_MESSAGE_THEN_NEXT_STATE;
     }
 
     return PARTY_MENU_STATE_6;

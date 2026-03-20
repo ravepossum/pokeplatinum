@@ -1591,7 +1591,7 @@ BOOL StartMenu_FlyDestinationSelected(FieldTask *fieldTask)
     } else {
         Pokemon *mon = Party_GetPokemonBySlotIndex(SaveData_GetParty(fieldSystem->saveData), slot);
         FlyContext *flyCtx = FlyContext_New(HEAP_ID_FIELD2, fieldSystem, mon, mapCtx->flyLocationMapHeader, mapCtx->flyLocationX * MAP_TILES_COUNT_X + MAP_TILES_COUNT_X / 2, mapCtx->flyLocationZ * MAP_TILES_COUNT_Z + MAP_TILES_COUNT_Z / 2);
-        void *journalEntryLocationEvent = JournalEntry_CreateEventUsedMove(LOCATION_EVENT_FLEW_TO_LOCATION - LOCATION_EVENT_USED_CUT, mapCtx->flyLocationMapHeader, HEAP_ID_FIELD2);
+        void *journalEntryLocationEvent = JournalEntry_CreateEventUsedMove(FIELD_MOVE_FLY, mapCtx->flyLocationMapHeader, HEAP_ID_FIELD2);
 
         JournalEntry_SaveData(fieldSystem->journalEntry, journalEntryLocationEvent, JOURNAL_LOCATION);
         Heap_FreeExplicit(HEAP_ID_FIELD2, menu->taskData);
