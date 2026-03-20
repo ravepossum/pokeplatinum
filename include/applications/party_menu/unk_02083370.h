@@ -11,7 +11,7 @@ int sub_020836E4(PartyMenuApplication *application);
 int sub_020839BC(PartyMenuApplication *application);
 int sub_02083A78(void *applicationPtr);
 int sub_02083AA4(void *applicationPtr);
-void sub_02083B88(PartyMenuApplication *application);
+void PartyMenu_ResetCursor(PartyMenuApplication *application);
 void sub_02083BD4(PartyMenuApplication *application);
 BOOL sub_02083D1C(PartyMenuApplication *application);
 int sub_020845A8(PartyMenuApplication *application);

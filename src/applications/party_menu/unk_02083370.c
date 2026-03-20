@@ -222,7 +222,7 @@ int sub_02083658(PartyMenuApplication *application)
             Window_EraseMessageBox(&application->windows[PARTY_MENU_WIN_LONG_MESSAGE], 1);
             PartyMenu_PrintShortMessage(application, PartyMenu_Text_ChooseAPokemon, TRUE);
             Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
-            return PARTY_MENU_STATE_1;
+            return PARTY_MENU_STATE_DEFAULT;
         }
     }
 
@@ -298,8 +298,8 @@ static void PartyMenu_SelectMailTake(PartyMenuApplication *application, int *par
 
     application->unk_B04.unk_00 = sub_0208384C;
     application->unk_B04.unk_04 = sub_020838C4;
-    application->unk_B0E = PARTY_MENU_STATE_26;
-    *partyMenuState = PARTY_MENU_STATE_24;
+    application->stateAfterMessage = PARTY_MENU_STATE_26;
+    *partyMenuState = PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
 }
 
 static int sub_0208384C(void *applicationPtr)
@@ -318,9 +318,9 @@ static int sub_0208384C(void *applicationPtr)
         PartyMenu_PrintLongMessage(application, PartyMenu_Text_MailboxIsFull, FALSE);
     }
 
-    application->unk_B0E = PARTY_MENU_STATE_20;
+    application->stateAfterMessage = PARTY_MENU_STATE_20;
 
-    return 24;
+    return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
 }
 
 static int sub_020838C4(void *applicationPtr)
@@ -331,9 +331,9 @@ static int sub_020838C4(void *applicationPtr)
 
     application->unk_B04.unk_00 = sub_020838F4;
     application->unk_B04.unk_04 = sub_02083990;
-    application->unk_B0E = PARTY_MENU_STATE_26;
+    application->stateAfterMessage = PARTY_MENU_STATE_26;
 
-    return 24;
+    return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
 }
 
 static int sub_020838F4(void *applicationPtr)
@@ -359,9 +359,9 @@ static int sub_020838F4(void *applicationPtr)
         PartyMenu_PrintLongMessage(application, PartyMenu_Text_BagIsFull, FALSE);
     }
 
-    application->unk_B0E = PARTY_MENU_STATE_20;
+    application->stateAfterMessage = PARTY_MENU_STATE_20;
 
-    return 24;
+    return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
 }
 
 static int sub_02083990(void *applicationPtr)
@@ -381,7 +381,7 @@ int sub_020839BC(PartyMenuApplication *application)
         Window_EraseMessageBox(&application->windows[PARTY_MENU_WIN_LONG_MESSAGE], 1);
         PartyMenu_PrintShortMessage(application, PartyMenu_Text_ChooseAPokemon, TRUE);
         Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
-        return PARTY_MENU_STATE_1;
+        return PARTY_MENU_STATE_DEFAULT;
     }
 
     return PARTY_MENU_STATE_20;
@@ -402,8 +402,8 @@ static void PartyMenu_SelectBallSeal(PartyMenuApplication *application, int *par
 
     application->unk_B04.unk_00 = sub_02083A78;
     application->unk_B04.unk_04 = sub_02083AA4;
-    application->unk_B0E = PARTY_MENU_STATE_26;
-    *partyMenuState = PARTY_MENU_STATE_24;
+    application->stateAfterMessage = PARTY_MENU_STATE_26;
+    *partyMenuState = PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
 }
 
 int sub_02083A78(void *applicationPtr)
@@ -430,17 +430,17 @@ int sub_02083AA4(void *applicationPtr)
 
 static void PartyMenu_SelectSwitch(PartyMenuApplication *application, int *partyMenuState)
 {
-    s16 v0, v1;
+    s16 x, y;
 
-    application->inSwitchMode = 1;
-    application->switchTargetSlot = application->currPartySlot;
+    application->inTargetSlotMode = 1;
+    application->selectTargetSlot = application->currPartySlot;
 
     Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
-    Sprite_GetPositionXY(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], &v0, &v1);
-    Sprite_SetPositionXY(application->sprites[PARTY_MENU_SPRITE_CURSOR_SWITCH], v0, v1);
-    Sprite_SetAnim(application->sprites[PARTY_MENU_SPRITE_CURSOR_SWITCH], PartyMenu_GetMemberPanelAnim(application->partyMenu->type, application->switchTargetSlot) + 2);
+    Sprite_GetPositionXY(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], &x, &y);
+    Sprite_SetPositionXY(application->sprites[PARTY_MENU_SPRITE_CURSOR_SWITCH], x, y);
+    Sprite_SetAnim(application->sprites[PARTY_MENU_SPRITE_CURSOR_SWITCH], PartyMenu_GetMemberPanelAnim(application->partyMenu->type, application->selectTargetSlot) + 2);
     Sprite_SetDrawFlag(application->sprites[PARTY_MENU_SPRITE_CURSOR_SWITCH], TRUE);
-    PartyMenu_UpdateSlotPalette(application, application->switchTargetSlot);
+    PartyMenu_UpdateSlotPalette(application, application->selectTargetSlot);
     Window_EraseMessageBox(&application->windows[PARTY_MENU_WIN_MEDIUM_MESSAGE], 1);
     PartyMenu_ClearContextWindow(application);
     PartyMenu_PrintShortMessage(application, PartyMenu_MoveToWhere, TRUE);
@@ -448,16 +448,16 @@ static void PartyMenu_SelectSwitch(PartyMenuApplication *application, int *party
     *partyMenuState = PARTY_MENU_STATE_28;
 }
 
-void sub_02083B88(PartyMenuApplication *application)
+void PartyMenu_ResetCursor(PartyMenuApplication *application)
 {
-    application->inSwitchMode = 0;
+    application->inTargetSlotMode = FALSE;
     Sprite_SetDrawFlag(application->sprites[PARTY_MENU_SPRITE_CURSOR_SWITCH], FALSE);
 
-    if (application->currPartySlot < 6) {
+    if (application->currPartySlot < MAX_PARTY_SIZE) {
         PartyMenu_UpdateSlotPalette(application, application->currPartySlot);
     }
 
-    PartyMenu_UpdateSlotPalette(application, application->switchTargetSlot);
+    PartyMenu_UpdateSlotPalette(application, application->selectTargetSlot);
     PartyMenu_PrintShortMessage(application, PartyMenu_Text_ChooseAPokemon, TRUE);
 }
 
@@ -730,7 +730,7 @@ static void sub_020844B0(PartyMenuApplication *application, int *partyMenuState)
             sub_0207FD68(application, 6);
         }
 
-        *partyMenuState = PARTY_MENU_STATE_1;
+        *partyMenuState = PARTY_MENU_STATE_DEFAULT;
         return;
     }
 
@@ -752,8 +752,8 @@ static void sub_020844B0(PartyMenuApplication *application, int *partyMenuState)
         break;
     }
 
-    application->unk_B0E = PARTY_MENU_STATE_23;
-    *partyMenuState = PARTY_MENU_STATE_24;
+    application->stateAfterMessage = PARTY_MENU_STATE_23;
+    *partyMenuState = PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
 }
 
 int sub_020845A8(PartyMenuApplication *application)
@@ -762,7 +762,7 @@ int sub_020845A8(PartyMenuApplication *application)
         Window_EraseMessageBox(&application->windows[PARTY_MENU_WIN_LONG_MESSAGE], 1);
         PartyMenu_PrintShortMessage(application, Partymenu_Text_ChooseMonAndConfirm, TRUE);
         Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
-        return PARTY_MENU_STATE_1;
+        return PARTY_MENU_STATE_DEFAULT;
     }
 
     return PARTY_MENU_STATE_23;
@@ -797,7 +797,7 @@ static void sub_020845E8(PartyMenuApplication *application, int *partyMenuState)
     PartyMenu_PrintShortMessage(application, PartyMenu_Text_ChooseAPokemon, TRUE);
     Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
 
-    *partyMenuState = PARTY_MENU_STATE_1;
+    *partyMenuState = PARTY_MENU_STATE_DEFAULT;
 }
 
 static void sub_020846CC(PartyMenuApplication *application, int *partyMenuState)
@@ -853,9 +853,9 @@ int sub_02084780(PartyMenuApplication *application)
     PartyMenu_PrintLongMessage(application, PRINT_MESSAGE_PRELOADED, TRUE);
 
     application->partyMenu->menuSelectionResult = PARTY_MENU_EXIT_CODE_DONE;
-    application->unk_B0E = PARTY_MENU_STATE_25;
+    application->stateAfterMessage = PARTY_MENU_STATE_25;
 
-    return PARTY_MENU_STATE_24;
+    return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
 }
 
 static void PartyMenu_SelectFieldMove(PartyMenuApplication *windowLayout, int *partyMenuState)
@@ -896,8 +896,8 @@ static void PartyMenu_SelectFieldMove(PartyMenuApplication *windowLayout, int *p
     PartyMenu_ClearContextWindow(windowLayout);
     PartyMenu_PrintLongMessage(windowLayout, msgID, TRUE);
 
-    windowLayout->unk_B0E = PARTY_MENU_STATE_3;
-    *partyMenuState = PARTY_MENU_STATE_24;
+    windowLayout->stateAfterMessage = PARTY_MENU_STATE_3;
+    *partyMenuState = PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
 }
 
 static void PartyMenu_SelectCut(PartyMenuApplication *application, int *partyMenuState)
@@ -982,7 +982,7 @@ static void sub_020849E0(PartyMenuApplication *application, int *partyMenuState)
 {
     *partyMenuState = sub_02084A18(application);
 
-    if (*partyMenuState == PARTY_MENU_STATE_30) {
+    if (*partyMenuState == PARTY_MENU_STATE_HP_TRANSFER_FIELD_MOVE) {
         application->monStats[3] = 24 - 11;
     }
 }
@@ -991,7 +991,7 @@ static void sub_020849FC(PartyMenuApplication *application, int *partyMenuState)
 {
     *partyMenuState = sub_02084A18(application);
 
-    if (*partyMenuState == PARTY_MENU_STATE_30) {
+    if (*partyMenuState == PARTY_MENU_STATE_HP_TRANSFER_FIELD_MOVE) {
         application->monStats[3] = 25 - 11;
     }
 }
@@ -1006,7 +1006,7 @@ static int sub_02084A18(PartyMenuApplication *application)
     if (application->partyMembers[application->currPartySlot].curHP <= application->monStats[0]) {
         PartyMenu_PrintLongMessage(application, PartyMenu_Text_NotEnoughHP, TRUE);
         application->unk_B0E = PARTY_MENU_STATE_3;
-        return PARTY_MENU_STATE_24;
+        return PARTY_MENU_STATE_PRINT_MESSAGE_THEN_NEXT_STATE;
     } else {
         s16 v0, v1;
 
@@ -1022,17 +1022,17 @@ static int sub_02084A18(PartyMenuApplication *application)
         PartyMenu_PrintShortMessage(application, PartyMenu_Text_UseOnWhichPokemon, TRUE);
 
         application->monStats[1] = 0;
-        return PARTY_MENU_STATE_30;
+        return PARTY_MENU_STATE_HP_TRANSFER_FIELD_MOVE;
     }
 }
 
 int sub_02084B34(PartyMenuApplication *application)
 {
-    if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+    if (JOY_NEW(PAD_BUTTON_A | PAD_BUTTON_B)) {
         Window_EraseMessageBox(&application->windows[PARTY_MENU_WIN_LONG_MESSAGE], 1);
         PartyMenu_PrintShortMessage(application, PartyMenu_Text_ChooseAPokemon, TRUE);
         Sprite_SetExplicitPalette2(application->sprites[PARTY_MENU_SPRITE_CURSOR_NORMAL], 0);
-        return PARTY_MENU_STATE_1;
+        return PARTY_MENU_STATE_DEFAULT;
     }
 
     return PARTY_MENU_STATE_3;
