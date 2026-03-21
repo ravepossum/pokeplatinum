@@ -1,8 +1,8 @@
 #ifndef POKEPLATINUM_CONST_OV5_021FB470_H
 #define POKEPLATINUM_CONST_OV5_021FB470_H
 
-#include "overlay005/struct_ov5_021FB0F0.h"
+#include "map_object.h"
 
-extern const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB470;
+extern const MapObjGfxFuncTable Unk_ov5_021FB470;
 
 #endif // POKEPLATINUM_CONST_OV5_021FB470_H

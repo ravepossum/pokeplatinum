@@ -984,7 +984,7 @@ BOOL ScrCmd_32D(ScriptContext *ctx)
                 MapObject_SetY(v7, ((v0) >> 3) / FX32_ONE );
             }
 
-            v2 = ov5_021EB1A0(v7);
+            v2 = MapObject_GetBillboard(v7);
 
             if ((v2 == NULL) && BerryPatchGraphics_IsBerryPatch(MapObject_GetGraphicsID(v7))) {
                 if (sub_02062D4C(v7)) {
@@ -994,7 +994,7 @@ BOOL ScrCmd_32D(ScriptContext *ctx)
             }
 
             if (v2 != NULL) {
-                ov5_021EDEB4(v7, v2);
+                MapObject_UpdateBillboardPos(v7, v2);
                 Billboard_SetDrawFlag(v2, 1);
             }
         }
@@ -1033,10 +1033,10 @@ static void ov5_021F7654(MapObject *param0, int param1)
     MapObject_SetPos(param0, &v0);
     MapObject_SetY(param0, (param1) * 2);
 
-    v1 = ov5_021EB1A0(param0);
+    v1 = MapObject_GetBillboard(param0);
 
     if (v1 != NULL) {
-        ov5_021EDEB4(param0, v1);
+        MapObject_UpdateBillboardPos(param0, v1);
         Billboard_SetDrawFlag(v1, 1);
     }
 }

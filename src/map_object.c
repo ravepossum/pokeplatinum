@@ -14,15 +14,9 @@
 #include "functypes/funcptr_020EDF0C_2.h"
 #include "overlay005/const_ov5_021FB470.h"
 #include "overlay005/const_ov5_021FB97C.h"
-#include "overlay005/funcptr_ov5_021FB0F0.h"
-#include "overlay005/funcptr_ov5_021FB0F0_1.h"
-#include "overlay005/funcptr_ov5_021FB0F0_2.h"
-#include "overlay005/funcptr_ov5_021FB0F0_3.h"
-#include "overlay005/funcptr_ov5_021FB0F0_4.h"
 #include "overlay005/ov5_021ECC20.h"
 #include "overlay005/ov5_021ECE40.h"
 #include "overlay005/struct_ov5_021ED0A4.h"
-#include "overlay005/struct_ov5_021FB0F0.h"
 #include "overlay005/struct_ov5_021FB97C.h"
 
 #include "berry_patch_graphics.h"
@@ -90,11 +84,11 @@ typedef struct MapObject {
     UnkFuncPtr_020EDF0C unk_B8;
     UnkFuncPtr_020EDF0C_1 unk_BC;
     UnkFuncPtr_020EDF0C_2 unk_C0;
-    UnkFuncPtr_ov5_021FB0F0 unk_C4;
-    UnkFuncPtr_ov5_021FB0F0_1 unk_C8;
-    UnkFuncPtr_ov5_021FB0F0_2 unk_CC;
-    UnkFuncPtr_ov5_021FB0F0_3 unk_D0;
-    UnkFuncPtr_ov5_021FB0F0_4 unk_D4;
+    MapObjGfxFunc unk_C4;
+    MapObjGfxFunc unk_C8;
+    MapObjGfxFunc unk_CC;
+    MapObjGfxFunc unk_D0;
+    MapObjGfxFunc unk_D4;
     u8 unk_D8[16];
     u8 unk_E8[16];
     u8 movementData[16];
@@ -151,13 +145,13 @@ static const UnkStruct_020EDF0C *sub_0206320C(u32 param0);
 static UnkFuncPtr_020EDF0C sub_02063224(const UnkStruct_020EDF0C *param0);
 static UnkFuncPtr_020EDF0C_1 sub_02063228(const UnkStruct_020EDF0C *param0);
 static UnkFuncPtr_020EDF0C_2 sub_0206322C(const UnkStruct_020EDF0C *param0);
-static UnkFuncPtr_ov5_021FB0F0_3 sub_0206323C(const UnkStruct_ov5_021FB0F0 *param0);
-static UnkFuncPtr_ov5_021FB0F0_4 sub_02063240(const UnkStruct_ov5_021FB0F0 *param0);
+static MapObjGfxFunc sub_0206323C(const MapObjGfxFuncTable *param0);
+static MapObjGfxFunc sub_02063240(const MapObjGfxFuncTable *param0);
 
-static UnkFuncPtr_ov5_021FB0F0 sub_02063230(const UnkStruct_ov5_021FB0F0 *param0);
-static UnkFuncPtr_ov5_021FB0F0_1 sub_02063234(const UnkStruct_ov5_021FB0F0 *param0);
-static UnkFuncPtr_ov5_021FB0F0_2 sub_02063238(const UnkStruct_ov5_021FB0F0 *param0);
-static const UnkStruct_ov5_021FB0F0 *sub_02063244(u32 param0);
+static MapObjGfxFunc sub_02063230(const MapObjGfxFuncTable *param0);
+static MapObjGfxFunc sub_02063234(const MapObjGfxFuncTable *param0);
+static MapObjGfxFunc sub_02063238(const MapObjGfxFuncTable *param0);
+static const MapObjGfxFuncTable *sub_02063244(u32 param0);
 
 MapObjectManager *MapObjectMan_New(FieldSystem *fieldSystem, int maxObjs, int taskBasePriority)
 {
@@ -759,7 +753,7 @@ static void sub_0206239C(MapObject *mapObj)
 
 static void sub_020623D4(MapObject *mapObj)
 {
-    const UnkStruct_ov5_021FB0F0 *v0;
+    const MapObjGfxFuncTable *v0;
     u32 v1 = MapObject_GetGraphicsID(mapObj);
 
     if (v1 == 0x2000) {
@@ -1533,7 +1527,7 @@ void sub_02062B34(MapObject *mapObj)
     v0->unk_10(mapObj);
 }
 
-void sub_02062B4C(MapObject *mapObj, UnkFuncPtr_ov5_021FB0F0 param1)
+void sub_02062B4C(MapObject *mapObj, MapObjGfxFunc param1)
 {
     mapObj->unk_C4 = param1;
 }
@@ -1543,7 +1537,7 @@ void sub_02062B54(MapObject *mapObj)
     mapObj->unk_C4(mapObj);
 }
 
-void sub_02062B60(MapObject *mapObj, UnkFuncPtr_ov5_021FB0F0_1 param1)
+void sub_02062B60(MapObject *mapObj, MapObjGfxFunc param1)
 {
     mapObj->unk_C8 = param1;
 }
@@ -1553,7 +1547,7 @@ void sub_02062B68(MapObject *mapObj)
     mapObj->unk_C8(mapObj);
 }
 
-void sub_02062B74(MapObject *mapObj, UnkFuncPtr_ov5_021FB0F0_2 param1)
+void sub_02062B74(MapObject *mapObj, MapObjGfxFunc param1)
 {
     mapObj->unk_CC = param1;
 }
@@ -1563,7 +1557,7 @@ void sub_02062B7C(MapObject *mapObj)
     mapObj->unk_CC(mapObj);
 }
 
-void sub_02062B88(MapObject *mapObj, UnkFuncPtr_ov5_021FB0F0_3 param1)
+void sub_02062B88(MapObject *mapObj, MapObjGfxFunc param1)
 {
     mapObj->unk_D0 = param1;
 }
@@ -1573,7 +1567,7 @@ void sub_02062B90(MapObject *mapObj)
     mapObj->unk_D0(mapObj);
 }
 
-void sub_02062B9C(MapObject *mapObj, UnkFuncPtr_ov5_021FB0F0_4 param1)
+void sub_02062B9C(MapObject *mapObj, MapObjGfxFunc param1)
 {
     mapObj->unk_D4 = param1;
 }
@@ -2370,32 +2364,32 @@ static UnkFuncPtr_020EDF0C_2 sub_0206322C(const UnkStruct_020EDF0C *param0)
     return param0->unk_0C;
 }
 
-static UnkFuncPtr_ov5_021FB0F0 sub_02063230(const UnkStruct_ov5_021FB0F0 *param0)
+static MapObjGfxFunc sub_02063230(const MapObjGfxFuncTable *param0)
 {
     return param0->unk_00;
 }
 
-static UnkFuncPtr_ov5_021FB0F0_1 sub_02063234(const UnkStruct_ov5_021FB0F0 *param0)
+static MapObjGfxFunc sub_02063234(const MapObjGfxFuncTable *param0)
 {
     return param0->unk_04;
 }
 
-static UnkFuncPtr_ov5_021FB0F0_2 sub_02063238(const UnkStruct_ov5_021FB0F0 *param0)
+static MapObjGfxFunc sub_02063238(const MapObjGfxFuncTable *param0)
 {
     return param0->unk_08;
 }
 
-static UnkFuncPtr_ov5_021FB0F0_3 sub_0206323C(const UnkStruct_ov5_021FB0F0 *param0)
+static MapObjGfxFunc sub_0206323C(const MapObjGfxFuncTable *param0)
 {
     return param0->unk_0C;
 }
 
-static UnkFuncPtr_ov5_021FB0F0_4 sub_02063240(const UnkStruct_ov5_021FB0F0 *param0)
+static MapObjGfxFunc sub_02063240(const MapObjGfxFuncTable *param0)
 {
     return param0->unk_10;
 }
 
-static const UnkStruct_ov5_021FB0F0 *sub_02063244(u32 param0)
+static const MapObjGfxFuncTable *sub_02063244(u32 param0)
 {
     const UnkStruct_ov5_021FB97C *v0 = Unk_ov5_021FB97C;
 

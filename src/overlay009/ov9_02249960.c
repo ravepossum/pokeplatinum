@@ -1939,7 +1939,7 @@ static void ov9_0224A2C0(UnkStruct_ov9_0224A228 *param0, UnkStruct_ov9_0224A294 
 {
     if (param1->unk_18 != NULL) {
         if (param1->unk_10 == NULL) {
-            Billboard *v0 = ov5_021EB1A0(param1->unk_18);
+            Billboard *v0 = MapObject_GetBillboard(param1->unk_18);
 
             if (v0 == NULL) {
                 return;
@@ -7081,10 +7081,10 @@ static BOOL ov9_0224EF64(DistWorldSystem *param0, MapObject **param1, const UnkS
 
         MapObject_SetPosDirFromCoords(*param1, param2->unk_08.x, (((param2->unk_08.y) >> 3) / FX32_ONE), param2->unk_08.z, param2->unk_08.dir);
 
-        v1 = ov5_021EB1A0(*param1);
+        v1 = MapObject_GetBillboard(*param1);
 
         if (v1 != NULL) {
-            ov5_021EDEB4(*param1, v1);
+            MapObject_UpdateBillboardPos(*param1, v1);
         }
     } else {
         (void)0;
@@ -8691,7 +8691,7 @@ static int ov9_022507C4(DistWorldSystem *param0, FieldTask *param1, u16 *param2,
 static int ov9_022507FC(DistWorldSystem *param0, FieldTask *param1, u16 *param2, const void *param3)
 {
     UnkStruct_ov9_0225074C *v1 = ov9_0224E39C(param0);
-    Billboard *v0 = ov5_021EB1A0(v1->unk_18);
+    Billboard *v0 = MapObject_GetBillboard(v1->unk_18);
 
     if (v0 != NULL) {
         v1->unk_00 = (FX32_ONE * 16);
@@ -8741,7 +8741,7 @@ static int ov9_022508C0(DistWorldSystem *param0, FieldTask *param1, u16 *param2,
     Billboard *v0;
     NNSG3dResMdl *v1;
     UnkStruct_ov9_0225074C *v2 = ov9_0224E39C(param0);
-    v0 = ov5_021EB1A0(v2->unk_18);
+    v0 = MapObject_GetBillboard(v2->unk_18);
     v1 = Billboard_GetModel2(v0);
 
     v2->unk_00 -= (FX32_ONE * 16) / (3 * 30);
@@ -9531,10 +9531,10 @@ static void PlaySoundIfNotActive(u16 seqID)
 static void ov9_022511F4(MapObject *mapObj, const VecFx32 *pos)
 {
     MapObject_SetPos(mapObj, pos);
-    Billboard *v0 = ov5_021EB1A0(mapObj);
+    Billboard *v0 = MapObject_GetBillboard(mapObj);
 
     if (v0 != NULL) {
-        ov5_021EDEB4(mapObj, v0);
+        MapObject_UpdateBillboardPos(mapObj, v0);
     }
 }
 

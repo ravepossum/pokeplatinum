@@ -23,116 +23,115 @@
 #include "overlay005/struct_ov5_021ECD10.h"
 #include "overlay005/struct_ov5_021ED2D0.h"
 #include "overlay005/struct_ov5_021EDD04.h"
-#include "overlay005/struct_ov5_021FB0F0.h"
 #include "overlay005/struct_ov5_021FB97C.h"
 
 #include "berry_patch_graphics.h"
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB0F0 = {
-    ov5_021EBA0C,
-    ov5_021EBAD0,
-    ov5_021EBA34,
-    ov5_021EBA60,
-    ov5_021EBA8C
+static const MapObjGfxFuncTable Unk_ov5_021FB0F0 = {
+    MapObjGfxFunc_Player_Init,
+    MapObjGfxFunc_Player_Update,
+    MapObjGfxFunc_Player_Delete,
+    MapObjGfxFunc_Player_Pause,
+    MapObjGfxFunc_Player_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FAF88 = {
-    ov5_021EBA0C,
-    ov5_021EBF50,
-    ov5_021EBA34,
-    ov5_021EBA60,
-    ov5_021EBA8C
+static const MapObjGfxFuncTable Unk_ov5_021FAF88 = {
+    MapObjGfxFunc_Player_Init,
+    MapObjGfxFunc_PlayerBiking_Update,
+    MapObjGfxFunc_Player_Delete,
+    MapObjGfxFunc_Player_Pause,
+    MapObjGfxFunc_Player_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FAF60 = {
-    ov5_021EBA0C,
+static const MapObjGfxFuncTable Unk_ov5_021FAF60 = {
+    MapObjGfxFunc_Player_Init,
     ov5_021EC3F0,
-    ov5_021EBA34,
-    ov5_021EBA60,
-    ov5_021EBA8C
+    MapObjGfxFunc_Player_Delete,
+    MapObjGfxFunc_Player_Pause,
+    MapObjGfxFunc_Player_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FAFB0 = {
-    ov5_021EBA0C,
+static const MapObjGfxFuncTable Unk_ov5_021FAFB0 = {
+    MapObjGfxFunc_Player_Init,
     ov5_021EC454,
-    ov5_021EBA34,
-    ov5_021EBA60,
-    ov5_021EBA8C
+    MapObjGfxFunc_Player_Delete,
+    MapObjGfxFunc_Player_Pause,
+    MapObjGfxFunc_Player_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FAFEC = {
-    ov5_021EBA0C,
+static const MapObjGfxFuncTable Unk_ov5_021FAFEC = {
+    MapObjGfxFunc_Player_Init,
     ov5_021EC4BC,
-    ov5_021EBA34,
-    ov5_021EBA60,
-    ov5_021EBA8C
+    MapObjGfxFunc_Player_Delete,
+    MapObjGfxFunc_Player_Pause,
+    MapObjGfxFunc_Player_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB014 = {
-    ov5_021EBA0C,
-    ov5_021EC15C,
-    ov5_021EBA34,
-    ov5_021EBA60,
-    ov5_021EBA8C
+static const MapObjGfxFuncTable Unk_ov5_021FB014 = {
+    MapObjGfxFunc_Player_Init,
+    MapObjGfxFunc_PlayerFishing_Update,
+    MapObjGfxFunc_Player_Delete,
+    MapObjGfxFunc_Player_Pause,
+    MapObjGfxFunc_Player_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB0DC = {
-    ov5_021EBA0C,
+static const MapObjGfxFuncTable Unk_ov5_021FB0DC = {
+    MapObjGfxFunc_Player_Init,
     ov5_021EC554,
-    ov5_021EBA34,
-    ov5_021EBA60,
-    ov5_021EBA8C
+    MapObjGfxFunc_Player_Delete,
+    MapObjGfxFunc_Player_Pause,
+    MapObjGfxFunc_Player_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB0C8 = {
-    ov5_021EBA0C,
+static const MapObjGfxFuncTable Unk_ov5_021FB0C8 = {
+    MapObjGfxFunc_Player_Init,
     ov5_021EC5C0,
-    ov5_021EBA34,
-    ov5_021EBA60,
-    ov5_021EBA8C
+    MapObjGfxFunc_Player_Delete,
+    MapObjGfxFunc_Player_Pause,
+    MapObjGfxFunc_Player_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FAFD8 = {
-    ov5_021EB2EC,
-    ov5_021EB398,
-    ov5_021EB314,
-    ov5_021EB328,
-    ov5_021EB354
+static const MapObjGfxFuncTable Unk_ov5_021FAFD8 = {
+    MapObjGfxFunc_Standard_Init,
+    MapObjGfxFunc_Standard_Update,
+    MapObjGfxFunc_Standard_Delete,
+    MapObjGfxFunc_Standard_Pause,
+    MapObjGfxFunc_Standard_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB0A0 = {
-    ov5_021EB2EC,
+static const MapObjGfxFuncTable Unk_ov5_021FB0A0 = {
+    MapObjGfxFunc_Standard_Init,
     ov5_021EB40C,
-    ov5_021EB314,
-    ov5_021EB328,
-    ov5_021EB354
+    MapObjGfxFunc_Standard_Delete,
+    MapObjGfxFunc_Standard_Pause,
+    MapObjGfxFunc_Standard_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB03C = {
-    ov5_021EB2EC,
+static const MapObjGfxFuncTable Unk_ov5_021FB03C = {
+    MapObjGfxFunc_Standard_Init,
     ov5_021EB438,
-    ov5_021EB314,
-    ov5_021EB328,
-    ov5_021EB354
+    MapObjGfxFunc_Standard_Delete,
+    MapObjGfxFunc_Standard_Pause,
+    MapObjGfxFunc_Standard_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB08C = {
-    ov5_021EB2EC,
-    ov5_021EB720,
-    ov5_021EB314,
-    ov5_021EB328,
-    ov5_021EB354
+static const MapObjGfxFuncTable Unk_ov5_021FB08C = {
+    MapObjGfxFunc_Standard_Init,
+    MapObjGfxFunc_PokecenterNurse_Update,
+    MapObjGfxFunc_Standard_Delete,
+    MapObjGfxFunc_Standard_Pause,
+    MapObjGfxFunc_Standard_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB064 = {
-    ov5_021EB7F8,
-    ov5_021EB8B8,
-    ov5_021EB834,
-    ov5_021EB848,
-    ov5_021EB874
+static const MapObjGfxFuncTable Unk_ov5_021FB064 = {
+    MapObjGfxFunc_Magikarp_Init,
+    MapObjGfxFunc_Magikarp_Update,
+    MapObjGfxFunc_Magikarp_Delete,
+    MapObjGfxFunc_Magikarp_Pause,
+    MapObjGfxFunc_Magikarp_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB000 = {
+static const MapObjGfxFuncTable Unk_ov5_021FB000 = {
     ov5_021EC734,
     ov5_021EC75C,
     ov5_021EC760,
@@ -140,7 +139,7 @@ static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB000 = {
     ov5_021EC790
 };
 
-static const UnkStruct_ov5_021FB0F0 BerryPatchRenderer = {
+static const MapObjGfxFuncTable BerryPatchRenderer = {
     BerryPatchGraphics_NewGraphics,
     BerryPatchGraphics_UpdateGraphics,
     BerryPatchGraphics_FreeGraphics,
@@ -148,15 +147,15 @@ static const UnkStruct_ov5_021FB0F0 BerryPatchRenderer = {
     BerryPatchGraphics_ResumeGraphics
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB078 = {
-    ov5_021EB2EC,
+static const MapObjGfxFuncTable Unk_ov5_021FB078 = {
+    MapObjGfxFunc_Standard_Init,
     ov5_021EB944,
-    ov5_021EB314,
-    ov5_021EB328,
-    ov5_021EB354
+    MapObjGfxFunc_Standard_Delete,
+    MapObjGfxFunc_Standard_Pause,
+    MapObjGfxFunc_Standard_Resume
 };
 
-static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB050 = {
+static const MapObjGfxFuncTable Unk_ov5_021FB050 = {
     ov5_021EC7B8,
     ov5_021EC75C,
     ov5_021EC760,
@@ -164,7 +163,7 @@ static const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB050 = {
     ov5_021EC7D0
 };
 
-const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB470 = {
+const MapObjGfxFuncTable Unk_ov5_021FB470 = {
     ov5_021ECE18,
     ov5_021ECE30,
     ov5_021ECE34,
@@ -172,7 +171,7 @@ const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB470 = {
     ov5_021ECE3C
 };
 
-const UnkStruct_ov5_021FB0F0 Unk_ov5_021FAF9C = {
+const MapObjGfxFuncTable Unk_ov5_021FAF9C = {
     ov5_021ECA70,
     ov5_021ECA90,
     ov5_021ECABC,
@@ -180,7 +179,7 @@ const UnkStruct_ov5_021FB0F0 Unk_ov5_021FAF9C = {
     ov5_021ECAF0
 };
 
-const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB0B4 = {
+const MapObjGfxFuncTable Unk_ov5_021FB0B4 = {
     ov5_021ECB34,
     ov5_021ECB58,
     ov5_021ECB78,
@@ -188,7 +187,7 @@ const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB0B4 = {
     ov5_021ECAF0
 };
 
-const UnkStruct_ov5_021FB0F0 dummy = {
+const MapObjGfxFuncTable dummy = {
     NULL,
     NULL,
     NULL,
@@ -196,7 +195,7 @@ const UnkStruct_ov5_021FB0F0 dummy = {
     NULL
 };
 
-const UnkStruct_ov5_021FB0F0 Unk_ov5_021FAFC4 = {
+const MapObjGfxFuncTable Unk_ov5_021FAFC4 = {
     ov5_021EC824,
     ov5_021EC8EC,
     ov5_021EC858,
@@ -204,7 +203,7 @@ const UnkStruct_ov5_021FB0F0 Unk_ov5_021FAFC4 = {
     ov5_021EC898
 };
 
-const UnkStruct_ov5_021FB0F0 Unk_ov5_021FB028 = {
+const MapObjGfxFuncTable Unk_ov5_021FB028 = {
     ov5_021EC938,
     ov5_021EC9E8,
     ov5_021EC95C,

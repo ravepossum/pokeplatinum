@@ -131,9 +131,9 @@ void BerryPatchGraphics_UpdateGraphics(MapObject *mapObject)
     }
 
     if (graphicsData->graphicsObject != NULL) {
-        ov5_021EDEB4(mapObject, graphicsData->graphicsObject);
+        MapObject_UpdateBillboardPos(mapObject, graphicsData->graphicsObject);
 
-        if (ov5_021ECD38(mapObject) == 0) {
+        if (MapObject_ShouldPauseAnim(mapObject) == 0) {
             Billboard_AdvanceAnim(graphicsData->graphicsObject, FX32_ONE );
         }
 
@@ -152,7 +152,7 @@ void BerryPatchGraphics_PauseGraphics(MapObject *mapObject)
     BerryPatchGraphics *graphicsData = sub_02062AF0(mapObject);
 
     if (graphicsData->graphicsObject != NULL) {
-        ov5_021ED01C(graphicsData->graphicsObject, &graphicsData->graphicsState);
+        Billboard_StoreAnimState(graphicsData->graphicsObject, &graphicsData->graphicsState);
     }
 
     ov5_021ECFD8(mapObject, &graphicsData->graphicsObject, graphicsData->graphicsResourceID);
@@ -178,8 +178,8 @@ void BerryPatchGraphics_ResumeGraphics(MapObject *mapObject)
     }
 
     if (graphicsData->graphicsObject != NULL) {
-        ov5_021ED03C(graphicsData->graphicsObject, &graphicsData->graphicsState);
-        ov5_021EDEB4(mapObject, graphicsData->graphicsObject);
+        Billboard_RestoreAnimState(graphicsData->graphicsObject, &graphicsData->graphicsState);
+        MapObject_UpdateBillboardPos(mapObject, graphicsData->graphicsObject);
         MapObject_SetStatusFlagOff(mapObject, MAP_OBJ_STATUS_21);
     }
 }

@@ -267,7 +267,7 @@ OverworldAnimManager *BerryPatchGraphics_NewSparkleEffect(MapObject *mapObject)
     OverworldAnimManager *effectTask;
 
     fieldEffMan = MapObject_GetFieldEffectManager(mapObject);
-    ov5_021ECDA0(mapObject, &position);
+    MapObject_ApplyPosOffsets(mapObject, &position);
     position.z += (FX32_ONE * 8); // Offset sparkle effect 8 units above ground
 
     effectContext.fieldEffMan = fieldEffMan;

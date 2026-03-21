@@ -44,8 +44,7 @@ static const PlayerGfxAnimStateFunc PlayerGfxAnimStateFuncs_Standard[];
 static const PlayerGfxAnimStateFunc PlayerGfxAnimStateFuncs_Biking[];
 static const PlayerGfxAnimStateFunc PlayerGfxAnimStateFuncs_Fishing[];
 
-// MapObject_GetBillboard
-Billboard *ov5_021EB1A0(MapObject *mapObj)
+Billboard *MapObject_GetBillboard(MapObject *mapObj)
 {
     int graphicsID = MapObject_GetGraphicsID(mapObj);
 
@@ -108,13 +107,11 @@ Billboard *ov5_021EB1A0(MapObject *mapObj)
     return NULL;
 }
 
-// MapObjGfxFunc_Standard_Init
-void ov5_021EB2EC(MapObject *mapObj)
+void MapObjGfxFunc_Standard_Init(MapObject *mapObj)
 {
     MapObjectGfx *mapObjGfx = sub_02062ACC(mapObj, sizeof(MapObjectGfx));
     mapObjGfx->previousDir = DIR_NONE;
 
-    // initialize billboard or something
     ov5_021ECF04(mapObj, &mapObjGfx->billboard);
 
     if (mapObjGfx->billboard != NULL) {
@@ -122,28 +119,25 @@ void ov5_021EB2EC(MapObject *mapObj)
     }
 }
 
-// MapObjGfxFunc_Standard_Delete
-void ov5_021EB314(MapObject *mapObj)
+void MapObjGfxFunc_Standard_Delete(MapObject *mapObj)
 {
     MapObjectGfx *mapObjGfx = sub_02062AF0(mapObj);
-    ov5_021ECFA4(mapObj, &mapObjGfx->billboard);
+    MapObject_DeleteGfx(mapObj, &mapObjGfx->billboard);
 }
 
-// MapObjGfxFunc_Standard_Pause
-void ov5_021EB328(MapObject *mapObj)
+void MapObjGfxFunc_Standard_Pause(MapObject *mapObj)
 {
     MapObjectGfx *mapObjGfx = sub_02062AF0(mapObj);
 
     if (mapObjGfx->billboard != NULL) {
-        ov5_021ED01C(mapObjGfx->billboard, &mapObjGfx->animState);
+        Billboard_StoreAnimState(mapObjGfx->billboard, &mapObjGfx->animState);
     }
 
-    ov5_021ECFA4(mapObj, &mapObjGfx->billboard);
+    MapObject_DeleteGfx(mapObj, &mapObjGfx->billboard);
     MapObject_SetStatusFlagOn(mapObj, MAP_OBJ_STATUS_21);
 }
 
-// MapObjGfxFunc_Standard_Resume
-void ov5_021EB354(MapObject *mapObj)
+void MapObjGfxFunc_Standard_Resume(MapObject *mapObj)
 {
     MapObjectGfx *mapObjGfx = sub_02062AF0(mapObj);
 
@@ -156,15 +150,14 @@ void ov5_021EB354(MapObject *mapObj)
     }
 
     if (mapObjGfx->billboard != NULL) {
-        ov5_021ED03C(mapObjGfx->billboard, &mapObjGfx->animState);
-        ov5_021EDEB4(mapObj, mapObjGfx->billboard);
+        Billboard_RestoreAnimState(mapObjGfx->billboard, &mapObjGfx->animState);
+        MapObject_UpdateBillboardPos(mapObj, mapObjGfx->billboard);
 
         MapObject_SetStatusFlagOff(mapObj, MAP_OBJ_STATUS_21);
     }
 }
 
-// MapObjGfxFunc_Standard_Update
-void ov5_021EB398(MapObject *mapObj)
+void MapObjGfxFunc_Standard_Update(MapObject *mapObj)
 {
     MapObjectGfx *mapObjGfx = sub_02062AF0(mapObj);
     Billboard *billboard = mapObjGfx->billboard;
@@ -188,7 +181,7 @@ void ov5_021EB398(MapObject *mapObj)
     mapObjGfx->previousDir = currentDir;
     mapObjGfx->previousAnimState = sub_02062A14(mapObj);
 
-    ov5_021EDEB4(mapObj, billboard);
+    MapObject_UpdateBillboardPos(mapObj, billboard);
     UpdateBillboardDrawFlag(mapObj, billboard);
 }
 
@@ -210,7 +203,7 @@ void ov5_021EB40C(MapObject *mapObj)
         return;
     }
 
-    ov5_021EDEB4(mapObj, v3);
+    MapObject_UpdateBillboardPos(mapObj, v3);
     UpdateBillboardDrawFlag(mapObj, v3);
 }
 
@@ -232,18 +225,18 @@ void ov5_021EB438(MapObject *mapObj)
         return;
     }
 
-    if (ov5_021ECD38(mapObj) == 0) {
+    if (MapObject_ShouldPauseAnim(mapObj) == 0) {
         Billboard_AdvanceAnim(v3, (FX32_ONE));
     }
 
-    ov5_021EDEB4(mapObj, v3);
+    MapObject_UpdateBillboardPos(mapObj, v3);
     UpdateBillboardDrawFlag(mapObj, v3);
 }
 
 static void ObjGfxAnimState_Standard_Stopped(MapObject *mapObj, Billboard *billboard, MapObjectGfx *mapObjGfx, int dir)
 {
     if (dir != mapObjGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
@@ -257,13 +250,13 @@ static void ObjGfxAnimState_Standard_Stopped(MapObject *mapObj, Billboard *billb
 static void ObjGfxAnimState_Standard_Walk32And16Frames(MapObject *mapObj, Billboard *billboard, MapObjectGfx *mapObjGfx, int dir)
 {
     if (dir != mapObjGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         Billboard_AdvanceAnim(billboard, FX32_ONE / 2);
     }
 }
@@ -271,13 +264,13 @@ static void ObjGfxAnimState_Standard_Walk32And16Frames(MapObject *mapObj, Billbo
 static void ObjGfxAnimState_Standard_Walk8Frames(MapObject *mapObj, Billboard *billboard, MapObjectGfx *mapObjGfx, int dir)
 {
     if (dir != mapObjGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         Billboard_AdvanceAnim(billboard, FX32_ONE);
     }
 }
@@ -285,13 +278,13 @@ static void ObjGfxAnimState_Standard_Walk8Frames(MapObject *mapObj, Billboard *b
 static void ObjGfxAnimState_Standard_Walk4Frames(MapObject *mapObj, Billboard *billboard, MapObjectGfx *mapObjGfx, int dir)
 {
     if (dir != mapObjGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         Billboard_AdvanceAnim(billboard, FX32_ONE * 2);
     }
 }
@@ -299,13 +292,13 @@ static void ObjGfxAnimState_Standard_Walk4Frames(MapObject *mapObj, Billboard *b
 static void ObjGfxAnimState_Standard_Walk2Frames(MapObject *mapObj, Billboard *billboard, MapObjectGfx *mapObjGfx, int dir)
 {
     if (dir != mapObjGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         Billboard_AdvanceAnim(billboard, FX32_ONE * 4);
     }
 }
@@ -313,7 +306,7 @@ static void ObjGfxAnimState_Standard_Walk2Frames(MapObject *mapObj, Billboard *b
 static void ObjGfxAnimState_Standard_Walk6Frames(MapObject *mapObj, Billboard *billboard, MapObjectGfx *mapObjGfx, int dir)
 {
     if (dir != mapObjGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
@@ -325,7 +318,7 @@ static void ObjGfxAnimState_Standard_Walk6Frames(MapObject *mapObj, Billboard *b
         mapObjGfx->animSteps = 0;
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         fx32 stepsToFrames[] = {
             FX32_ONE,
             FX32_ONE,
@@ -348,7 +341,7 @@ static void ObjGfxAnimState_Standard_Walk6Frames(MapObject *mapObj, Billboard *b
 static void ObjGfxAnimState_Standard_Walk3Frames(MapObject *mapObj, Billboard *billboard, MapObjectGfx *mapObjGfx, int dir)
 {
     if (dir != mapObjGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
@@ -360,7 +353,7 @@ static void ObjGfxAnimState_Standard_Walk3Frames(MapObject *mapObj, Billboard *b
         mapObjGfx->animSteps = 0;
     }
 
-    if (ov5_021ECD38(mapObj) == 0) {
+    if (MapObject_ShouldPauseAnim(mapObj) == 0) {
         fx32 stepsToFrames[] = {
             FX32_ONE * 3,
             FX32_ONE * 2,
@@ -380,7 +373,7 @@ static void ObjGfxAnimState_Standard_Walk3Frames(MapObject *mapObj, Billboard *b
 static void ObjGfxAnimState_Standard_Walk7Frames(MapObject *mapObj, Billboard *billboard, MapObjectGfx *mapObjGfx, int dir)
 {
     if (dir != mapObjGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
@@ -392,7 +385,7 @@ static void ObjGfxAnimState_Standard_Walk7Frames(MapObject *mapObj, Billboard *b
         mapObjGfx->animSteps = 0;
     }
 
-    if (ov5_021ECD38(mapObj) == 0) {
+    if (MapObject_ShouldPauseAnim(mapObj) == 0) {
         fx32 stepsToFrames[] = {
             FX32_ONE * 2,
             FX32_ONE,
@@ -425,8 +418,7 @@ static const ObjGfxAnimStateFunc ObjGfxAnimStateFuncs_Standard[] = {
     ObjGfxAnimState_Standard_Walk7Frames,
 };
 
-// MapObjGfxFunc_PokecenterNurse_Update
-void ov5_021EB720(MapObject *mapObj)
+void MapObjGfxFunc_PokecenterNurse_Update(MapObject *mapObj)
 {
     MapObjectGfx *mapObjGfx = sub_02062AF0(mapObj);
     Billboard *billboard = mapObjGfx->billboard;
@@ -451,14 +443,14 @@ void ov5_021EB720(MapObject *mapObj)
     mapObjGfx->previousDir = dir;
     mapObjGfx->previousAnimState = sub_02062A14(mapObj);
 
-    ov5_021EDEB4(mapObj, billboard);
+    MapObject_UpdateBillboardPos(mapObj, billboard);
     UpdateBillboardDrawFlag(mapObj, billboard);
 }
 
 static void ObjGfxAnimState_PokecenterNurse_Stopped(MapObject *mapObj, Billboard *billboard, MapObjectGfx *mapObjGfx, int dir)
 {
     if (dir != mapObjGfx->previousDir || mapObjGfx->previousAnimState == NURSE_GFX_ANIM_STATE_BOW) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
@@ -492,8 +484,7 @@ static const ObjGfxAnimStateFunc ObjGfxAnimStateFuncs_PokecenterNurse[] = {
     ObjGfxAnimState_PokecenterNurse_Bow,
 };
 
-// MapObjGfxFunc_Magikarp_Init
-void ov5_021EB7F8(MapObject *mapObj)
+void MapObjGfxFunc_Magikarp_Init(MapObject *mapObj)
 {
     MagikarpMapObjectGfx *magikarpGfx = sub_02062ACC(mapObj, sizeof(MagikarpMapObjectGfx));
 
@@ -507,28 +498,25 @@ void ov5_021EB7F8(MapObject *mapObj)
     }
 }
 
-// MapObjGfxFunc_Magikarp_Delete
-void ov5_021EB834(MapObject *mapObj)
+void MapObjGfxFunc_Magikarp_Delete(MapObject *mapObj)
 {
     MagikarpMapObjectGfx *magikarpGfx = sub_02062AF0(mapObj);
-    ov5_021ECFA4(mapObj, &magikarpGfx->billboard);
+    MapObject_DeleteGfx(mapObj, &magikarpGfx->billboard);
 }
 
-// MapObjGfxFunc_Magikarp_Pause
-void ov5_021EB848(MapObject *mapObj)
+void MapObjGfxFunc_Magikarp_Pause(MapObject *mapObj)
 {
     MagikarpMapObjectGfx *magikarpGfx = sub_02062AF0(mapObj);
 
     if (magikarpGfx->billboard != NULL) {
-        ov5_021ED01C(magikarpGfx->billboard, &magikarpGfx->animState);
+        Billboard_StoreAnimState(magikarpGfx->billboard, &magikarpGfx->animState);
     }
 
-    ov5_021ECFA4(mapObj, &magikarpGfx->billboard);
+    MapObject_DeleteGfx(mapObj, &magikarpGfx->billboard);
     MapObject_SetStatusFlagOn(mapObj, MAP_OBJ_STATUS_21);
 }
 
-// MapObjGfxFunc_Magikarp_Resume
-void ov5_021EB874(MapObject *mapObj)
+void MapObjGfxFunc_Magikarp_Resume(MapObject *mapObj)
 {
     MagikarpMapObjectGfx *magikarpGfx = sub_02062AF0(mapObj);
 
@@ -541,14 +529,13 @@ void ov5_021EB874(MapObject *mapObj)
     }
 
     if (magikarpGfx->billboard != NULL) {
-        ov5_021ED03C(magikarpGfx->billboard, &magikarpGfx->animState);
-        ov5_021EDEB4(mapObj, magikarpGfx->billboard);
+        Billboard_RestoreAnimState(magikarpGfx->billboard, &magikarpGfx->animState);
+        MapObject_UpdateBillboardPos(mapObj, magikarpGfx->billboard);
         MapObject_SetStatusFlagOff(mapObj, MAP_OBJ_STATUS_21);
     }
 }
 
-// MapObjGfxFunc_Magikarp_Update
-void ov5_021EB8B8(MapObject *mapObj)
+void MapObjGfxFunc_Magikarp_Update(MapObject *mapObj)
 {
     MagikarpMapObjectGfx *magikarpGfx = sub_02062AF0(mapObj);
     Billboard *billboard = magikarpGfx->billboard;
@@ -582,7 +569,7 @@ void ov5_021EB8B8(MapObject *mapObj)
     magikarpGfx->previousDir = dir;
     magikarpGfx->previousAnimState = sub_02062A14(mapObj);
 
-    ov5_021EDEB4(mapObj, billboard);
+    MapObject_UpdateBillboardPos(mapObj, billboard);
     UpdateBillboardDrawFlag(mapObj, billboard);
 }
 
@@ -645,12 +632,11 @@ void ov5_021EB944(MapObject *mapObj)
     v2->previousDir = v0;
     v2->previousAnimState = sub_02062A14(mapObj);
 
-    ov5_021EDEB4(mapObj, v3);
+    MapObject_UpdateBillboardPos(mapObj, v3);
     UpdateBillboardDrawFlag(mapObj, v3);
 }
 
-// MapObjGfxFunc_Player_Init
-void ov5_021EBA0C(MapObject *mapObj)
+void MapObjGfxFunc_Player_Init(MapObject *mapObj)
 {
     PlayerMapObjectGfx *playerGfx = sub_02062ACC(mapObj, sizeof(PlayerMapObjectGfx));
     playerGfx->previousDir = DIR_NONE;
@@ -662,33 +648,30 @@ void ov5_021EBA0C(MapObject *mapObj)
     }
 }
 
-// MapObjGfxFunc_Player_Delete
-void ov5_021EBA34(MapObject *mapObj)
+void MapObjGfxFunc_Player_Delete(MapObject *mapObj)
 {
     PlayerMapObjectGfx *playerGfx;
     VecFx32 zeroOffset = { 0, 0, 0 };
 
     playerGfx = sub_02062AF0(mapObj);
 
-    ov5_021ECFA4(mapObj, &playerGfx->billboard);
+    MapObject_DeleteGfx(mapObj, &playerGfx->billboard);
     MapObject_SetSpriteJumpOffset(mapObj, &zeroOffset);
 }
 
-// MapObjGfxFunc_Player_Pause
-void ov5_021EBA60(MapObject *mapObj)
+void MapObjGfxFunc_Player_Pause(MapObject *mapObj)
 {
     PlayerMapObjectGfx *playerGfx = sub_02062AF0(mapObj);
 
     if (playerGfx->billboard != NULL) {
-        ov5_021ED01C(playerGfx->billboard, &playerGfx->animState);
+        Billboard_StoreAnimState(playerGfx->billboard, &playerGfx->animState);
     }
 
-    ov5_021ECFA4(mapObj, &playerGfx->billboard);
+    MapObject_DeleteGfx(mapObj, &playerGfx->billboard);
     MapObject_SetStatusFlagOn(mapObj, MAP_OBJ_STATUS_21);
 }
 
-// MapObjGfxFunc_Player_Resume
-void ov5_021EBA8C(MapObject *mapObj)
+void MapObjGfxFunc_Player_Resume(MapObject *mapObj)
 {
     PlayerMapObjectGfx *playerGfx = sub_02062AF0(mapObj);
 
@@ -701,14 +684,13 @@ void ov5_021EBA8C(MapObject *mapObj)
     }
 
     if (playerGfx->billboard != NULL) {
-        ov5_021ED03C(playerGfx->billboard, &playerGfx->animState);
-        ov5_021EDEB4(mapObj, playerGfx->billboard);
+        Billboard_RestoreAnimState(playerGfx->billboard, &playerGfx->animState);
+        MapObject_UpdateBillboardPos(mapObj, playerGfx->billboard);
         MapObject_SetStatusFlagOff(mapObj, MAP_OBJ_STATUS_21);
     }
 }
 
-// MapObjGfxFunc_Player_Update
-void ov5_021EBAD0(MapObject *mapObj)
+void MapObjGfxFunc_Player_Update(MapObject *mapObj)
 {
     PlayerMapObjectGfx *playerGfx = sub_02062AF0(mapObj);
     Billboard *billboard = playerGfx->billboard;
@@ -732,14 +714,14 @@ void ov5_021EBAD0(MapObject *mapObj)
     playerGfx->previousDir = dir;
     playerGfx->previousAnimState = sub_02062A14(mapObj);
 
-    ov5_021EDEB4(mapObj, billboard);
+    MapObject_UpdateBillboardPos(mapObj, billboard);
     UpdateBillboardDrawFlag(mapObj, billboard);
 }
 
 static void PlayerGfxAnimState_Standard_Stopped(MapObject *mapObj, Billboard *billboard, PlayerMapObjectGfx *playerGfx, int dir)
 {
     if (dir != playerGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
@@ -747,7 +729,7 @@ static void PlayerGfxAnimState_Standard_Stopped(MapObject *mapObj, Billboard *bi
     } else if (playerGfx->previousAnimState == PLAYER_GFX_ANIM_STATE_RUN) {
         playerGfx->stoppedRunningOrBiking = TRUE;
     } else if (playerGfx->stoppedRunningOrBiking == TRUE) {
-        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, ov5_021EDF18(dir));
+        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, Billboard_WalkDirToAnimNum(dir));
         playerGfx->stoppedRunningOrBiking = FALSE;
     } else {
         SnapBillboardAnimToStep_8Frames(billboard);
@@ -757,18 +739,18 @@ static void PlayerGfxAnimState_Standard_Stopped(MapObject *mapObj, Billboard *bi
 static void PlayerGfxAnimState_Standard_Walk32And16Frames(MapObject *mapObj, Billboard *billboard, PlayerMapObjectGfx *playerGfx, int dir)
 {
     if (dir != playerGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
     } else if (playerGfx->previousAnimState == PLAYER_GFX_ANIM_STATE_RUN) {
         playerGfx->stoppedRunningOrBiking = TRUE;
         return;
     } else if (playerGfx->stoppedRunningOrBiking == TRUE) {
-        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, ov5_021EDF18(dir));
+        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, Billboard_WalkDirToAnimNum(dir));
         playerGfx->stoppedRunningOrBiking = FALSE;
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         Billboard_AdvanceAnim(billboard, FX32_ONE / 2);
     }
 }
@@ -776,14 +758,14 @@ static void PlayerGfxAnimState_Standard_Walk32And16Frames(MapObject *mapObj, Bil
 static void PlayerGfxAnimState_Standard_Walk8Frames(MapObject *mapObj, Billboard *billboard, PlayerMapObjectGfx *playerGfx, int dir)
 {
     if (dir != playerGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
     } else if (playerGfx->previousAnimState == PLAYER_GFX_ANIM_STATE_RUN) {
-        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, ov5_021EDF18(dir));
+        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, Billboard_WalkDirToAnimNum(dir));
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         Billboard_AdvanceAnim(billboard, FX32_ONE);
     }
 }
@@ -791,15 +773,15 @@ static void PlayerGfxAnimState_Standard_Walk8Frames(MapObject *mapObj, Billboard
 static void PlayerGfxAnimState_Standard_Walk4Frames(MapObject *mapObj, Billboard *billboard, PlayerMapObjectGfx *playerGfx, int dir)
 {
     if (dir != playerGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
     } else if (playerGfx->previousAnimState == PLAYER_GFX_ANIM_STATE_RUN) {
-        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, ov5_021EDF18(dir));
+        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, Billboard_WalkDirToAnimNum(dir));
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         Billboard_AdvanceAnim(billboard, FX32_ONE * 2);
     }
 }
@@ -807,15 +789,15 @@ static void PlayerGfxAnimState_Standard_Walk4Frames(MapObject *mapObj, Billboard
 static void PlayerGfxAnimState_Standard_Walk2Frames(MapObject *mapObj, Billboard *billboard, PlayerMapObjectGfx *playerGfx, int dir)
 {
     if (dir != playerGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
     } else if (playerGfx->previousAnimState == PLAYER_GFX_ANIM_STATE_RUN) {
-        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, ov5_021EDF18(dir));
+        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, Billboard_WalkDirToAnimNum(dir));
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         Billboard_AdvanceAnim(billboard, FX32_ONE * 4);
     }
 }
@@ -823,20 +805,20 @@ static void PlayerGfxAnimState_Standard_Walk2Frames(MapObject *mapObj, Billboard
 static void PlayerGfxAnimState_Standard_Walk6Frames(MapObject *mapObj, Billboard *billboard, PlayerMapObjectGfx *playerGfx, int dir)
 {
     if (dir != playerGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
         playerGfx->animSteps = 0;
     } else if (playerGfx->previousAnimState == PLAYER_GFX_ANIM_STATE_RUN) {
-        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, ov5_021EDF18(dir));
+        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, Billboard_WalkDirToAnimNum(dir));
     }
 
     if (playerGfx->previousAnimState != OBJ_GFX_ANIM_STATE_WALK_6_FRAMES) {
         playerGfx->animSteps = 0;
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         fx32 stepsToFrames[] = {
             FX32_ONE,
             FX32_ONE,
@@ -859,20 +841,20 @@ static void PlayerGfxAnimState_Standard_Walk6Frames(MapObject *mapObj, Billboard
 static void PlayerGfxAnimState_Standard_Walk3Frames(MapObject *mapObj, Billboard *billboard, PlayerMapObjectGfx *playerGfx, int dir)
 {
     if (dir != playerGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
         playerGfx->animSteps = 0;
     } else if (playerGfx->previousAnimState == PLAYER_GFX_ANIM_STATE_RUN) {
-        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, ov5_021EDF18(dir));
+        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, Billboard_WalkDirToAnimNum(dir));
     }
 
     if (playerGfx->previousAnimState != OBJ_GFX_ANIM_STATE_WALK_3_FRAMES) {
         playerGfx->animSteps = 0;
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         fx32 stepsToFrames[] = {
             FX32_ONE * 3,
             FX32_ONE * 2,
@@ -892,20 +874,20 @@ static void PlayerGfxAnimState_Standard_Walk3Frames(MapObject *mapObj, Billboard
 static void PlayerGfxAnimState_Standard_Walk7Frames(MapObject *mapObj, Billboard *billboard, PlayerMapObjectGfx *playerGfx, int dir)
 {
     if (dir != playerGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
 
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
         playerGfx->animSteps = 0;
     } else if (playerGfx->previousAnimState == PLAYER_GFX_ANIM_STATE_RUN) {
-        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, ov5_021EDF18(dir));
+        SetBillboardAnimNumAndSnapTo8FrameStep(billboard, Billboard_WalkDirToAnimNum(dir));
     }
 
     if (playerGfx->previousAnimState != OBJ_GFX_ANIM_STATE_WALK_7_FRAMES) {
         playerGfx->animSteps = 0;
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         fx32 stepsToFrames[] = {
             FX32_ONE * 2,
             FX32_ONE,
@@ -929,14 +911,14 @@ static void PlayerGfxAnimState_Standard_Walk7Frames(MapObject *mapObj, Billboard
 static void PlayerGfxAnimState_Standard_Run(MapObject *mapObj, Billboard *billboard, PlayerMapObjectGfx *playerGfx, int dir)
 {
     if (dir != playerGfx->previousDir) {
-        int animNum = ov5_021EDF24(dir);
+        int animNum = Billboard_RunDirToAnimNum(dir);
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
     } else if (playerGfx->previousAnimState != PLAYER_GFX_ANIM_STATE_RUN) {
-        SetBillboardAnimNumAndSnapToStep(billboard, ov5_021EDF24(dir), 4);
+        SetBillboardAnimNumAndSnapToStep(billboard, Billboard_RunDirToAnimNum(dir), 4);
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         Billboard_AdvanceAnim(billboard, FX32_ONE);
     }
 }
@@ -954,8 +936,7 @@ static const PlayerGfxAnimStateFunc PlayerGfxAnimStateFuncs_Standard[] = {
     PlayerGfxAnimState_Standard_Run,
 };
 
-// MapObjGfxFunc_PlayerBiking_Update
-void ov5_021EBF50(MapObject *mapObj)
+void MapObjGfxFunc_PlayerBiking_Update(MapObject *mapObj)
 {
     // does not match with C99-style declarations
     int dir, animState;
@@ -988,7 +969,7 @@ void ov5_021EBF50(MapObject *mapObj)
     playerGfx->previousDir = dir;
     playerGfx->previousAnimState = animState;
 
-    ov5_021EDEB4(mapObj, billboard);
+    MapObject_UpdateBillboardPos(mapObj, billboard);
     UpdateBillboardDrawFlag(mapObj, billboard);
 }
 
@@ -1014,7 +995,7 @@ static void PlayerGfxAnimState_Biking_Stopped(MapObject *mapObj, Billboard *bill
 
 static void PlayerGfxAnimState_Biking_Jump16Frames(MapObject *mapObj, Billboard *billboard, PlayerMapObjectGfx *playerGfx, int dir)
 {
-    int animNum = ov5_021EDF30(dir);
+    int animNum = Billboard_BikeJumpDirToAnimNum(dir);
 
     if (dir != playerGfx->previousDir || playerGfx->previousAnimState != OBJ_GFX_ANIM_STATE_STOPPED) {
         Billboard_SetAnimNum(billboard, animNum);
@@ -1027,14 +1008,14 @@ static void PlayerGfxAnimState_Biking_Jump16Frames(MapObject *mapObj, Billboard 
         Billboard_SetAnimFrameNum(billboard, 0);
     }
 
-    if (ov5_021ECD38(mapObj) == FALSE) {
+    if (MapObject_ShouldPauseAnim(mapObj) == FALSE) {
         Billboard_AdvanceAnim(billboard, FX32_ONE / 2);
     }
 }
 
 static void PlayerGfxAnimState_Biking_Jump8Frames(MapObject *mapObj, Billboard *billboard, PlayerMapObjectGfx *playerGfx, int dir)
 {
-    int animNum = ov5_021EDF30(dir);
+    int animNum = Billboard_BikeJumpDirToAnimNum(dir);
 
     if (dir != playerGfx->previousDir) {
         Billboard_SetAnimNum(billboard, animNum);
@@ -1047,7 +1028,7 @@ static void PlayerGfxAnimState_Biking_Jump8Frames(MapObject *mapObj, Billboard *
         Billboard_SetAnimFrameNum(billboard, 0);
     }
 
-    if (ov5_021ECD38(mapObj) == 0) {
+    if (MapObject_ShouldPauseAnim(mapObj) == 0) {
         Billboard_AdvanceAnim(billboard, FX32_ONE );
     }
 }
@@ -1073,8 +1054,7 @@ static const int BillboardFishingDirAnimTable[MAX_DIR] = {
     [DIR_EAST] = 3,
 };
 
-// MapObjGfxFunc_PlayerFishing_Update
-void ov5_021EC15C(MapObject *mapObj)
+void MapObjGfxFunc_PlayerFishing_Update(MapObject *mapObj)
 {
     PlayerMapObjectGfx *playerGfx = sub_02062AF0(mapObj);
     Billboard *billboard = playerGfx->billboard;
@@ -1096,7 +1076,7 @@ void ov5_021EC15C(MapObject *mapObj)
     playerGfx->previousDir = dir;
     playerGfx->previousAnimState = sub_02062A14(mapObj);
 
-    ov5_021EDEB4(mapObj, billboard);
+    MapObject_UpdateBillboardPos(mapObj, billboard);
     UpdateBillboardDrawFlag(mapObj, billboard);
 }
 
@@ -1243,13 +1223,13 @@ void ov5_021EC3F0(MapObject *mapObj)
     playerGfx->previousDir = dir;
     playerGfx->previousAnimState = sub_02062A14(mapObj);
 
-    int animNum = ov5_021EDF18(dir);
+    int animNum = Billboard_WalkDirToAnimNum(dir);
 
     Billboard_SetAnimNum(billboard, animNum);
     Billboard_SetAnimFrameNum(billboard, 0);
     Billboard_AdvanceAnim(billboard, 0);
 
-    ov5_021EDEB4(mapObj, billboard);
+    MapObject_UpdateBillboardPos(mapObj, billboard);
     UpdateBillboardDrawFlag(mapObj, billboard);
 }
 
@@ -1280,7 +1260,7 @@ void ov5_021EC454(MapObject *mapObj)
 
     Billboard_AdvanceAnim(billboard, FX32_ONE);
 
-    ov5_021EDEB4(mapObj, billboard);
+    MapObject_UpdateBillboardPos(mapObj, billboard);
     UpdateBillboardDrawFlag(mapObj, billboard);
 }
 
@@ -1323,7 +1303,7 @@ void ov5_021EC4BC(MapObject *mapObj)
     playerGfx->previousDir = dir;
     playerGfx->previousAnimState = sub_02062A14(mapObj);
 
-    ov5_021EDEB4(mapObj, billboard);
+    MapObject_UpdateBillboardPos(mapObj, billboard);
     UpdateBillboardDrawFlag(mapObj, billboard);
 }
 
@@ -1345,13 +1325,13 @@ void ov5_021EC554(MapObject *mapObj)
     int dir = MapObject_GetFacingDir(mapObj);
 
     if (dir != playerGfx->previousDir) {
-        int animNum = ov5_021EDF18(dir);
+        int animNum = Billboard_WalkDirToAnimNum(dir);
         Billboard_SetAnimNum(billboard, animNum);
         Billboard_SetAnimFrameNum(billboard, 0);
     }
 
     Billboard_AdvanceAnim(billboard, FX32_ONE);
-    ov5_021EDEB4(mapObj, billboard);
+    MapObject_UpdateBillboardPos(mapObj, billboard);
     UpdateBillboardDrawFlag(mapObj, billboard);
 
     playerGfx->previousDir = dir;
@@ -1391,7 +1371,7 @@ void ov5_021EC5C0(MapObject *mapObj)
     playerGfx->previousDir = dir;
     playerGfx->previousAnimState = animState;
 
-    ov5_021EDEB4(mapObj, billboard);
+    MapObject_UpdateBillboardPos(mapObj, billboard);
     UpdateBillboardDrawFlag(mapObj, billboard);
 }
 
@@ -1548,7 +1528,7 @@ void ov5_021EC824(MapObject *mapObj)
 void ov5_021EC858(MapObject *mapObj)
 {
     MespritDistWorldMapObjGfx *mespritGfx = sub_02062AF0(mapObj);
-    ov5_021ECFA4(mapObj, &mespritGfx->billboard);
+    MapObject_DeleteGfx(mapObj, &mespritGfx->billboard);
 }
 
 void ov5_021EC86C(MapObject *mapObj)
@@ -1556,10 +1536,10 @@ void ov5_021EC86C(MapObject *mapObj)
     MespritDistWorldMapObjGfx *mespritGfx = sub_02062AF0(mapObj);
 
     if (mespritGfx->billboard != NULL) {
-        ov5_021ED01C(mespritGfx->billboard, &mespritGfx->animState);
+        Billboard_StoreAnimState(mespritGfx->billboard, &mespritGfx->animState);
     }
 
-    ov5_021ECFA4(mapObj, &mespritGfx->billboard);
+    MapObject_DeleteGfx(mapObj, &mespritGfx->billboard);
     MapObject_SetStatusFlagOn(mapObj, MAP_OBJ_STATUS_21);
 }
 
@@ -1576,8 +1556,8 @@ void ov5_021EC898(MapObject *mapObj)
     }
 
     if (mespritGfx->billboard != NULL) {
-        ov5_021ED03C(mespritGfx->billboard, &mespritGfx->animState);
-        ov5_021EDEB4(mapObj, mespritGfx->billboard);
+        Billboard_RestoreAnimState(mespritGfx->billboard, &mespritGfx->animState);
+        MapObject_UpdateBillboardPos(mapObj, mespritGfx->billboard);
         MapObject_SetStatusFlagOff(mapObj, MAP_OBJ_STATUS_21);
         Billboard_SetCallback(mespritGfx->billboard, BillboardCB_UpdateMespritAlpha, mespritGfx);
     }
@@ -1601,11 +1581,11 @@ void ov5_021EC8EC(MapObject *mapObj)
         mespritGfx->alpha++;
     }
 
-    if (ov5_021ECD38(mapObj) == 0) {
+    if (MapObject_ShouldPauseAnim(mapObj) == 0) {
         Billboard_AdvanceAnim(v3, FX32_ONE);
     }
 
-    ov5_021EDEB4(mapObj, v3);
+    MapObject_UpdateBillboardPos(mapObj, v3);
     UpdateBillboardDrawFlag(mapObj, v3);
 }
 
@@ -1622,7 +1602,7 @@ void ov5_021EC938(MapObject *mapObj)
 void ov5_021EC95C(MapObject *mapObj)
 {
     UnkStruct_ov5_021EC938 *v0 = sub_02062AF0(mapObj);
-    ov5_021ECFA4(mapObj, &v0->unk_08);
+    MapObject_DeleteGfx(mapObj, &v0->unk_08);
 }
 
 void ov5_021EC970(MapObject *mapObj)
@@ -1630,10 +1610,10 @@ void ov5_021EC970(MapObject *mapObj)
     UnkStruct_ov5_021EC938 *v0 = sub_02062AF0(mapObj);
 
     if (v0->unk_08 != NULL) {
-        ov5_021ED01C(v0->unk_08, &v0->unk_0C);
+        Billboard_StoreAnimState(v0->unk_08, &v0->unk_0C);
     }
 
-    ov5_021ECFA4(mapObj, &v0->unk_08);
+    MapObject_DeleteGfx(mapObj, &v0->unk_08);
     MapObject_SetStatusFlagOn(mapObj, MAP_OBJ_STATUS_21);
 }
 
@@ -1651,8 +1631,8 @@ void ov5_021EC9A0(MapObject *mapObj)
     }
 
     if (v1->unk_08 != NULL) {
-        ov5_021ED03C(v1->unk_08, &v1->unk_0C);
-        ov5_021EDEB4(mapObj, v1->unk_08);
+        Billboard_RestoreAnimState(v1->unk_08, &v1->unk_0C);
+        MapObject_UpdateBillboardPos(mapObj, v1->unk_08);
         MapObject_SetStatusFlagOff(mapObj, MAP_OBJ_STATUS_21);
     }
 }
@@ -1675,7 +1655,7 @@ void ov5_021EC9E8(MapObject *mapObj)
         return;
     }
 
-    if (ov5_021ECD38(mapObj) == 0) {
+    if (MapObject_ShouldPauseAnim(mapObj) == 0) {
         Billboard_AdvanceAnim(v3, (FX32_ONE));
     }
 
@@ -1711,6 +1691,6 @@ void ov5_021EC9E8(MapObject *mapObj)
         }
     }
 
-    ov5_021EDEB4(mapObj, v3);
+    MapObject_UpdateBillboardPos(mapObj, v3);
     UpdateBillboardDrawFlag(mapObj, v3);
 }

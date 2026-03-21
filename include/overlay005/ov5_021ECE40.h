@@ -16,11 +16,11 @@ void ov5_021ECE94(UnkStruct_ov5_021ED0A4 *param0);
 int ov5_021ECEB4(MapObject *param0, Billboard **param1, int param2);
 int ov5_021ECF04(MapObject *param0, Billboard **param1);
 Billboard *ov5_021ECF1C(MapObject *param0, int param1);
-void ov5_021ECF70(const MapObject *param0, Billboard **param1, int param2);
-void ov5_021ECFA4(const MapObject *param0, Billboard **param1);
+void MapObject_DeleteBillboardAndGfxIfNotInUse(const MapObject *mapObj, Billboard **billboard, int graphicsID);
+void MapObject_DeleteGfx(const MapObject *mapObj, Billboard **billboard);
 void ov5_021ECFD8(const MapObject *param0, Billboard **param1, int param2);
-void ov5_021ED01C(Billboard *param0, BillboardAnimState *param1);
-void ov5_021ED03C(Billboard *param0, BillboardAnimState *param1);
+void Billboard_StoreAnimState(Billboard *billboard, BillboardAnimState *animState);
+void Billboard_RestoreAnimState(Billboard *billboard, BillboardAnimState *animState);
 void ov5_021ED060(MapObject *param0, Billboard **param1, int param2);
 int ov5_021ED150(const MapObjectManager *param0, u32 param1, BillboardResources *param2);
 void ov5_021EDA38(MapObjectManager *param0, UnkStruct_ov5_021ED0A4 *param1);
@@ -34,11 +34,11 @@ void ov5_021EDCA8(UnkStruct_ov5_021ED0A4 *param0, TextureResourceManager *param1
 TextureResourceManager *ov5_021EDCB0(const UnkStruct_ov5_021ED0A4 *param0);
 void ov5_021EDD78(MapObject *param0, int param1);
 int ov5_021EDD94(MapObject *param0);
-BOOL ov5_021EDEB4(MapObject *param0, Billboard *param1);
+BOOL MapObject_UpdateBillboardPos(MapObject *mapObj, Billboard *billboard);
 void ov5_021EDED8(MapObject *param0, Billboard *param1);
-int ov5_021EDF18(int param0);
-int ov5_021EDF24(int param0);
-int ov5_021EDF30(int param0);
+int Billboard_WalkDirToAnimNum(int dir);
+int Billboard_RunDirToAnimNum(int dir);
+int Billboard_BikeJumpDirToAnimNum(int dir);
 Billboard *ov5_021EE3FC(MapObject *param0, int param1, UnkFuncPtr_ov5_021EE454 param2, void *param3);
 
 #endif // POKEPLATINUM_OV5_021ECE40_H

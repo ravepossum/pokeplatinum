@@ -59,20 +59,20 @@ static void ov5_021ECCBC(MapObjectManager *param0)
     NARC_dtor(v0);
 }
 
-void MapObject_Draw(MapObject *param0)
+void MapObject_Draw(MapObject *mapObj)
 {
-    const MapObjectManager *v0 = MapObject_MapObjectManager(param0);
+    const MapObjectManager *v0 = MapObject_MapObjectManager(mapObj);
 
     if (MapObjectMan_CheckStatus(v0, (1 << 2))) {
         return;
     }
 
-    if (!MapObject_CheckStatus(param0, MAP_OBJ_STATUS_14)) {
+    if (!MapObject_CheckStatus(mapObj, MAP_OBJ_STATUS_14)) {
         return;
     }
 
-    if ((MapObject_IsMovementPaused(param0) == 0) || sub_02062F7C(param0)) {
-        sub_02062B68(param0);
+    if ((MapObject_IsMovementPaused(mapObj) == 0) || sub_02062F7C(mapObj)) {
+        sub_02062B68(mapObj);
     }
 }
 
@@ -100,8 +100,7 @@ static const UnkStruct_ov5_021ECD10 *ov5_021ECD10(int param0)
     return NULL;
 }
 
-// MapObjGfx_ShouldPauseAnim
-int ov5_021ECD38(const MapObject *mapObj)
+int MapObject_ShouldPauseAnim(const MapObject *mapObj)
 {
     if (MapObject_IsMovementPaused(mapObj) == TRUE && sub_02062F7C(mapObj) == FALSE) {
         return TRUE;
@@ -131,15 +130,14 @@ void *ov5_021ECD68(const MapObjectManager *param0, u32 param1, int param2)
     return v0;
 }
 
-// MapObject_ApplyPosOffsets
-void ov5_021ECDA0(const MapObject *param0, VecFx32 *adjustedObjectPos)
+void MapObject_ApplyPosOffsets(const MapObject *mapObj, VecFx32 *adjustedObjectPos)
 {
     VecFx32 objectPosition, jumpOffset, posOffset, terrainSpriteOffset;
 
-    MapObject_GetPosPtr(param0, &objectPosition);
-    MapObject_GetSpriteJumpOffset(param0, &jumpOffset);
-    MapObject_GetSpritePosOffset(param0, &posOffset);
-    MapObject_GetSpriteTerrainOffset(param0, &terrainSpriteOffset);
+    MapObject_GetPosPtr(mapObj, &objectPosition);
+    MapObject_GetSpriteJumpOffset(mapObj, &jumpOffset);
+    MapObject_GetSpritePosOffset(mapObj, &posOffset);
+    MapObject_GetSpriteTerrainOffset(mapObj, &terrainSpriteOffset);
 
     adjustedObjectPos->x = objectPosition.x + jumpOffset.x + posOffset.x + terrainSpriteOffset.x;
     adjustedObjectPos->y = objectPosition.y + jumpOffset.y + posOffset.y + terrainSpriteOffset.y;

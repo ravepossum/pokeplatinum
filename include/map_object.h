@@ -14,11 +14,6 @@
 #include "functypes/funcptr_020EDF0C.h"
 #include "functypes/funcptr_020EDF0C_1.h"
 #include "functypes/funcptr_020EDF0C_2.h"
-#include "overlay005/funcptr_ov5_021FB0F0.h"
-#include "overlay005/funcptr_ov5_021FB0F0_1.h"
-#include "overlay005/funcptr_ov5_021FB0F0_2.h"
-#include "overlay005/funcptr_ov5_021FB0F0_3.h"
-#include "overlay005/funcptr_ov5_021FB0F0_4.h"
 #include "overlay005/struct_ov5_021ED0A4.h"
 
 #include "map_header_data.h"
@@ -26,6 +21,16 @@
 #include "sys_task_manager.h"
 
 #define MAP_OBJECT_COORD_TO_FX32(coord) ((coord << 4) * FX32_ONE) + (MAP_OBJECT_TILE_SIZE >> 1)
+
+typedef void (*MapObjGfxFunc)(MapObject *);
+
+typedef struct {
+    MapObjGfxFunc unk_00;
+    MapObjGfxFunc unk_04;
+    MapObjGfxFunc unk_08;
+    MapObjGfxFunc unk_0C;
+    MapObjGfxFunc unk_10;
+} MapObjGfxFuncTable;
 
 typedef struct MapObjectSave {
     u32 status;
@@ -160,15 +165,15 @@ void sub_02062B14(MapObject *mapObj);
 void sub_02062B20(MapObject *mapObj, UnkFuncPtr_020EDF0C_2 param1);
 void sub_02062B28(MapObject *mapObj);
 void sub_02062B34(MapObject *mapObj);
-void sub_02062B4C(MapObject *mapObj, UnkFuncPtr_ov5_021FB0F0 param1);
+void sub_02062B4C(MapObject *mapObj, MapObjGfxFunc param1);
 void sub_02062B54(MapObject *mapObj);
-void sub_02062B60(MapObject *mapObj, UnkFuncPtr_ov5_021FB0F0_1 param1);
+void sub_02062B60(MapObject *mapObj, MapObjGfxFunc param1);
 void sub_02062B68(MapObject *mapObj);
-void sub_02062B74(MapObject *mapObj, UnkFuncPtr_ov5_021FB0F0_2 param1);
+void sub_02062B74(MapObject *mapObj, MapObjGfxFunc param1);
 void sub_02062B7C(MapObject *mapObj);
-void sub_02062B88(MapObject *mapObj, UnkFuncPtr_ov5_021FB0F0_3 param1);
+void sub_02062B88(MapObject *mapObj, MapObjGfxFunc param1);
 void sub_02062B90(MapObject *mapObj);
-void sub_02062B9C(MapObject *mapObj, UnkFuncPtr_ov5_021FB0F0_4 param1);
+void sub_02062B9C(MapObject *mapObj, MapObjGfxFunc param1);
 void sub_02062BA4(MapObject *mapObj);
 void MapObject_SetMovementAction(MapObject *mapObj, enum MovementAction movementAction);
 enum MovementAction MapObject_GetMovementAction(const MapObject *mapObj);

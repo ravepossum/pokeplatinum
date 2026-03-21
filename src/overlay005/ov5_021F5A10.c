@@ -407,7 +407,7 @@ static void ov5_021F5E58(OverworldAnimManager *param0, void *param1)
     v1 = v0->unk_30.unk_0C;
 
     GF_ASSERT(sub_02062764(v1, v0->unk_08, v0->unk_0C) != 0);
-    ov5_021ECDA0(v1, &v2);
+    MapObject_ApplyPosOffsets(v1, &v2);
 
     v2.y += (FX32_ONE * 32);
     v2.z += (FX32_ONE * 1);
@@ -470,7 +470,7 @@ static void ov5_021F5F24(OverworldAnimManager *param0, void *param1)
     v1 = v0->unk_30.unk_0C;
 
     GF_ASSERT(sub_02062764(v1, v0->unk_08, v0->unk_0C) != 0);
-    ov5_021ECDA0(v1, &v2);
+    MapObject_ApplyPosOffsets(v1, &v2);
 
     v2.y += (FX32_ONE * 32);
     v2.z += (FX32_ONE * 1);

@@ -231,7 +231,7 @@ static void ov5_021F1978(OverworldAnimManager *param0, void *param1)
     Billboard_SetScale(v0->unk_24, &v0->unk_28);
 
     {
-        Billboard *v4 = ov5_021EB1A0(v0->unk_14.unk_0C);
+        Billboard *v4 = MapObject_GetBillboard(v0->unk_14.unk_0C);
 
         Billboard_SetAnimNum(v0->unk_24, Billboard_GetAnimNum(v4));
         Billboard_SetFrameNum(v0->unk_24, Billboard_GetFrameNum(v4));

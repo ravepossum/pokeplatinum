@@ -230,7 +230,7 @@ Billboard *ov5_021ECF1C(MapObject *param0, int param1)
 
     GF_ASSERT(v3 != NULL);
 
-    ov5_021ECDA0(param0, &v0);
+    MapObject_ApplyPosOffsets(param0, &v0);
     v2 = ov5_021EDDDC(v1, v3, &v0, ov5_021EDD50(param1));
 
     GF_ASSERT(v2 != NULL);
@@ -238,8 +238,7 @@ Billboard *ov5_021ECF1C(MapObject *param0, int param1)
     return v2;
 }
 
-// MapObject_DeleteBillboardAndGraphicsIfNotInUse
-void ov5_021ECF70(const MapObject *mapObj, Billboard **billboard, int graphicsID)
+void MapObject_DeleteBillboardAndGfxIfNotInUse(const MapObject *mapObj, Billboard **billboard, int graphicsID)
 {
     Billboard_Delete(*billboard);
     *billboard = NULL;
@@ -251,8 +250,7 @@ void ov5_021ECF70(const MapObject *mapObj, Billboard **billboard, int graphicsID
     }
 }
 
-// MapObject_DeleteGraphics
-void ov5_021ECFA4(const MapObject *mapObj, Billboard **billboard)
+void MapObject_DeleteGfx(const MapObject *mapObj, Billboard **billboard)
 {
     ov5_021ED094(mapObj);
 
@@ -263,7 +261,7 @@ void ov5_021ECFA4(const MapObject *mapObj, Billboard **billboard)
             graphicsID = BerryPatchGraphics_GetCurrentGraphicsResourceID(mapObj);
         }
 
-        ov5_021ECF70(mapObj, billboard, graphicsID);
+        MapObject_DeleteBillboardAndGfxIfNotInUse(mapObj, billboard, graphicsID);
     }
 }
 
@@ -287,16 +285,14 @@ void ov5_021ECFD8(const MapObject *param0, Billboard **param1, int param2)
     }
 }
 
-// Billboard_StoreAnimState
-void ov5_021ED01C(Billboard *billboard, BillboardAnimState *animState)
+void Billboard_StoreAnimState(Billboard *billboard, BillboardAnimState *animState)
 {
     animState->draw = Billboard_GetDrawFlag(billboard);
     animState->animNum = Billboard_GetAnimNum(billboard);
     animState->frameNum = Billboard_GetFrameNum(billboard);
 }
 
-// Billboard_RestoreAnimState
-void ov5_021ED03C(Billboard *billboard, BillboardAnimState *animState)
+void Billboard_RestoreAnimState(Billboard *billboard, BillboardAnimState *animState)
 {
     Billboard_SetDrawFlag(billboard, animState->draw);
     Billboard_SetAnimNum(billboard, animState->animNum);
@@ -1431,12 +1427,11 @@ static UnkStruct_ov5_021ED0A4 *ov5_021EDEA8(const MapObject *param0)
     return (UnkStruct_ov5_021ED0A4 *)sub_0206285C(v0);
 }
 
-// MapObject_UpdateBillboardPos
-BOOL ov5_021EDEB4(MapObject *mapObj, Billboard *billboard)
+BOOL MapObject_UpdateBillboardPos(MapObject *mapObj, Billboard *billboard)
 {
     VecFx32 pos;
 
-    ov5_021ECDA0(mapObj, &pos);
+    MapObject_ApplyPosOffsets(mapObj, &pos);
 
     pos.x += 0;
     pos.y += 0;
@@ -1471,8 +1466,7 @@ static const int BillboardWalkDirAnimTable[MAX_DIR] = {
     [DIR_EAST] = 3,
 };
 
-// Billboard_WalkDirToAnimNum
-int ov5_021EDF18(int dir)
+int Billboard_WalkDirToAnimNum(int dir)
 {
     return BillboardWalkDirAnimTable[dir];
 }
@@ -1484,8 +1478,7 @@ static const int BillboardRunDirAnimTable[MAX_DIR] = {
     [DIR_EAST] = 7,
 };
 
-// Billboard_RunDirToAnimNum
-int ov5_021EDF24(int dir)
+int Billboard_RunDirToAnimNum(int dir)
 {
     return BillboardRunDirAnimTable[dir];
 }
@@ -1497,8 +1490,7 @@ static const int BillboardBikeJumpDirAnimTable[MAX_DIR] = {
     [DIR_EAST] = 5,
 };
 
-// Billboard_BikeJumoDirToAnimNum
-int ov5_021EDF30(int dir)
+int Billboard_BikeJumpDirToAnimNum(int dir)
 {
     return BillboardBikeJumpDirAnimTable[dir];
 }
@@ -1868,7 +1860,7 @@ static void ov5_021EE3C4(UnkStruct_ov5_021ED0A4 *param0)
 
 Billboard *ov5_021EE3FC(MapObject *param0, int param1, UnkFuncPtr_ov5_021EE454 param2, void *param3)
 {
-    if ((ov5_021EDD94(param0) == 1) || (ov5_021EB1A0(param0) == NULL)) {
+    if ((ov5_021EDD94(param0) == 1) || (MapObject_GetBillboard(param0) == NULL)) {
         int v0 = MapObject_GetGraphicsID(param0);
         const MapObjectManager *v1 = MapObject_MapObjectManager(param0);
 
@@ -1890,7 +1882,7 @@ static Billboard *ov5_021EE454(MapObject *param0, int param1, UnkFuncPtr_ov5_021
     const UnkStruct_ov5_021ED2D0 *v7;
     UnkStruct_ov5_021ED0A4 *v8 = ov5_021EDEA8(param0);
     BillboardList *v9 = ov5_021EDC8C(v8);
-    Billboard *v10 = ov5_021EB1A0(param0);
+    Billboard *v10 = MapObject_GetBillboard(param0);
     UnkStruct_ov5_021EE698 *v11 = Heap_AllocAtEnd(HEAP_ID_FIELD1, sizeof(UnkStruct_ov5_021EE698));
 
     memset(v11, 0, sizeof(UnkStruct_ov5_021EE698));

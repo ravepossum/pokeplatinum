@@ -62,10 +62,10 @@ void ov5_021ECAC4(MapObject *param0)
     UnkStruct_ov5_021ECB8C *v0 = sub_02062AF0(param0);
 
     if (v0->unk_00 != NULL) {
-        ov5_021ED01C(v0->unk_00, &v0->unk_04);
+        Billboard_StoreAnimState(v0->unk_00, &v0->unk_04);
     }
 
-    ov5_021ECFA4(param0, &v0->unk_00);
+    MapObject_DeleteGfx(param0, &v0->unk_00);
     MapObject_SetStatusFlagOn(param0, MAP_OBJ_STATUS_21);
 }
 
@@ -82,8 +82,8 @@ void ov5_021ECAF0(MapObject *param0)
     }
 
     if (v0->unk_00 != NULL) {
-        ov5_021ED03C(v0->unk_00, &v0->unk_04);
-        ov5_021EDEB4(param0, v0->unk_00);
+        Billboard_RestoreAnimState(v0->unk_00, &v0->unk_04);
+        MapObject_UpdateBillboardPos(param0, v0->unk_00);
         MapObject_SetStatusFlagOff(param0, MAP_OBJ_STATUS_21);
     }
 }
@@ -145,7 +145,7 @@ static void ov5_021ECBA4(MapObject *param0)
     UnkStruct_ov5_021ECB8C *v0 = sub_02062AF0(param0);
     Billboard *v1 = v0->unk_00;
 
-    ov5_021EDEB4(param0, v1);
+    MapObject_UpdateBillboardPos(param0, v1);
     Billboard_AdvanceAnim(v1, (FX32_ONE));
     ov5_021ECBCC(param0, v1);
 }
@@ -170,5 +170,5 @@ static void ov5_021ECBCC(MapObject *param0, Billboard *param1)
 static void ov5_021ECC0C(MapObject *param0)
 {
     UnkStruct_ov5_021ECB8C *v0 = sub_02062AF0(param0);
-    ov5_021ECFA4(param0, &v0->unk_00);
+    MapObject_DeleteGfx(param0, &v0->unk_00);
 }
