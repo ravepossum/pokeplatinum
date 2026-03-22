@@ -24,10 +24,10 @@ typedef struct {
 } UnkStruct_021F114C;
 
 typedef struct {
-    u32 unk_00;
-    FieldEffectManager *unk_04;
-    const MapObject *unk_08;
-} UnkStruct_021F121C;
+    u32 graphicsID;
+    FieldEffectManager *fieldEffMan;
+    const MapObject *mapObj;
+} FieldEffectMapObject;
 
 typedef struct {
     int unk_00;
@@ -35,7 +35,7 @@ typedef struct {
     int unk_08;
     VecFx32 unk_0C;
     Simple3DRenderObj *unk_18;
-    UnkStruct_021F121C unk_1C;
+    FieldEffectMapObject unk_1C;
 } UnkStruct_021F1258;
 
 typedef struct {
@@ -177,36 +177,33 @@ Simple3DRenderObj *ov5_021F11FC(FieldEffectManager *param0, u32 param1)
     return &v1->unk_18;
 }
 
-OverworldAnimManager *ov5_021F121C(const MapObject *param0, const VecFx32 *param1)
+OverworldAnimManager *FieldEffectMapObject_InitAnim(const MapObject *mapObj, const VecFx32 *pos)
 {
-    int v0;
-    OverworldAnimManager *v1;
-    UnkStruct_021F121C v2;
-    FieldEffectManager *v3 = MapObject_GetFieldEffectManager(param0);
+    FieldEffectMapObject fieldEffObj;
+    FieldEffectManager *fieldEffMan = MapObject_GetFieldEffectManager(mapObj);
 
-    v2.unk_00 = MapObject_GetGraphicsID(param0);
-    v2.unk_04 = v3;
-    v2.unk_08 = param0;
+    fieldEffObj.graphicsID = MapObject_GetGraphicsID(mapObj);
+    fieldEffObj.fieldEffMan = fieldEffMan;
+    fieldEffObj.mapObj = mapObj;
 
-    v0 = MapObject_CalculateTaskPriority(param0, 2);
-    v1 = FieldEffectManager_InitAnimManager(v3, &Unk_ov5_0220021C, param1, 0, &v2, v0);
+    int taskPriority = MapObject_CalculateTaskPriority(mapObj, 2);
 
-    return v1;
+    return FieldEffectManager_InitAnimManager(fieldEffMan, &Unk_ov5_0220021C, pos, 0, &fieldEffObj, taskPriority);
 }
 
 static int ov5_021F1258(OverworldAnimManager *param0, void *param1)
 {
     UnkStruct_021F1258 *v0 = param1;
-    const UnkStruct_021F121C *v1 = OverworldAnimManager_GetUserData(param0);
+    const FieldEffectMapObject *v1 = OverworldAnimManager_GetUserData(param0);
 
     v0->unk_1C = *v1;
-    v0->unk_04 = MapObject_GetLocalID(v0->unk_1C.unk_08);
-    v0->unk_18 = ov5_021F11FC(v0->unk_1C.unk_04, v0->unk_1C.unk_00);
+    v0->unk_04 = MapObject_GetLocalID(v0->unk_1C.mapObj);
+    v0->unk_18 = ov5_021F11FC(v0->unk_1C.fieldEffMan, v0->unk_1C.graphicsID);
 
-    if (sub_02062E94(v0->unk_1C.unk_08) == 1) {
-        v0->unk_08 = sub_02062C18(v0->unk_1C.unk_08);
+    if (sub_02062E94(v0->unk_1C.mapObj) == 1) {
+        v0->unk_08 = sub_02062C18(v0->unk_1C.mapObj);
     } else {
-        v0->unk_08 = MapObject_GetMapID(v0->unk_1C.unk_08);
+        v0->unk_08 = MapObject_GetMapID(v0->unk_1C.mapObj);
     }
 
     OverworldAnimManager_GetPosition(param0, &v0->unk_0C);
@@ -221,7 +218,7 @@ static void ov5_021F12A8(OverworldAnimManager *param0, void *param1)
 static void ov5_021F12AC(OverworldAnimManager *param0, void *param1)
 {
     UnkStruct_021F1258 *v0 = param1;
-    const MapObject *v1 = v0->unk_1C.unk_08;
+    const MapObject *v1 = v0->unk_1C.mapObj;
 
     if (sub_02062764(v1, v0->unk_04, v0->unk_08) == 0) {
         FieldEffectManager_FinishAnimManager(param0);

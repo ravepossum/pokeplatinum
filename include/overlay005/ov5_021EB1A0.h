@@ -77,8 +77,8 @@ typedef struct {
 } PlayerMapObjectGfx;
 
 typedef struct {
-    OverworldAnimManager *unk_00;
-} UnkStruct_ov5_021EC760;
+    OverworldAnimManager *animManager;
+} FieldEffectMapObjGfx;
 
 typedef struct {
     s16 animSteps;

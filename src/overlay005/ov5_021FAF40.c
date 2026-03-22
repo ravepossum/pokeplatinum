@@ -1911,7 +1911,7 @@ const BerryGraphicsData gBerryGraphicsTable[] = {
     { 0x10BE, 0x1000 + 0xbf, 0x10C0 }
 };
 
-const UnkStruct_ov5_021EC700 Unk_ov5_021FB51C[] = {
+const MapObjGfxGlobalOffset Unk_ov5_021FB51C[] = {
     {
         0x5B,
         {

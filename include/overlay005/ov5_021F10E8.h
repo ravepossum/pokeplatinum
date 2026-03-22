@@ -15,7 +15,7 @@ void ov5_021F10FC(void *param0);
 void ov5_021F1188(FieldEffectManager *param0, u32 param1);
 void ov5_021F11C0(FieldEffectManager *param0, u32 param1, u32 param2);
 Simple3DRenderObj *ov5_021F11FC(FieldEffectManager *param0, u32 param1);
-OverworldAnimManager *ov5_021F121C(const MapObject *param0, const VecFx32 *param1);
+OverworldAnimManager *FieldEffectMapObject_InitAnim(const MapObject *mapObj, const VecFx32 *pos);
 void FieldEffect_InitRenderObject(FieldEffectManager *param0);
 
 #endif // POKEPLATINUM_OV5_021F10E8_H

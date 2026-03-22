@@ -7,9 +7,9 @@
 
 #include "overworld_anim_manager.h"
 
-void *ov5_021F23D0(FieldEffectManager *param0);
-void ov5_021F23EC(void *param0);
-OverworldAnimManager *ov5_021F2438(MapObject *param0);
-void ov5_021F247C(OverworldAnimManager *param0);
+void *SnowballRenderer_New(FieldEffectManager *fieldEffMan);
+void SnowballRenderer_Free(void *context);
+OverworldAnimManager *SnowballRenderer_Init(MapObject *mapObj);
+void SnowballRenderer_SetSnowballBroken(OverworldAnimManager *animMan);
 
 #endif // POKEPLATINUM_OV5_021F23D0_H

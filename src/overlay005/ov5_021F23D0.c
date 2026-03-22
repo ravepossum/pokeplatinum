@@ -3,6 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/field/field_effect_renderer.h"
+
 #include "struct_decls/struct_02061AB4_decl.h"
 
 #include "overlay005/field_effect_manager.h"
@@ -11,178 +13,165 @@
 #include "overworld_anim_manager.h"
 #include "simple3d.h"
 
-typedef struct {
-    FieldEffectManager *unk_00;
-    Simple3DModel unk_04;
-    Simple3DAnimation unk_18;
-} UnkStruct_ov5_021F23FC;
+typedef struct SnowballResources {
+    FieldEffectManager *fieldEffMan;
+    Simple3DModel model;
+    Simple3DAnimation anim;
+} SnowballResources;
+
+typedef struct SnowballUserData {
+    FieldEffectManager *fieldEffMan;
+    SnowballResources *resources;
+    MapObject *mapObj;
+} SnowballUserData;
 
 typedef struct {
-    FieldEffectManager *unk_00;
-    UnkStruct_ov5_021F23FC *unk_04;
-    MapObject *unk_08;
-} UnkStruct_ov5_021F2438;
+    int unused;
+    int localID;
+    int mapID;
+    BOOL snowballBroken;
+    SnowballUserData userData;
+    Simple3DAnimation anim;
+    Simple3DRenderObj renderObj;
+} SnowballRenderer;
 
-typedef struct {
-    int unk_00;
-    int unk_04;
-    int unk_08;
-    int unk_0C;
-    UnkStruct_ov5_021F2438 unk_10;
-    Simple3DAnimation unk_1C;
-    Simple3DRenderObj unk_40;
-} UnkStruct_ov5_021F247C;
+static void SnowballResources_Init(SnowballResources *param0);
+static void SnowballResources_Free(SnowballResources *param0);
 
-static void ov5_021F23FC(UnkStruct_ov5_021F23FC *param0);
-static void ov5_021F2424(UnkStruct_ov5_021F23FC *param0);
+static const OverworldAnimManagerFuncs sSnowballRendererAnimFuncs;
 
-static const OverworldAnimManagerFuncs Unk_ov5_02200464;
-
-void *ov5_021F23D0(FieldEffectManager *param0)
+void *SnowballRenderer_New(FieldEffectManager *fieldEffMan)
 {
-    UnkStruct_ov5_021F23FC *v0 = FieldEffectManager_HeapAllocInit(param0, (sizeof(UnkStruct_ov5_021F23FC)), 0, 0);
-    v0->unk_00 = param0;
+    SnowballResources *resources = FieldEffectManager_HeapAllocInit(fieldEffMan, (sizeof(SnowballResources)), FALSE, 0);
+    resources->fieldEffMan = fieldEffMan;
 
-    ov5_021F23FC(v0);
-    return v0;
+    SnowballResources_Init(resources);
+    return resources;
 }
 
-void ov5_021F23EC(void *param0)
+void SnowballRenderer_Free(void *context)
 {
-    UnkStruct_ov5_021F23FC *v0 = param0;
+    SnowballResources *resources = context;
 
-    ov5_021F2424(v0);
-    FieldEffectManager_HeapFree(v0);
+    SnowballResources_Free(resources);
+    FieldEffectManager_HeapFree(resources);
 }
 
-static void ov5_021F23FC(UnkStruct_ov5_021F23FC *param0)
+static void SnowballResources_Init(SnowballResources *resources)
 {
-    FieldEffectManager_LoadModel(param0->unk_00, &param0->unk_04, 0, 78, 0);
-    FieldEffectManager_LoadAnimation(param0->unk_00, &param0->unk_18, 0, 165, 0);
+    FieldEffectManager_LoadModel(resources->fieldEffMan, &resources->model, 0, 78, FALSE);
+    FieldEffectManager_LoadAnimation(resources->fieldEffMan, &resources->anim, 0, 165, FALSE);
 }
 
-static void ov5_021F2424(UnkStruct_ov5_021F23FC *param0)
+static void SnowballResources_Free(SnowballResources *resources)
 {
-    Simple3D_FreeModel(&param0->unk_04);
-    Simple3D_FreeAnimation(&param0->unk_18);
+    Simple3D_FreeModel(&resources->model);
+    Simple3D_FreeAnimation(&resources->anim);
 }
 
-OverworldAnimManager *ov5_021F2438(MapObject *param0)
+OverworldAnimManager *SnowballRenderer_Init(MapObject *mapObj)
 {
-    OverworldAnimManager *v0;
-    FieldEffectManager *v1;
-    UnkStruct_ov5_021F23FC *v2;
-    UnkStruct_ov5_021F2438 v3;
+    FieldEffectManager *fieldEffMan = MapObject_GetFieldEffectManager(mapObj);
+    SnowballResources *resources = FieldEffectManager_GetRendererContext(fieldEffMan, FIELD_EFFECT_RENDERER_SNOWBALL);
+    SnowballUserData userData;
 
-    v1 = MapObject_GetFieldEffectManager(param0);
-    v2 = FieldEffectManager_GetRendererContext(v1, 13);
+    userData.fieldEffMan = fieldEffMan;
+    userData.resources = resources;
+    userData.mapObj = mapObj;
 
-    v3.unk_00 = v1;
-    v3.unk_04 = v2;
-    v3.unk_08 = param0;
+    VecFx32 zeroPos = { 0, 0, 0 };
+    int taskPriority = MapObject_CalculateTaskPriority(mapObj, 2);
 
-    {
-        VecFx32 v4 = { 0, 0, 0 };
-        int v5 = MapObject_CalculateTaskPriority(param0, 2);
-
-        v0 = FieldEffectManager_InitAnimManager(v1, &Unk_ov5_02200464, &v4, 0, &v3, v5);
-    }
-
-    return v0;
+    return FieldEffectManager_InitAnimManager(fieldEffMan, &sSnowballRendererAnimFuncs, &zeroPos, 0, &userData, taskPriority);
 }
 
-void ov5_021F247C(OverworldAnimManager *param0)
+void SnowballRenderer_SetSnowballBroken(OverworldAnimManager *animMan)
 {
-    UnkStruct_ov5_021F247C *v0 = OverworldAnimManager_GetFuncsContext(param0);
+    SnowballRenderer *renderer = OverworldAnimManager_GetFuncsContext(animMan);
 
-    v0->unk_0C = 1;
+    renderer->snowballBroken = TRUE;
 }
 
-static int ov5_021F2488(OverworldAnimManager *param0, void *param1)
+static int SnowballRenderer_AnimInit(OverworldAnimManager *animMan, void *context)
 {
-    UnkStruct_ov5_021F247C *v0;
-    const UnkStruct_ov5_021F2438 *v1;
+    SnowballRenderer *renderer = context;
+    const SnowballUserData *userData = OverworldAnimManager_GetUserData(animMan);
 
-    v0 = param1;
-    v1 = OverworldAnimManager_GetUserData(param0);
+    renderer->userData = *userData;
 
-    v0->unk_10 = *v1;
+    FieldEffectManager_ApplyAnimCopyToModel(renderer->userData.fieldEffMan, &renderer->anim, &renderer->userData.resources->model, &renderer->userData.resources->anim, 0);
+    Simple3D_CreateRenderObjectWithAnim(&renderer->renderObj, &renderer->userData.resources->model, &renderer->anim);
 
-    FieldEffectManager_ApplyAnimCopyToModel(v0->unk_10.unk_00, &v0->unk_1C, &v0->unk_10.unk_04->unk_04, &v0->unk_10.unk_04->unk_18, 0);
-    Simple3D_CreateRenderObjectWithAnim(&v0->unk_40, &v0->unk_10.unk_04->unk_04, &v0->unk_1C);
+    renderer->localID = MapObject_GetLocalID(renderer->userData.mapObj);
+    renderer->mapID = MapObject_GetMapID(renderer->userData.mapObj);
 
-    v0->unk_04 = MapObject_GetLocalID(v0->unk_10.unk_08);
-    v0->unk_08 = MapObject_GetMapID(v0->unk_10.unk_08);
+    VecFx32 pos, offset;
+    MapObject *mapObj = renderer->userData.mapObj;
 
-    {
-        VecFx32 v2, v3;
-        MapObject *v4 = v0->unk_10.unk_08;
+    MapObject_GetPosPtr(mapObj, &pos);
+    MapObject_GetSpriteJumpOffset(mapObj, &offset);
 
-        MapObject_GetPosPtr(v4, &v2);
-        MapObject_GetSpriteJumpOffset(v4, &v3);
+    pos.x += offset.x + 0;
+    pos.y += offset.y + 0;
+    pos.z += offset.z + FX32_ONE * 6 - FX32_ONE * 6;
 
-        v2.x += v3.x + 0;
-        v2.y += v3.y + 0;
-        v2.z += v3.z + (FX32_ONE * 6) - (FX32_ONE * 6);
+    OverworldAnimManager_SetPosition(animMan, &pos);
 
-        OverworldAnimManager_SetPosition(param0, &v2);
-    }
-
-    return 1;
+    return TRUE;
 }
 
-static void ov5_021F2510(OverworldAnimManager *param0, void *param1)
+static void SnowballRenderer_AnimExit(OverworldAnimManager *animMan, void *context)
 {
-    UnkStruct_ov5_021F247C *v0 = param1;
-    Simple3D_FreeAnimation(&v0->unk_1C);
+    SnowballRenderer *renderer = context;
+    Simple3D_FreeAnimation(&renderer->anim);
 }
 
-static void ov5_021F251C(OverworldAnimManager *param0, void *param1)
+static void SnowballRenderer_AnimTick(OverworldAnimManager *animMan, void *context)
 {
-    UnkStruct_ov5_021F247C *v0 = param1;
-    MapObject *v1 = v0->unk_10.unk_08;
+    SnowballRenderer *renderer = context;
+    MapObject *mapObj = renderer->userData.mapObj;
 
-    if (v0->unk_0C == 0) {
-        if (sub_02062764(v1, v0->unk_04, v0->unk_08) == 0) {
-            FieldEffectManager_FinishAnimManager(param0);
+    if (renderer->snowballBroken == FALSE) {
+        if (sub_02062764(mapObj, renderer->localID, renderer->mapID) == FALSE) {
+            FieldEffectManager_FinishAnimManager(animMan);
             return;
         }
     } else {
-        if (Simple3D_HasAnimationReachedEnd(&v0->unk_1C) == 1) {
-            FieldEffectManager_FinishAnimManager(param0);
+        if (Simple3D_HasAnimationReachedEnd(&renderer->anim) == TRUE) {
+            FieldEffectManager_FinishAnimManager(animMan);
             return;
         }
 
-        Simple3D_UpdateAnim(&v0->unk_1C, FX32_ONE, 0);
+        Simple3D_UpdateAnim(&renderer->anim, FX32_ONE, FALSE);
     }
 
-    if (v0->unk_0C == 0) {
-        VecFx32 v2, v3;
+    if (renderer->snowballBroken == FALSE) {
+        VecFx32 pos, offset;
 
-        MapObject_GetPosPtr(v1, &v2);
-        MapObject_GetSpriteJumpOffset(v1, &v3);
+        MapObject_GetPosPtr(mapObj, &pos);
+        MapObject_GetSpriteJumpOffset(mapObj, &offset);
 
-        v2.x += v3.x + 0;
-        v2.y += v3.y + 0;
-        v2.z += v3.z + (FX32_ONE * 6) - (FX32_ONE * 6);
+        pos.x += offset.x + 0;
+        pos.y += offset.y + 0;
+        pos.z += offset.z + FX32_ONE * 6 - FX32_ONE * 6;
 
-        OverworldAnimManager_SetPosition(param0, &v2);
+        OverworldAnimManager_SetPosition(animMan, &pos);
     }
 }
 
-static void ov5_021F25A4(OverworldAnimManager *param0, void *param1)
+static void SnowballRenderer_AnimRender(OverworldAnimManager *animMan, void *context)
 {
-    VecFx32 v0;
-    UnkStruct_ov5_021F247C *v1 = param1;
+    VecFx32 pos;
+    SnowballRenderer *renderer = context;
 
-    OverworldAnimManager_GetPosition(param0, &v0);
-    Simple3D_DrawRenderObjWithPos(&v1->unk_40, &v0);
+    OverworldAnimManager_GetPosition(animMan, &pos);
+    Simple3D_DrawRenderObjWithPos(&renderer->renderObj, &pos);
 }
 
-static const OverworldAnimManagerFuncs Unk_ov5_02200464 = {
-    sizeof(UnkStruct_ov5_021F247C),
-    ov5_021F2488,
-    ov5_021F2510,
-    ov5_021F251C,
-    ov5_021F25A4
+static const OverworldAnimManagerFuncs sSnowballRendererAnimFuncs = {
+    sizeof(SnowballRenderer),
+    SnowballRenderer_AnimInit,
+    SnowballRenderer_AnimExit,
+    SnowballRenderer_AnimTick,
+    SnowballRenderer_AnimRender,
 };

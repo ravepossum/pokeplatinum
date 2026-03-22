@@ -25,11 +25,11 @@
 typedef void (*MapObjGfxFunc)(MapObject *);
 
 typedef struct {
-    MapObjGfxFunc unk_00;
-    MapObjGfxFunc unk_04;
-    MapObjGfxFunc unk_08;
-    MapObjGfxFunc unk_0C;
-    MapObjGfxFunc unk_10;
+    MapObjGfxFunc initFunc;
+    MapObjGfxFunc updateFunc;
+    MapObjGfxFunc deleteFunc;
+    MapObjGfxFunc pauseFunc;
+    MapObjGfxFunc resumeFunc;
 } MapObjGfxFuncTable;
 
 typedef struct MapObjectSave {

@@ -145,12 +145,11 @@ static const UnkStruct_020EDF0C *sub_0206320C(u32 param0);
 static UnkFuncPtr_020EDF0C sub_02063224(const UnkStruct_020EDF0C *param0);
 static UnkFuncPtr_020EDF0C_1 sub_02063228(const UnkStruct_020EDF0C *param0);
 static UnkFuncPtr_020EDF0C_2 sub_0206322C(const UnkStruct_020EDF0C *param0);
-static MapObjGfxFunc sub_0206323C(const MapObjGfxFuncTable *param0);
-static MapObjGfxFunc sub_02063240(const MapObjGfxFuncTable *param0);
-
-static MapObjGfxFunc sub_02063230(const MapObjGfxFuncTable *param0);
-static MapObjGfxFunc sub_02063234(const MapObjGfxFuncTable *param0);
-static MapObjGfxFunc sub_02063238(const MapObjGfxFuncTable *param0);
+static MapObjGfxFunc GetPauseFunc(const MapObjGfxFuncTable *funcTable);
+static MapObjGfxFunc GetResumeFunc(const MapObjGfxFuncTable *funcTable);
+static MapObjGfxFunc GetInitFunc(const MapObjGfxFuncTable *funcTable);
+static MapObjGfxFunc GetUpdateFunc(const MapObjGfxFuncTable *funcTable);
+static MapObjGfxFunc GetDeleteFunc(const MapObjGfxFuncTable *funcTable);
 static const MapObjGfxFuncTable *sub_02063244(u32 param0);
 
 MapObjectManager *MapObjectMan_New(FieldSystem *fieldSystem, int maxObjs, int taskBasePriority)
@@ -753,20 +752,20 @@ static void sub_0206239C(MapObject *mapObj)
 
 static void sub_020623D4(MapObject *mapObj)
 {
-    const MapObjGfxFuncTable *v0;
-    u32 v1 = MapObject_GetGraphicsID(mapObj);
+    const MapObjGfxFuncTable *funcTable;
+    u32 graphicsID = MapObject_GetGraphicsID(mapObj);
 
-    if (v1 == 0x2000) {
-        v0 = &Unk_ov5_021FB470;
+    if (graphicsID == 0x2000) {
+        funcTable = &Unk_ov5_021FB470;
     } else {
-        v0 = sub_02063244(v1);
+        funcTable = sub_02063244(graphicsID);
     }
 
-    sub_02062B4C(mapObj, sub_02063230(v0));
-    sub_02062B60(mapObj, sub_02063234(v0));
-    sub_02062B74(mapObj, sub_02063238(v0));
-    sub_02062B88(mapObj, sub_0206323C(v0));
-    sub_02062B9C(mapObj, sub_02063240(v0));
+    sub_02062B4C(mapObj, GetInitFunc(funcTable));
+    sub_02062B60(mapObj, GetUpdateFunc(funcTable));
+    sub_02062B74(mapObj, GetDeleteFunc(funcTable));
+    sub_02062B88(mapObj, GetPauseFunc(funcTable));
+    sub_02062B9C(mapObj, GetResumeFunc(funcTable));
 }
 
 static void sub_0206243C(MapObject *mapObj)
@@ -2364,29 +2363,29 @@ static UnkFuncPtr_020EDF0C_2 sub_0206322C(const UnkStruct_020EDF0C *param0)
     return param0->unk_0C;
 }
 
-static MapObjGfxFunc sub_02063230(const MapObjGfxFuncTable *param0)
+static MapObjGfxFunc GetInitFunc(const MapObjGfxFuncTable *funcTable)
 {
-    return param0->unk_00;
+    return funcTable->initFunc;
 }
 
-static MapObjGfxFunc sub_02063234(const MapObjGfxFuncTable *param0)
+static MapObjGfxFunc GetUpdateFunc(const MapObjGfxFuncTable *funcTable)
 {
-    return param0->unk_04;
+    return funcTable->updateFunc;
 }
 
-static MapObjGfxFunc sub_02063238(const MapObjGfxFuncTable *param0)
+static MapObjGfxFunc GetDeleteFunc(const MapObjGfxFuncTable *funcTable)
 {
-    return param0->unk_08;
+    return funcTable->deleteFunc;
 }
 
-static MapObjGfxFunc sub_0206323C(const MapObjGfxFuncTable *param0)
+static MapObjGfxFunc GetPauseFunc(const MapObjGfxFuncTable *funcTable)
 {
-    return param0->unk_0C;
+    return funcTable->pauseFunc;
 }
 
-static MapObjGfxFunc sub_02063240(const MapObjGfxFuncTable *param0)
+static MapObjGfxFunc GetResumeFunc(const MapObjGfxFuncTable *funcTable)
 {
-    return param0->unk_10;
+    return funcTable->resumeFunc;
 }
 
 static const MapObjGfxFuncTable *sub_02063244(u32 param0)
