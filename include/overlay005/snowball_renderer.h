@@ -1,5 +1,5 @@
-#ifndef POKEPLATINUM_OV5_021F23D0_H
-#define POKEPLATINUM_OV5_021F23D0_H
+#ifndef POKEPLATINUM_SNOWBALL_RENDERER_H
+#define POKEPLATINUM_SNOWBALL_RENDERER_H
 
 #include "struct_decls/struct_02061AB4_decl.h"
 
@@ -12,4 +12,4 @@ void SnowballRenderer_Free(void *context);
 OverworldAnimManager *SnowballRenderer_Init(MapObject *mapObj);
 void SnowballRenderer_SetSnowballBroken(OverworldAnimManager *animMan);
 
-#endif // POKEPLATINUM_OV5_021F23D0_H
+#endif // POKEPLATINUM_SNOWBALL_RENDERER_H

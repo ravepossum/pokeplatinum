@@ -1,4 +1,4 @@
-#include "overlay005/ov5_021F23D0.h"
+#include "overlay005/snowball_renderer.h"
 
 #include <nitro.h>
 #include <string.h>
@@ -42,7 +42,7 @@ static const OverworldAnimManagerFuncs sSnowballRendererAnimFuncs;
 
 void *SnowballRenderer_New(FieldEffectManager *fieldEffMan)
 {
-    SnowballResources *resources = FieldEffectManager_HeapAllocInit(fieldEffMan, (sizeof(SnowballResources)), FALSE, 0);
+    SnowballResources *resources = FieldEffectManager_HeapAllocInit(fieldEffMan, sizeof(SnowballResources), FALSE, 0);
     resources->fieldEffMan = fieldEffMan;
 
     SnowballResources_Init(resources);

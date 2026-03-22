@@ -10,7 +10,6 @@
 #include "overlay005/ov5_021F134C.h"
 #include "overlay005/ov5_021F17B8.h"
 #include "overlay005/ov5_021F1CC8.h"
-#include "overlay005/ov5_021F23D0.h"
 #include "overlay005/ov5_021F2850.h"
 #include "overlay005/ov5_021F2A7C.h"
 #include "overlay005/ov5_021F2BD0.h"
@@ -37,6 +36,7 @@
 #include "overlay005/ov5_021F600C.h"
 #include "overlay005/ov5_021F61BC.h"
 #include "overlay005/ov5_021F8560.h"
+#include "overlay005/snowball_renderer.h"
 #include "overlay005/surf_mount_renderer.h"
 
 const FieldEffectRendererFuncs sFieldEffectRendererHandlers[FIELD_EFFECT_RENDERER_COUNT + 1] = {

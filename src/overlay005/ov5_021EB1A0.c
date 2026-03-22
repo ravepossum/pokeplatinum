@@ -14,7 +14,7 @@
 #include "overlay005/ov5_021ECC20.h"
 #include "overlay005/ov5_021ECE40.h"
 #include "overlay005/ov5_021F10E8.h"
-#include "overlay005/ov5_021F23D0.h"
+#include "overlay005/snowball_renderer.h"
 #include "overlay005/struct_ov5_021EC700.h"
 #include "overlay005/struct_ov5_021ECD10.h"
 
