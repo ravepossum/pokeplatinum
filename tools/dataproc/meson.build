@@ -57,3 +57,14 @@ speciesproc_exe = executable(
     dependencies: commonproc_dep,
     native: true,
 )
+
+resdatproc_exe = executable(
+    'resdatproc',
+    sources: [ files('src/resdatproc.c') ],
+
+    c_args: dataproc_cflags,
+
+    include_directories: [ public_includes, toplevel_includes ],
+    dependencies: commonproc_dep,
+    native: true,
+)
