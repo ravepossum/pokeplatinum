@@ -167,22 +167,37 @@ alias_target('data', nitrofs_files)
 ###                     ARM9 BINARY                      ###
 ############################################################
 subdir('src')
-subdir('asm')
+
+trainer_ai_o = custom_target(
+    'trainer_ai_script.o',
+    output: 'trainer_ai_script.o',
+    input: files('src/battle/trainer_ai/script.s'),
+    command: [
+        arm_none_eabi_gcc_exe,
+        '-I', meson.global_source_root() / 'include',
+        '-I', meson.global_source_root() / 'asm',
+        '-I', meson.global_build_root(),
+        '-x', 'assembler-with-cpp',
+        '-MD', '-MF', '@DEPFILE@',
+        '-c', '-o', '@OUTPUT@',
+        '@INPUT@',
+    ],
+    depfile: '@BASENAME@.d',
+)
 
 main = executable('main',
     sources: [
         pokeplatinum_c,
-        pokeplatinum_asm,
         c_consts_generators,
         naix_headers,
         h_headers,
         embed_headers,
     ],
+    objects: trainer_ai_o,
     c_args: [
         pokeplatinum_args,
         '-thumb'
     ],
-    nasm_args: asm_args,
     c_pch: 'include/pch/global_pch.h',
     include_directories: [
         public_includes,
