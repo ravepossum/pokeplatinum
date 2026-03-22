@@ -673,7 +673,7 @@ Overlay trainer_ai
 {
 	After overlay11
 	Object main.nef.p/src_battle_trainer_ai_trainer_ai.c.o
-	Object main.nef.p/asm_trainer_ai_trainer_ai_script.s.o
+	Object trainer_ai_script.o
 }
 
 Overlay dummy4
