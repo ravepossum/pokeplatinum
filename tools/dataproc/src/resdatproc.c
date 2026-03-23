@@ -133,7 +133,11 @@ int main(int argc, char **argv) {
 int sort_strcmp(const void *lhs, const void *rhs) {
     const lookup_t *l = lhs;
     const lookup_t *r = rhs;
-    if (l->def == NULL || r->def == NULL) return 0;
+
+    if (l->def == NULL && r->def == NULL) return 0;
+    else if (l->def == NULL) return 1;
+    else if (r->def == NULL) return -1;
+
     return strcmp(l->def, r->def);
 }
 
