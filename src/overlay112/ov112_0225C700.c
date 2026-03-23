@@ -23,6 +23,7 @@
 #include "heap.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "pltt_transfer.h"
@@ -35,7 +36,6 @@
 #include "string_gf.h"
 #include "system.h"
 #include "text.h"
-#include "unk_020393C8.h"
 #include "vram_transfer.h"
 
 typedef struct {
@@ -555,7 +555,7 @@ static void ov112_0225CB98(UnkStruct_ov112_0225C9BC *param0, enum HeapID heapID)
         param0->unk_194[i] = SpriteResourceCollection_New(32, i, heapID);
     }
 
-    sub_02039734();
+    NetworkIcon_Init();
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
 }

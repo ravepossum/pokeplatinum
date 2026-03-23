@@ -40,6 +40,7 @@
 #include "message.h"
 #include "message_util.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "pal_pad.h"
 #include "party.h"
@@ -75,7 +76,6 @@
 #include "unk_02038ED4.h"
 #include "unk_02038F8C.h"
 #include "unk_0203909C.h"
-#include "unk_020393C8.h"
 #include "unk_02092494.h"
 #include "unk_02095CD4.h"
 #include "vars_flags.h"
@@ -314,7 +314,7 @@ int ov88_0223B140(ApplicationManager *appMan, int *param1)
     Bg_ToggleLayer(BG_LAYER_MAIN_0, 1);
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     sub_02038A1C(26, v0->unk_174);
-    sub_02039734();
+    NetworkIcon_Init();
 
     if (IsNight() == FALSE) {
         Sound_SetSceneAndPlayBGM(SOUND_SCENE_FIELD, SEQ_PC_01, 1);
@@ -456,7 +456,7 @@ int ov88_0223B57C(ApplicationManager *appMan, int *param1)
 
                 ov88_0223BE28(v0);
                 ov88_0223CF68(v0->unk_88[0], v0->unk_39C[0], 0);
-                sub_02039734();
+                NetworkIcon_Init();
 
                 v0->unk_48 = 6;
             }

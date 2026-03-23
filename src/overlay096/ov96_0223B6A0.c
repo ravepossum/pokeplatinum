@@ -19,6 +19,7 @@
 #include "menu.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "pltt_transfer.h"
 #include "render_oam.h"
@@ -31,7 +32,6 @@
 #include "string_template.h"
 #include "system.h"
 #include "unk_02033200.h"
-#include "unk_020393C8.h"
 #include "vram_transfer.h"
 #include "wifi_overlays.h"
 
@@ -313,7 +313,7 @@ static void ov96_0223BB0C(UnkStruct_ov96_0223BF40 *param0)
     }
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
-    sub_02039734();
+    NetworkIcon_Init();
 }
 
 static const WindowTemplate Unk_ov96_0223DA78 = {

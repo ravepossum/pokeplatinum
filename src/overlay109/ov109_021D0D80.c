@@ -28,6 +28,7 @@
 #include "math_util.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "party.h"
@@ -51,7 +52,6 @@
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_02038ED4.h"
-#include "unk_020393C8.h"
 #include "unk_02092494.h"
 #include "unk_0209BDF8.h"
 #include "vram_transfer.h"
@@ -1960,12 +1960,12 @@ static void ov109_021D2408(UnkStruct_ov109_021D0F70 *param0)
     }
 
     {
-        sub_02039734();
+        NetworkIcon_Init();
     }
 
     {
         NNSG2dPaletteData *v5;
-        void *v6 = sub_020394A8(HEAP_ID_95);
+        void *v6 = NetworkIcon_GetPalette(HEAP_ID_95);
 
         NNS_G2dGetUnpackedPaletteData(v6, &v5);
         PaletteData_LoadBuffer(v2, v5->pRawData, 2, 14 * 16, 32);

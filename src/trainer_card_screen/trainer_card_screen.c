@@ -17,6 +17,7 @@
 #include "heap.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "render_oam.h"
 #include "screen_fade.h"
@@ -27,7 +28,6 @@
 #include "system.h"
 #include "touch_pad.h"
 #include "touch_screen.h"
-#include "unk_020393C8.h"
 #include "vram_transfer.h"
 
 #include "res/text/bank/trainer_card.h"
@@ -291,7 +291,7 @@ BOOL TrainerCardScreen_Init(ApplicationManager *appMan, int *state)
     TrainerCard_ResetAffineTransforms();
 
     SetVBlankCallback(TrainerCard_TransferGraphicsOnVBlank, NULL);
-    NetworkIcon_Init();
+    NetworkIcon_InitIfConnected();
     Sound_SetPlayerVolume(PLAYER_FIELD, SOUND_VOLUME_MAX / 3);
     StartScreenFade(FADE_SUB_THEN_MAIN, FADE_TYPE_DOWNWARD_IN, FADE_TYPE_DOWNWARD_IN, COLOR_BLACK, 6, 1, HEAP_ID_TRAINER_CARD_SCREEN);
     NARC_dtor(narc);

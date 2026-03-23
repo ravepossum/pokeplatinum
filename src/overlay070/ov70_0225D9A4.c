@@ -46,6 +46,7 @@
 #include "list_menu.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "pltt_transfer.h"
 #include "pokemon.h"
@@ -73,7 +74,6 @@
 #include "type_icon.h"
 #include "unk_0202419C.h"
 #include "unk_020366A0.h"
-#include "unk_020393C8.h"
 #include "vram_transfer.h"
 
 typedef struct {
@@ -1294,7 +1294,7 @@ static void ov70_0225E4EC(UnkStruct_ov70_0225E4EC *param0, SaveData *saveData, u
         ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
         ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DMAIN);
 
-        sub_02039734();
+        NetworkIcon_Init();
         param0->unk_04 = SpriteList_InitRendering(24, &param0->unk_08, heapID);
         SetSubScreenViewRect(&param0->unk_08, 0, 256 * FX32_ONE);
 

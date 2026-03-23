@@ -20,6 +20,7 @@
 #include "menu.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "render_window.h"
 #include "screen_fade.h"
 #include "string_gf.h"
@@ -30,7 +31,6 @@
 #include "unk_0202ACE0.h"
 #include "unk_02030CE8.h"
 #include "unk_020366A0.h"
-#include "unk_020393C8.h"
 
 #include "res/text/bank/gts.h"
 #include "res/text/bank/unk_0674.h"
@@ -930,7 +930,7 @@ void ov94_02245900(Window *window, String *string, int x, int y, int centered, T
 
 void ov94_02245934(GTSApplicationState *appState)
 {
-    sub_02039734();
+    NetworkIcon_Init();
 }
 
 static void GTSApplication_WFCInit_DisplayNetworkError(GTSApplicationState *appState, int messageId)

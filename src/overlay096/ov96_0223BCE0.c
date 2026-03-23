@@ -26,6 +26,7 @@
 #include "menu.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "render_window.h"
 #include "savedata.h"
 #include "screen_fade.h"
@@ -39,7 +40,6 @@
 #include "unk_0202D05C.h"
 #include "unk_02030CE8.h"
 #include "unk_020366A0.h"
-#include "unk_020393C8.h"
 #include "unk_02073700.h"
 
 static void ov96_0223BE38(BgConfig *param0);
@@ -1630,7 +1630,7 @@ static void ov96_0223D90C(Window *param0, String *param1, int param2, int param3
 
 void ov96_0223D948(UnkStruct_ov96_0223BF40 *param0)
 {
-    sub_02039734();
+    NetworkIcon_Init();
 }
 
 static void ov96_0223D950(UnkStruct_ov96_0223BF40 *param0, int param1, int param2)

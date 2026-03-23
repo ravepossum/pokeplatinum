@@ -18,6 +18,7 @@
 #include "heap.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "palette.h"
 #include "pokemon_sprite.h"
 #include "render_text.h"
@@ -32,7 +33,6 @@
 #include "unk_02012744.h"
 #include "unk_0202419C.h"
 #include "unk_020298BC.h"
-#include "unk_020393C8.h"
 #include "unk_0208B284.h"
 #include "unk_0208BA78.h"
 #include "unk_0208C010.h"
@@ -85,12 +85,12 @@ void ov62_0222F2C0(UnkStruct_0208C06C *param0)
         ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DMAIN);
         ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DSUB, GX_OBJVRAMMODE_CHAR_1D_128K);
         ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DSUB);
-        sub_02039734();
-        sub_020397C8(1, HEAP_ID_102);
+        NetworkIcon_Init();
+        NetworkIcon_CreateOnSubScreen(1, HEAP_ID_102);
 
         {
             NNSG2dPaletteData *v0;
-            void *v1 = sub_020394A8(HEAP_ID_102);
+            void *v1 = NetworkIcon_GetPalette(HEAP_ID_102);
 
             NNS_G2dGetUnpackedPaletteData(v1, &v0);
             PaletteData_LoadBuffer(param0->unk_14.unk_14, v0->pRawData, 2, 14 * 16, 32);

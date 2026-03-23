@@ -14,6 +14,7 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "sprite_system.h"
@@ -21,7 +22,6 @@
 #include "system.h"
 #include "touch_pad.h"
 #include "touch_screen_actions.h"
-#include "unk_020393C8.h"
 #include "unk_02089604.h"
 #include "unk_0208A3F4.h"
 #include "vram_transfer.h"
@@ -79,8 +79,8 @@ static int sub_020890F4(ApplicationManager *appMan, int *param1)
     }
 
     if (v0->unk_3B8.unk_30 != 0) {
-        sub_02039734();
-        sub_020397C8(1, HEAP_ID_101);
+        NetworkIcon_Init();
+        NetworkIcon_CreateOnSubScreen(1, HEAP_ID_101);
     }
 
     G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2, 15, 7);

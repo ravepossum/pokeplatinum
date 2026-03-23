@@ -53,6 +53,7 @@
 #include "math_util.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "particle_system.h"
@@ -82,7 +83,6 @@
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_02038F8C.h"
-#include "unk_020393C8.h"
 #include "unk_0207A6DC.h"
 #include "unk_0208C098.h"
 #include "vram_transfer.h"
@@ -2255,7 +2255,7 @@ static void ov16_0223DD90(BattleSystem *battleSys, FieldBattleDTO *dto)
 
 static void BattleMain_SetNetworkIconStrength(void)
 {
-    sub_02039734();
+    NetworkIcon_Init();
 
     if (CommMan_IsConnectedToWifi()) {
         NetworkIcon_SetStrength(WM_LINK_LEVEL_3 - DWC_GetLinkLevel());

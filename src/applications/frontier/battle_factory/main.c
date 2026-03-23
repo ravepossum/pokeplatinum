@@ -33,6 +33,7 @@
 #include "message.h"
 #include "narc.h"
 #include "narc_frontier_bg.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "party.h"
@@ -53,7 +54,6 @@
 #include "text.h"
 #include "trainer_info.h"
 #include "unk_020363E8.h"
-#include "unk_020393C8.h"
 #include "unk_0209BA80.h"
 #include "vram_transfer.h"
 
@@ -2679,7 +2679,7 @@ static void LoadAssets(BattleFactoryApp *app)
     if (CommSys_IsInitialized()) {
         ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
         ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DMAIN);
-        sub_02039734();
+        NetworkIcon_Init();
     }
 
     if (CheckAppIsInInitialSelectionMode(app, 0) == TRUE) {

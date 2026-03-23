@@ -28,6 +28,7 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "journal.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "poffin.h"
 #include "screen_fade.h"
@@ -40,7 +41,6 @@
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_0203909C.h"
-#include "unk_020393C8.h"
 #include "vram_transfer.h"
 
 typedef int (*UnkFuncPtr_ov83_0224024C)(UnkStruct_ov83_0223C344 *, UnkStruct_ov83_0223B784 *, int *);
@@ -273,7 +273,7 @@ static int ov83_0223B78C(UnkStruct_ov83_0223C344 *param0, UnkStruct_ov83_0223B78
         ov83_0223F820(&param1->unk_334);
         ov83_0223C958(param1);
 
-        sub_02039734();
+        NetworkIcon_Init();
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
 
         if (param1->unk_1488 > 1) {

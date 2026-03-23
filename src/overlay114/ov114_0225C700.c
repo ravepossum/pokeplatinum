@@ -30,6 +30,7 @@
 #include "math_util.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "pltt_transfer.h"
 #include "render_oam.h"
 #include "render_window.h"
@@ -54,7 +55,6 @@
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_0203909C.h"
-#include "unk_020393C8.h"
 #include "unk_02094EDC.h"
 #include "vram_transfer.h"
 
@@ -1374,7 +1374,7 @@ static void ov114_0225CFCC(UnkStruct_ov114_0225CFCC *param0, u32 param1, u32 par
 
     param0->unk_00 = SpriteList_InitRendering(param1, &param0->unk_04, param4);
 
-    sub_02039734();
+    NetworkIcon_Init();
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
 }
@@ -3199,7 +3199,7 @@ static BOOL ov114_0225F27C(UnkStruct_ov114_0225F270 *param0, UnkStruct_ov114_022
     switch (param0->unk_00) {
     case 0:
         StartScreenFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_IN, COLOR_BLACK, 6, 1, heapID);
-        sub_020397C8(0, heapID);
+        NetworkIcon_CreateOnSubScreen(0, heapID);
 
         if (param0->unk_01) {
             NintendoWFC_StartVoiceChat(heapID);

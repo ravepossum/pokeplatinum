@@ -39,6 +39,7 @@
 #include "math_util.h"
 #include "menu.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "pltt_transfer.h"
 #include "pokedex.h"
 #include "render_oam.h"
@@ -63,7 +64,6 @@
 #include "trainer_info.h"
 #include "tv_episode_segment.h"
 #include "underground.h"
-#include "unk_020393C8.h"
 #include "vars_flags.h"
 #include "vram_transfer.h"
 
@@ -1502,7 +1502,7 @@ static void Mining_GameTask(SysTask *sysTask, void *data)
         ctx->state++;
         break;
     case MINING_STATE_FADE_IN_START:
-        sub_02039734();
+        NetworkIcon_Init();
         StartScreenFade(FADE_MAIN_ONLY, FADE_TYPE_CIRCLE_IN, FADE_TYPE_CIRCLE_IN, COLOR_BLACK, 6, 1, HEAP_ID_MINING);
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG0, TRUE);
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG1, TRUE);
@@ -1634,7 +1634,7 @@ static void Mining_GameTask(SysTask *sysTask, void *data)
     case MINING_STATE_FADE_IN_END:
         if (FieldSystem_IsRunningFieldMap(fieldSystem)) {
             fieldSystem->ugTopScreenCtx = UndergroundTopScreen_StartTask(fieldSystem);
-            sub_02039734();
+            NetworkIcon_Init();
             CommPlayerMan_PauseFieldSystem();
             HBlankSystem_Stop(ctx->fieldSystem->unk_04->hBlankSystem);
             StartScreenFade(FADE_MAIN_THEN_SUB, FADE_TYPE_CIRCLE_IN, FADE_TYPE_TOP_HALF_CIRCLE_IN, COLOR_BLACK, 6, 1, HEAP_ID_FIELD1);

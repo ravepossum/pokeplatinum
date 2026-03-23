@@ -16,6 +16,7 @@
 #include "journal.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "save_player.h"
 #include "savedata.h"
@@ -26,7 +27,6 @@
 #include "string_template.h"
 #include "system.h"
 #include "trainer_info.h"
-#include "unk_020393C8.h"
 #include "unk_0208C098.h"
 
 static void JournalController_MainCallback(void *data);
@@ -100,7 +100,7 @@ int JournalController_Init(ApplicationManager *appMan, int *state)
 
     SetVBlankCallback(JournalController_MainCallback, journalManager);
     GXLayers_TurnBothDispOn();
-    sub_02039734();
+    NetworkIcon_Init();
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     Sound_SetSceneAndPlayBGM(SOUND_SCENE_SUB_67, SEQ_NONE, 0);
 

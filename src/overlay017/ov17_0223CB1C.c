@@ -22,6 +22,7 @@
 #include "heap.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "particle_system.h"
@@ -39,7 +40,6 @@
 #include "system.h"
 #include "touch_pad.h"
 #include "unk_020366A0.h"
-#include "unk_020393C8.h"
 #include "unk_02094EDC.h"
 #include "vram_transfer.h"
 
@@ -202,7 +202,7 @@ int VisualCompetitonScoring_Init(ApplicationManager *appMan, int *param1)
     PaletteData_FillBufferRange(v0->unk_0C.unk_44, 1, 0, 0x7fff, 1, 16 * 16);
     PaletteData_FillBufferRange(v0->unk_0C.unk_44, 2, 0, 0x7fff, 0, (16 - 2) * 16);
     PaletteData_FillBufferRange(v0->unk_0C.unk_44, 3, 0, 0x7fff, 0, 16 * 16);
-    sub_02039734();
+    NetworkIcon_Init();
     StartScreenFade(FADE_MAIN_THEN_SUB, FADE_TYPE_UNK_27, FADE_TYPE_UNK_27, COLOR_BLACK, 6, 1, HEAP_ID_22);
 
     v0->unk_04 = SysTask_Start(ov17_0223D164, v0, 60000);

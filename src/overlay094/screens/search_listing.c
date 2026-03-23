@@ -18,6 +18,7 @@
 #include "menu.h"
 #include "message.h"
 #include "message_util.h"
+#include "network_icon.h"
 #include "pokemon.h"
 #include "render_window.h"
 #include "screen_fade.h"
@@ -27,7 +28,6 @@
 #include "string_template.h"
 #include "system.h"
 #include "text.h"
-#include "unk_020393C8.h"
 
 #include "res/text/bank/gts.h"
 
@@ -218,7 +218,7 @@ static void ov94_0223DE7C(GTSApplicationState *appState)
 
     Sprite_SetAnimateFlag(appState->unk_F30, 1);
     Sprite_SetAnim(appState->unk_F30, 37);
-    sub_02039734();
+    NetworkIcon_Init();
 }
 
 static void ov94_0223DEC8(GTSApplicationState *appState)

@@ -15,6 +15,7 @@
 #include "menu.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "render_text.h"
@@ -26,7 +27,6 @@
 #include "string_gf.h"
 #include "system.h"
 #include "text.h"
-#include "unk_020393C8.h"
 #include "vram_transfer.h"
 
 #include "res/graphics/options_menu/config_gra.naix"
@@ -375,7 +375,7 @@ static int SetupMenuVisuals(OptionsMenuData *menuData)
         PrintTitleAndEntries(menuData);
         VramTransfer_New(32, menuData->heapID);
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, TRUE);
-        NetworkIcon_Init();
+        NetworkIcon_InitIfConnected();
         SetVBlankCallback(OptionsMenuVBlank, menuData);
         menuData->subState = 0;
         return TRUE;

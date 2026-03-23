@@ -30,6 +30,7 @@
 #include "message.h"
 #include "message_util.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "pltt_transfer.h"
 #include "render_oam.h"
@@ -52,7 +53,6 @@
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_02038ED4.h"
-#include "unk_020393C8.h"
 #include "unk_0205B33C.h"
 #include "unk_0205C22C.h"
 #include "unk_020961E8.h"
@@ -212,7 +212,7 @@ int ov59_021D0D80(ApplicationManager *appMan, int *param1)
             sub_0205BEA8(2);
         }
 
-        sub_02039734();
+        NetworkIcon_Init();
         ov59_021D30E0(v0->saveData, &v0->unk_418);
 
         v0->unk_20 = SysTask_ExecuteOnVBlank(ov59_021D109C, v0, 5);

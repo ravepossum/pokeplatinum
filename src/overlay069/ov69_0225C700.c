@@ -31,6 +31,7 @@
 #include "math_util.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "pltt_transfer.h"
 #include "render_oam.h"
@@ -52,7 +53,6 @@
 #include "unk_02015920.h"
 #include "unk_0202419C.h"
 #include "unk_0202C858.h"
-#include "unk_020393C8.h"
 #include "unk_020996D0.h"
 #include "vram_transfer.h"
 
@@ -1458,7 +1458,7 @@ static void ov69_0225D53C(UnkStruct_ov69_0225D35C *param0, u32 heapID)
         param0->unk_194[i] = SpriteResourceCollection_New(32, i, heapID);
     }
 
-    sub_02039734();
+    NetworkIcon_Init();
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
 }

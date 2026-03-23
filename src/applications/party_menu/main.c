@@ -42,6 +42,7 @@
 #include "menu.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "party.h"
 #include "pokemon.h"
@@ -59,7 +60,6 @@
 #include "touch_pad.h"
 #include "touch_screen.h"
 #include "tv_episode_segment.h"
-#include "unk_020393C8.h"
 #include "unk_0206B9D8.h"
 #include "vram_transfer.h"
 
@@ -335,7 +335,7 @@ static BOOL PartyMenu_Init(ApplicationManager *appMan, int *state)
     }
 
     SetVBlankCallback(sub_0207E898, application);
-    NetworkIcon_Init();
+    NetworkIcon_InitIfConnected();
     NARC_dtor(narc);
 
     return TRUE;

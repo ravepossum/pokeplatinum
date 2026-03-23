@@ -27,6 +27,7 @@
 #include "message.h"
 #include "message_util.h"
 #include "mystery_gift.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "pokemon_icon.h"
@@ -49,7 +50,6 @@
 #include "unk_02033200.h"
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
-#include "unk_020393C8.h"
 
 #include "res/graphics/main_menu/main_menu_graphics.naix"
 #include "res/text/bank/mystery_gift_menu.h"
@@ -1542,7 +1542,7 @@ static int WonderCardsApp_Main(ApplicationManager *appMan, enum WonderCardsAppSt
         break;
     case WC_APP_STATE_PREPARE_FOR_SHARING:
         PrepareSelectedWCForSharing(appData);
-        sub_02039734();
+        NetworkIcon_Init();
         DoScreenTransitionToState(appData, FADE_TYPE_BRIGHTNESS_IN, WC_APP_STATE_WAIT_FOR_PLAYERS, state);
         break;
     case WC_APP_STATE_WAIT_FOR_PLAYERS: {

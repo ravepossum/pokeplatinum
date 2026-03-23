@@ -29,6 +29,7 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "message.h"
+#include "network_icon.h"
 #include "palette.h"
 #include "screen_fade.h"
 #include "sound_playback.h"
@@ -41,7 +42,6 @@
 #include "unk_02012744.h"
 #include "unk_0202F1D4.h"
 #include "unk_02030A80.h"
-#include "unk_020393C8.h"
 #include "unk_0208B284.h"
 #include "unk_0208BA78.h"
 
@@ -501,7 +501,7 @@ static BOOL ov62_0223E510(UnkStruct_0208C06C *param0)
         ov62_02234540(param0, 1);
         ov62_0223146C(param0);
         ov62_02234540(param0, 0);
-        sub_020397C8(1, HEAP_ID_102);
+        NetworkIcon_CreateOnSubScreen(1, HEAP_ID_102);
         ov62_0223376C(param0, 1);
         param0->unk_08++;
         break;
@@ -1120,7 +1120,7 @@ static BOOL ov62_0223F348(UnkStruct_0208C06C *param0)
         ov62_0223F06C(param0);
         ov62_0223146C(param0);
         ov62_02234540(param0, 0);
-        sub_020397C8(1, HEAP_ID_102);
+        NetworkIcon_CreateOnSubScreen(1, HEAP_ID_102);
         ov62_0223376C(param0, 1);
         param0->unk_08++;
         break;
@@ -1370,7 +1370,7 @@ static BOOL ov62_0223FB74(UnkStruct_0208C06C *a0)
     case 2:
         ov62_02231688(&r4->unk_08);
         ov62_0223146C(r5);
-        sub_020397C8(1, 0x66);
+        NetworkIcon_CreateOnSubScreen(1, 0x66);
         ov62_0223376C(r5, 1);
         r5->unk_08++;
         break;

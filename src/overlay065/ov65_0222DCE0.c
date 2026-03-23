@@ -45,6 +45,7 @@
 #include "message.h"
 #include "message_util.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "party.h"
 #include "pltt_transfer.h"
@@ -83,7 +84,6 @@
 #include "unk_020363E8.h"
 #include "unk_020366A0.h"
 #include "unk_0203909C.h"
-#include "unk_020393C8.h"
 #include "unk_0207DFAC.h"
 #include "unk_0209C390.h"
 #include "vars_flags.h"
@@ -774,7 +774,7 @@ int ov65_0222E2A8(ApplicationManager *appMan, int *param1)
         StartScreenFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, COLOR_BLACK, 6, 1, HEAP_ID_54);
 
         if (CommMan_IsConnectedToWifi()) {
-            sub_02039734();
+            NetworkIcon_Init();
         } else {
             Overlay_LoadWFCOverlay();
         }

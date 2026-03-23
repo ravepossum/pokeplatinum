@@ -15,6 +15,7 @@
 #include "heap.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "screen_fade.h"
 #include "string_gf.h"
@@ -23,7 +24,6 @@
 #include "text.h"
 #include "touch_pad.h"
 #include "unk_0202419C.h"
-#include "unk_020393C8.h"
 #include "unk_0208C098.h"
 #include "unk_020972FC.h"
 
@@ -240,7 +240,7 @@ int ov85_02241440(ApplicationManager *appMan, int *param1)
     ov85_02242218(v0);
 
     SetVBlankCallback(ov85_022415F4, v0);
-    NetworkIcon_Init();
+    NetworkIcon_InitIfConnected();
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     NARC_dtor(v1);
 

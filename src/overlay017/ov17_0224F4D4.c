@@ -19,6 +19,7 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "message.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "particle_system.h"
@@ -36,7 +37,6 @@
 #include "touch_pad.h"
 #include "unk_02012744.h"
 #include "unk_020366A0.h"
-#include "unk_020393C8.h"
 #include "unk_02094EDC.h"
 #include "vram_transfer.h"
 
@@ -199,7 +199,7 @@ int ContestFinalScoring_Init(ApplicationManager *appMan, int *param1)
     ov17_0224FE58(v0);
     ov17_02250744(v0);
 
-    sub_02039734();
+    NetworkIcon_Init();
     StartScreenFade(FADE_MAIN_THEN_SUB, FADE_TYPE_UNK_33, FADE_TYPE_UNK_33, COLOR_BLACK, 6, 1, HEAP_ID_24);
 
     v0->unk_04 = SysTask_Start(ov17_0224FAFC, v0, 80000);
