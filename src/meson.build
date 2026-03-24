@@ -256,7 +256,7 @@ pokeplatinum_c = files(
     'great_marsh_lookout.c',
     'trainer_card_badge_dirt.c',
     'roaming_pokemon.c',
-    'unk_0206C660.c',
+    'npc_trade_task.c',
     'cutscenes/boat_cutscene/boat_cutscene.c',
     'tv_episode_segment.c',
     'rankings_machine.c',

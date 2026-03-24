@@ -126,6 +126,7 @@
 #include "message.h"
 #include "message_util.h"
 #include "network_icon.h"
+#include "npc_trade_task.h"
 #include "party.h"
 #include "pc_boxes.h"
 #include "persisted_map_features_init.h"
@@ -208,7 +209,6 @@
 #include "unk_0205DFC4.h"
 #include "unk_020655F4.h"
 #include "unk_02069BE0.h"
-#include "unk_0206C660.h"
 #include "unk_02070428.h"
 #include "unk_020722AC.h"
 #include "unk_0207DA28.h"
@@ -600,10 +600,10 @@ static BOOL ScrCmd_SetNewsPressDeadline(ScriptContext *ctx);
 static BOOL ScrCmd_GetNewsPressDeadline(ScriptContext *ctx);
 static BOOL ScrCmd_EnableSwarms(ScriptContext *ctx);
 static BOOL ScrCmd_ActivateRoamingPokemon(ScriptContext *ctx);
-static BOOL ScrCmd_StartNpcTrade(ScriptContext *ctx);
+static BOOL ScrCmd_InitNPCTrade(ScriptContext *ctx);
 static BOOL ScrCmd_GetNpcTradeSpecies(ScriptContext *ctx);
 static BOOL ScrCmd_GetNpcTradeRequestedSpecies(ScriptContext *ctx);
-static BOOL ScrCmd_229(ScriptContext *ctx);
+static BOOL ScrCmd_StartNPCTrade(ScriptContext *ctx);
 static BOOL ScrCmd_FinishNpcTrade(ScriptContext *ctx);
 static BOOL ScrCmd_22B(ScriptContext *ctx);
 static BOOL ScrCmd_22C(ScriptContext *ctx);
@@ -5412,7 +5412,7 @@ static BOOL ScrCmd_ActivateRoamingPokemon(ScriptContext *ctx)
     return FALSE;
 }
 
-static BOOL ScrCmd_StartNpcTrade(ScriptContext *ctx)
+static BOOL ScrCmd_InitNPCTrade(ScriptContext *ctx)
 {
     void **data = FieldSystem_GetScriptMemberPtr(ctx->fieldSystem, SCRIPT_MANAGER_DATA_PTR);
     *data = NpcTrade_Init(HEAP_ID_FIELD2, ScriptContext_ReadByte(ctx));
@@ -5435,10 +5435,10 @@ static BOOL ScrCmd_GetNpcTradeRequestedSpecies(ScriptContext *ctx)
     return FALSE;
 }
 
-static BOOL ScrCmd_229(ScriptContext *ctx)
+static BOOL ScrCmd_StartNPCTrade(ScriptContext *ctx)
 {
     void **data = FieldSystem_GetScriptMemberPtr(ctx->fieldSystem, SCRIPT_MANAGER_DATA_PTR);
-    sub_0206C740(ctx->task, (NpcTradeData *)*data, ScriptContext_GetVar(ctx), HEAP_ID_FIELD2);
+    FieldTask_StartNPCTrade(ctx->task, (NpcTradeData *)*data, ScriptContext_GetVar(ctx), HEAP_ID_FIELD2);
     return TRUE;
 }
 

@@ -41,7 +41,7 @@ NpcTradeData *NpcTrade_Init(enum HeapID heapID, u32 npcTradeID)
     TrainerInfo_Init(data->trainerInfo);
     String *string = NpcTrade_GetOtName(heapID, npcTradeID);
 
-    u16 otName[128];
+    charcode_t otName[128];
     String_ToChars(string, otName, NELEMS(otName));
     String_Free(string);
     TrainerInfo_SetName(data->trainerInfo, otName);
@@ -74,7 +74,7 @@ void NpcTrade_ReceiveMon(FieldSystem *fieldSystem, NpcTradeData *data, int slot)
     SaveData_UpdateCatchRecords(fieldSystem->saveData, data->mon);
 }
 
-void ov6_02246254(FieldSystem *fieldSystem, NpcTradeData *data, int slot, TradeAnimationTemplate *animationConfig, Pokemon *givingMon, Pokemon *receivingMon)
+void NPCTrade_FillAnimationTemplate(FieldSystem *fieldSystem, NpcTradeData *data, int slot, TradeAnimationTemplate *animationConfig, Pokemon *givingMon, Pokemon *receivingMon)
 {
     Party *party = SaveData_GetParty(fieldSystem->saveData);
     Pokemon *partyMon = Party_GetPokemonBySlotIndex(party, slot);

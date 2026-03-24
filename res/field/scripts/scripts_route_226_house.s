@@ -40,12 +40,12 @@ _0060:
     FadeScreenIn
     WaitFadeScreen
     GoToIfEq VAR_RESULT, 0xFF, _00D1
-    StartNpcTrade NPC_TRADE_FOOPA_MAGIKARP
+    InitNPCTrade NPC_TRADE_FOOPA_MAGIKARP
     SetVar VAR_0x8004, VAR_RESULT
     GetPartyMonSpecies VAR_0x8004, VAR_0x8005
     GetNpcTradeRequestedSpecies VAR_RESULT
     GoToIfNe VAR_0x8005, VAR_RESULT, _00C4
-    ScrCmd_229 VAR_0x8004
+    StartNPCTrade VAR_0x8004
     FinishNpcTrade
     SetFlag FLAG_UNK_0x00F5
     Message 3

@@ -270,7 +270,7 @@ Static main
 	Object main.nef.p/src_great_marsh_lookout.c.o
 	Object main.nef.p/src_trainer_card_badge_dirt.c.o
 	Object main.nef.p/src_roaming_pokemon.c.o
-	Object main.nef.p/src_unk_0206C660.c.o
+	Object main.nef.p/src_npc_trade_task.c.o
 	Object main.nef.p/src_cutscenes_boat_cutscene_boat_cutscene.c.o
 	Object main.nef.p/src_tv_episode_segment.c.o
 	Object main.nef.p/src_rankings_machine.c.o

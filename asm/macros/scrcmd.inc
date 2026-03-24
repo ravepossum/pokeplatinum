@@ -3162,8 +3162,8 @@
     .short \destVar
     .endm
 
-    .macro StartNpcTrade npcTradeID
-    .short SCRCMD_STARTNPCTRADE
+    .macro InitNPCTrade npcTradeID
+    .short SCRCMD_INITNPCTRADE
     .byte \npcTradeID
     .endm
 
@@ -3177,9 +3177,9 @@
     .short \destVar
     .endm
 
-    .macro ScrCmd_229 arg0
-    .short SCRCMD_229
-    .short \arg0
+    .macro StartNPCTrade partySlot
+    .short SCRCMD_STARTNPCTRADE
+    .short \partySlot
     .endm
 
     .macro FinishNpcTrade
