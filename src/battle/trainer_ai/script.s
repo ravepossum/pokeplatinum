@@ -6385,8 +6385,7 @@ EvalAttack_ApplyKillBonuses:
     // Do not evaluate kills with Explosion or Self-Destruct for this routine.
     IfCurrentMoveEffectEqualTo BATTLE_EFFECT_HALVE_DEFENSE, EvalAttack_Terminate
 
-    // Moves like Focus Punch, Sucker Punch, and Future Sight *may* get an additional +4 on top of
-    // the usual +4 for a kill.
+    // Moves like Focus Punch, Sucker Punch, and Future Sight *may* get +4 score for a kill.
     // NOTE: Focus Punch and Sucker Punch can never actually reach this state, because the AI never
     // treats them as able to kill.
     IfCurrentMoveEffectEqualTo BATTLE_EFFECT_HIT_LAST_WHIFF_IF_HIT, EvalAttack_TryScorePlus4
