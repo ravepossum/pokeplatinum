@@ -745,10 +745,10 @@ BOOL (*const *const gMovementActionFuncs[MAX_MOVEMENT_ACTION])(MapObject *) = {
     [MOVEMENT_ACTION_114] = gMovementActionFuncs_114,
     [MOVEMENT_ACTION_115] = gMovementActionFuncs_115,
     [MOVEMENT_ACTION_116] = gMovementActionFuncs_116,
-    [MOVEMENT_ACTION_117] = gMovementActionFuncs_117,
-    [MOVEMENT_ACTION_118] = gMovementActionFuncs_118,
-    [MOVEMENT_ACTION_119] = gMovementActionFuncs_119,
-    [MOVEMENT_ACTION_120] = gMovementActionFuncs_120,
+    [MOVEMENT_ACTION_JUMP_DISTORTION_WORLD_NORTH] = gMovementActionFuncs_JumpDistortionWorldNorth,
+    [MOVEMENT_ACTION_JUMP_DISTORTION_WORLD_SOUTH] = gMovementActionFuncs_JumpDistortionWorldSouth,
+    [MOVEMENT_ACTION_JUMP_DISTORTION_WORLD_WEST] = gMovementActionFuncs_JumpDistortionWorldWest,
+    [MOVEMENT_ACTION_JUMP_DISTORTION_WORLD_EAST] = gMovementActionFuncs_JumpDistortionWorldEast,
     [MOVEMENT_ACTION_121] = gMovementActionFuncs_121,
     [MOVEMENT_ACTION_122] = gMovementActionFuncs_122,
     [MOVEMENT_ACTION_123] = gMovementActionFuncs_123,
@@ -938,11 +938,11 @@ static const int sMovementActionCodes_WalkEverSoSlightlyFast[] = {
     [DIR_EAST] = MOVEMENT_ACTION_WALK_EVER_SO_SLIGHTLY_FAST_EAST,
 };
 
-static const int Unk_020EDC2C[] = {
-    [DIR_NORTH] = MOVEMENT_ACTION_117,
-    [DIR_SOUTH] = MOVEMENT_ACTION_118,
-    [DIR_WEST] = MOVEMENT_ACTION_119,
-    [DIR_EAST] = MOVEMENT_ACTION_120,
+static const int sMovementActionCodes_JumpDistortionWorld[] = {
+    [DIR_NORTH] = MOVEMENT_ACTION_JUMP_DISTORTION_WORLD_NORTH,
+    [DIR_SOUTH] = MOVEMENT_ACTION_JUMP_DISTORTION_WORLD_SOUTH,
+    [DIR_WEST] = MOVEMENT_ACTION_JUMP_DISTORTION_WORLD_WEST,
+    [DIR_EAST] = MOVEMENT_ACTION_JUMP_DISTORTION_WORLD_EAST,
 };
 
 static const int Unk_020EDCCC[] = {
@@ -1047,7 +1047,7 @@ const int *const gMovementActionCodes[] = {
     sMovementActionCodes_WalkEverSoSlightlyFast,
     Unk_020EDCCC,
     Unk_020EDC0C,
-    Unk_020EDC2C,
+    sMovementActionCodes_JumpDistortionWorld,
     Unk_020EDCAC,
     Unk_020EDD4C,
     Unk_020EDD1C,

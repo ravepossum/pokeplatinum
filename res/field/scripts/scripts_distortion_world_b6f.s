@@ -92,7 +92,7 @@ _0108:
     .balign 4, 0
 _011C:
     WalkNormalSouth
-    MoveAction_118
+    JumpDistortionWorldSouth
     WalkNormalWest
     WalkOnSpotNormalEast
     EndMovement

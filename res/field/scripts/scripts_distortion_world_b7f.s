@@ -212,7 +212,7 @@ _028C:
     .balign 4, 0
 _029C:
     WalkNormalEast
-    MoveAction_117
+    JumpDistortionWorldNorth
     WalkNormalNorth 7
     EndMovement
 
@@ -269,6 +269,6 @@ _0308:
     .balign 4, 0
 _0314:
     WalkNormalSouth 7
-    MoveAction_118
+    JumpDistortionWorldSouth
     Delay16
     EndMovement
