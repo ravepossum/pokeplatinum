@@ -355,7 +355,7 @@ BOOL FieldInput_Process(const FieldInput *input, FieldSystem *fieldSystem)
     }
 
     if (input->debugMenu) {
-        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN_sseq);
         DebugMenu_Init(fieldSystem);
         return TRUE;
     }
@@ -409,7 +409,7 @@ BOOL FieldInput_Process_Underground(FieldInput *input, FieldSystem *fieldSystem)
     }
 
     if (input->debugMenu) {
-        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN_sseq);
         DebugMenu_Init(fieldSystem);
         return FALSE;
     }
@@ -456,7 +456,7 @@ BOOL FieldInput_Process_Colosseum(FieldInput *input, FieldSystem *fieldSystem)
     }
 
     if (input->debugMenu) {
-        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN_sseq);
         DebugMenu_Init(fieldSystem);
         return FALSE;
     }
@@ -521,7 +521,7 @@ BOOL FieldInput_Process_UnionRoom(const FieldInput *input, FieldSystem *fieldSys
     }
 
     if (input->debugMenu) {
-        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN_sseq);
         DebugMenu_Init(fieldSystem);
         return TRUE;
     }
@@ -582,7 +582,7 @@ int FieldInput_Process_BattleTower(const FieldInput *input, FieldSystem *fieldSy
     }
 
     if (input->debugMenu) {
-        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN);
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN_sseq);
         DebugMenu_Init(fieldSystem);
         return TRUE;
     }

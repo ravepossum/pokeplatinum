@@ -870,11 +870,10 @@ static void PlayerAvatar_SetMovement_Normal(PlayerAvatar *playerAvatar, MapObjec
 {
     FieldSystem *fsys = MapObject_FieldSystem(mapObj);
 
-    // param5 = pressKey, param3 = dir
-    if (VarsFlags_CheckFlag(SaveData_GetVarsFlags(fsys->saveData), FLAG_DEBUG_NO_COLLISION) && (param5 & PAD_KEY)) {
-        int movement = sub_020613FC(playerAvatar, param5) ? MOVEMENT_ACTION_RUN_NORTH : MOVEMENT_ACTION_WALK_NORMAL_NORTH;
-        int newAnim = MovementAction_TurnActionTowardsDir(param3, movement); // force player to move in the given dir
-        sub_02060B64(playerAvatar, mapObj, newAnim, AVATAR_MOVE_STATE_MOVING); // set moving state
+    if (VarsFlags_CheckFlag(SaveData_GetVarsFlags(fsys->saveData), FLAG_DEBUG_NO_COLLISION) && (keyPress & PAD_KEY)) {
+        int movement = PlayerAvatar_IsRunButtonHeld(playerAvatar, keyPress) ? MOVEMENT_ACTION_RUN_NORTH : MOVEMENT_ACTION_WALK_NORMAL_NORTH;
+        int newAnim = MovementAction_TurnActionTowardsDir(dir, movement); // force player to move in the given dir
+        PlayerAvatar_SetMovement(playerAvatar, mapObj, newAnim, AVATAR_MOVE_STATE_MOVING); // set moving state
         return;
     }
 

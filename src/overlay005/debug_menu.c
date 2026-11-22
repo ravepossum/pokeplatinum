@@ -7,7 +7,6 @@
 #include "constants/pokemon.h"
 #include "generated/items.h"
 #include "generated/moves.h"
-#include "generated/sdat.h"
 #include "generated/species.h"
 #include "generated/text_banks.h"
 
@@ -43,6 +42,7 @@
 #include "vars_flags.h"
 #include "vram_transfer.h"
 
+#include "res/sound/pl_sound_data.naix"
 #include "res/text/bank/debug_menu.h"
 
 // if these are lifted from bag.c into bag.h, these constants should be removed
@@ -449,14 +449,14 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
     s32 choice = ListMenu_ProcessInput(menu->listNode->listMenu);
 
     if (JOY_NEW(PAD_BUTTON_A)) {
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         DebugFunction debugFunc = menu->listNode->items[choice].function;
         debugFunc(task, data);
         return;
     }
 
     if (JOY_NEW(PAD_BUTTON_B)) {
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         if (menu->listNode->prev == NULL) {
             DebugMenu_ExitToField(task, menu);
         } else {
@@ -466,7 +466,7 @@ static void Task_DebugMenu_HandleInput(SysTask *task, void *data)
     }
 
     if (JOY_NEW(PAD_KEY)) {
-        Sound_PlayEffect(SEQ_SE_DP_SELECT78);
+        Sound_PlayEffect(SEQ_SE_DP_SELECT78_sseq);
     }
 }
 
@@ -672,7 +672,7 @@ static void Task_DebugMenu_Fly(SysTask *task, void *data)
         }
 
         Pokemon *mon = Party_GetPokemonBySlotIndex(SaveData_GetParty(fly->fieldSystem->saveData), 0);
-        fly->taskCutIn = HMCutIn_StartTask(fly->fieldSystem, TRUE, mon, PlayerAvatar_Gender(fly->fieldSystem->playerAvatar));
+        fly->taskCutIn = HMCutIn_StartTask(fly->fieldSystem, TRUE, mon, PlayerAvatar_GetGender(fly->fieldSystem->playerAvatar));
 
         break;
     case DEBUG_FLY_WAIT_CUTIN_AND_START_FLY:
@@ -689,7 +689,7 @@ static void Task_DebugMenu_Fly(SysTask *task, void *data)
         Location destLoc;
         Location_InitFly(warpID, &destLoc);
 
-        FieldTask_StartMapChangeFly(fly->fieldSystem, destLoc.mapId, (-1), destLoc.x, destLoc.z, DIR_SOUTH);
+        FieldTask_StartMapChangeFly(fly->fieldSystem, destLoc.mapHeaderID, (-1), destLoc.x, destLoc.z, DIR_SOUTH);
         break;
     case DEBUG_FLY_EXIT:
         Heap_Free(fly->mapCtx);
@@ -748,7 +748,7 @@ static void AddItem_InitSprite(DebugSubMenu *subMenu)
 {
     NARC *narc = NARC_ctor(NARC_INDEX_ITEMTOOL__ITEMDATA__ITEM_ICON, HEAP_ID_FIELD2);
     SpriteResourceManager_LoadTiles(&subMenu->spriteResMan, narc, Item_FileID(ITEM_NONE, ITEM_FILE_TYPE_ICON), FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, ITEM_ICON_CHAR);
-    SpriteResourceManager_LoadPalette(&subMenu->spriteResMan, narc, Item_FileID(ITEM_NONE, ITEM_FILE_TYPE_PALETTE), FALSE, PLTT_1, NNS_G2D_VRAM_TYPE_2DMAIN, ITEM_ICON_PLTT);
+    SpriteResourceManager_LoadPalette(&subMenu->spriteResMan, narc, Item_FileID(ITEM_NONE, ITEM_FILE_TYPE_PALETTE), FALSE, 1, NNS_G2D_VRAM_TYPE_2DMAIN, ITEM_ICON_PLTT);
     SpriteResourceManager_LoadCell(&subMenu->spriteResMan, narc, Item_IconNCERFile(), FALSE, ITEM_ICON_CHAR);
     SpriteResourceManager_LoadAnimation(&subMenu->spriteResMan, narc, Item_IconNANRFile(), FALSE, ITEM_ICON_CHAR);
     NARC_dtor(narc);
@@ -917,10 +917,10 @@ static void ToggleDebugFlag(DebugMenu *menu, u16 flagID)
 
     if (VarsFlags_CheckFlag(varsFlags, flagID)) {
         VarsFlags_ClearFlag(varsFlags, flagID);
-        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF_sseq);
     } else {
         VarsFlags_SetFlag(varsFlags, flagID);
-        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN_sseq);
     }
 
     ListMenu_Draw(menu->listNode->listMenu);
@@ -947,10 +947,10 @@ static void DebugFunction_TogglePokedex(SysTask *task, DebugMenu *menu)
 
     if (Pokedex_IsObtained(pokedex)) {
         Pokedex_DisablePokedex(pokedex);
-        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF_sseq);
     } else {
         Pokedex_ObtainPokedex(pokedex);
-        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN_sseq);
     }
 
     ListMenu_Draw(menu->listNode->listMenu);
@@ -962,10 +962,10 @@ static void DebugFunction_ToggleNationalDex(SysTask *task, DebugMenu *menu)
 
     if (Pokedex_IsNationalDexObtained(pokedex)) {
         Pokedex_DisableNationalDex(pokedex);
-        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF_sseq);
     } else {
         Pokedex_ObtainNationalDex(pokedex);
-        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN_sseq);
     }
 
     ListMenu_Draw(menu->listNode->listMenu);

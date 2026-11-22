@@ -184,9 +184,9 @@ static int GetTrainerType(const MapObject *trainerMapObj)
 
 static int GetTrainerDistToPlayer(const MapObject *trainerMapObj, PlayerAvatar *playerAvatar, int *direction)
 {
-    FieldSystem *fieldSystem = MapObject_FieldSystem(param0);
+    FieldSystem *fieldSystem = MapObject_FieldSystem(trainerMapObj);
     if (VarsFlags_CheckFlag(SaveData_GetVarsFlags(fieldSystem->saveData), FLAG_DEBUG_NO_TRAINER_SEE)) {
-        return -1;
+        return DISTANCE_INVALID;
     }
 
     int trainerSightRange, trainerFaceDir, playerX, playerZ, distance;
