@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "overlay005/field_effect_manager.h"
 
@@ -12,6 +12,8 @@
 #include "map_object_move.h"
 #include "overworld_anim_manager.h"
 #include "simple3d.h"
+
+#include "res/graphics/field_effects/field_effects.naix"
 
 typedef struct {
     FieldEffectManager *unk_00;
@@ -380,7 +382,7 @@ static int ov5_021F4D50(OverworldAnimManager *param0, void *param1)
 {
     UnkStruct_021F4D50 *v0 = param1;
 
-    v0->unk_00 = OverworldAnimManager_GetID(param0);
+    v0->unk_00 = OverworldAnimManager_GetUserInt(param0);
     v0->unk_04 = (FieldEffectManager *)OverworldAnimManager_GetUserData(param0);
     v0->unk_08 = FieldEffectManager_GetRendererContext(v0->unk_04, 32);
 
@@ -416,19 +418,19 @@ static const OverworldAnimManagerFuncs Unk_ov5_02200768 = {
 };
 
 static const u32 Unk_ov5_0220079C[9] = {
-    0x73,
-    0x74,
-    0x75,
-    0x76,
-    0x77,
-    0x78,
-    0x79,
-    0x7A,
-    0x7B
+    hearthome_gym_flashlight_cone_nsbmd,
+    hearthome_gym_hint_circle_nsbmd,
+    hearthome_gym_hint_square_nsbmd,
+    hearthome_gym_hint_triangle_nsbmd,
+    hearthome_gym_hint_sun_nsbmd,
+    hearthome_gym_hint_target_nsbmd,
+    hearthome_gym_hint_moon_nsbmd,
+    hearthome_gym_hint_star_nsbmd,
+    hearthome_gym_hint_heart_nsbmd
 };
 
 static const u32 Unk_ov5_02200750[1] = {
-    0xC7
+    hearthome_gym_flashlight_cone_nsbta
 };
 
 static const Simple3DRotationAngles Unk_ov5_0220077C[4] = {

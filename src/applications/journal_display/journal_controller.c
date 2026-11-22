@@ -16,6 +16,7 @@
 #include "journal.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "save_player.h"
 #include "savedata.h"
@@ -26,7 +27,6 @@
 #include "string_template.h"
 #include "system.h"
 #include "trainer_info.h"
-#include "unk_020393C8.h"
 #include "unk_0208C098.h"
 
 static void JournalController_MainCallback(void *data);
@@ -100,7 +100,7 @@ int JournalController_Init(ApplicationManager *appMan, int *state)
 
     SetVBlankCallback(JournalController_MainCallback, journalManager);
     GXLayers_TurnBothDispOn();
-    sub_02039734();
+    NetworkIcon_Init();
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     Sound_SetSceneAndPlayBGM(SOUND_SCENE_SUB_67, SEQ_NONE, 0);
 
@@ -292,7 +292,7 @@ static void JournalController_LoadGraphics(JournalManager *journalManager)
     MI_CpuCopy16(tilemapBuffer, journalManager->tilemapBuffer_5C, 0x800);
     Bg_LoadTilemapBuffer(journalManager->bgConfig, 3, journalManager->tilemapBuffer_5C, 0x800);
 
-    Font_LoadTextPalette(PAL_LOAD_MAIN_BG, 15 * 32, HEAP_ID_JOURNAL);
+    Font_LoadTextPalette(PAL_LOAD_MAIN_BG, PLTT_OFFSET(15), HEAP_ID_JOURNAL);
     Bg_MaskPalette(BG_LAYER_SUB_0, 0);
 }
 
@@ -365,7 +365,7 @@ static int JournalController_TurnPageLeft(JournalManager *journalManager)
         journalManager->page--;
         JournalPrinter_PrintEntry(journalManager, journalManager->unk_1060 ^ 1);
         journalManager->state = 1;
-        Sound_PlayEffect(SEQ_SE_DP_MEKURU3);
+        Sound_PlayEffect(SEQ_SE_DP_MEKURU3_sseq);
         break;
     case 1:
         if (ov81_021D14E0(journalManager) == TRUE) {
@@ -393,7 +393,7 @@ static int JournalController_TurnPageRight(JournalManager *journalManager)
         journalManager->page++;
         JournalPrinter_PrintEntry(journalManager, journalManager->unk_1060 ^ 1);
         journalManager->state = 1;
-        Sound_PlayEffect(SEQ_SE_DP_MEKURU3);
+        Sound_PlayEffect(SEQ_SE_DP_MEKURU3_sseq);
         break;
     case 1:
         if (ov81_021D156C(journalManager) == TRUE) {

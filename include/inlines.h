@@ -3,8 +3,6 @@
 
 #include <nitro/rtc.h>
 
-#include "struct_decls/struct_0203A790_decl.h"
-
 #include "field/field_system.h"
 #include "overlay061/struct_ov61_0222C3B0.h"
 
@@ -132,7 +130,7 @@ static inline void PoketchMap_GetPlayerLocation(FieldSystem *fieldSystem, int *x
     FieldOverworldState *fieldState = SaveData_GetFieldOverworldState(fieldSystem->saveData);
     Location *location = FieldOverworldState_GetExitLocation(fieldState);
 
-    if (MapHeader_IsOnMainMatrix(fieldSystem->location->mapId)) {
+    if (MapHeader_IsOnMainMatrix(fieldSystem->location->mapHeaderID)) {
         *x = fieldSystem->location->x;
         *z = fieldSystem->location->z;
     } else {

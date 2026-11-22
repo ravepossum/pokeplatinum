@@ -79,7 +79,7 @@ BOOL PartyMenuFormChange_ChangeForm(PartyMenuApplication *app)
             break;
         case SPECIES_ROTOM:
         default:
-            GF_ASSERT(0);
+            GF_ASSERT(FALSE);
             break;
         }
 
@@ -192,12 +192,12 @@ static void LoadParticleResources(PartyMenuFormChange *formChanger)
         ParticleSystem_CreateEmitterWithCallback(formChanger->ps, 0, EmitterCallback, formChanger);
         ParticleSystem_CreateEmitterWithCallback(formChanger->ps, 1, EmitterCallback, formChanger);
         ParticleSystem_CreateEmitterWithCallback(formChanger->ps, 2, EmitterCallback, formChanger);
-        Sound_PlayEffect(SEQ_SE_PL_W467109);
+        Sound_PlayEffect(SEQ_SE_PL_W467109_sseq);
         break;
     case SPECIES_SHAYMIN:
         ParticleSystem_CreateEmitterWithCallback(formChanger->ps, 0, EmitterCallback, formChanger);
         ParticleSystem_CreateEmitterWithCallback(formChanger->ps, 1, EmitterCallback, formChanger);
-        Sound_PlayEffect(SEQ_SE_PL_W363);
+        Sound_PlayEffect(SEQ_SE_PL_W363_sseq);
         break;
     }
 }

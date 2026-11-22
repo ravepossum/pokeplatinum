@@ -11,6 +11,8 @@
 #include "simple3d.h"
 #include "sound_playback.h"
 
+#include "res/graphics/field_effects/field_effects.naix"
+
 typedef struct {
     FieldEffectManager *unk_00;
     Simple3DModel unk_04;
@@ -52,8 +54,8 @@ void ov5_021F55E8(void *param0)
 
 static void ov5_021F55F8(UnkStruct_ov5_021F55F8 *param0)
 {
-    FieldEffectManager_LoadModel(param0->unk_00, &param0->unk_04, 0, 58, 0);
-    FieldEffectManager_LoadAnimation(param0->unk_00, &param0->unk_18, 0, 162, 0);
+    FieldEffectManager_LoadModel(param0->unk_00, &param0->unk_04, 0, ug_effect_smoke_nsbmd, 0);
+    FieldEffectManager_LoadAnimation(param0->unk_00, &param0->unk_18, 0, ug_effect_smoke_nsbtp, 0);
 }
 
 static void ov5_021F5620(UnkStruct_ov5_021F55F8 *param0)
@@ -75,7 +77,7 @@ void ov5_021F5634(FieldSystem *fieldSystem, int x, int unused, int z)
     v3.z = ((z << 4) * FX32_ONE);
 
     FieldEffectManager_InitAnimManager(v2.unk_00, &Unk_ov5_02200B1C, &v3, 0, &v2, 0xff);
-    Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN2);
+    Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN2_sseq);
 }
 
 static int ov5_021F5684(OverworldAnimManager *param0, void *param1)

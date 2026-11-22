@@ -3,15 +3,16 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/field/script_ranges.h"
 #include "generated/text_banks.h"
-
-#include "struct_decls/struct_0203A790_decl.h"
 
 #include "field/field_system.h"
 
 #include "bg_window.h"
 #include "brightness_controller.h"
+#include "field_bgm.h"
 #include "field_map_change.h"
+#include "field_map_change_flags.h"
 #include "field_overworld_state.h"
 #include "field_system.h"
 #include "field_task.h"
@@ -34,8 +35,6 @@
 #include "string_template.h"
 #include "system.h"
 #include "text.h"
-#include "unk_020553DC.h"
-#include "unk_02070428.h"
 
 typedef struct {
     int unk_00;
@@ -123,7 +122,7 @@ static void sub_02052914(FieldSystem *fieldSystem, FieldTask *task)
     Window_AddFromTemplate(v0->unk_08, &v0->unk_0C, &Unk_020EC2F0);
     StringTemplate_SetPlayerName(v0->unk_20, 0, SaveData_GetTrainerInfo(FieldSystem_GetSaveData(fieldSystem)));
 
-    if (fieldSystem->location->mapId == MAP_HEADER_TWINLEAF_TOWN_PLAYER_HOUSE_1F) {
+    if (fieldSystem->location->mapHeaderID == MAP_HEADER_TWINLEAF_TOWN_PLAYER_HOUSE_1F) {
         sub_02052AA4(v0, 4, 0, 0);
     } else {
         sub_02052AA4(v0, 3, 0, 0);
@@ -210,7 +209,7 @@ BOOL FieldTask_BlackOutFromBattle(FieldTask *task)
 
         Location location;
         FieldOverworldState *fieldState = SaveData_GetFieldOverworldState(fieldSystem->saveData);
-        u16 warpId = FieldOverworldState_GetWarpId(fieldState);
+        u16 warpId = FieldOverworldState_GetBlackOutWarpId(fieldState);
 
         Location_InitBlackOut(warpId, &location);
         Location_InitFly(warpId, FieldOverworldState_GetExitLocation(fieldState));
@@ -225,7 +224,7 @@ BOOL FieldTask_BlackOutFromBattle(FieldTask *task)
         break;
     case 2:
         if (Sound_IsFadeActive() == FALSE) {
-            sub_020553DC();
+            FieldBGM_Stop();
             (*state)++;
         }
         break;
@@ -242,7 +241,7 @@ BOOL FieldTask_BlackOutFromBattle(FieldTask *task)
     case 5:
         BrightnessController_SetScreenBrightness(0, GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD, BRIGHTNESS_BOTH_SCREENS);
 
-        if (FieldOverworldState_GetDefaultWarpID() == FieldOverworldState_GetWarpId(SaveData_GetFieldOverworldState(fieldSystem->saveData))) {
+        if (FieldOverworldState_GetDefaultWarpID() == FieldOverworldState_GetBlackOutWarpId(SaveData_GetFieldOverworldState(fieldSystem->saveData))) {
             ScriptManager_Start(task, SCRIPT_ID(COMMON_SCRIPTS, 20), NULL, NULL);
         } else {
             ScriptManager_Start(task, SCRIPT_ID(COMMON_SCRIPTS, 21), NULL, NULL);

@@ -1,7 +1,7 @@
 #ifndef POKEPLATINUM_APPLICATIONS_TOWN_MAP_MAIN_H
 #define POKEPLATINUM_APPLICATIONS_TOWN_MAP_MAIN_H
 
-#include "generated/map_headers.h"
+#include "constants/fieldmap.h"
 
 #include "field/field_system_decl.h"
 
@@ -41,7 +41,7 @@ typedef struct TownMapContext {
     BOOL flyLocationSelected;
     int flyLocationX;
     int flyLocationZ;
-    enum MapHeader flyLocationMapHeader;
+    enum MapHeaderID flyLocationMapHeader;
     TownMapLocationHistoryEntry locationHistory[TOWN_MAP_HISTORY_LENGTH];
     TownMapLocationDescCheckResults descCheckResults[200];
     u8 unlockedFlyLocations[NUM_FLY_LOCATIONS + 1];

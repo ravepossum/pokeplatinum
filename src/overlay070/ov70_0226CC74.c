@@ -24,7 +24,7 @@ typedef struct {
 BOOL ov70_0226CC74(UnkStruct_ov70_02263344 *param0, UnkStruct_ov70_0225DEE8 *param1, u32 param2)
 {
     UnkStruct_ov70_0226CC74 *v0;
-    UnkStruct_ov66_0222DFF8 *v1;
+    WiFiPlazaSystem *v1;
     UnkStruct_ov70_0225CA20 *v2;
     UnkStruct_ov70_0225CC54 *v3;
     UnkStruct_ov70_0225CC54 *v4;
@@ -39,7 +39,7 @@ BOOL ov70_0226CC74(UnkStruct_ov70_02263344 *param0, UnkStruct_ov70_0225DEE8 *par
     switch (ov70_02262E84(param0)) {
     case 0:
         v0 = ov70_02262E3C(param0, sizeof(UnkStruct_ov70_0226CC74));
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
 
         {
             u32 v6;
@@ -127,7 +127,7 @@ BOOL ov70_0226CC74(UnkStruct_ov70_02263344 *param0, UnkStruct_ov70_0225DEE8 *par
         }
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 

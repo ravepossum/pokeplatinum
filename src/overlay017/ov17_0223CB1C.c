@@ -13,6 +13,8 @@
 #include "overlay022/ov22_0225AF8C.h"
 
 #include "bg_window.h"
+#include "comm_manager.h"
+#include "contest.h"
 #include "font.h"
 #include "game_options.h"
 #include "game_overlay.h"
@@ -21,6 +23,7 @@
 #include "heap.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "particle_system.h"
@@ -37,9 +40,6 @@
 #include "sys_task_manager.h"
 #include "system.h"
 #include "touch_pad.h"
-#include "unk_020366A0.h"
-#include "unk_020393C8.h"
-#include "unk_020933F8.h"
 #include "unk_02094EDC.h"
 #include "vram_transfer.h"
 
@@ -115,7 +115,7 @@ static const SpriteResourceCapacities Unk_ov17_02252EC8 = {
     0x8
 };
 
-int ov17_0223CB1C(ApplicationManager *appMan, int *param1)
+int VisualCompetitionScoring_Init(ApplicationManager *appMan, int *param1)
 {
     UnkStruct_ov17_02247A48 *v0;
 
@@ -145,11 +145,11 @@ int ov17_0223CB1C(ApplicationManager *appMan, int *param1)
     ov17_0223D390(v0);
     v0->unk_0C.unk_44 = PaletteData_New(HEAP_ID_22);
 
-    PaletteData_SetAutoTransparent(v0->unk_0C.unk_44, 1);
-    PaletteData_AllocBuffer(v0->unk_0C.unk_44, 0, 0x200, HEAP_ID_22);
-    PaletteData_AllocBuffer(v0->unk_0C.unk_44, 1, 0x200, HEAP_ID_22);
-    PaletteData_AllocBuffer(v0->unk_0C.unk_44, 2, ((16 - 2) * 16) * sizeof(u16), HEAP_ID_22);
-    PaletteData_AllocBuffer(v0->unk_0C.unk_44, 3, 0x200, HEAP_ID_22);
+    PaletteData_SetAutoTransparent(v0->unk_0C.unk_44, TRUE);
+    PaletteData_AllocBuffer(v0->unk_0C.unk_44, PLTTBUF_MAIN_BG, PALETTE_SIZE_BYTES * 16, HEAP_ID_22);
+    PaletteData_AllocBuffer(v0->unk_0C.unk_44, PLTTBUF_SUB_BG, PALETTE_SIZE_BYTES * 16, HEAP_ID_22);
+    PaletteData_AllocBuffer(v0->unk_0C.unk_44, PLTTBUF_MAIN_OBJ, PALETTE_SIZE_BYTES * 14, HEAP_ID_22);
+    PaletteData_AllocBuffer(v0->unk_0C.unk_44, PLTTBUF_SUB_OBJ, PALETTE_SIZE_BYTES * 16, HEAP_ID_22);
 
     v0->unk_0C.unk_24 = BgConfig_New(HEAP_ID_22);
 
@@ -162,7 +162,7 @@ int ov17_0223CB1C(ApplicationManager *appMan, int *param1)
     InitializeTouchPad(4);
     Font_InitManager(FONT_SUBSCREEN, HEAP_ID_22);
 
-    v0->unk_0C.unk_1C = SpriteSystem_Alloc(22);
+    v0->unk_0C.unk_1C = SpriteSystem_Alloc(HEAP_ID_22);
 
     SpriteSystem_Init(v0->unk_0C.unk_1C, &Unk_ov17_02252EFC, &Unk_ov17_02252EB4, 16 + 16);
     ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_64K);
@@ -177,7 +177,7 @@ int ov17_0223CB1C(ApplicationManager *appMan, int *param1)
     v0->unk_0C.unk_04 = PokemonSpriteManager_New(HEAP_ID_22);
     ov17_0223D350();
 
-    v0->unk_0C.unk_38 = MessageLoader_Init(MSG_LOADER_PRELOAD_ENTIRE_BANK, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_CONTEST_VISUAL_COMPETITION, HEAP_ID_22);
+    v0->unk_0C.visualCompetitionMessages = MessageLoader_Init(MSG_LOADER_PRELOAD_ENTIRE_BANK, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_CONTEST_VISUAL_COMPETITION, HEAP_ID_22);
     v0->unk_0C.unk_3C = StringTemplate_Default(HEAP_ID_22);
     v0->unk_0C.unk_40 = String_Init(2 * 160, HEAP_ID_22);
 
@@ -198,11 +198,11 @@ int ov17_0223CB1C(ApplicationManager *appMan, int *param1)
         NARC_dtor(v2);
     }
 
-    PaletteData_FillBufferRange(v0->unk_0C.unk_44, 0, 0, 0x7fff, 1, 16 * 16);
-    PaletteData_FillBufferRange(v0->unk_0C.unk_44, 1, 0, 0x7fff, 1, 16 * 16);
-    PaletteData_FillBufferRange(v0->unk_0C.unk_44, 2, 0, 0x7fff, 0, (16 - 2) * 16);
-    PaletteData_FillBufferRange(v0->unk_0C.unk_44, 3, 0, 0x7fff, 0, 16 * 16);
-    sub_02039734();
+    PaletteData_FillBufferRange(v0->unk_0C.unk_44, PLTTBUF_MAIN_BG, PLTTSEL_FADED, 0x7fff, 1, 16 * 16);
+    PaletteData_FillBufferRange(v0->unk_0C.unk_44, PLTTBUF_SUB_BG, PLTTSEL_FADED, 0x7fff, 1, 16 * 16);
+    PaletteData_FillBufferRange(v0->unk_0C.unk_44, PLTTBUF_MAIN_OBJ, PLTTSEL_FADED, 0x7fff, 0, (16 - 2) * 16);
+    PaletteData_FillBufferRange(v0->unk_0C.unk_44, PLTTBUF_SUB_OBJ, PLTTSEL_FADED, 0x7fff, 0, 16 * 16);
+    NetworkIcon_Init();
     StartScreenFade(FADE_MAIN_THEN_SUB, FADE_TYPE_UNK_27, FADE_TYPE_UNK_27, COLOR_BLACK, 6, 1, HEAP_ID_22);
 
     v0->unk_04 = SysTask_Start(ov17_0223D164, v0, 60000);
@@ -212,20 +212,20 @@ int ov17_0223CB1C(ApplicationManager *appMan, int *param1)
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
     Sound_SetScene(SOUND_SCENE_NONE);
-    Sound_SetSceneAndPlayBGM(SOUND_SCENE_CONTEST, SEQ_CONTEST_DRESSING_ROOM, 1);
+    Sound_SetSceneAndPlayBGM(SOUND_SCENE_CONTEST, CONTEST_DRESSING_ROOM_sseq, 1);
     SetLockTextWithAutoScroll(v0->unk_00->isLinkContest);
     SetVBlankCallback(ov17_0223D0C8, v0);
-    Sound_PlayEffect(SEQ_SE_DP_DOOR_OPEN);
+    Sound_PlayEffect(SEQ_SE_DP_DOOR_OPEN_sseq);
 
     return 1;
 }
 
-int ov17_0223CDDC(ApplicationManager *appMan, int *param1)
+int VisualCompetitionScoring_Main(ApplicationManager *appMan, int *param1)
 {
     UnkStruct_ov17_02247A48 *v0 = ApplicationManager_Data(appMan);
     int v1;
 
-    sub_02094E98(v0->unk_00);
+    Contest_GetRNGNext(v0->unk_00);
 
     switch (*param1) {
     case 0:
@@ -234,12 +234,12 @@ int ov17_0223CDDC(ApplicationManager *appMan, int *param1)
             PaletteData_StartFade(v0->unk_0C.unk_44, 0x2, 0xffff, 6, 16, 0, 0x7fff);
             PaletteData_StartFade(v0->unk_0C.unk_44, 0x4, 0x3fff, 6, 16, 0, 0x7fff);
             PaletteData_StartFade(v0->unk_0C.unk_44, 0x8, 0xffff, 6, 16, 0, 0x7fff);
-            Sound_PlayEffect(SEQ_SE_DP_CON_007);
+            Sound_PlayEffect(SEQ_SE_DP_CON_007_sseq);
             *param1 = 1;
         }
         break;
     case 1:
-        if (sub_02094EDC(v0->unk_00) == 1) {
+        if (sub_02094EDC(v0->unk_00) == TRUE) {
             v1 = Unk_ov17_02252F44[v0->unk_4F4](v0, &v0->unk_F0C);
 
             if ((v1 == 1) || (v1 == 2)) {
@@ -261,7 +261,7 @@ int ov17_0223CDDC(ApplicationManager *appMan, int *param1)
         ov17_0224F35C(&v0->unk_4F8);
         ov17_0224F3D8(&v0->unk_4F8, v0);
 
-        if ((v0->unk_F14 == 1) && (ov17_0224F3D0(&v0->unk_4F8) == 0) && (sub_02094EDC(v0->unk_00) == 0)) {
+        if ((v0->unk_F14 == 1) && (ov17_0224F3D0(&v0->unk_4F8) == 0) && (sub_02094EDC(v0->unk_00) == FALSE)) {
             *param1 = 2;
             MI_CpuClear8(&v0->unk_F0C, sizeof(UnkStruct_ov17_0223D60C));
             StartScreenFade(FADE_SUB_THEN_MAIN, FADE_TYPE_CIRCLE_OUT, FADE_TYPE_UNK_36, COLOR_BLACK, 6, 1, HEAP_ID_22);
@@ -279,7 +279,7 @@ int ov17_0223CDDC(ApplicationManager *appMan, int *param1)
     return 0;
 }
 
-int ov17_0223CF8C(ApplicationManager *appMan, int *param1)
+int VisualCompetitionScoring_Exit(ApplicationManager *appMan, int *param1)
 {
     UnkStruct_ov17_02247A48 *v0 = ApplicationManager_Data(appMan);
     int v1;
@@ -317,14 +317,14 @@ int ov17_0223CF8C(ApplicationManager *appMan, int *param1)
 
     PokemonSpriteManager_Free(v0->unk_0C.unk_04);
     Font_Free(FONT_SUBSCREEN);
-    PaletteData_FreeBuffer(v0->unk_0C.unk_44, 0);
-    PaletteData_FreeBuffer(v0->unk_0C.unk_44, 1);
-    PaletteData_FreeBuffer(v0->unk_0C.unk_44, 2);
-    PaletteData_FreeBuffer(v0->unk_0C.unk_44, 3);
+    PaletteData_FreeBuffer(v0->unk_0C.unk_44, PLTTBUF_MAIN_BG);
+    PaletteData_FreeBuffer(v0->unk_0C.unk_44, PLTTBUF_SUB_BG);
+    PaletteData_FreeBuffer(v0->unk_0C.unk_44, PLTTBUF_MAIN_OBJ);
+    PaletteData_FreeBuffer(v0->unk_0C.unk_44, PLTTBUF_SUB_OBJ);
     PaletteData_Free(v0->unk_0C.unk_44);
     StringTemplate_Free(v0->unk_0C.unk_3C);
     String_Free(v0->unk_0C.unk_40);
-    MessageLoader_Free(v0->unk_0C.unk_38);
+    MessageLoader_Free(v0->unk_0C.visualCompetitionMessages);
     Heap_Free(v0->unk_0C.unk_24);
     SysTask_Done(v0->unk_04);
 
@@ -397,7 +397,7 @@ static void ov17_0223D164(SysTask *param0, void *param1)
         G3_SwapBuffers(GX_SORTMODE_MANUAL, GX_BUFFERMODE_Z);
     }
 
-    sub_02038A1C(22, v0->unk_0C.unk_24);
+    CommManager_Dummy_02038A1C(22, v0->unk_0C.unk_24);
 }
 
 static void ov17_0223D1B8(BgConfig *param0)
@@ -593,19 +593,19 @@ static void ov17_0223D4A8(UnkStruct_ov17_02247A48 *param0, NARC *param1)
 {
     int v0;
 
-    Graphics_LoadTilesToBgLayerFromOpenNARC(param1, 23, param0->unk_0C.unk_24, 3, 0, 0, 1, HEAP_ID_22);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(param1, 22, param0->unk_0C.unk_24, 3, 0, 0, 1, HEAP_ID_22);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(param1, 23, param0->unk_0C.unk_24, 3, 0, 0, TRUE, HEAP_ID_22);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(param1, 22, param0->unk_0C.unk_24, 3, 0, 0, TRUE, HEAP_ID_22);
     Bg_ClearTilemap(param0->unk_0C.unk_24, 1);
-    PaletteData_LoadBufferFromFileStart(param0->unk_0C.unk_44, 45, 35, 22, 0, 0, 0);
-    PaletteData_LoadBufferFromFileStart(param0->unk_0C.unk_44, 45, 36, 22, 0, 0x20, 13 * 16);
+    PaletteData_LoadBufferFromFileStart(param0->unk_0C.unk_44, NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 35, HEAP_ID_22, PLTTBUF_MAIN_BG, 0, PLTT_DEST(0));
+    PaletteData_LoadBufferFromFileStart(param0->unk_0C.unk_44, NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 36, HEAP_ID_22, PLTTBUF_MAIN_BG, PALETTE_SIZE_BYTES, PLTT_DEST(13));
 
     v0 = Options_Frame(param0->unk_00->options);
 
     LoadMessageBoxGraphics(param0->unk_0C.unk_24, 1, 1, 15, v0, HEAP_ID_22);
-    PaletteData_LoadBufferFromFileStart(param0->unk_0C.unk_44, 38, GetMessageBoxPaletteNARCMember(v0), 22, 0, 0x20, 14 * 16);
+    PaletteData_LoadBufferFromFileStart(param0->unk_0C.unk_44, NARC_INDEX_GRAPHIC__PL_WINFRAME, GetMessageBoxPaletteNARCMember(v0), HEAP_ID_22, PLTTBUF_MAIN_BG, PALETTE_SIZE_BYTES, PLTT_DEST(14));
     Graphics_LoadTilesToBgLayerFromOpenNARC(param1, 24, param0->unk_0C.unk_24, 2, 0, 0, 1, HEAP_ID_22);
     Graphics_LoadTilemapToBgLayerFromOpenNARC(param1, 21, param0->unk_0C.unk_24, 2, 0, 0, 1, HEAP_ID_22);
-    PaletteData_LoadBufferFromFileStart(param0->unk_0C.unk_44, 45, 37, 22, 0, 0x20, 0xc * 16);
+    PaletteData_LoadBufferFromFileStart(param0->unk_0C.unk_44, NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 37, HEAP_ID_22, PLTTBUF_MAIN_BG, PALETTE_SIZE_BYTES, PLTT_DEST(12));
 }
 
 static void ov17_0223D5AC(UnkStruct_ov17_02247A48 *param0)
@@ -617,7 +617,7 @@ static void ov17_0223D5B0(UnkStruct_ov17_02247A48 *param0, NARC *param1)
 {
     Graphics_LoadTilesToBgLayerFromOpenNARC(param1, 19, param0->unk_0C.unk_24, 4, 0, 0, 1, HEAP_ID_22);
     Graphics_LoadTilemapToBgLayerFromOpenNARC(param1, 20, param0->unk_0C.unk_24, 4, 0, 0, 1, HEAP_ID_22);
-    PaletteData_LoadBufferFromFileStart(param0->unk_0C.unk_44, 45, 34, 22, 1, 0, 0);
+    PaletteData_LoadBufferFromFileStart(param0->unk_0C.unk_44, NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 34, HEAP_ID_22, PLTTBUF_SUB_BG, 0, PLTT_DEST(0));
 }
 
 static void ov17_0223D608(UnkStruct_ov17_02247A48 *param0)
@@ -649,7 +649,7 @@ static int ov17_0223D640(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
 {
     switch (param1->unk_00) {
     case 0:
-        if (sub_0209590C(param0->unk_00) == 1) {
+        if (Contest_IsPracticeCompetition(param0->unk_00) == TRUE) {
             param0->unk_E0.unk_07 = 2;
         } else {
             param0->unk_E0.unk_07 = 1;
@@ -663,7 +663,7 @@ static int ov17_0223D640(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
         }
         break;
     default:
-        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.unk_117, param0->unk_00->unk_00.unk_113, param0->unk_00->unk_00.unk_10C) == 1) {
+        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.connectionCount, param0->unk_00->unk_00.playerContestantID, param0->unk_00->unk_00.unk_10C) == 1) {
             return 1;
         }
         break;
@@ -683,7 +683,7 @@ static int ov17_0223D6B8(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
         }
         break;
     default:
-        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.unk_117, param0->unk_00->unk_00.unk_113, param0->unk_00->unk_00.unk_10C) == 1) {
+        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.connectionCount, param0->unk_00->unk_00.playerContestantID, param0->unk_00->unk_00.unk_10C) == 1) {
             return 1;
         }
         break;
@@ -706,7 +706,7 @@ static int ov17_0223D71C(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
         }
         break;
     default:
-        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.unk_117, param0->unk_00->unk_00.unk_113, param0->unk_00->unk_00.unk_10C) == 1) {
+        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.connectionCount, param0->unk_00->unk_00.playerContestantID, param0->unk_00->unk_00.unk_10C) == 1) {
             return 1;
         }
         break;
@@ -724,7 +724,7 @@ static int ov17_0223D78C(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
         }
         break;
     default:
-        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.unk_117, param0->unk_00->unk_00.unk_113, param0->unk_00->unk_00.unk_10C) == 1) {
+        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.connectionCount, param0->unk_00->unk_00.playerContestantID, param0->unk_00->unk_00.unk_10C) == 1) {
             return 1;
         }
         break;
@@ -742,7 +742,7 @@ static int ov17_0223D7DC(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
         }
         break;
     default:
-        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.unk_117, param0->unk_00->unk_00.unk_113, param0->unk_00->unk_00.unk_10C) == 1) {
+        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.connectionCount, param0->unk_00->unk_00.playerContestantID, param0->unk_00->unk_00.unk_10C) == 1) {
             return 1;
         }
         break;
@@ -772,7 +772,7 @@ static int ov17_0223D82C(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
 
         param0->unk_E0.unk_08 = 0;
         param0->unk_E0.unk_09 = 0;
-        param0->unk_E0.unk_03.unk_00 = param0->unk_E0.unk_00;
+        param0->unk_E0.unk_03.contestantID = param0->unk_E0.unk_00;
         param1->unk_00++;
     case 1:
         if (ov17_0224F30C(&param0->unk_4F8, param0, 13, &param0->unk_E0) == 1) {
@@ -780,7 +780,7 @@ static int ov17_0223D82C(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
         }
         break;
     default:
-        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.unk_117, param0->unk_00->unk_00.unk_113, param0->unk_00->unk_00.unk_10C) == 1) {
+        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.connectionCount, param0->unk_00->unk_00.playerContestantID, param0->unk_00->unk_00.unk_10C) == 1) {
             return 1;
         }
         break;
@@ -802,7 +802,7 @@ static int ov17_0223D8DC(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
         }
         break;
     case 2:
-        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.unk_117, param0->unk_00->unk_00.unk_113, param0->unk_00->unk_00.unk_10C) == 1) {
+        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.connectionCount, param0->unk_00->unk_00.playerContestantID, param0->unk_00->unk_00.unk_10C) == 1) {
             param1->unk_00++;
         }
         break;
@@ -843,13 +843,13 @@ static int ov17_0223D99C(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
         }
         break;
     case 1:
-        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.unk_117, param0->unk_00->unk_00.unk_113, param0->unk_00->unk_00.unk_10C) == 1) {
+        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.connectionCount, param0->unk_00->unk_00.playerContestantID, param0->unk_00->unk_00.unk_10C) == 1) {
             param1->unk_00++;
         }
         break;
     case 2:
-        switch (param0->unk_00->unk_00.unk_111) {
-        case 2:
+        switch (param0->unk_00->unk_00.competitionType) {
+        case CONTEST_COMPETITION_LINK_OR_OFFICIAL:
             param0->unk_E0.unk_07 = 7;
             break;
         default:
@@ -866,7 +866,7 @@ static int ov17_0223D99C(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
         }
         break;
     default:
-        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.unk_117, param0->unk_00->unk_00.unk_113, param0->unk_00->unk_00.unk_10C) == 1) {
+        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.connectionCount, param0->unk_00->unk_00.playerContestantID, param0->unk_00->unk_00.unk_10C) == 1) {
             return 1;
         }
         break;
@@ -884,7 +884,7 @@ static int ov17_0223DA78(UnkStruct_ov17_02247A48 *param0, UnkStruct_ov17_0223D60
         }
         break;
     default:
-        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.unk_117 - param0->unk_00->unk_15B - 1, param0->unk_00->unk_00.unk_113, param0->unk_00->unk_00.unk_10C) == 1) {
+        if (ov17_0224F4B8(&param0->unk_4F8, param0->unk_00->unk_00.connectionCount - param0->unk_00->unk_15B - 1, param0->unk_00->unk_00.playerContestantID, param0->unk_00->unk_00.unk_10C) == 1) {
             return 3;
         }
         break;

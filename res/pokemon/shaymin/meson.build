@@ -1,4 +1,4 @@
-species_data_files += files('data.json')
+species_data_files += files('data.json', 'sprite_data.json')
 species_data_files += files('forms/sky/data.json')
 
 poke_icon_files += files('icon.png')
@@ -19,3 +19,6 @@ otherpoke_index += {
 }
 
 pokefoot_files += files('footprint.png')
+
+cry_banks += files('forms/sky/cry.txt')
+cry_waves += files('forms/sky/cry.wav')

@@ -3,13 +3,14 @@
 #include <nitro.h>
 
 #include "constants/battle.h"
+#include "constants/field/script_ranges.h"
+#include "constants/fieldmap.h"
 #include "constants/heap.h"
 #include "constants/pokemon.h"
 #include "generated/game_records.h"
-#include "generated/map_headers.h"
 #include "generated/trainer_score_events.h"
 
-#include "struct_decls/struct_0202440C_decl.h"
+#include "struct_decls/tv_broadcast.h"
 
 #include "field/field_system.h"
 #include "overlay006/roamer_after_battle.h"
@@ -44,7 +45,7 @@
 #include "system_flags.h"
 #include "system_vars.h"
 #include "trainer_data.h"
-#include "tv_episode_segment.h"
+#include "tv_segment.h"
 #include "unk_0202F1D4.h"
 #include "unk_0203D1B8.h"
 #include "unk_020528D0.h"
@@ -186,7 +187,7 @@ static BOOL FieldTask_Encounter(FieldTask *task)
         if (encounter->dto->battleType == BATTLE_TYPE_WILD_MON
             || encounter->dto->battleType == BATTLE_TYPE_ROAMER
             || encounter->dto->battleType == BATTLE_TYPE_AI_PARTNER) {
-            FieldSystem_SaveTVEpisodeSegment_CatchThatPokemonShow(fieldSystem, encounter->dto->captureAttempt, encounter->dto->resultMask);
+            TVSegment_Save_CatchThatPokemonShow(fieldSystem, encounter->dto->captureAttempt, encounter->dto->resultMask);
         }
 
         if (CheckPlayerWonEncounter(encounter) == FALSE) {
@@ -309,7 +310,7 @@ static BOOL FieldTask_WiFiEncounter(FieldTask *task)
 
     case 2:
         FreeEncounter(encounter);
-        sub_0202F22C();
+        BattleRecording_Free();
         return TRUE;
     }
 
@@ -386,7 +387,7 @@ static BOOL FieldTask_WildEncounter(FieldTask *task)
 
     case 3:
         UpdateFieldSystemFromDTO(encounter->dto, fieldSystem);
-        FieldSystem_SaveTVEpisodeSegment_CatchThatPokemonShow(fieldSystem, encounter->dto->captureAttempt, encounter->dto->resultMask);
+        TVSegment_Save_CatchThatPokemonShow(fieldSystem, encounter->dto->captureAttempt, encounter->dto->resultMask);
 
         if (CheckPlayerWonBattle(encounter->dto->resultMask) == 0) {
             FreeWildEncounter(encounter);
@@ -743,8 +744,8 @@ void Encounter_NewVsTrainer(FieldTask *taskMan, int enemyTrainer1ID, int enemyTr
     dto = FieldBattleDTO_New(HEAP_ID_FIELD2, battleType);
     FieldBattleDTO_Init(dto, fieldSystem);
 
-    if (fieldSystem->location->mapId >= MAP_HEADER_DISTORTION_WORLD_1F
-        && fieldSystem->location->mapId <= MAP_HEADER_DISTORTION_WORLD_TURNBACK_CAVE_ROOM) {
+    if (fieldSystem->location->mapHeaderID >= MAP_HEADER_DISTORTION_WORLD_1F
+        && fieldSystem->location->mapHeaderID <= MAP_HEADER_DISTORTION_WORLD_TURNBACK_CAVE_ROOM) {
         dto->battleStatusMask |= BATTLE_STATUS_DISTORTION;
     }
 
@@ -804,7 +805,7 @@ void Encounter_NewVsWiFi(FieldTask *task, int param1, int normalizedLevel, int w
         dto = FieldBattleDTO_New(HEAP_ID_FIELD2, battleType);
         v5 = (UnkEnum_0202F510_07);
     } else {
-        battleType = BATTLE_TYPE_FRONTIER_DOUBLES | BATTLE_TYPE_LINK | BATTLE_TYPE_2vs2;
+        battleType = BATTLE_TYPE_FRONTIER_LINK | BATTLE_TYPE_TRAINER_DOUBLES | BATTLE_TYPE_2vs2;
         dto = FieldBattleDTO_New(HEAP_ID_FIELD2, battleType);
         dto->trainerIDs[BATTLER_ENEMY_1] = 1;
         dto->trainerIDs[BATTLER_ENEMY_2] = 2;
@@ -815,8 +816,8 @@ void Encounter_NewVsWiFi(FieldTask *task, int param1, int normalizedLevel, int w
     }
 
     FieldBattleDTO_InitWithNormalizedMonLevels(dto, fieldSystem, normalizedLevel);
-    sub_0202F1F8(fieldSystem->saveData, HEAP_ID_FIELD2, &recordingResultCode);
-    dto->unk_18A = v5;
+    BattleRecording_New(fieldSystem->saveData, HEAP_ID_FIELD2, &recordingResultCode);
+    dto->recordingType = v5;
 
     encounter = NewEncounter(dto, EncEffects_CutInEffect(dto), EncEffects_BGM(dto), NULL);
     encounter->unk_0C = param1;
@@ -837,11 +838,11 @@ static BOOL FieldTask_LinkEncounterWithRecording(FieldTask *task)
         break;
 
     case 1:
-        if (sub_0202F250() == 1) {
-            sub_0202F22C();
+        if (BattleRecording_Exists() == 1) {
+            BattleRecording_Free();
         }
 
-        FieldCommMan_EnterBattleRoom(fieldSystem);
+        FieldCommManager_EnterBattleRoom(fieldSystem);
         return TRUE;
     }
 
@@ -854,8 +855,8 @@ void Encounter_NewVsLinkWithRecording(FieldSystem *fieldSystem, const u8 *partyO
     FieldBattleDTO_InitWithPartyOrderFromSave(dto, fieldSystem, partyOrder);
 
     int recordingResultCode;
-    sub_0202F1F8(fieldSystem->saveData, HEAP_ID_FIELD2, &recordingResultCode);
-    dto->unk_18A = sub_020516C8(fieldSystem->unk_B0, battleType);
+    BattleRecording_New(fieldSystem->saveData, HEAP_ID_FIELD2, &recordingResultCode);
+    dto->recordingType = sub_020516C8(fieldSystem->battleRegulation, battleType);
 
     Encounter *encounter = NewEncounter(dto, EncEffects_CutInEffect(dto), EncEffects_BGM(dto), NULL);
     FieldSystem_CreateTask(fieldSystem, FieldTask_LinkEncounterWithRecording, encounter);
@@ -867,8 +868,8 @@ void Encounter_NewVsLinkWithRecordingAndParty(FieldSystem *fieldSystem, const Pa
     FieldBattleDTO_InitWithPartyOrder(dto, fieldSystem, party, NULL);
 
     int recordingResultCode;
-    sub_0202F1F8(fieldSystem->saveData, HEAP_ID_FIELD2, &recordingResultCode);
-    dto->unk_18A = sub_020516C8(fieldSystem->unk_B0, battleType);
+    BattleRecording_New(fieldSystem->saveData, HEAP_ID_FIELD2, &recordingResultCode);
+    dto->recordingType = sub_020516C8(fieldSystem->battleRegulation, battleType);
 
     Encounter *encounter = NewEncounter(dto, EncEffects_CutInEffect(dto), EncEffects_BGM(dto), NULL);
     FieldSystem_CreateTask(fieldSystem, FieldTask_LinkEncounterWithRecording, encounter);
@@ -962,7 +963,7 @@ static void UpdateJournal(FieldSystem *fieldSystem, FieldBattleDTO *dto)
         }
     } else if ((battleType & BATTLE_TYPE_TRAINER) || (battleType & BATTLE_TYPE_TAG)) {
         if (resultMask == BATTLE_RESULT_WIN) {
-            JournalEntry_CreateAndSaveEventTrainer(fieldSystem->journalEntry, fieldSystem->location->mapId, dto->trainerIDs[BATTLER_ENEMY_1], HEAP_ID_FIELD2);
+            JournalEntry_CreateAndSaveEventTrainer(fieldSystem->journalEntry, fieldSystem->location->mapHeaderID, dto->trainerIDs[BATTLER_ENEMY_1], HEAP_ID_FIELD2);
         }
     }
 }

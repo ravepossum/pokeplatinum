@@ -15,6 +15,7 @@
 #include "menu.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "render_text.h"
@@ -26,7 +27,6 @@
 #include "string_gf.h"
 #include "system.h"
 #include "text.h"
-#include "unk_020393C8.h"
 #include "vram_transfer.h"
 
 #include "res/graphics/options_menu/config_gra.naix"
@@ -237,7 +237,7 @@ BOOL OptionsMenu_Main(ApplicationManager *appMan, int *state)
             if (ChangesWereMade(menuData) == TRUE) {
                 menuData->state = STATE_CONFIRM_NEW_SETTINGS;
             } else {
-                Sound_PlayEffect(SEQ_SE_CONFIRM);
+                Sound_PlayEffect(SE_CONFIRM_sseq_3);
                 menuData->saveSelections = 2;
                 menuData->state = STATE_START_VISUAL_TEARDOWN;
             }
@@ -267,8 +267,8 @@ BOOL OptionsMenu_Main(ApplicationManager *appMan, int *state)
 
         if (choiceYesNo != MENU_NOTHING_CHOSEN) {
             if (choiceYesNo == 0) {
-                Sound_StopEffect(SEQ_SE_CONFIRM, 0);
-                Sound_PlayEffect(SEQ_SE_DP_SAVE);
+                Sound_StopEffect(SE_CONFIRM_sseq_3, 0);
+                Sound_PlayEffect(SEQ_SE_DP_SAVE_sseq);
                 menuData->saveSelections = 1;
             } else {
                 menuData->saveSelections = 2;
@@ -375,7 +375,7 @@ static int SetupMenuVisuals(OptionsMenuData *menuData)
         PrintTitleAndEntries(menuData);
         VramTransfer_New(32, menuData->heapID);
         GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, TRUE);
-        NetworkIcon_Init();
+        NetworkIcon_InitIfConnected();
         SetVBlankCallback(OptionsMenuVBlank, menuData);
         menuData->subState = 0;
         return TRUE;
@@ -891,11 +891,11 @@ static void ProcessMainInput(OptionsMenuData *menuData)
         if (JOY_NEW(PAD_KEY_RIGHT)) {
             entry->selected = (entry->selected + 1) % entry->numChoices;
             PrintEntryChoices(menuData, menuData->cursor);
-            Sound_PlayEffect(SEQ_SE_CONFIRM);
+            Sound_PlayEffect(SE_CONFIRM_sseq_3);
         } else if (JOY_NEW(PAD_KEY_LEFT)) {
             entry->selected = (entry->selected + entry->numChoices - 1) % entry->numChoices;
             PrintEntryChoices(menuData, menuData->cursor);
-            Sound_PlayEffect(SEQ_SE_CONFIRM);
+            Sound_PlayEffect(SE_CONFIRM_sseq_3);
         }
     }
 
@@ -907,7 +907,7 @@ static void ProcessMainInput(OptionsMenuData *menuData)
             -(menuData->cursor * SINGLE_ENTRY_HEIGHT + FIRST_ENTRY_OFFSET));
 
         PrintEntryDescription(menuData, menuData->cursor, TRUE);
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
     } else if (JOY_NEW(PAD_KEY_DOWN)) {
         menuData->cursor = (menuData->cursor + 1) % 7;
         Bg_ScheduleScroll(menuData->bgConfig,
@@ -916,7 +916,7 @@ static void ProcessMainInput(OptionsMenuData *menuData)
             -(menuData->cursor * SINGLE_ENTRY_HEIGHT + FIRST_ENTRY_OFFSET));
 
         PrintEntryDescription(menuData, menuData->cursor, TRUE);
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
     }
 }
 

@@ -29,6 +29,7 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "message.h"
+#include "network_icon.h"
 #include "palette.h"
 #include "screen_fade.h"
 #include "sound_playback.h"
@@ -41,7 +42,6 @@
 #include "unk_02012744.h"
 #include "unk_0202F1D4.h"
 #include "unk_02030A80.h"
-#include "unk_020393C8.h"
 #include "unk_0208B284.h"
 #include "unk_0208BA78.h"
 
@@ -308,7 +308,7 @@ static BOOL ov62_0223E22C(UnkStruct_0208C06C *param0)
         if (ov62_022315E0(&v0->unk_00, &v0->unk_04, 1, 0)) {
             param0->unk_08++;
         }
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     case 2:
         ov62_02231AAC(param0, 117);
@@ -316,7 +316,7 @@ static BOOL ov62_0223E22C(UnkStruct_0208C06C *param0)
         sub_0208B9E0(param0->unk_6F0, 1);
         sub_0208BA08(param0->unk_6F0, 24, 24);
         v0->unk_1FC0 = 0;
-        Sound_PlayEffect(SEQ_SE_PL_BREC80);
+        Sound_PlayEffect(SEQ_SE_PL_BREC80_sseq);
         param0->unk_08++;
         break;
     case 3:
@@ -346,7 +346,7 @@ static BOOL ov62_0223E22C(UnkStruct_0208C06C *param0)
         break;
     default:
         if (v0->unk_1FC0) {
-            Sound_PlayEffect(SEQ_SE_PL_BREC12);
+            Sound_PlayEffect(SEQ_SE_PL_BREC12_sseq);
             ov62_0222FB60(param0, v0->unk_1FBC);
             ov62_0223381C(param0, 1);
         } else {
@@ -400,7 +400,7 @@ static BOOL ov62_0223E460(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     default:
         ov62_0222FB60(param0, 12);
@@ -431,7 +431,7 @@ static BOOL ov62_0223E510(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     case 2:;
         if (ov62_022337F0(param0, v0->unk_1FB0, param0->unk_8B4.unk_3904[param0->unk_14.unk_48C.unk_38.unk_00])) {
@@ -443,7 +443,7 @@ static BOOL ov62_0223E510(UnkStruct_0208C06C *param0)
         sub_0208B9E0(param0->unk_6F0, 1);
         sub_0208BA08(param0->unk_6F0, 24, 24);
         param0->unk_08++;
-        Sound_PlayEffect(SEQ_SE_PL_BREC80);
+        Sound_PlayEffect(SEQ_SE_PL_BREC80_sseq);
         break;
     case 4:
         if (ov62_022411B8(param0) == 0) {
@@ -471,7 +471,7 @@ static BOOL ov62_0223E510(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         } else {
             Sound_StopEffect(1381, 0);
-            Sound_PlayEffect(SEQ_SE_PL_BREC12);
+            Sound_PlayEffect(SEQ_SE_PL_BREC12_sseq);
             param0->unk_08++;
         }
         ov62_0223E0FC(param0, 281, 0);
@@ -501,7 +501,7 @@ static BOOL ov62_0223E510(UnkStruct_0208C06C *param0)
         ov62_02234540(param0, 1);
         ov62_0223146C(param0);
         ov62_02234540(param0, 0);
-        sub_020397C8(1, HEAP_ID_102);
+        NetworkIcon_CreateOnSubScreen(1, HEAP_ID_102);
         ov62_0223376C(param0, 1);
         param0->unk_08++;
         break;
@@ -513,7 +513,7 @@ static BOOL ov62_0223E510(UnkStruct_0208C06C *param0)
         if (ov62_02231664(&v0->unk_08, 0)) {
             ov62_022318E8(param0);
             ov62_02231688(&v0->unk_08);
-            PaletteData_BlendMulti(param0->unk_14.unk_14, 2, 0xC, 16, param0->unk_14.unk_44);
+            PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_MAIN_OBJ, 0xC, 16, param0->unk_14.unk_44);
             ov62_0222FB44(param0, 1, 1, param0->unk_10);
             ov62_0222FB60(param0, 5);
             Bg_ClearTilemap(param0->unk_14.unk_10, 2);
@@ -522,12 +522,12 @@ static BOOL ov62_0223E510(UnkStruct_0208C06C *param0)
             Bg_ClearTilemap(param0->unk_14.unk_10, 7);
             Heap_Free(v0);
 
-            if (sub_0202F250() == 1) {
-                sub_0202F22C();
+            if (BattleRecording_Exists() == 1) {
+                BattleRecording_Free();
             }
         } else {
-            PaletteData_BlendMulti(param0->unk_14.unk_14, 1, 0x2, v0->unk_08, param0->unk_14.unk_44);
-            PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+            PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_BG, 0x2, v0->unk_08, param0->unk_14.unk_44);
+            PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         }
 
         break;
@@ -550,7 +550,7 @@ static BOOL ov62_0223E810(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     case 1:
         if (ov62_022315E0(&v0->unk_00, &v0->unk_04, 0, 2)) {
@@ -586,7 +586,7 @@ static BOOL ov62_0223E8BC(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     case 2:
         if (param0->unk_86C == 210) {
@@ -633,7 +633,7 @@ static BOOL ov62_0223E8BC(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     default: {
         int v1;
@@ -679,7 +679,7 @@ static BOOL ov62_0223EB28(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     case 2:
         ov62_0223E01C(param0);
@@ -726,7 +726,7 @@ static BOOL ov62_0223EB28(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     default: {
         int v1;
@@ -776,7 +776,7 @@ static BOOL ov62_0223ED7C(UnkStruct_0208C06C *param0)
             ov62_0223F0A8(param0, 1);
             param0->unk_08++;
         }
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     default:
         ov62_0222FB60(param0, 3);
@@ -979,9 +979,9 @@ static BOOL ov62_0223F218(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 2, 0xC, v0->unk_08, param0->unk_14.unk_44);
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 1, 0x2, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_MAIN_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_BG, 0x2, v0->unk_08, param0->unk_14.unk_44);
         break;
     case 1:
         Bg_SetPriority(BG_LAYER_MAIN_0, 1);
@@ -1043,7 +1043,7 @@ static BOOL ov62_0223F348(UnkStruct_0208C06C *param0)
             ov62_02231AAC(param0, 292);
         }
 
-        Sound_PlayEffect(SEQ_SE_PL_BREC80);
+        Sound_PlayEffect(SEQ_SE_PL_BREC80_sseq);
         param0->unk_08++;
         break;
     case 1:
@@ -1069,7 +1069,7 @@ static BOOL ov62_0223F348(UnkStruct_0208C06C *param0)
                 }
             }
         } else {
-            GF_ASSERT(0);
+            GF_ASSERT(FALSE);
         }
 
         break;
@@ -1082,7 +1082,7 @@ static BOOL ov62_0223F348(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         } else {
             Sound_StopEffect(1381, 0);
-            Sound_PlayEffect(SEQ_SE_PL_BREC12);
+            Sound_PlayEffect(SEQ_SE_PL_BREC12_sseq);
 
             if (param0->unk_8B4.unk_3900 == 0) {
                 ov62_022348B8(param0, 5, 0, 0);
@@ -1113,14 +1113,14 @@ static BOOL ov62_0223F348(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     case 5:
         ov62_02234540(param0, 1);
         ov62_0223F06C(param0);
         ov62_0223146C(param0);
         ov62_02234540(param0, 0);
-        sub_020397C8(1, HEAP_ID_102);
+        NetworkIcon_CreateOnSubScreen(1, HEAP_ID_102);
         ov62_0223376C(param0, 1);
         param0->unk_08++;
         break;
@@ -1132,7 +1132,7 @@ static BOOL ov62_0223F348(UnkStruct_0208C06C *param0)
         if (ov62_02231664(&v0->unk_08, 0)) {
             ov62_022318E8(param0);
             ov62_02231688(&v0->unk_08);
-            PaletteData_BlendMulti(param0->unk_14.unk_14, 2, 0xC, 16, param0->unk_14.unk_44);
+            PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_MAIN_OBJ, 0xC, 16, param0->unk_14.unk_44);
             ov62_0222FB44(param0, 1, 1, param0->unk_10);
             ov62_0222FB60(param0, 5);
             Bg_ClearTilemap(param0->unk_14.unk_10, 2);
@@ -1141,8 +1141,8 @@ static BOOL ov62_0223F348(UnkStruct_0208C06C *param0)
             Bg_ClearTilemap(param0->unk_14.unk_10, 7);
             Heap_Free(v0);
         } else {
-            PaletteData_BlendMulti(param0->unk_14.unk_14, 1, 0x2, v0->unk_08, param0->unk_14.unk_44);
-            PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+            PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_BG, 0x2, v0->unk_08, param0->unk_14.unk_44);
+            PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         }
 
         break;
@@ -1204,8 +1204,8 @@ static BOOL ov62_0223F760(UnkStruct_0208C06C *param0)
 
     switch (param0->unk_08) {
     case 0:
-        if (sub_0202F250()) {
-            sub_0202F22C();
+        if (BattleRecording_Exists()) {
+            BattleRecording_Free();
         }
 
         v0->unk_1FDC = Unk_ov62_02248FD8;
@@ -1260,8 +1260,8 @@ static BOOL ov62_0223F760(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 2, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_MAIN_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     default:
         ov62_0222FB60(param0, 4);
@@ -1335,8 +1335,8 @@ static BOOL ov62_0223F984(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 2, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_MAIN_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     default:
         ov62_0222FB60(param0, v0->unk_1FBC);
@@ -1365,12 +1365,12 @@ static BOOL ov62_0223FB74(UnkStruct_0208C06C *a0)
             ov62_02234540(r5, 0);
             r5->unk_08++;
         }
-        PaletteData_BlendMulti(r5->unk_14.unk_14, 3, 0xc, r4->unk_08, r5->unk_14.unk_44);
+        PaletteData_BlendMulti(r5->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xc, r4->unk_08, r5->unk_14.unk_44);
         break;
     case 2:
         ov62_02231688(&r4->unk_08);
         ov62_0223146C(r5);
-        sub_020397C8(1, 0x66);
+        NetworkIcon_CreateOnSubScreen(1, 0x66);
         ov62_0223376C(r5, 1);
         r5->unk_08++;
         break;
@@ -1381,7 +1381,7 @@ static BOOL ov62_0223FB74(UnkStruct_0208C06C *a0)
         if (ov62_02231664(&r4->unk_08, 0)) {
             ov62_022318E8(r5);
             ov62_02231688(&r4->unk_08);
-            PaletteData_BlendMulti(r5->unk_14.unk_14, 2, 0xc, 0x10, r5->unk_14.unk_44);
+            PaletteData_BlendMulti(r5->unk_14.unk_14, PLTTBUF_MAIN_OBJ, 0xc, 0x10, r5->unk_14.unk_44);
             ov62_0222FB44(r5, 1, 1, r5->unk_10);
             ov62_0222FB60(r5, 5);
             Bg_ClearTilemap(r5->unk_14.unk_10, 2);
@@ -1390,8 +1390,8 @@ static BOOL ov62_0223FB74(UnkStruct_0208C06C *a0)
             Bg_ClearTilemap(r5->unk_14.unk_10, 7);
             Heap_Free(r4);
         } else {
-            PaletteData_BlendMulti(r5->unk_14.unk_14, 1, 2, r4->unk_08, r5->unk_14.unk_44);
-            PaletteData_BlendMulti(r5->unk_14.unk_14, 3, 0xc, r4->unk_08, r5->unk_14.unk_44);
+            PaletteData_BlendMulti(r5->unk_14.unk_14, PLTTBUF_SUB_BG, 2, r4->unk_08, r5->unk_14.unk_44);
+            PaletteData_BlendMulti(r5->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xc, r4->unk_08, r5->unk_14.unk_44);
         }
         break;
     }
@@ -1436,7 +1436,7 @@ static BOOL ov62_0223FCC4(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     default:
         ov62_0222FB60(param0, 7);
@@ -1630,7 +1630,7 @@ static BOOL ov62_02240084(UnkStruct_0208C06C *param0)
             param0->unk_08++;
         }
 
-        PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xC, v0->unk_08, param0->unk_14.unk_44);
+        PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xC, v0->unk_08, param0->unk_14.unk_44);
         break;
     case 4:
         StartScreenFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, COLOR_BLACK, 6, 1, HEAP_ID_102);
@@ -1722,7 +1722,7 @@ static BOOL ov62_022403F8(UnkStruct_0208C06C *a0)
                 Bg_ClearTilemap(r4->unk_14.unk_10, 7);
                 r4->unk_08++;
             }
-            PaletteData_BlendMulti(r4->unk_14.unk_14, 3, 0xc, r5->unk_08, r4->unk_14.unk_44);
+            PaletteData_BlendMulti(r4->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xc, r5->unk_08, r4->unk_14.unk_44);
             break;
         case 2:
             ov62_02231AAC(r4, 0x115);
@@ -1747,7 +1747,7 @@ static BOOL ov62_022403F8(UnkStruct_0208C06C *a0)
                 ov62_02234540(r4, 0);
                 r4->unk_08++;
             }
-            PaletteData_BlendMulti(r4->unk_14.unk_14, 3, 0xc, r5->unk_08, r4->unk_14.unk_44);
+            PaletteData_BlendMulti(r4->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xc, r5->unk_08, r4->unk_14.unk_44);
             break;
         case 5:
             ov62_02234540(r4, 1);
@@ -1788,7 +1788,7 @@ static BOOL ov62_022403F8(UnkStruct_0208C06C *a0)
                 GXLayers_EngineAToggleLayers(4, 1);
                 r4->unk_08++;
             }
-            PaletteData_BlendMulti(r4->unk_14.unk_14, 3, 0xc, r5->unk_08, r4->unk_14.unk_44);
+            PaletteData_BlendMulti(r4->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xc, r5->unk_08, r4->unk_14.unk_44);
             break;
         default:
             for (int i = 0; i < r4->unk_8B4.unk_3900; i++) {
@@ -1825,7 +1825,7 @@ static BOOL ov62_022403F8(UnkStruct_0208C06C *a0)
                 Bg_ClearTilemap(r4->unk_14.unk_10, 7);
                 r4->unk_08++;
             }
-            PaletteData_BlendMulti(r4->unk_14.unk_14, 3, 0xc, r5->unk_08, r4->unk_14.unk_44);
+            PaletteData_BlendMulti(r4->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xc, r5->unk_08, r4->unk_14.unk_44);
             break;
         case 2:
             ov62_02231664(&r5->unk_08, 0);
@@ -1833,7 +1833,7 @@ static BOOL ov62_022403F8(UnkStruct_0208C06C *a0)
                 ov62_022402FC(r4, 0x64, 0);
                 r4->unk_08++;
             }
-            PaletteData_BlendMulti(r4->unk_14.unk_14, 3, 0xc, r5->unk_08, r4->unk_14.unk_44);
+            PaletteData_BlendMulti(r4->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xc, r5->unk_08, r4->unk_14.unk_44);
             break;
         default:
             ov62_0222FB60(r4, 0xc);
@@ -1944,7 +1944,7 @@ static void ov62_02240A50(u32 param0, enum TouchScreenButtonState param1, void *
     case 1:
         ov62_02234520(v0);
 
-        if (sub_0202F250()) {
+        if (BattleRecording_Exists()) {
             ov62_0222FB60(v0, 9);
         } else {
             v1->unk_1FBC = 9;
@@ -1954,7 +1954,7 @@ static void ov62_02240A50(u32 param0, enum TouchScreenButtonState param1, void *
     case 2:
         ov62_02234520(v0);
 
-        if (sub_0202F250()) {
+        if (BattleRecording_Exists()) {
             ov62_0222FB60(v0, 11);
         } else {
             v1->unk_1FBC = 11;

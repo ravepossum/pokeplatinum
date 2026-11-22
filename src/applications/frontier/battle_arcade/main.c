@@ -5,17 +5,17 @@
 
 #include "constants/battle_frontier.h"
 #include "constants/graphics.h"
+#include "constants/heap.h"
 
-#include "struct_decls/struct_020304A0_decl.h"
-#include "struct_decls/struct_020305B8_decl.h"
 #include "struct_defs/battle_frontier.h"
 
 #include "applications/frontier/battle_arcade/sprite_manager.h"
 #include "applications/frontier/battle_arcade/sprites.h"
 #include "applications/frontier/battle_arcade/windows.h"
-#include "overlay104/ov104_0223BCBC.h"
-#include "overlay104/struct_ov104_02238240.h"
+#include "overlay104/battle_arcade_helpers.h"
 
+#include "battle_arcade_save.h"
+#include "battle_frontier_save.h"
 #include "bg_window.h"
 #include "communication_system.h"
 #include "font.h"
@@ -27,7 +27,7 @@
 #include "math_util.h"
 #include "message.h"
 #include "narc.h"
-#include "narc_frontier_bg.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "party.h"
@@ -44,12 +44,11 @@
 #include "system.h"
 #include "touch_screen.h"
 #include "trainer_info.h"
-#include "unk_02030494.h"
-#include "unk_0203061C.h"
 #include "unk_020363E8.h"
-#include "unk_020393C8.h"
 #include "unk_0209BA80.h"
 #include "vram_transfer.h"
+
+#include "res/graphics/frontier/backgrounds/frontier_backgrounds.naix"
 
 FS_EXTERN_OVERLAY(overlay104);
 
@@ -108,7 +107,7 @@ static const struct {
     [ARCADE_EFFECT_FREEZE_FOE] =       { 0, 0, 0, 0, 1, 1, 1 },
     [ARCADE_EFFECT_FOE_GET_BERRY] =    { 1, 1, 1, 0, 0, 0, 1 },
     [ARCADE_EFFECT_FOE_GET_ITEM] =     { 0, 0, 0, 1, 1, 1, 1 },
-    [ARCADE_EFFECT_FOE_GET_LEVELS] =   { 0, 1, 1, 1, 1, 1, 1 },
+    [ARCADE_EFFECT_FOE_LEVEL_UP] =     { 0, 1, 1, 1, 1, 1, 1 },
     [ARCADE_EFFECT_LOWER_ALLY_HP] =    { 0, 1, 1, 1, 1, 1, 1 },
     [ARCADE_EFFECT_POISON_ALLY] =      { 1, 0, 1, 0, 0, 0, 1 },
     [ARCADE_EFFECT_PARALYZE_ALLY] =    { 1, 0, 1, 0, 0, 0, 1 },
@@ -117,17 +116,17 @@ static const struct {
     [ARCADE_EFFECT_FREEZE_ALLY] =      { 0, 0, 0, 0, 1, 1, 1 },
     [ARCADE_EFFECT_ALLY_GET_BERRY] =   { 1, 1, 1, 0, 0, 0, 1 },
     [ARCADE_EFFECT_ALLY_GET_ITEM] =    { 0, 0, 0, 1, 1, 1, 1 },
-    [ARCADE_EFFECT_ALLY_GET_LEVELS] =  { 0, 1, 1, 1, 1, 1, 1 },
+    [ARCADE_EFFECT_ALLY_LEVEL_UP] =    { 0, 1, 1, 1, 1, 1, 1 },
     [ARCADE_EFFECT_SUNNY_BATTLE] =     { 0, 1, 1, 0, 0, 0, 1 },
     [ARCADE_EFFECT_RAINY_BATTLE] =     { 0, 1, 1, 0, 0, 0, 1 },
     [ARCADE_EFFECT_SANDY_BATTLE] =     { 0, 1, 1, 0, 0, 0, 1 },
     [ARCADE_EFFECT_HAIL_BATTLE] =      { 0, 1, 1, 0, 0, 0, 1 },
     [ARCADE_EFFECT_FOGGY_BATTLE] =     { 0, 0, 0, 1, 0, 1, 1 },
     [ARCADE_EFFECT_TRICK_ROOM] =       { 0, 0, 0, 1, 0, 1, 1 },
-    [ARCADE_EFFECT_SWAP_MONS] =        { 1, 1, 1, 1, 1, 1, 1 },
-    [ARCADE_EFFECT_SPEED_UP] =         { 1, 1, 1, 0, 0, 0, 1 },
-    [ARCADE_EFFECT_SLOW_DOWN] =        { 1, 1, 1, 1, 1, 1, 1 },
-    [ARCADE_EFFECT_RANDOMIZE_CURSOR] = { 0, 0, 0, 0, 1, 1, 1 },
+    [ARCADE_EFFECT_SPEED_UP] =         { 1, 1, 1, 1, 1, 1, 1 },
+    [ARCADE_EFFECT_SLOW_DOWN] =        { 1, 1, 1, 0, 0, 0, 1 },
+    [ARCADE_EFFECT_RANDOMIZE_CURSOR] = { 1, 1, 1, 1, 1, 1, 1 },
+    [ARCADE_EFFECT_SWAP_MONS] =        { 0, 0, 0, 0, 1, 1, 1 },
     [ARCADE_EFFECT_GET_1_BP] =         { 0, 0, 0, 1, 1, 1, 1 },
     [ARCADE_EFFECT_NO_BATTLE] =        { 0, 0, 0, 0, 1, 1, 1 },
     [ARCADE_EFFECT_NO_EVENT] =         { 1, 1, 1, 1, 1, 1, 1 },
@@ -143,25 +142,27 @@ static const struct {
     u8 battle5 : 1;
     u8 battle6 : 1;
     u8 battle7 : 1;
-} sEffectAvailabilityByBattle[BATTLES_PER_ROUND_ARCADE] = {
-    { 1, 1, 1, 1, 1, 1, 0 }, // ARCADE_EFFECT_RANDOMIZE_CURSOR
+} sEffectAvailabilityByBattle[ARCADE_BATTLES_PER_ROUND] = {
     { 1, 1, 1, 1, 1, 1, 0 }, // ARCADE_EFFECT_SWAP_MONS
     { 1, 1, 1, 1, 1, 1, 0 }, // ARCADE_EFFECT_SPEED_UP
     { 1, 1, 1, 1, 1, 1, 0 }, // ARCADE_EFFECT_SLOW_DOWN
+    { 1, 1, 1, 1, 1, 1, 0 }, // ARCADE_EFFECT_RANDOMIZE_CURSOR
     { 1, 0, 1, 0, 1, 0, 0 }, // ARCADE_EFFECT_GET_1_BP
     { 0, 1, 0, 1, 0, 1, 0 }, // ARCADE_EFFECT_NO_BATTLE
     { 0, 1, 0, 1, 0, 1, 0 }, // ARCADE_EFFECT_GET_3_BP
 };
 
+// Columns: Foe, Ally, Env, Bonus effect weights.
+// Rows: categoryTier, derived from fitness
 static const u8 sCategoryWeights[][NUM_ARCADE_EFFECT_CATEGORIES] = {
-    { 15, 15, 40, 30 },
-    { 35, 20, 30, 15 },
-    { 30, 30, 35, 5 },
-    { 25, 40, 30, 5 },
-    { 10, 75, 10, 5 }
+    { 15, 15, 40, 30 }, // tier 0
+    { 35, 20, 30, 15 }, // tier 1
+    { 30, 30, 35, 5 }, // tier 2
+    { 25, 40, 30, 5 }, // tier 3
+    { 10, 75, 10, 5 }, // tier 4
 };
 
-static const u8 Unk_ov108_0224367C[] = {
+static const u8 sCategoryTierPerformanceThresholds[] = {
     21,
     16,
     10,
@@ -170,7 +171,7 @@ static const u8 Unk_ov108_0224367C[] = {
 
 typedef struct BattleArcadeApp {
     ApplicationManager *appMan;
-    BattleFrontier *frontier;
+    BattleFrontierSave *frontier;
     u8 subState;
     u8 challengeType;
     u8 unused;
@@ -180,8 +181,13 @@ typedef struct BattleArcadeApp {
     u8 cursorPosID;
     u8 numReceivedMsgs;
     u8 cursorUpdateTimer;
-    u8 categoryWeightTier;
-    u8 unk_12;
+    u8 categoryTier;
+    // How well you did in the previous battle, based on mons fainted, status conditions, and turns
+    // elapsed.
+    //
+    // Higher fitness scores are more likely to yield environmental and bonus effects. Lower
+    // fitness scores are more likely to yield ally effects.
+    u8 performance;
     u8 unusedFlag : 1;
     u8 pointlessTimer : 7;
     u8 resultCursorPos;
@@ -190,7 +196,7 @@ typedef struct BattleArcadeApp {
     int rouletteTimer;
     u8 *rouletteSpeed;
     u8 *selectedEffect;
-    u16 *unk_24;
+    u16 *randomIndex;
     u16 battleStreak;
     u16 round;
     u8 gridWidth;
@@ -214,8 +220,8 @@ typedef struct BattleArcadeApp {
     PaletteData *plttData;
     Options *options;
     SaveData *saveData;
-    UnkStruct_020304A0 *unk_E0;
-    UnkStruct_020305B8 *unk_E4;
+    BattleArcadeSave *unk_E0;
+    BattleArcadeStreakFlags *unk_E4;
     BattleArcadeAppSpriteManager spriteMan;
     BattleArcadeAppSprite *cursorSprite;
     BattleArcadeAppSprite *tileSprites[GRID_SIZE];
@@ -294,28 +300,28 @@ BOOL BattleArcadeApp_Init(ApplicationManager *appMan, int *state)
     app->bgConfig = BgConfig_New(HEAP_ID_BATTLE_ARCADE_APP);
     app->appMan = appMan;
 
-    UnkStruct_ov104_02238240 *v2 = ApplicationManager_Args(appMan);
+    BattleArcadeAppArgs *args = ApplicationManager_Args(appMan);
 
-    app->saveData = v2->saveData;
-    app->unk_E0 = sub_020304A0(app->saveData);
-    app->unk_E4 = sub_020305B8(app->saveData);
-    app->challengeType = v2->unk_04;
-    app->round = v2->unk_1E;
-    app->battleStreak = v2->unk_1C;
-    app->partnerBattleStreak = v2->unk_18;
-    app->unk_12 = v2->unk_07;
-    app->cursorPosPtr = &v2->unk_38;
+    app->saveData = args->saveData;
+    app->unk_E0 = BattleArcadeSave_Get(app->saveData);
+    app->unk_E4 = BattleArcadeStreakFlags_Get(app->saveData);
+    app->challengeType = args->challengeType;
+    app->round = args->round;
+    app->battleStreak = args->currentStreak;
+    app->partnerBattleStreak = args->partnersStreak;
+    app->performance = args->performance;
+    app->cursorPosPtr = &args->cursorPos;
     app->options = SaveData_GetOptions(app->saveData);
-    app->party = v2->unk_30;
-    app->opponentsParty = v2->unk_34;
+    app->party = args->party;
+    app->opponentsParty = args->opponentsParty;
     app->cursorPosID = 0xff;
     app->frontier = SaveData_GetBattleFrontier(app->saveData);
-    app->unused6 = v2->unk_08;
-    app->rouletteSpeed = v2->unk_0C;
-    app->selectedEffect = v2->unk_10;
-    app->unk_24 = v2->unk_14;
+    app->unused6 = args->weather;
+    app->rouletteSpeed = args->rouletteSpeed;
+    app->selectedEffect = args->selectedEffect;
+    app->randomIndex = args->randomIndex;
     app->rouletteTimer = 30 * 30; // 30 Seconds at 30FPS
-    app->randomizeCursorMovement = v2->unk_40;
+    app->randomizeCursorMovement = args->randomizeCursorMovement;
 
     for (int i = 0; i < NUM_ARCADE_EFFECTS; i++) {
         app->availableEffects[i] = NUM_ARCADE_EFFECTS;
@@ -326,7 +332,7 @@ BOOL BattleArcadeApp_Init(ApplicationManager *appMan, int *state)
     app->gridSize = GRID_SIZE;
     app->partnerCursorPos = 0;
 
-    *app->unk_24 = GetRandomNumber(app);
+    *app->randomIndex = GetRandomNumber(app);
 
     app->startingCursorPos = LCRNG_Next() % GRID_SIZE;
 
@@ -530,7 +536,7 @@ static BOOL State_OperateRoulette(BattleArcadeApp *app)
         }
 
         LoadRouletteBackground(app, BG_LAYER_MAIN_3);
-        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN2);
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN2_sseq);
 
         app->subStateTimer = 24;
         app->subState = 3;
@@ -548,7 +554,7 @@ static BOOL State_OperateRoulette(BattleArcadeApp *app)
             }
         }
 
-        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN2);
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN2_sseq);
         app->subStateTimer = 24;
         app->subState = 4;
         break;
@@ -565,7 +571,7 @@ static BOOL State_OperateRoulette(BattleArcadeApp *app)
             }
         }
 
-        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN2);
+        Sound_PlayEffect(SEQ_SE_DP_WIN_OPEN2_sseq);
         app->subStateTimer = 24;
         app->subState = 5;
         break;
@@ -583,7 +589,7 @@ static BOOL State_OperateRoulette(BattleArcadeApp *app)
         }
 
         BattleArcadeAppSprite_SetDrawFlag(app->cursorSprite, TRUE);
-        Sound_PlayEffect(SEQ_SE_DP_UG_020);
+        Sound_PlayEffect(SEQ_SE_DP_UG_020_sseq);
         BattleArcadeAppSprite_SetAnim(app->buttonSprite, ANIM_ID_BUTTON_UNPRESSED);
         app->subState = 6;
         break;
@@ -654,7 +660,7 @@ static BOOL State_SyncResult(BattleArcadeApp *app)
     case 4:
         if (CommTiming_IsSyncState(151) == TRUE) {
             CommTool_ClearReceivedTempDataAllPlayers();
-            CommTool_Init(103);
+            CommTool_Init(HEAP_ID_BATTLE_ARCADE_APP);
             app->cursorPosID = 0xff;
             return TRUE;
         }
@@ -728,7 +734,7 @@ static void FreeAssets(BattleArcadeApp *app)
         }
     }
 
-    u8 numMons = BattleArcade_GetPartySize(app->challengeType, TRUE);
+    u8 numMons = BattleArcade_GetPlayerPartySize(app->challengeType, TRUE);
 
     for (i = 0; i < numMons; i++) {
         if (app->monSprites[i] != NULL) {
@@ -787,7 +793,7 @@ static void LoadAssets(BattleArcadeApp *app)
 {
     int i;
 
-    app->narc = NARC_ctor(NARC_INDEX_RESOURCE__ENG__FRONTIER_GRAPHIC__FRONTIER_BG, HEAP_ID_BATTLE_ARCADE_APP);
+    app->narc = NARC_ctor(NARC_INDEX_FRONTIER_BACKGROUNDS, HEAP_ID_BATTLE_ARCADE_APP);
 
     LoadBackgrounds(app);
     InitSpriteManager(app);
@@ -801,8 +807,8 @@ static void LoadAssets(BattleArcadeApp *app)
         app->unusedStrs[i] = String_Init(32, HEAP_ID_BATTLE_ARCADE_APP);
     }
 
-    Font_LoadTextPalette(PAL_LOAD_MAIN_BG, 13 * PALETTE_SIZE_BYTES, HEAP_ID_BATTLE_ARCADE_APP);
-    Font_LoadScreenIndicatorsPalette(PAL_LOAD_MAIN_BG, 12 * PALETTE_SIZE_BYTES, HEAP_ID_BATTLE_ARCADE_APP);
+    Font_LoadTextPalette(PAL_LOAD_MAIN_BG, PLTT_OFFSET(13), HEAP_ID_BATTLE_ARCADE_APP);
+    Font_LoadScreenIndicatorsPalette(PAL_LOAD_MAIN_BG, PLTT_OFFSET(12), HEAP_ID_BATTLE_ARCADE_APP);
 
     BattleArcadeApp_InitWindows(app->bgConfig, app->windows);
     app->cursorSprite = BattleArcadeAppSprite_New(&app->spriteMan, RESOURCE_ID_MAIN_SPRITES, RESOURCE_ID_MAIN_SPRITES, RESOURCE_ID_MAIN_SPRITES, ANIM_ID_CURSOR, 68, 36, 0, 2, FALSE);
@@ -813,7 +819,7 @@ static void LoadAssets(BattleArcadeApp *app)
         BattleArcadeAppSprite_SetDrawFlag(app->tileSprites[i], FALSE);
     }
 
-    u8 numMons = BattleArcade_GetPartySize(app->challengeType, TRUE);
+    u8 numMons = BattleArcade_GetPlayerPartySize(app->challengeType, TRUE);
 
     u16 monYOffset, itemsYOffset;
     if (!BattleArcade_IsMultiPlayerChallenge(app->challengeType)) {
@@ -843,7 +849,7 @@ static void LoadAssets(BattleArcadeApp *app)
     if (CommSys_IsInitialized()) {
         ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
         ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DMAIN);
-        sub_02039734();
+        NetworkIcon_Init();
     }
 
     SetVBlankCallback(VBlankCallback, app);
@@ -984,22 +990,22 @@ static void InitBackgrounds(BgConfig *bgConfig)
 
 static void LoadInitialBackround(BattleArcadeApp *app, enum BgLayer bgLayer)
 {
-    Graphics_LoadTilesToBgLayerFromOpenNARC(app->narc, BATTLE_ARCADE_APP_MAIN_TILES, app->bgConfig, bgLayer, 0, 0, TRUE, HEAP_ID_BATTLE_ARCADE_APP);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(app->narc, battle_arcade_app_NCGR_lz, app->bgConfig, bgLayer, 0, 0, TRUE, HEAP_ID_BATTLE_ARCADE_APP);
 
-    u32 idx = !BattleArcade_IsMultiPlayerChallenge(app->challengeType) ? BATTLE_ARCADE_APP_MAIN_INITIAL_TILEMAP : BATTLE_ARCADE_APP_MAIN_MULTI_INITIAL_TILEMAP;
+    u32 idx = !BattleArcade_IsMultiPlayerChallenge(app->challengeType) ? battle_arcade_app_main_initial_NSCR_lz : battle_arcade_app_main_multi_initial_NSCR_lz;
     Graphics_LoadTilemapToBgLayerFromOpenNARC(app->narc, idx, app->bgConfig, bgLayer, 0, 0, TRUE, HEAP_ID_BATTLE_ARCADE_APP);
 }
 
 static void LoadRouletteBackground(BattleArcadeApp *app, enum BgLayer bgLayer)
 {
-    u32 idx = !BattleArcade_IsMultiPlayerChallenge(app->challengeType) ? BATTLE_ARCADE_APP_MAIN_ROULETTE_TILEMAP : BATTLE_ARCADE_APP_MAIN_MULTI_ROULETTE_TILEMAP;
+    u32 idx = !BattleArcade_IsMultiPlayerChallenge(app->challengeType) ? battle_arcade_app_main_roulette_NSCR_lz : battle_arcade_app_main_multi_roulette_NSCR_lz;
     Graphics_LoadTilemapToBgLayerFromOpenNARC(app->narc, idx, app->bgConfig, bgLayer, 0, 0, TRUE, HEAP_ID_BATTLE_ARCADE_APP);
 }
 
 static void LoadPalette(void)
 {
     NNSG2dPaletteData *plttData;
-    void *pltt = Graphics_GetPlttData(NARC_INDEX_RESOURCE__ENG__FRONTIER_GRAPHIC__FRONTIER_BG, 167, &plttData, HEAP_ID_BATTLE_ARCADE_APP);
+    void *pltt = Graphics_GetPlttData(NARC_INDEX_FRONTIER_BACKGROUNDS, battle_arcade_app_NCLR, &plttData, HEAP_ID_BATTLE_ARCADE_APP);
 
     DC_FlushRange(plttData->pRawData, PALETTE_SIZE_BYTES * 7);
     GX_LoadBGPltt(plttData->pRawData, 0, PALETTE_SIZE_BYTES * 7);
@@ -1008,9 +1014,9 @@ static void LoadPalette(void)
 
 static void LoadSubScreenBackground(BattleArcadeApp *app, enum BgLayer bgLayer)
 {
-    Graphics_LoadTilesToBgLayerFromOpenNARC(app->narc, BATTLE_ARCADE_APP_SUB_TILES, app->bgConfig, bgLayer, 0, 0, TRUE, HEAP_ID_BATTLE_ARCADE_APP);
-    Graphics_LoadPaletteFromOpenNARC(app->narc, Battle_ARCADE_APP_SUB_PLTT, PAL_LOAD_SUB_BG, 0, PLTT_OFFSET(2), HEAP_ID_BATTLE_ARCADE_APP);
-    Graphics_LoadTilemapToBgLayerFromOpenNARC(app->narc, BATTLE_ARCADE_APP_SUB_TILEMAP, app->bgConfig, bgLayer, 0, 0, TRUE, HEAP_ID_BATTLE_ARCADE_APP);
+    Graphics_LoadTilesToBgLayerFromOpenNARC(app->narc, battle_arcade_app_sub_NCGR_lz, app->bgConfig, bgLayer, 0, 0, TRUE, HEAP_ID_BATTLE_ARCADE_APP);
+    Graphics_LoadPaletteFromOpenNARC(app->narc, battle_arcade_app_sub_NCLR, PAL_LOAD_SUB_BG, 0, PLTT_OFFSET(2), HEAP_ID_BATTLE_ARCADE_APP);
+    Graphics_LoadTilemapToBgLayerFromOpenNARC(app->narc, battle_arcade_app_sub_NSCR_lz, app->bgConfig, bgLayer, 0, 0, TRUE, HEAP_ID_BATTLE_ARCADE_APP);
 }
 
 static void ChangeState(BattleArcadeApp *app, int *state, enum BattleArcadeAppState newState)
@@ -1033,7 +1039,7 @@ static void UpdateCursorPosition(BattleArcadeApp *app, int unused)
             app->cursorPos++;
         }
 
-        Sound_PlayEffect(SEQ_SE_DP_BUTTON3);
+        Sound_PlayEffect(SEQ_SE_DP_BUTTON3_sseq);
 
         if (app->cursorPos >= app->gridSize) {
             app->cursorPos = 0;
@@ -1151,7 +1157,7 @@ static void CreateResultPayload(BattleArcadeApp *app, u16 cmd, u16 resultCursorP
     }
 
     app->commPayload[2] = app->cursorPosID;
-    app->commPayload[3] = *app->unk_24;
+    app->commPayload[3] = *app->randomIndex;
 }
 
 static u16 GetRandomNumber(BattleArcadeApp *app)
@@ -1180,7 +1186,7 @@ void BattleArcadeApp_HandleResultCmd(int netID, int unused, void *data, void *co
         }
     } else {
         app->cursorPosID = payload[2];
-        *app->unk_24 = payload[3];
+        *app->randomIndex = payload[3];
     }
 }
 
@@ -1216,7 +1222,7 @@ static void SetSelectedEffect(BattleArcadeApp *app, u8 cursorPos)
     }
 
     UpdateCursorSpritePosition(app, finalCursorPos);
-    Sound_PlayEffect(SEQ_SE_DP_PIRORIRO2);
+    Sound_PlayEffect(SEQ_SE_DP_PIRORIRO2_sseq);
 }
 
 static void GetAvailableEffects(BattleArcadeApp *app)
@@ -1252,16 +1258,16 @@ static void GetAvailableEffects(BattleArcadeApp *app)
             u8 effectIndex = 0xff;
 
             switch (effect) {
-            case ARCADE_EFFECT_RANDOMIZE_CURSOR:
+            case ARCADE_EFFECT_SWAP_MONS:
                 effectIndex = 0;
                 break;
-            case ARCADE_EFFECT_SWAP_MONS:
+            case ARCADE_EFFECT_SPEED_UP:
                 effectIndex = 1;
                 break;
-            case ARCADE_EFFECT_SPEED_UP:
+            case ARCADE_EFFECT_SLOW_DOWN:
                 effectIndex = 2;
                 break;
-            case ARCADE_EFFECT_SLOW_DOWN:
+            case ARCADE_EFFECT_RANDOMIZE_CURSOR:
                 effectIndex = 3;
                 break;
             case ARCADE_EFFECT_GET_1_BP:
@@ -1276,7 +1282,7 @@ static void GetAvailableEffects(BattleArcadeApp *app)
             }
 
             u16 battleNum = GetBattleNumber(app);
-            u16 normalizedBattleNum = battleNum % BATTLES_PER_ROUND_ARCADE;
+            u16 normalizedBattleNum = battleNum % ARCADE_BATTLES_PER_ROUND;
 
             if (battleNum >= 9999) {
                 normalizedBattleNum = 6;
@@ -1307,7 +1313,7 @@ static void GetAvailableEffects(BattleArcadeApp *app)
                     isAvailable = sEffectAvailabilityByBattle[effectIndex].battle7;
                     break;
                 default:
-                    GF_ASSERT(0);
+                    GF_ASSERT(FALSE);
                     isAvailable = TRUE;
                     break;
                 }
@@ -1326,13 +1332,13 @@ static void GetAvailableEffects(BattleArcadeApp *app)
 static void GetEffectCategoryCounts(BattleArcadeApp *app)
 {
     int i;
-    for (i = 0; i < NELEMS(Unk_ov108_0224367C); i++) {
-        if (app->unk_12 >= Unk_ov108_0224367C[i]) {
+    for (i = 0; i < NELEMS(sCategoryTierPerformanceThresholds); i++) {
+        if (app->performance >= sCategoryTierPerformanceThresholds[i]) {
             break;
         }
     }
 
-    app->categoryWeightTier = i;
+    app->categoryTier = i;
 
     for (i = 0; i < app->numAvailableEffects; i++) {
         if (BattleArcade_GetCategoryFromEffect(app->availableEffects[i]) == ARCADE_EFFECT_CATEGORY_FOE) {
@@ -1352,7 +1358,7 @@ static void AssignEffectsToGrid(BattleArcadeApp *app)
     u8 effectsIndex = 0;
 
     for (int i = 0; i < GRID_SIZE; i++) {
-        u8 category = GetRandomCategory(app, app->categoryWeightTier);
+        u8 category = GetRandomCategory(app, app->categoryTier);
         int numEffectsInCategory = app->availableEffectsPerCategory[category];
 
         int startOffset = 0;
@@ -1376,7 +1382,7 @@ static void AssignEffectsToGrid(BattleArcadeApp *app)
         int loopCounter = 0;
         while (TRUE) {
             if (loopCounter >= 50) {
-                GF_ASSERT(0);
+                GF_ASSERT(FALSE);
                 app->rouletteEffects[i] = ARCADE_EFFECT_LOWER_FOE_HP;
                 loopCounter = 0;
                 break;
@@ -1406,14 +1412,14 @@ static void AssignEffectsToGrid(BattleArcadeApp *app)
     }
 }
 
-static u8 GetRandomCategory(BattleArcadeApp *app, u8 weightsIndex)
+static u8 GetRandomCategory(BattleArcadeApp *app, u8 categoryTier)
 {
     u8 category;
     u8 sum = 0;
     u16 rand = LCRNG_Next() % 100;
 
     for (category = ARCADE_EFFECT_CATEGORY_FOE; category < NUM_ARCADE_EFFECT_CATEGORIES; category++) {
-        sum += sCategoryWeights[weightsIndex][category];
+        sum += sCategoryWeights[categoryTier][category];
 
         if (rand < sum) {
             break;
@@ -1421,7 +1427,7 @@ static u8 GetRandomCategory(BattleArcadeApp *app, u8 weightsIndex)
     }
 
     if (category >= NUM_ARCADE_EFFECT_CATEGORIES) {
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         category = ARCADE_EFFECT_CATEGORY_FOE;
     }
 
@@ -1430,7 +1436,7 @@ static u8 GetRandomCategory(BattleArcadeApp *app, u8 weightsIndex)
 
 static void UpdateItemSprites(BattleArcadeApp *app)
 {
-    u8 partySize = BattleArcade_GetPartySize(app->challengeType, TRUE);
+    u8 partySize = BattleArcade_GetPlayerPartySize(app->challengeType, TRUE);
     u8 opponentPartySize = BattleArcade_GetOpponentPartySize(app->challengeType, TRUE);
 
     for (u8 i = 0; i < partySize; i++) {
@@ -1466,7 +1472,7 @@ static BOOL CheckStopButtonPressed(BattleArcadeApp *app)
 
 static void PressStopButton(BattleArcadeApp *app)
 {
-    Sound_StopEffect(SEQ_SE_CONFIRM, 0);
-    Sound_PlayEffect(SEQ_SE_DP_BUTTON9);
+    Sound_StopEffect(SE_CONFIRM_sseq_3, 0);
+    Sound_PlayEffect(SEQ_SE_DP_BUTTON9_sseq);
     BattleArcadeAppSprite_SetAnim(app->buttonSprite, ANIM_ID_BUTTON_PRESSED);
 }

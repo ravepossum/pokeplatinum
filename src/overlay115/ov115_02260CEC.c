@@ -9,7 +9,6 @@
 #include "struct_decls/struct_02012B20_decl.h"
 #include "struct_defs/struct_020127E8.h"
 
-#include "overlay092/struct_ov92_021D28C0.h"
 #include "overlay114/ov114_0225C700.h"
 #include "overlay114/struct_ov114_0225CAD4_decl.h"
 #include "overlay115/struct_ov115_022612BC.h"
@@ -427,7 +426,7 @@ static void ov115_02263990(UnkStruct_ov115_02261ADC *param0, u32 heapID);
 static void ov115_02263A3C(UnkStruct_ov115_02261ADC *param0);
 static void ov115_02263BCC(UnkStruct_ov115_02261ADC *param0, u32 heapID);
 static void ov115_02263C04(UnkStruct_ov115_02261ADC *param0);
-static void ov115_02263C24(UnkStruct_ov115_02261ADC *param0, u32 param1, u32 param2, u32 param3);
+static void ov115_02263C24(UnkStruct_ov115_02261ADC *param0, u32 param1, u32 param2, u32 heapID);
 static void ov115_02263CC0(UnkStruct_ov115_02261ADC *param0);
 static void ov115_02263CD0(UnkStruct_ov115_02261ADC *param0);
 static void ov115_02263CD8(UnkStruct_ov115_02261ADC *param0, NARC *param1, u32 param2, u32 param3);
@@ -616,7 +615,7 @@ static const u16 Unk_ov115_02265C5C[4][4] = {
     { 0x7FFF, 0x0, 0xBFFF, 0x3FFF },
 };
 
-static const UnkStruct_ov92_021D28C0 Unk_ov115_02265CA4[4][4][4] = {
+static const Vec2s32 Unk_ov115_02265CA4[4][4][4] = {
     {
         { 0x0 },
         {
@@ -785,11 +784,11 @@ BOOL ov115_02260DAC(UnkStruct_ov115_02260D78 *param0, u32 param1)
         param0->unk_1AB4.unk_4E8.unk_08--;
 
         if (param0->unk_1AB4.unk_4E8.unk_08 == 50) {
-            Sound_PlayEffect(SEQ_SE_DP_KI_GASYAN);
+            Sound_PlayEffect(SEQ_SE_DP_KI_GASYAN_sseq);
         }
 
         if (param0->unk_1AB4.unk_4E8.unk_08 == 20) {
-            Sound_PlayEffect(SEQ_SE_DP_HAMARU);
+            Sound_PlayEffect(SEQ_SE_DP_HAMARU_sseq);
         }
 
         ov115_02264214(&param0->unk_1AB4.unk_524, FX32_CONST(1.0));
@@ -806,7 +805,7 @@ BOOL ov115_02260DAC(UnkStruct_ov115_02260D78 *param0, u32 param1)
         break;
     case 5:
         ov115_02261A10(&param0->unk_1AB4.unk_4E8, &param0->unk_1AB4);
-        Sound_PlayEffect(SEQ_SE_DP_DECIDE);
+        Sound_PlayEffect(SEQ_SE_DP_DECIDE_sseq);
         param0->unk_1AB4.unk_4E8.unk_00 = 6;
         break;
     case 6:
@@ -1091,7 +1090,7 @@ static BOOL ov115_02261364(UnkStruct_ov115_02261304 *param0)
 
 static void ov115_022613CC(u32 param0, u32 param1, u32 param2, s32 *param3, s32 *param4)
 {
-    static const UnkStruct_ov92_021D28C0 v0[4][4][4] = {
+    static const Vec2s32 v0[4][4][4] = {
         {
             { 0 },
             {
@@ -1162,8 +1161,8 @@ static void ov115_022613CC(u32 param0, u32 param1, u32 param2, s32 *param3, s32 
         },
     };
 
-    *param3 = v0[param1][param0 - 1][param2].unk_00;
-    *param4 = v0[param1][param0 - 1][param2].unk_04;
+    *param3 = v0[param1][param0 - 1][param2].x;
+    *param4 = v0[param1][param0 - 1][param2].y;
 }
 
 static void ov115_022613F8(UnkStruct_ov115_02260D78 *param0, u16 param1, u16 param2, u16 param3, u16 param4, u32 param5)
@@ -1442,8 +1441,8 @@ static void ov115_022617E8(UnkStruct_ov115_022617E8 *param0, UnkStruct_ov115_022
 
         for (v2 = 0; v2 < param3; v2++) {
             if (v2 != param4) {
-                v3 = Unk_ov115_02265CA4[param4][param3 - 1][v2].unk_00;
-                v4 = Unk_ov115_02265CA4[param4][param3 - 1][v2].unk_04;
+                v3 = Unk_ov115_02265CA4[param4][param3 - 1][v2].x;
+                v4 = Unk_ov115_02265CA4[param4][param3 - 1][v2].y;
 
                 Bg_ChangeTilemapRectPalette(param1->unk_00, 2, v3 - 1, v4 - 1, 10, 4, 0 + v2);
                 Window_FillTilemap(&v5, 15);
@@ -1894,7 +1893,7 @@ static void ov115_022621DC(UnkStruct_ov115_02260D78 *param0, const UnkStruct_ov1
             }
         }
 
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
     }
 }
 
@@ -1966,16 +1965,16 @@ static void ov115_02262354(UnkStruct_ov115_02260D78 *param0, UnkStruct_ov115_022
 
         switch (param0->unk_1C) {
         case 0:
-            Sound_PlayEffect(SEQ_SE_PL_NOMI02);
-            Sound_PlayEffect(SEQ_SE_PL_POINT1);
+            Sound_PlayEffect(SEQ_SE_PL_NOMI02_sseq);
+            Sound_PlayEffect(SEQ_SE_PL_POINT1_sseq);
             break;
         case 1:
-            Sound_PlayEffect(SEQ_SE_PL_NOMI02);
-            Sound_PlayEffect(SEQ_SE_PL_POINT2);
+            Sound_PlayEffect(SEQ_SE_PL_NOMI02_sseq);
+            Sound_PlayEffect(SEQ_SE_PL_POINT2_sseq);
             break;
         default:
-            Sound_PlayEffect(SEQ_SE_PL_NOMI02);
-            Sound_PlayEffect(SEQ_SE_PL_POINT3);
+            Sound_PlayEffect(SEQ_SE_PL_NOMI02_sseq);
+            Sound_PlayEffect(SEQ_SE_PL_POINT3_sseq);
             break;
         }
 
@@ -1999,7 +1998,7 @@ static void ov115_02262354(UnkStruct_ov115_02260D78 *param0, UnkStruct_ov115_022
             v3 = 1;
 
             if (v5 == 1) {
-                Sound_PlayEffect(SEQ_SE_DP_023);
+                Sound_PlayEffect(SEQ_SE_DP_023_sseq);
             }
 
             ov115_022626BC(param1, param0, 1);
@@ -2384,7 +2383,7 @@ static void ov115_02262990(UnkStruct_ov115_02260D78 *param0)
             }
 
             ov115_022621DC(param0, &v0, 1);
-            Sound_PlayEffect(SEQ_SE_DP_FW104);
+            Sound_PlayEffect(SEQ_SE_DP_FW104_sseq);
         }
     } else {
         v6 = 1;
@@ -2725,7 +2724,7 @@ static BOOL ov115_02263150(UnkStruct_ov115_02263130 *param0, UnkStruct_ov115_022
             case 10:
                 if (param0->unk_3B == 0) {
                     ov115_022613F8(param1, 128, 96, 128, 64, 2);
-                    Sound_PlayEffect(SEQ_SE_DP_FW104);
+                    Sound_PlayEffect(SEQ_SE_DP_FW104_sseq);
                     param0->unk_3B = 1;
                 }
                 break;
@@ -3121,7 +3120,7 @@ static void ov115_0226376C(UnkStruct_ov115_02261ADC *param0, u32 heapID)
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG2, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_BG3, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
-    Font_LoadScreenIndicatorsPalette(0, 5 * 0x20, heapID);
+    Font_LoadScreenIndicatorsPalette(PAL_LOAD_MAIN_BG, PLTT_OFFSET(5), heapID);
     LoadStandardWindowGraphics(param0->unk_00, BG_LAYER_MAIN_1, 1, 4, 0, heapID);
 }
 
@@ -3234,13 +3233,13 @@ static void ov115_02263C04(UnkStruct_ov115_02261ADC *param0)
     StringTemplate_Free(param0->unk_04);
 }
 
-static void ov115_02263C24(UnkStruct_ov115_02261ADC *param0, u32 param1, u32 param2, u32 param3)
+static void ov115_02263C24(UnkStruct_ov115_02261ADC *param0, u32 param1, u32 param2, u32 heapID)
 {
     CameraAngle v0;
     VecFx32 v1;
     MtxFx33 v2;
 
-    param0->camera = Camera_Alloc(param3);
+    param0->camera = Camera_Alloc(heapID);
     param0->unk_1F8.x = 0;
     param0->unk_1F8.y = 0;
     param0->unk_1F8.z = 0;
@@ -3661,7 +3660,7 @@ static void ov115_0226464C(UnkStruct_ov115_02261ADC *param0, const UnkStruct_ov1
         }
     }
 
-    GF_ASSERT(0);
+    GF_ASSERT(FALSE);
 }
 
 static void ov115_02264684(UnkStruct_ov115_02261ADC *param0, u32 param1)
@@ -3816,7 +3815,7 @@ static UnkStruct_ov115_022647A0 *ov115_02264948(UnkStruct_ov115_02261ADC *param0
         }
     }
 
-    GF_ASSERT(0);
+    GF_ASSERT(FALSE);
     return NULL;
 }
 
@@ -4191,7 +4190,7 @@ static void ov115_02264FA0(UnkStruct_ov115_02264FA0 *param0)
             }
             break;
         default:
-            GF_ASSERT(0);
+            GF_ASSERT(FALSE);
             break;
         }
 
@@ -4561,7 +4560,7 @@ static void ov115_022658E0(UnkStruct_ov115_022658E0 *param0)
     param0->unk_00 = 0;
     param0->unk_02 = 1;
     param0->unk_03 = 0;
-    Sound_PlayEffect(SEQ_SE_PL_PINPON);
+    Sound_PlayEffect(SEQ_SE_PL_PINPON_sseq);
 }
 
 static void ov115_022658F8(UnkStruct_ov115_022658E0 *param0, UnkStruct_ov115_02264FA0 *param1, UnkStruct_ov115_02263DF8 *param2)
@@ -4588,7 +4587,7 @@ static void ov115_022658F8(UnkStruct_ov115_022658E0 *param0, UnkStruct_ov115_022
         Sound_SetTempoRatioForHandle(7, v1);
 
         if (12 == param0->unk_03) {
-            Sound_PlayEffect(SEQ_SE_PL_BALLOON05_2);
+            Sound_PlayEffect(SEQ_SE_PL_BALLOON05_2_sseq);
         }
 
         if (param0->unk_03 >= 58) {

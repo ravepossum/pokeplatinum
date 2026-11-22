@@ -5,13 +5,11 @@
 
 #include "generated/trainer_score_events.h"
 
-#include "struct_decls/struct_02015920_decl.h"
 #include "struct_defs/dress_up_photo.h"
-#include "struct_defs/struct_02015958.h"
 #include "struct_defs/struct_02029C88.h"
 #include "struct_defs/struct_0203DA00.h"
-#include "struct_defs/struct_02093BBC.h"
 #include "struct_defs/struct_02095C60.h"
+#include "struct_defs/visual_competition_app_args.h"
 
 #include "overlay022/ov22_02254DE0.h"
 #include "overlay022/ov22_02255094.h"
@@ -55,6 +53,7 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "message.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "pokemon.h"
 #include "render_text.h"
@@ -66,18 +65,17 @@
 #include "sprite_util.h"
 #include "string_gf.h"
 #include "string_template.h"
+#include "sys_task_extensions.h"
 #include "sys_task_manager.h"
 #include "system.h"
 #include "text.h"
 #include "touch_pad.h"
 #include "trainer_info.h"
-#include "unk_0200679C.h"
-#include "unk_02015920.h"
 #include "unk_020298BC.h"
 #include "unk_020363E8.h"
-#include "unk_020393C8.h"
 #include "unk_02094EDC.h"
 #include "unk_02095AF0.h"
+#include "yes_no_touch_menu.h"
 
 typedef struct {
     UnkStruct_ov22_0225A0E4 unk_00;
@@ -93,13 +91,13 @@ typedef struct {
     UnkStruct_ov22_0225A428 unk_5C4;
     int unk_70C;
     int unk_710;
-    UnkStruct_02015920 *unk_714;
+    YesNoTouchMenu *unk_714;
     Window *unk_718;
     BOOL unk_71C;
     int unk_720;
-    int unk_724;
+    enum PokemonContestRank contestRank;
     int unk_728;
-    int unk_72C;
+    enum PokemonContestType contestType;
     int unk_730;
     UnkStruct_02095C60 *unk_734;
     const Options *options;
@@ -156,7 +154,7 @@ static void ov22_02256DB8(UnkStruct_ov22_02255D44 *param0, BOOL *param1);
 static void ov22_02256DE0(SysTask *param0, void *param1);
 static BOOL ov22_02257098(UnkStruct_ov22_02256C48 *param0, int param1, int param2, int param3);
 static void ov22_02256F38(DressUpPhoto *photo, UnkStruct_ov22_02257964 *param1, const TrainerInfo *info);
-static void ov22_02256FD8(UnkStruct_02029C88 *param0, UnkStruct_ov22_02257964 *param1, int param2, const TrainerInfo *param3);
+static void ov22_02256FD8(UnkStruct_02029C88 *param0, UnkStruct_ov22_02257964 *param1, enum PokemonContestRank contestRank, const TrainerInfo *trainerInfo);
 static void ov22_02257104(UnkStruct_ov22_02255D44 *param0);
 static void ov22_0225718C(UnkStruct_ov22_02255D44 *param0);
 static void ov22_022571D4(UnkStruct_ov22_02255D44 *param0);
@@ -178,7 +176,7 @@ static u32 ov22_022573EC(UnkStruct_ov22_02255D44 *param0, u32 param1);
 static void ov22_02257498(UnkStruct_ov22_02255D44 *param0);
 static void ov22_022574B0(UnkStruct_ov22_02255D44 *param0);
 static void ov22_02257564(UnkStruct_ov22_02255D44 *param0);
-static int ov22_02257580(int param0);
+static int ov22_02257580(enum PokemonContestRank contestRank);
 static void ov22_0225764C(UnkStruct_ov22_02256FD8 *param0);
 static void ov22_02257658(UnkStruct_ov22_02256FD8 *param0, UnkStruct_ov22_02259560 *param1, u32 param2);
 static void ov22_0225768C(UnkStruct_ov22_02256FD8 *param0);
@@ -214,18 +212,18 @@ int ov22_02255D44(ApplicationManager *appMan, int *param1)
 
     ov22_0225894C(v2->fashionCase, &v0->unk_1E8);
     ov22_022566C0(v0);
-    ov22_02259484(&v0->unk_3C0, (700 + 1 + 18), HEAP_ID_13);
+    ov22_02259484(&v0->unk_3C0, 700 + 1 + 18, HEAP_ID_13);
 
     v0->unk_3C8 = ov22_02254DE0(700, HEAP_ID_13);
 
-    ov22_02256708(v0, v2->unk_00, 10, 0);
+    ov22_02256708(v0, v2->pokemon, 10, 0);
     ov22_022567FC(v0);
     ov22_02256948(v0, 0);
     ov22_0225699C(v0);
     ov22_02256BAC(v0, v2->options);
     ov22_022589E0(&v0->unk_4FC, &v0->unk_458, &v0->unk_3CC, &v0->unk_00, &v0->unk_5C4, 1);
 
-    v0->unk_714 = sub_02015920(HEAP_ID_13);
+    v0->unk_714 = YesNoTouchMenu_New(HEAP_ID_13);
     v0->unk_718 = Window_New(HEAP_ID_13, 1);
     v0->unk_70C = 0;
 
@@ -363,7 +361,7 @@ int ov22_02256098(ApplicationManager *appMan, int *param1)
 
     if (v0->unk_71C == 1) {
         GameRecords_IncrementTrainerScore(v2->records, TRAINER_SCORE_EVENT_UNK_07);
-        ov22_02256F38(v2->photo, &v0->unk_458, v2->unk_14);
+        ov22_02256F38(v2->photo, &v0->unk_458, v2->trainerInfo);
     }
 
     if (v2->unk_18 != NULL) {
@@ -374,7 +372,7 @@ int ov22_02256098(ApplicationManager *appMan, int *param1)
         }
     }
 
-    sub_02015938(v0->unk_714);
+    YesNoTouchMenu_Free(v0->unk_714);
     Windows_Delete(v0->unk_718, 1);
 
     ov22_02256C38(v0);
@@ -403,11 +401,11 @@ int ov22_02256098(ApplicationManager *appMan, int *param1)
     return 1;
 }
 
-int ov22_02256174(ApplicationManager *appMan, int *param1)
+int VisualCompetition_Init(ApplicationManager *appMan, int *param1)
 {
     UnkStruct_ov22_02255D44 *v0;
     u32 v1;
-    UnkStruct_02093BBC *v2;
+    VisualCompetitionAppArgs *appArgs;
 
     Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_13, 0x20000);
     Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_14, 0x40000);
@@ -418,13 +416,13 @@ int ov22_02256174(ApplicationManager *appMan, int *param1)
     SetVBlankCallback(ov22_02256940, v0);
     DisableHBlank();
 
-    v2 = ApplicationManager_Args(appMan);
+    appArgs = ApplicationManager_Args(appMan);
 
-    v0->unk_724 = v2->unk_0C;
-    v0->unk_728 = v2->unk_10;
-    v0->unk_72C = v2->unk_14;
-    v0->unk_730 = v2->unk_08;
-    v0->unk_734 = v2->unk_1C;
+    v0->contestRank = appArgs->contestRank;
+    v0->unk_728 = appArgs->competitionType;
+    v0->contestType = appArgs->contestType;
+    v0->unk_730 = appArgs->unk_08;
+    v0->unk_734 = appArgs->unk_1C;
 
     EnableTouchPad();
     v1 = InitializeTouchPad(4);
@@ -433,33 +431,33 @@ int ov22_02256174(ApplicationManager *appMan, int *param1)
         (void)0;
     }
 
-    ov22_0225894C(v2->fashionCase, &v0->unk_1E8);
+    ov22_0225894C(appArgs->fashionCase, &v0->unk_1E8);
     ov22_022566C0(v0);
 
     SpriteList_SetActive(v0->unk_00.unk_44, 0);
-    sub_02039734();
+    NetworkIcon_Init();
     ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DMAIN, GX_OBJVRAMMODE_CHAR_1D_32K);
     ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DMAIN);
 
-    ov22_02259484(&v0->unk_3C0, (700 + 1 + 18), HEAP_ID_13);
+    ov22_02259484(&v0->unk_3C0, 700 + 1 + 18, HEAP_ID_13);
 
     v0->unk_3C8 = ov22_02254DE0(700, HEAP_ID_13);
-    v0->options = v2->options;
+    v0->options = appArgs->options;
 
     if (v0->unk_734->unk_16 == 0) {
-        v0->unk_720 = ov22_02257580(v2->unk_0C);
+        v0->unk_720 = ov22_02257580(appArgs->contestRank);
     } else {
         v0->unk_720 = 20;
     }
 
-    ov22_02256790(v0, v2->unk_00, v0->unk_720);
+    ov22_02256790(v0, appArgs->mon, v0->unk_720);
     ov22_022567FC(v0);
     ov22_02256948(v0, 0);
     ov22_02256A28(v0);
-    ov22_02256BF4(v0, v0->unk_720, v2->unk_08, v2->unk_1C, v2->options);
+    ov22_02256BF4(v0, v0->unk_720, appArgs->unk_08, appArgs->unk_1C, appArgs->options);
     ov22_022589E0(&v0->unk_4FC, &v0->unk_458, &v0->unk_3CC, &v0->unk_00, &v0->unk_5C4, 0);
 
-    v0->unk_714 = sub_02015920(HEAP_ID_13);
+    v0->unk_714 = YesNoTouchMenu_New(HEAP_ID_13);
     v0->unk_718 = Window_New(HEAP_ID_13, 1);
     v0->unk_70C = 0;
 
@@ -468,7 +466,7 @@ int ov22_02256174(ApplicationManager *appMan, int *param1)
     return 1;
 }
 
-int ov22_022562EC(ApplicationManager *appMan, int *param1)
+int VisualCompetition_Main(ApplicationManager *appMan, int *param1)
 {
     UnkStruct_ov22_02255D44 *v0 = ApplicationManager_Data(appMan);
     int v1 = 0;
@@ -476,7 +474,7 @@ int ov22_022562EC(ApplicationManager *appMan, int *param1)
 
     switch (*param1) {
     case 0:
-        Sound_FadeOutBGM((127 / 3), 30);
+        Sound_FadeOutBGM(127 / 3, 30);
         (*param1)++;
         break;
     case 1:
@@ -545,7 +543,7 @@ int ov22_022562EC(ApplicationManager *appMan, int *param1)
         break;
     case 10:
         ov22_0225718C(v0);
-        Sound_PlayEffect(SEQ_SE_DP_CON_016);
+        Sound_PlayEffect(SEQ_SE_DP_CON_016_sseq);
         (*param1)++;
         break;
     case 11:
@@ -554,7 +552,7 @@ int ov22_022562EC(ApplicationManager *appMan, int *param1)
         break;
     case 12:
         if (IsScreenFadeDone()) {
-            Sound_SetSceneAndPlayBGM(SOUND_SCENE_7, SEQ_CO_DRESS, 0);
+            Sound_SetSceneAndPlayBGM(SOUND_SCENE_7, SEQ_CO_DRESS_sseq, 0);
             (*param1)++;
         }
         break;
@@ -574,7 +572,7 @@ int ov22_022562EC(ApplicationManager *appMan, int *param1)
 
         if (0 == v2) {
             (*param1) = 15;
-            Sound_PlayEffect(SEQ_SE_DP_MAZYO);
+            Sound_PlayEffect(SEQ_SE_DP_MAZYO_sseq);
         }
 
         ov22_0225890C(&v0->unk_4FC);
@@ -587,7 +585,7 @@ int ov22_022562EC(ApplicationManager *appMan, int *param1)
 
         if (0 == v2) {
             (*param1) = 15;
-            Sound_PlayEffect(SEQ_SE_DP_MAZYO);
+            Sound_PlayEffect(SEQ_SE_DP_MAZYO_sseq);
         }
 
         ov22_02257564(v0);
@@ -607,7 +605,7 @@ int ov22_022562EC(ApplicationManager *appMan, int *param1)
         }
 
         StartScreenFade(FADE_MAIN_THEN_SUB, FADE_TYPE_UNK_26, FADE_TYPE_UNK_26, COLOR_BLACK, 6, 1, HEAP_ID_13);
-        Sound_PlayEffect(SEQ_SE_DP_CON_017);
+        Sound_PlayEffect(SEQ_SE_DP_CON_017_sseq);
         (*param1)++;
         break;
     case 20:
@@ -617,7 +615,7 @@ int ov22_022562EC(ApplicationManager *appMan, int *param1)
             v1 = 1;
 
             GX_SetVisibleWnd(GX_WNDMASK_NONE);
-            ov22_02257AB0(&v0->unk_458, -(8 * 8), (5 * 8));
+            ov22_02257AB0(&v0->unk_458, -(8 * 8), 5 * 8);
         }
         break;
     }
@@ -627,15 +625,15 @@ int ov22_022562EC(ApplicationManager *appMan, int *param1)
     return v1;
 }
 
-int ov22_02256600(ApplicationManager *appMan, int *param1)
+int VisualCompetition_Exit(ApplicationManager *appMan, int *param1)
 {
     UnkStruct_ov22_02255D44 *v0 = ApplicationManager_Data(appMan);
     u32 v1;
-    UnkStruct_02093BBC *v2 = ApplicationManager_Args(appMan);
+    VisualCompetitionAppArgs *appArgs = ApplicationManager_Args(appMan);
 
-    ov22_02256FD8(v2->unk_04, &v0->unk_458, v0->unk_724, v2->unk_24);
+    ov22_02256FD8(appArgs->unk_04, &v0->unk_458, v0->contestRank, appArgs->trainerInfo);
 
-    sub_02015938(v0->unk_714);
+    YesNoTouchMenu_Free(v0->unk_714);
     Windows_Delete(v0->unk_718, 1);
 
     ov22_02256C38(v0);
@@ -689,7 +687,7 @@ static void ov22_022566F4(UnkStruct_ov22_02255D44 *param0)
     ov22_022550B4();
 }
 
-static void ov22_02256708(UnkStruct_ov22_02255D44 *param0, Pokemon *param1, int param2, BOOL param3)
+static void ov22_02256708(UnkStruct_ov22_02255D44 *param0, Pokemon *mon, int param2, BOOL param3)
 {
     UnkStruct_ov22_0225B388 v0;
 
@@ -709,9 +707,9 @@ static void ov22_02256708(UnkStruct_ov22_02255D44 *param0, Pokemon *param1, int 
         PokemonSpriteTemplate v1;
 
         if (param3 == 0) {
-            ov22_02257998(&param0->unk_458, param1, &v1, 14);
+            ov22_02257998(&param0->unk_458, mon, &v1, 14);
         } else {
-            ov22_022579B4(&param0->unk_458, param1, &v1, 14);
+            ov22_022579B4(&param0->unk_458, mon, &v1, 14);
         }
 
         ov22_02259098(&param0->unk_00, &v1);
@@ -721,12 +719,12 @@ static void ov22_02256708(UnkStruct_ov22_02255D44 *param0, Pokemon *param1, int 
     ov22_02257C88(&param0->unk_458, 0, HEAP_ID_14);
 }
 
-static void ov22_02256790(UnkStruct_ov22_02255D44 *param0, Pokemon *param1, int param2)
+static void ov22_02256790(UnkStruct_ov22_02255D44 *param0, Pokemon *mon, int param2)
 {
     int v0, v1;
     UnkStruct_ov22_022596B0 v2;
 
-    ov22_02256708(param0, param1, param2, 1);
+    ov22_02256708(param0, mon, param2, 1);
     ov22_02259270(&param0->unk_458.unk_2C.unk_4C, &v0, &v1);
     ov22_02259358(&param0->unk_458.unk_2C.unk_4C, &v2);
     ov22_022591EC(&param0->unk_458.unk_2C.unk_4C, 192, (16 + 129) - ((v1 / 2) - v2.unk_03) + -4);
@@ -759,19 +757,18 @@ static void ov22_022567FC(UnkStruct_ov22_02255D44 *param0)
     ov22_022582C0(&param0->unk_3CC, 0, 0);
 
     {
-        int v1, v2;
         int v3;
 
-        for (v1 = 0; v1 < 100; v1++) {
-            v3 = ov22_0225899C(&param0->unk_1E8, v1);
+        for (int i = 0; i < 100; i++) {
+            v3 = ov22_0225899C(&param0->unk_1E8, i);
 
-            for (v2 = 0; v2 < v3; v2++) {
-                ov22_022580A4(&param0->unk_3CC, 0, v1);
+            for (int v2 = 0; v2 < v3; v2++) {
+                ov22_022580A4(&param0->unk_3CC, 0, i);
             }
         }
 
-        for (v1 = 0; v1 < 18; v1++) {
-            v3 = ov22_022589B0(&param0->unk_1E8, v1);
+        for (int i = 0; i < 18; i++) {
+            v3 = ov22_022589B0(&param0->unk_1E8, i);
 
             if (v3 < 18) {
                 ov22_022580A4(&param0->unk_3CC, 1, v3);
@@ -896,11 +893,9 @@ static void ov22_02256B24(UnkStruct_ov22_02259C58 *param0, void *param1)
 static void ov22_02256B44(UnkStruct_ov22_02259C58 *param0, void *param1)
 {
     UnkStruct_ov22_02255D44 *v0 = param1;
-    int v1;
-    int v2;
 
     if (v0->unk_70C != 0) {
-        v1 = ov22_02258424(&v0->unk_3CC, 0);
+        int v1 = ov22_02258424(&v0->unk_3CC, 0);
 
         ov22_022582C0(&v0->unk_3CC, 0, v1);
         v0->unk_70C = 0;
@@ -934,7 +929,7 @@ static void ov22_02256BAC(UnkStruct_ov22_02255D44 *param0, const Options *option
     v0.options = options;
     v0.unk_24 = param0->unk_00.unk_5C;
 
-    ov22_0225A428(&param0->unk_5C4, &v0, (1 | 2 | 4 | 8));
+    ov22_0225A428(&param0->unk_5C4, &v0, 1 | 2 | 4 | 8);
 }
 
 static void ov22_02256BF4(UnkStruct_ov22_02255D44 *param0, int param1, int param2, UnkStruct_02095C60 *param3, const Options *options)
@@ -953,7 +948,7 @@ static void ov22_02256BF4(UnkStruct_ov22_02255D44 *param0, int param1, int param
     v0.options = options;
     v0.unk_24 = param0->unk_00.unk_5C;
 
-    ov22_0225A428(&param0->unk_5C4, &v0, (1 | 2 | 4 | 8 | 16 | 32));
+    ov22_0225A428(&param0->unk_5C4, &v0, 1 | 2 | 4 | 8 | 16 | 32);
 }
 
 static void ov22_02256C38(UnkStruct_ov22_02255D44 *param0)
@@ -1168,25 +1163,25 @@ static void ov22_02256F38(DressUpPhoto *photo, UnkStruct_ov22_02257964 *param1, 
     DressUpPhoto_SetLanguageAndMagic(photo);
 }
 
-static void ov22_02256FD8(UnkStruct_02029C88 *param0, UnkStruct_ov22_02257964 *param1, int param2, const TrainerInfo *param3)
+static void ov22_02256FD8(UnkStruct_02029C88 *param0, UnkStruct_ov22_02257964 *param1, enum PokemonContestRank contestRank, const TrainerInfo *trainerInfo)
 {
     int v0;
     int v1;
     UnkStruct_ov22_02256FD8 *v2;
     UnkStruct_ov22_02259560 *v3;
-    String *v4;
-    int v5;
+    String *name;
+    int gender;
 
     v2 = Heap_Alloc(HEAP_ID_13, sizeof(UnkStruct_ov22_02256FD8));
     ov22_0225764C(v2);
 
     sub_0202A284(param0, param1->unk_2C.unk_4C.unk_0C, &param1->unk_2C.unk_4C);
 
-    if (param3) {
-        v4 = TrainerInfo_NameNewString(param3, 13);
-        v5 = TrainerInfo_Gender(param3);
-        sub_0202A4B4(param0, v4, v5);
-        String_Free(v4);
+    if (trainerInfo) {
+        name = TrainerInfo_NameNewString(trainerInfo, 13);
+        gender = TrainerInfo_Gender(trainerInfo);
+        sub_0202A4B4(param0, name, gender);
+        String_Free(name);
     }
 
     ov22_02257778(v2, &param1->unk_00.unk_14, 1);
@@ -1204,7 +1199,7 @@ static void ov22_02256FD8(UnkStruct_02029C88 *param0, UnkStruct_ov22_02257964 *p
     }
 
     sub_0202A35C(param0, param1->unk_2C.unk_48);
-    sub_0202A378(param0, param2);
+    sub_0202A378(param0, contestRank);
     sub_0202A240(param0);
     Heap_Free(v2);
 }
@@ -1270,20 +1265,20 @@ static void ov22_0225718C(UnkStruct_ov22_02255D44 *param0)
 
 static void ov22_022571D4(UnkStruct_ov22_02255D44 *param0)
 {
-    UnkStruct_02015958 v0;
+    YesNoTouchMenuParams v0;
 
     Bg_ClearTilemap(param0->unk_00.unk_40, 3);
     Bg_SetOffset(param0->unk_00.unk_40, 3, 0, 0);
     Bg_SetOffset(param0->unk_00.unk_40, 3, 3, 0);
 
-    v0.unk_00 = param0->unk_00.unk_40;
-    v0.unk_04 = 3;
-    v0.unk_08 = 0;
-    v0.unk_0C = 5;
-    v0.unk_10 = 25;
-    v0.unk_11 = 4;
+    v0.bgConfig = param0->unk_00.unk_40;
+    v0.bgLayer = BG_LAYER_MAIN_3;
+    v0.baseTile = 0;
+    v0.palette = 5;
+    v0.tilemapLeft = 25;
+    v0.tilemapTop = 4;
 
-    sub_02015958(param0->unk_714, &v0);
+    YesNoTouchMenu_InitWithParams(param0->unk_714, &v0);
     ov22_022574CC(param0, 1);
 
     G2_SetBG0Priority(2);
@@ -1294,23 +1289,23 @@ static void ov22_022571D4(UnkStruct_ov22_02255D44 *param0)
 
 static void ov22_02257258(UnkStruct_ov22_02255D44 *param0)
 {
-    sub_02015A54(param0->unk_714);
+    YesNoTouchMenu_Reset(param0->unk_714);
     ov22_022574EC(param0);
     Bg_ClearTilemap(param0->unk_00.unk_40, 3);
 }
 
 static u32 ov22_02257278(UnkStruct_ov22_02255D44 *param0)
 {
-    u32 v0 = sub_020159FC(param0->unk_714);
+    u32 v0 = YesNoTouchMenu_ProcessInput(param0->unk_714);
 
     switch (v0) {
-    case 0:
+    case YES_NO_TOUCH_MENU_NOTHING_CHOSEN:
         v0 = 4;
         break;
-    case 1:
+    case YES_NO_TOUCH_MENU_YES:
         v0 = 8;
         break;
-    case 2:
+    case YES_NO_TOUCH_MENU_NO:
         v0 = 9;
         break;
     }
@@ -1324,11 +1319,11 @@ static void ov22_022572A0(UnkStruct_ov22_02255D44 *param0, u32 param1, u8 param2
     String *v1;
     int v2 = Options_Frame(param0->options);
 
-    Font_LoadScreenIndicatorsPalette(0, 7 * 32, HEAP_ID_14);
-    Window_Add(param0->unk_00.unk_40, param0->unk_718, 3, param2, param3, param4, param5, 7, (0 + (29 * 4) + (18 + 12)));
+    Font_LoadScreenIndicatorsPalette(PAL_LOAD_MAIN_BG, PLTT_OFFSET(7), HEAP_ID_14);
+    Window_Add(param0->unk_00.unk_40, param0->unk_718, 3, param2, param3, param4, param5, 7, 0 + (29 * 4) + (18 + 12));
     Window_FillTilemap(param0->unk_718, 15);
-    LoadMessageBoxGraphics(param0->unk_00.unk_40, 3, (0 + (29 * 4)), 8, v2, HEAP_ID_14);
-    Window_DrawMessageBoxWithScrollCursor(param0->unk_718, 0, (0 + (29 * 4)), 8);
+    LoadMessageBoxGraphics(param0->unk_00.unk_40, 3, 0 + (29 * 4), 8, v2, HEAP_ID_14);
+    Window_DrawMessageBoxWithScrollCursor(param0->unk_718, 0, 0 + (29 * 4), 8);
 
     v0 = MessageLoader_Init(MSG_LOADER_PRELOAD_ENTIRE_BANK, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_UNK_0385, HEAP_ID_13);
     v1 = MessageLoader_GetNewString(v0, param1);
@@ -1453,25 +1448,25 @@ static void ov22_02257564(UnkStruct_ov22_02255D44 *param0)
     ov22_0225A6B8(&param0->unk_5C4, v0);
 }
 
-static int ov22_02257580(int param0)
+static int ov22_02257580(enum PokemonContestRank contestRank)
 {
     int v0;
 
-    switch (param0) {
-    case 0:
+    switch (contestRank) {
+    case CONTEST_RANK_NORMAL:
         v0 = 5;
         break;
-    case 1:
+    case CONTEST_RANK_GREAT:
         v0 = 10;
         break;
-    case 2:
+    case CONTEST_RANK_ULTRA:
         v0 = 15;
         break;
-    case 3:
+    case CONTEST_RANK_MASTER:
         v0 = 20;
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 
@@ -1480,17 +1475,17 @@ static int ov22_02257580(int param0)
 
 static void ov22_022575B4(UnkStruct_ov22_02255D44 *param0)
 {
-    UnkStruct_02015958 v0;
+    YesNoTouchMenuParams v0;
 
-    v0.unk_00 = param0->unk_00.unk_40;
-    v0.unk_04 = 3;
-    v0.unk_08 = 0;
-    v0.unk_0C = 5;
-    v0.unk_10 = 25;
-    v0.unk_11 = 4;
+    v0.bgConfig = param0->unk_00.unk_40;
+    v0.bgLayer = BG_LAYER_MAIN_3;
+    v0.baseTile = 0;
+    v0.palette = 5;
+    v0.tilemapLeft = 25;
+    v0.tilemapTop = 4;
 
-    sub_02015A54(param0->unk_714);
-    sub_02015958(param0->unk_714, &v0);
+    YesNoTouchMenu_Reset(param0->unk_714);
+    YesNoTouchMenu_InitWithParams(param0->unk_714, &v0);
 
     ov22_022574E4(param0, 2);
 
@@ -1502,16 +1497,16 @@ static void ov22_022575B4(UnkStruct_ov22_02255D44 *param0)
 
 static u32 ov22_02257624(UnkStruct_ov22_02255D44 *param0)
 {
-    u32 v0 = sub_020159FC(param0->unk_714);
+    u32 v0 = YesNoTouchMenu_ProcessInput(param0->unk_714);
 
     switch (v0) {
-    case 0:
+    case YES_NO_TOUCH_MENU_NOTHING_CHOSEN:
         v0 = 5;
         break;
-    case 1:
+    case YES_NO_TOUCH_MENU_YES:
         v0 = 6;
         break;
-    case 2:
+    case YES_NO_TOUCH_MENU_NO:
         v0 = 7;
         break;
     }

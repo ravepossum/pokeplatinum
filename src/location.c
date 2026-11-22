@@ -1,12 +1,12 @@
 #include "location.h"
 
-#include "generated/map_headers.h"
+#include "constants/fieldmap.h"
 
 #include "field_overworld_state.h"
 #include "savedata.h"
 
 static const Location sPlayerStartLocation = {
-    .mapId = MAP_HEADER_TWINLEAF_TOWN_PLAYER_HOUSE_2F,
+    .mapHeaderID = MAP_HEADER_TWINLEAF_TOWN_PLAYER_HOUSE_2F,
     .warpId = WARP_ID_NONE,
     .x = 4,
     .z = 6,
@@ -14,7 +14,7 @@ static const Location sPlayerStartLocation = {
 };
 
 static const Location sPlayerFirstRespawnLocation = {
-    .mapId = MAP_HEADER_TWINLEAF_TOWN,
+    .mapHeaderID = MAP_HEADER_TWINLEAF_TOWN,
     .warpId = WARP_ID_NONE,
     .x = 116,
     .z = 886,

@@ -3,7 +3,7 @@
 
 #include "generated/movement_actions.h"
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "overlay005/map_object_anim_cmd.h"
 
@@ -95,10 +95,10 @@ extern BOOL (*const gMovementActionFuncs_JumpNearSlowWest[])(MapObject *);
 extern BOOL (*const gMovementActionFuncs_JumpNearSlowEast[])(MapObject *);
 extern BOOL (*const gMovementActionFuncs_JumpFartherWest[])(MapObject *);
 extern BOOL (*const gMovementActionFuncs_JumpFartherEast[])(MapObject *);
-extern BOOL (*const gMovementActionFuncs_117[])(MapObject *);
-extern BOOL (*const gMovementActionFuncs_118[])(MapObject *);
-extern BOOL (*const gMovementActionFuncs_119[])(MapObject *);
-extern BOOL (*const gMovementActionFuncs_120[])(MapObject *);
+extern BOOL (*const gMovementActionFuncs_JumpDistortionWorldNorth[])(MapObject *);
+extern BOOL (*const gMovementActionFuncs_JumpDistortionWorldSouth[])(MapObject *);
+extern BOOL (*const gMovementActionFuncs_JumpDistortionWorldWest[])(MapObject *);
+extern BOOL (*const gMovementActionFuncs_JumpDistortionWorldEast[])(MapObject *);
 extern BOOL (*const gMovementActionFuncs_Delay1[])(MapObject *);
 extern BOOL (*const gMovementActionFuncs_Delay2[])(MapObject *);
 extern BOOL (*const gMovementActionFuncs_Delay4[])(MapObject *);

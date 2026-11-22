@@ -1,4 +1,4 @@
-// Copyright (c) 2018 huderlem, 2021-2024 red031000
+// Copyright (c) 2018 huderlem, 2021-2025 red031000
 
 #ifndef OPTIONS_H
 #define OPTIONS_H
@@ -28,6 +28,7 @@ struct PngToNtrOptions {
     char *cellFilePath;
     bool cellSnap;
     int numTiles;
+    int tilesWide;
     int bitDepth;
     int colsPerChunk;
     int rowsPerChunk;
@@ -36,11 +37,11 @@ struct PngToNtrOptions {
     bool version101;
     bool sopc;
     bool scan;
-    uint32_t encodeMode;
     bool wrongSize;
     bool handleEmpty;
     bool vramTransfer;
     int mappingType;
+    uint32_t encodeMode;
     bool convertTo4Bpp;
     int rotate;
     bool noSkip;
@@ -58,9 +59,9 @@ struct NtrToPngOptions {
     int rowsPerChunk;
     int palIndex;
     bool handleEmpty;
+    uint32_t encodeMode;
     bool convertTo8Bpp;
     bool verbose;
-    uint32_t encodeMode;
 };
 
 struct CellVramTransferData {

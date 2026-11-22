@@ -1,9 +1,10 @@
 # include "macros/frscrcmd.inc"
+# include "constants/battle_frontier.h"
 
     .data
 
-    .long _0142 - 4
-    .short 0xFD13
+    ScriptEntry _0142
+    ScriptEntryEnd
 
     .balign 4, 0
 _0008:
@@ -130,112 +131,85 @@ _00A0:
 
     .balign 4, 0
 _00B8:
-    .short 0x0027
-    .short 0x0001
-    .short 0x0005
-    .short 0x0003
-    .short 0x0000
-    .short 0x0001
-    .short 0xFD13
+    WarpIn
+    WalkSouth 3
+    FaceNorth
+    EndMovement
 
     .balign 4, 0
 _00C8:
-    .short 0x0027
-    .short 0x0001
-    .short 0x0005
-    .short 0x0002
-    .short 0xFD13
+    WarpIn
+    WalkSouth 2
+    EndMovement
 
     .balign 4, 0
 _00D4:
-    .short 0x0005
-    .short 0x0001
-    .short 0x0007
-    .short 0x0005
-    .short 0xFD13
+    WalkSouth
+    WalkEast 5
+    EndMovement
 
     .balign 4, 0
 _00E0:
-    .short 0x0005
-    .short 0x0001
-    .short 0x0006
-    .short 0x0005
-    .short 0xFD13
+    WalkSouth
+    WalkWest 5
+    EndMovement
 
     .balign 4, 0
 _00EC:
-    .short 0x0004
-    .short 0x0002
-    .short 0x0028
-    .short 0x0001
-    .short 0xFD13
+    WalkNorth 2
+    WarpOut
+    EndMovement
 
     .balign 4, 0
 _00F8:
-    .short 0x0007
-    .short 0x0005
-    .short 0x0004
-    .short 0x0001
-    .short 0x0023
-    .short 0x0001
-    .short 0x0003
-    .short 0x0001
-    .short 0x0022
-    .short 0x0001
-    .short 0x0000
-    .short 0x0001
-    .short 0x0022
-    .short 0x0001
-    .short 0xFD13
+    WalkEast 5
+    WalkNorth
+    Delay8
+    FaceEast
+    Delay4
+    FaceNorth
+    Delay4
+    EndMovement
 
     .balign 4, 0
 _0118:
-    .short 0x0006
-    .short 0x0005
-    .short 0x0004
-    .short 0x0001
-    .short 0x0023
-    .short 0x0001
-    .short 0x0002
-    .short 0x0001
-    .short 0x0022
-    .short 0x0001
-    .short 0x0000
-    .short 0x0001
-    .short 0x0022
-    .short 0x0001
-    .short 0xFD13
+    WalkWest 5
+    WalkNorth
+    Delay8
+    FaceWest
+    Delay4
+    FaceNorth
+    Delay4
+    EndMovement
 
     .balign 4, 0
 _0138:
-    .short 0x0004
-    .short 0x0001
-    .short 0x0028
-    .short 0x0001
-    .short 0xFD13
+    WalkNorth
+    WarpOut
+    EndMovement
 
 _0142:
-    FrontierScrCmd_3E 0x40DD, 0x8001
+    GetSystemVar VAR_BATTLE_TOWER_CORRIDOR_MULTI_LOAD_ACTION, VAR_0x8001
     Call _0278
     Call _0344
-    SetVar 0x800F, 232
-    PlaySoundEffect SEQ_SE_DP_DOOR10
+    SetVar FR_VAR_0x800F, 232
+    PlaySoundEffect SEQ_SE_DP_DOOR10_sseq
     FrontierScrCmd_2A _009C
     FrontierScrCmd_2C _00A0
     FrontierScrCmd_2F 1
-    CallBattleTowerFunction BT_FUNC_GET_CHALLENGE_MODE, 0, 0x8008
-    GoToIfEq 0x8008, 3, _01B0
-    GoToIfEq 0x8008, 6, _01B0
-    SetVar 0x8002, 3
-    SetVar 0x8003, 4
+    CallBattleTowerFunction BT_FUNC_GET_CHALLENGE_MODE, 0, VAR_0x8008
+    GoToIfEq VAR_0x8008, BATTLE_TOWER_MODE_LINK_MULTI, _01B0
+    GoToIfEq VAR_0x8008, BATTLE_TOWER_MODE_6, _01B0
+    SetVar VAR_0x8002, 3
+    SetVar VAR_0x8003, 4
     FrontierScrCmd_22 _0008
     FrontierScrCmd_24 _0024
     GoTo _01D0
     End
 
 _01B0:
-    SetVar 0x8002, 5
-    SetVar 0x8003, 6
+    SetVar VAR_0x8002, 5
+    SetVar VAR_0x8003, 6
     FrontierScrCmd_22 _0018
     FrontierScrCmd_24 _0060
     GoTo _01D0
@@ -250,17 +224,17 @@ _01D0:
     FrontierScrCmd_2D 0
     FrontierScrCmd_2D 1
     FrontierScrCmd_2B 1
-    CallBattleTowerFunction BT_FUNC_GET_CHALLENGE_MODE, 0, 0x8008
-    GoToIfEq 0x8008, 3, _0250
-    GoToIfEq 0x8008, 6, _0250
+    CallBattleTowerFunction BT_FUNC_GET_CHALLENGE_MODE, 0, VAR_0x8008
+    GoToIfEq VAR_0x8008, BATTLE_TOWER_MODE_LINK_MULTI, _0250
+    GoToIfEq VAR_0x8008, BATTLE_TOWER_MODE_6, _0250
     FrontierScrCmd_25 0
     FrontierScrCmd_25 1
     FrontierScrCmd_25 2
     FrontierScrCmd_25 3
     FrontierScrCmd_25 4
-    FrontierScrCmd_23 0x800F
-    FrontierScrCmd_23 0x800B
-    FrontierScrCmd_23 0x800C
+    FrontierScrCmd_23 FR_VAR_0x800F
+    FrontierScrCmd_23 VAR_0x800B
+    FrontierScrCmd_23 VAR_0x800C
     GoTo _0270
     End
 
@@ -270,19 +244,19 @@ _0250:
     FrontierScrCmd_25 2
     FrontierScrCmd_25 5
     FrontierScrCmd_25 6
-    FrontierScrCmd_23 0x800F
+    FrontierScrCmd_23 FR_VAR_0x800F
     GoTo _0270
     End
 
 _0270:
-    FrontierScrCmd_04 8, 0
+    ChangeScript FRONTIER_SCENE_TOWER_MULTI_BATTLE_ROOM, 0
     End
 
 _0278:
-    GoToIfEq 0x8001, 0, _02AA
-    GoToIfEq 0x8000, 1, _02AC
-    CallBattleTowerFunction BT_FUNC_GET_PARTNER_PARAM, 0, 0x800B
-    CallBattleTowerFunction BT_FUNC_GET_PARTNER_PARAM, 1, 0x800C
+    GoToIfEq VAR_0x8001, 0, _02AA
+    GoToIfEq VAR_0x8000, 1, _02AC
+    CallBattleTowerFunction BT_FUNC_GET_PARTNER_PARAM, BT_PARAM_PLAYER_GRAPHICS_ID, VAR_0x800B
+    CallBattleTowerFunction BT_FUNC_GET_PARTNER_PARAM, BT_PARAM_PARTNER_GRAPHICS_ID, VAR_0x800C
     GoTo _02AA
     End
 
@@ -290,8 +264,8 @@ _02AA:
     Return
 
 _02AC:
-    CallBattleTowerFunction BT_FUNC_GET_PARTNER_PARAM, 0, 0x800B
-    CallBattleTowerFunction BT_FUNC_GET_PARTNER_PARAM, 1, 0x800C
+    CallBattleTowerFunction BT_FUNC_GET_PARTNER_PARAM, BT_PARAM_PLAYER_GRAPHICS_ID, VAR_0x800B
+    CallBattleTowerFunction BT_FUNC_GET_PARTNER_PARAM, BT_PARAM_PARTNER_GRAPHICS_ID, VAR_0x800C
     Return
 
 _02BE:
@@ -300,32 +274,32 @@ _02BE:
     FrontierScrCmd_33 0
     FrontierScrCmd_32 0
     FrontierScrCmd_32 1
-    FrontierScrCmd_28 1, _00B8
-    FrontierScrCmd_28 2, _00B8
-    FrontierScrCmd_29
-    FrontierScrCmd_28 0x8002, _00C8
-    FrontierScrCmd_28 0x8003, _00C8
-    FrontierScrCmd_29
+    ApplyMovement 1, _00B8
+    ApplyMovement 2, _00B8
+    WaitMovement
+    ApplyMovement VAR_0x8002, _00C8
+    ApplyMovement VAR_0x8003, _00C8
+    WaitMovement
     Return
 
 _02FC:
-    FrontierScrCmd_28 1, _00F8
-    FrontierScrCmd_28 0x8002, _00D4
-    FrontierScrCmd_28 2, _0118
-    FrontierScrCmd_28 0x8003, _00E0
-    FrontierScrCmd_29
+    ApplyMovement 1, _00F8
+    ApplyMovement VAR_0x8002, _00D4
+    ApplyMovement 2, _0118
+    ApplyMovement VAR_0x8003, _00E0
+    WaitMovement
     Return
 
 _0320:
-    FrontierScrCmd_28 1, _0138
-    FrontierScrCmd_28 2, _0138
-    FrontierScrCmd_28 0x8002, _00EC
-    FrontierScrCmd_28 0x8003, _00EC
-    FrontierScrCmd_29
+    ApplyMovement 1, _0138
+    ApplyMovement 2, _0138
+    ApplyMovement VAR_0x8002, _00EC
+    ApplyMovement VAR_0x8003, _00EC
+    WaitMovement
     Return
 
 _0344:
-    CallIfNe 0x8001, 0, _0353
+    CallIfNe VAR_0x8001, 0, _0353
     Return
 
 _0353:

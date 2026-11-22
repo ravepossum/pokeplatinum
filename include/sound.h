@@ -5,15 +5,14 @@
 #include <nitro/spi.h>
 #include <nnsys.h>
 
-#include "generated/sdat.h"
+#include "constants/sound_volume.h"
 
 #include "sound_system.h"
 
+#include "res/sound/pl_sound_data.naix"
+
 #define FIELD_BGM_BANK_STATE_IDLE   0
 #define FIELD_BGM_BANK_STATE_SWITCH 1
-
-#define SOUND_VOLUME_MIN 0
-#define SOUND_VOLUME_MAX 127
 
 #define SOUND_WAVE_BUFFER_SIZE 2000
 
@@ -33,6 +32,8 @@
 #define SOUND_PLAYBACK_TRACK_ALL    0xFFFF
 
 #define NUM_SE_PLAYERS PLAYER_SE_4 - PLAYER_SE_1 + 1
+
+#define SEQ_NONE 0
 
 enum SoundScene {
     SOUND_SCENE_NONE = 0,
@@ -57,7 +58,7 @@ enum SoundScene {
     SOUND_SCENE_19,
     SOUND_SCENE_20,
     SOUND_SCENE_21,
-    SOUND_SCENE_22,
+    SOUND_SCENE_VILLA_MUSIC_BOX,
     SOUND_SCENE_23,
     SOUND_SCENE_24,
     SOUND_SCENE_25,

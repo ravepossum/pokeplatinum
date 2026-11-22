@@ -3,11 +3,10 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/geonet_globe.h"
 #include "constants/graphics.h"
 
-#include "struct_decls/struct_02015920_decl.h"
-#include "struct_decls/struct_0202B370_decl.h"
-#include "struct_defs/struct_02015958.h"
+#include "struct_decls/wi_fi_list.h"
 
 #include "nintendo_wfc/main.h"
 #include "overlay066/ov66_0222DDF0.h"
@@ -19,6 +18,7 @@
 #include "bg_window.h"
 #include "buffer_manager.h"
 #include "char_transfer.h"
+#include "comm_manager.h"
 #include "communication_information.h"
 #include "communication_system.h"
 #include "enums.h"
@@ -30,6 +30,7 @@
 #include "math_util.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "pltt_transfer.h"
 #include "render_oam.h"
 #include "render_window.h"
@@ -49,14 +50,12 @@
 #include "system.h"
 #include "text.h"
 #include "trainer_info.h"
-#include "unk_02015920.h"
-#include "unk_0202ACE0.h"
 #include "unk_020363E8.h"
-#include "unk_020366A0.h"
 #include "unk_0203909C.h"
-#include "unk_020393C8.h"
 #include "unk_02094EDC.h"
 #include "vram_transfer.h"
+#include "wifi_list.h"
+#include "yes_no_touch_menu.h"
 
 typedef struct {
     fx32 unk_00;
@@ -129,8 +128,8 @@ typedef struct {
 } UnkStruct_ov114_0225DAC0;
 
 typedef struct {
-    u8 unk_00[4];
-    u8 unk_04[4];
+    u8 countries[4];
+    u8 regions[4];
     const TrainerInfo *unk_08[4];
 } UnkStruct_ov114_0225E0F8;
 
@@ -177,8 +176,8 @@ typedef struct {
     u8 unk_00;
     u8 unk_01;
     u16 unk_02;
-    UnkStruct_02015920 *unk_04;
-    UnkStruct_02015958 unk_08;
+    YesNoTouchMenu *unk_04;
+    YesNoTouchMenuParams unk_08;
     u8 unk_1C;
     u8 unk_1D;
     u8 unk_1E;
@@ -281,8 +280,8 @@ static void ov114_0225D084(UnkStruct_ov114_0225D084 *param0, u32 heapID);
 static void ov114_0225D0D8(UnkStruct_ov114_0225D084 *param0);
 static void ov114_0225D0F8(UnkStruct_ov114_0225D084 *param0);
 static void ov114_0225D104(UnkStruct_ov114_0225D084 *param0, const TrainerInfo *param1);
-static void ov114_0225D114(UnkStruct_ov114_0225D084 *param0, u32 param1);
-static void ov114_0225D124(UnkStruct_ov114_0225D084 *param0, u32 param1, u32 param2);
+static void ov114_0225D114(UnkStruct_ov114_0225D084 *param0, u32 country);
+static void ov114_0225D124(UnkStruct_ov114_0225D084 *param0, u32 country, u32 region);
 static void ov114_0225D138(UnkStruct_ov114_0225D084 *param0, u32 param1, u32 param2);
 static void ov114_0225D154(UnkStruct_ov114_0225D084 *param0, u32 param1);
 static void ov114_0225D170(UnkStruct_ov114_0225D084 *param0, u32 param1);
@@ -301,7 +300,7 @@ static void ov114_0225D458(UnkStruct_ov114_0225D338 *param0, u32 param1);
 static void ov114_0225D474(UnkStruct_ov114_0225D338 *param0, u32 param1);
 static void ov114_0225DAC0(UnkStruct_ov114_0225DAC0 *param0, u32 param1, u32 param2, NNSG2dScreenData *param3, UnkStruct_ov114_0225CEF0 *param4, u32 param5, u32 param6, UnkStruct_ov114_0225CFCC *param7, UnkStruct_ov114_0225CDB4 *param8, u32 heapID);
 static void ov114_0225DC44(UnkStruct_ov114_0225DAC0 *param0, UnkStruct_ov114_0225D084 *param1, const TrainerInfo *param2, s16 param3, s16 param4, u32 param5);
-static void ov114_0225DCA0(UnkStruct_ov114_0225DAC0 *param0, UnkStruct_ov114_0225D084 *param1, BOOL param2, u32 param3, u32 param4, s16 param5);
+static void ov114_0225DCA0(UnkStruct_ov114_0225DAC0 *param0, UnkStruct_ov114_0225D084 *param1, BOOL param2, u32 country, u32 region, s16 param5);
 static void ov114_0225DD0C(UnkStruct_ov114_0225DAC0 *param0, u32 param1);
 static void ov114_0225DD2C(UnkStruct_ov114_0225DAC0 *param0, UnkStruct_ov114_0225D084 *param1, u32 param2, s16 param3, s16 param4, u32 param5);
 static void ov114_0225DD80(UnkStruct_ov114_0225DAC0 *param0, UnkStruct_ov114_0225CEF0 *param1);
@@ -1042,11 +1041,11 @@ BOOL ov114_0225CA54(UnkStruct_ov114_0225C76C *param0)
             v0 = 1;
         }
 
-        if (sub_02038284() == 1) {
+        if (CommManager_GetDisconnectedWifi() == 1) {
             v0 = 1;
         }
 
-        if (sub_020380E4() >= 2) {
+        if (CommManager_GetMatchmakingState() >= 2) {
             v0 = 1;
         }
 
@@ -1069,9 +1068,9 @@ BOOL ov114_0225CA98(const UnkStruct_ov114_0225C76C *param0)
 
     if (CommInfo_IsInitialized() == 1) {
         CommInfo_Delete();
-        sub_0203888C();
+        CommManager_EndWifiP2P();
     } else {
-        if (sub_020382C0() == 1) {
+        if (CommManager_IsLoginBattleMatchWifi() == 1) {
             return 1;
         }
     }
@@ -1131,7 +1130,7 @@ void ov114_0225CBB0(UnkStruct_ov114_0225CAD4 *param0)
     param0->unk_2C = SysTask_Start(ov114_0225FF54, param0, 0);
     param0->unk_04 = 1;
 
-    Sound_PlayEffect(SEQ_SE_DP_PINPON);
+    Sound_PlayEffect(SEQ_SE_DP_PINPON_sseq);
 }
 
 BOOL ov114_0225CBE0(const UnkStruct_ov114_0225CAD4 *param0)
@@ -1374,7 +1373,7 @@ static void ov114_0225CFCC(UnkStruct_ov114_0225CFCC *param0, u32 param1, u32 par
 
     param0->unk_00 = SpriteList_InitRendering(param1, &param0->unk_04, param4);
 
-    sub_02039734();
+    NetworkIcon_Init();
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
 }
@@ -1404,8 +1403,8 @@ static void ov114_0225D084(UnkStruct_ov114_0225D084 *param0, u32 heapID)
     param0->unk_08 = String_Init(128, heapID);
     param0->unk_0C = String_Init(128, heapID);
 
-    Font_LoadScreenIndicatorsPalette(0, 12 * 0x20, heapID);
-    Font_LoadScreenIndicatorsPalette(4, 12 * 0x20, heapID);
+    Font_LoadScreenIndicatorsPalette(PAL_LOAD_MAIN_BG, PLTT_OFFSET(12), heapID);
+    Font_LoadScreenIndicatorsPalette(PAL_LOAD_SUB_BG, PLTT_OFFSET(12), heapID);
 }
 
 static void ov114_0225D0D8(UnkStruct_ov114_0225D084 *param0)
@@ -1426,14 +1425,14 @@ static void ov114_0225D104(UnkStruct_ov114_0225D084 *param0, const TrainerInfo *
     StringTemplate_SetPlayerName(param0->unk_04, 0, param1);
 }
 
-static void ov114_0225D114(UnkStruct_ov114_0225D084 *param0, u32 param1)
+static void ov114_0225D114(UnkStruct_ov114_0225D084 *param0, u32 country)
 {
-    StringTemplate_SetCountryName(param0->unk_04, 0, param1);
+    StringTemplate_SetCountryName(param0->unk_04, 0, country);
 }
 
-static void ov114_0225D124(UnkStruct_ov114_0225D084 *param0, u32 param1, u32 param2)
+static void ov114_0225D124(UnkStruct_ov114_0225D084 *param0, u32 country, u32 region)
 {
-    StringTemplate_SetCityName(param0->unk_04, 0, param1, param2);
+    StringTemplate_SetRegionName(param0->unk_04, 0, country, region);
 }
 
 static void ov114_0225D138(UnkStruct_ov114_0225D084 *param0, u32 param1, u32 param2)
@@ -1608,7 +1607,7 @@ static UnkStruct_ov114_0225D678 *ov114_0225D48C(const UnkStruct_ov114_0225C76C *
     UnkStruct_ov114_0225D678 *v0;
     int v1;
 
-    Sound_SetSceneAndPlayBGM(SOUND_SCENE_19, SEQ_PL_WIFIGAME, 0);
+    Sound_SetSceneAndPlayBGM(SOUND_SCENE_19, SEQ_PL_WIFIGAME_sseq, 0);
 
     v0 = Heap_Alloc(heapID, sizeof(UnkStruct_ov114_0225D678));
     memset(v0, 0, sizeof(UnkStruct_ov114_0225D678));
@@ -1749,7 +1748,7 @@ static void ov114_0225D688(SysTask *param0, void *param1)
             v4 = ov114_0225C7A4(&v0->unk_08, v5);
 
             ov114_0225DC44(&v0->unk_268[v2], &v0->unk_3C, v0->unk_18.unk_08[v2], 8, 0, v4);
-            ov114_0225DCA0(&v0->unk_268[v2], &v0->unk_3C, v3, v0->unk_18.unk_00[v2], v0->unk_18.unk_04[v2], 8);
+            ov114_0225DCA0(&v0->unk_268[v2], &v0->unk_3C, v3, v0->unk_18.countries[v2], v0->unk_18.regions[v2], 8);
             ov114_0225DDD4(&v0->unk_268[v2], -8, 3 * v2);
         }
     }
@@ -1880,7 +1879,7 @@ static int ov114_0225DA2C(const u8 *param0, u32 param1)
         }
     }
 
-    GF_ASSERT(0);
+    GF_ASSERT(FALSE);
     return param1 - 1;
 }
 
@@ -1979,18 +1978,18 @@ static void ov114_0225DC44(UnkStruct_ov114_0225DAC0 *param0, UnkStruct_ov114_022
     }
 }
 
-static void ov114_0225DCA0(UnkStruct_ov114_0225DAC0 *param0, UnkStruct_ov114_0225D084 *param1, BOOL param2, u32 param3, u32 param4, s16 param5)
+static void ov114_0225DCA0(UnkStruct_ov114_0225DAC0 *param0, UnkStruct_ov114_0225D084 *param1, BOOL param2, u32 country, u32 region, s16 param5)
 {
     if (param2) {
-        if (param3 != 0) {
+        if (country != COUNTRY_NONE) {
             ov114_0225D0F8(param1);
-            ov114_0225D114(param1, param3);
+            ov114_0225D114(param1, country);
             ov114_0225D1AC(param1, 11, &param0->unk_00, param5, 16);
         }
     } else {
-        if (param3 != 0) {
+        if (country != COUNTRY_NONE) {
             ov114_0225D0F8(param1);
-            ov114_0225D124(param1, param3, param4);
+            ov114_0225D124(param1, country, region);
             ov114_0225D1AC(param1, 12, &param0->unk_00, param5, 16);
         }
     }
@@ -2219,24 +2218,24 @@ static void ov114_0225E0AC(void *param0)
 
 static void ov114_0225E0F8(UnkStruct_ov114_0225E0F8 *param0, const UnkStruct_ov114_0225C76C *param1)
 {
-    int v0;
+    int i;
 
-    for (v0 = 0; v0 < param1->unk_08; v0++) {
-        param0->unk_08[v0] = ov114_0225C7CC(param1, param1->unk_04[v0]);
-        GF_ASSERT(param0->unk_08[v0]);
-        param0->unk_00[v0] = CommInfo_PlayerCountry(param1->unk_04[v0]);
-        param0->unk_04[v0] = CommInfo_PlayerRegion(param1->unk_04[v0]);
+    for (i = 0; i < param1->unk_08; i++) {
+        param0->unk_08[i] = ov114_0225C7CC(param1, param1->unk_04[i]);
+        GF_ASSERT(param0->unk_08[i]);
+        param0->countries[i] = CommInfo_PlayerCountry(param1->unk_04[i]);
+        param0->regions[i] = CommInfo_PlayerRegion(param1->unk_04[i]);
     }
 }
 
 static BOOL ov114_0225E14C(const UnkStruct_ov114_0225C76C *param0, const UnkStruct_ov114_0225E0F8 *param1)
 {
-    int v0;
-    BOOL v1 = 0;
+    int i;
+    BOOL v1 = FALSE;
 
-    for (v0 = 0; v0 < param0->unk_08 - 1; v0++) {
-        if ((param1->unk_00[v0] != param1->unk_00[v0 + 1]) || (param1->unk_00[v0] == 0) || (param1->unk_00[v0 + 1] == 0)) {
-            v1 = 1;
+    for (i = 0; i < param0->unk_08 - 1; i++) {
+        if ((param1->countries[i] != param1->countries[i + 1]) || (param1->countries[i] == 0) || (param1->countries[i + 1] == 0)) {
+            v1 = TRUE;
         }
     }
 
@@ -2323,7 +2322,7 @@ static BOOL ov114_0225E31C(UnkStruct_ov114_0225E1A4 *param0, UnkStruct_ov114_022
         param0->unk_2C++;
 
         if (v0 == 1) {
-            Sound_PlayEffect(SEQ_SE_PL_FCALL);
+            Sound_PlayEffect(SEQ_SE_PL_FCALL_sseq);
 
             ov114_0225CBF0(&param0->unk_18, Unk_ov114_02260110[param0->unk_10], Unk_ov114_0226011C[param0->unk_10], Unk_ov114_02260128[param0->unk_10], 4);
             param0->unk_2E++;
@@ -2399,7 +2398,7 @@ static void ov114_0225E4B0(UnkStruct_ov114_0225E1A4 *param0, UnkStruct_ov114_022
         Bg_SetOffset(param1->unk_00, BG_LAYER_MAIN_1, 3, param2);
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 }
@@ -2417,7 +2416,7 @@ static void ov114_0225E500(UnkStruct_ov114_0225E1A4 *param0, UnkStruct_ov114_022
         Bg_ScheduleScroll(param1->unk_00, 1, 3, param2);
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 }
@@ -2503,7 +2502,7 @@ static UnkStruct_ov114_0225E854 *ov114_0225E5A8(const UnkStruct_ov114_0225C76C *
         v0->unk_6A8 = SysTask_Start(ov114_0225ED40, v0, 0);
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         v0->unk_6A8 = SysTask_Start(ov114_0225E874, v0, 0);
         break;
     }
@@ -2669,7 +2668,7 @@ static void ov114_0225E874(SysTask *param0, void *param1)
             v0->unk_6B6 = 32;
             break;
         default:
-            GF_ASSERT(0);
+            GF_ASSERT(FALSE);
             break;
         }
 
@@ -2950,7 +2949,7 @@ static void ov114_0225ED40(SysTask *param0, void *param1)
             v3 = ov114_0225C7A4(&v0->unk_0C, v4);
 
             ov114_0225DC44(&v0->unk_2C0[v2], &v0->unk_58, v0->unk_34.unk_08[v2], 8, 0, v3);
-            ov114_0225DCA0(&v0->unk_2C0[v2], &v0->unk_58, v0->unk_05, v0->unk_34.unk_00[v2], v0->unk_34.unk_04[v2], 8);
+            ov114_0225DCA0(&v0->unk_2C0[v2], &v0->unk_58, v0->unk_05, v0->unk_34.countries[v2], v0->unk_34.regions[v2], 8);
             ov114_0225DD80(&v0->unk_2C0[v2], &v0->unk_4C);
             ov114_0225DD94(&v0->unk_2C0[v2]);
             ov114_0225DDD4(&v0->unk_2C0[v2], -8, 3 * v2);
@@ -3176,20 +3175,20 @@ static void ov114_0225F234(UnkStruct_ov114_0225F270 *param0, UnkStruct_ov114_022
 {
     memset(param0, 0, sizeof(UnkStruct_ov114_0225F270));
 
-    param0->unk_08.unk_00 = param1->unk_00;
-    param0->unk_08.unk_04 = 4;
-    param0->unk_08.unk_08 = ((1 + (18 + 12)) + (27 * 4));
-    param0->unk_08.unk_0C = 2;
-    param0->unk_08.unk_10 = 24;
-    param0->unk_08.unk_11 = 8;
-    param0->unk_04 = sub_02015920(heapID);
+    param0->unk_08.bgConfig = param1->unk_00;
+    param0->unk_08.bgLayer = BG_LAYER_SUB_0;
+    param0->unk_08.baseTile = ((1 + (18 + 12)) + (27 * 4));
+    param0->unk_08.palette = 2;
+    param0->unk_08.tilemapLeft = 24;
+    param0->unk_08.tilemapTop = 8;
+    param0->unk_04 = YesNoTouchMenu_New(heapID);
     param0->unk_01 = param2;
     param0->unk_1D = 1;
 }
 
 static void ov114_0225F270(UnkStruct_ov114_0225F270 *param0)
 {
-    sub_02015938(param0->unk_04);
+    YesNoTouchMenu_Free(param0->unk_04);
 }
 
 static BOOL ov114_0225F27C(UnkStruct_ov114_0225F270 *param0, UnkStruct_ov114_0225D338 *param1, UnkStruct_ov114_0225D084 *param2, u32 param3, u32 heapID)
@@ -3199,7 +3198,7 @@ static BOOL ov114_0225F27C(UnkStruct_ov114_0225F270 *param0, UnkStruct_ov114_022
     switch (param0->unk_00) {
     case 0:
         StartScreenFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_IN, COLOR_BLACK, 6, 1, heapID);
-        sub_020397C8(0, heapID);
+        NetworkIcon_CreateOnSubScreen(0, heapID);
 
         if (param0->unk_01) {
             NintendoWFC_StartVoiceChat(heapID);
@@ -3225,16 +3224,16 @@ static BOOL ov114_0225F27C(UnkStruct_ov114_0225F270 *param0, UnkStruct_ov114_022
         }
         break;
     case 4:
-        sub_02015958(param0->unk_04, &param0->unk_08);
+        YesNoTouchMenu_InitWithParams(param0->unk_04, &param0->unk_08);
         param0->unk_00++;
         break;
     case 5:
-        v0 = sub_020159FC(param0->unk_04);
+        v0 = YesNoTouchMenu_ProcessInput(param0->unk_04);
 
-        if ((v0 == 1) || (v0 == 2)) {
-            if (v0 == 1) {
+        if (v0 == YES_NO_TOUCH_MENU_YES || v0 == YES_NO_TOUCH_MENU_NO) {
+            if (v0 == YES_NO_TOUCH_MENU_YES) {
                 CommSys_SendData(22, NULL, 0);
-            } else if (v0 == 2) {
+            } else if (v0 == YES_NO_TOUCH_MENU_NO) {
                 CommSys_SendData(23, NULL, 0);
             }
 
@@ -3414,7 +3413,7 @@ static BOOL ov114_0225F5AC(UnkStruct_ov114_0225F578 *param0, UnkStruct_ov114_022
             break;
         }
 
-        Sound_PlayEffect(SEQ_SE_PL_BALLOON07);
+        Sound_PlayEffect(SEQ_SE_PL_BALLOON07_sseq);
         Sprite_SetDrawFlag(param0->unk_08[(param0->unk_4A % (5 * 3))], TRUE);
         param0->unk_49 = 8;
         param0->unk_48++;
@@ -3458,7 +3457,7 @@ static void ov114_0225F6E4(UnkStruct_ov114_0225E854 *param0, u32 param1, u32 par
     v0 = ov114_0225C7A4(&param0->unk_0C, v2);
 
     ov114_0225DC44(&param0->unk_2C0[param1], &param0->unk_58, param0->unk_34.unk_08[param1], 8, 0, v0);
-    ov114_0225DCA0(&param0->unk_2C0[param1], &param0->unk_58, param0->unk_05, param0->unk_34.unk_00[param1], param0->unk_34.unk_04[param1], 8);
+    ov114_0225DCA0(&param0->unk_2C0[param1], &param0->unk_58, param0->unk_05, param0->unk_34.countries[param1], param0->unk_34.regions[param1], 8);
 
     if (param0->unk_07 == UnkEnum_ov66_022324D0_00) {
         v1 = 5;
@@ -3497,7 +3496,7 @@ static BOOL ov114_0225F7D8(UnkStruct_ov114_0225E854 *param0)
 static void ov114_0225F83C(UnkStruct_ov114_0225E854 *param0)
 {
     if (param0->unk_6C4 == 0) {
-        Sound_PlayFanfare(SEQ_PL_WINMINI2);
+        Sound_PlayFanfare(SEQ_PL_WINMINI2_sseq);
         param0->unk_6C4 = 1;
     }
 }
@@ -3563,7 +3562,7 @@ static u32 ov114_0225F8FC(const UnkStruct_ov114_0225E854 *param0)
         v0 = 0;
         break;
     case UnkEnum_ov66_022324D0_02:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         v0 = 0;
         break;
     }
@@ -3813,19 +3812,19 @@ static void ov114_0225FDC8(SysTask *param0, void *param1)
         if (v2 != v3) {
             switch (v3) {
             case 7:
-                Sound_PlayEffect(SEQ_SE_DP_DECIDE);
+                Sound_PlayEffect(SEQ_SE_DP_DECIDE_sseq);
                 break;
             case 9:
-                Sound_PlayEffect(SEQ_SE_DP_DECIDE);
+                Sound_PlayEffect(SEQ_SE_DP_DECIDE_sseq);
                 break;
             case 11:
-                Sound_PlayEffect(SEQ_SE_DP_DECIDE);
+                Sound_PlayEffect(SEQ_SE_DP_DECIDE_sseq);
                 break;
             case 13:
-                Sound_PlayEffect(SEQ_SE_DP_DECIDE);
+                Sound_PlayEffect(SEQ_SE_DP_DECIDE_sseq);
                 break;
             case 15:
-                Sound_PlayEffect(SEQ_SE_DP_CON_016);
+                Sound_PlayEffect(SEQ_SE_DP_CON_016_sseq);
                 break;
             default:
                 break;

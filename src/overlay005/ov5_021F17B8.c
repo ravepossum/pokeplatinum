@@ -3,8 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_02061830_decl.h"
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
+#include "struct_decls/map_object_manager.h"
 
 #include "field/field_system.h"
 #include "overlay005/field_effect_manager.h"
@@ -16,6 +16,8 @@
 #include "map_object.h"
 #include "map_object_move.h"
 #include "overworld_anim_manager.h"
+
+#include "res/graphics/field_effects/field_effects.naix"
 
 typedef struct {
     FieldEffectManager *unk_00;
@@ -83,7 +85,7 @@ void ov5_021F17D4(void *param0)
 
 static void ov5_021F17E4(UnkStruct_ov5_021F17E4 *param0)
 {
-    ov5_021DF9E0(param0->unk_00, 2, 20);
+    ov5_021DF9E0(param0->unk_00, 2, mirror_nsbmd);
 }
 
 static void ov5_021F17F4(UnkStruct_ov5_021F17E4 *param0)
@@ -119,9 +121,9 @@ static int ov5_021F184C(OverworldAnimManager *param0, void *param1)
     v2 = OverworldAnimManager_GetUserData(param0);
 
     v1->unk_14 = *v2;
-    v1->unk_10 = OverworldAnimManager_GetID(param0);
+    v1->unk_10 = OverworldAnimManager_GetUserInt(param0);
     v1->unk_00 = MapObject_GetLocalID(v1->unk_14.unk_0C);
-    v1->unk_04 = MapObject_GetMapID(v1->unk_14.unk_0C);
+    v1->unk_04 = MapObject_GetMapHeaderID(v1->unk_14.unk_0C);
     v1->unk_08 = MapObject_GetGraphicsID(v1->unk_14.unk_0C);
 
     if (BerryPatchGraphics_IsBerryPatch(v1->unk_08) == 1) {
@@ -374,7 +376,7 @@ static int ov5_021F1BEC(OverworldAnimManager *param0, void *param1)
     v2 = OverworldAnimManager_GetUserData(param0);
 
     v1->unk_04 = *v2;
-    v1->unk_00 = OverworldAnimManager_GetID(param0);
+    v1->unk_00 = OverworldAnimManager_GetUserInt(param0);
     v1->unk_40.x = FX32_ONE;
     v1->unk_40.y = FX32_ONE;
     v1->unk_40.z = FX32_ONE;

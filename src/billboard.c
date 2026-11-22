@@ -4,12 +4,6 @@
 #include "easy3d.h"
 #include "heap.h"
 
-enum BillboardAnimType {
-    BILLBOARD_ANIM_TYPE_LOOP = 0,
-    BILLBOARD_ANIM_TYPE_ONESHOT,
-    BILLBOARD_ANIM_TYPE_TABLE_END, // used as the anim type for the dummy entry at the end of anim tables
-};
-
 enum BillboardAnimStatus {
     BILLBOARD_ANIM_STATUS_RUNNING = 0,
     BILLBOARD_ANIM_STATUS_FINISHED,
@@ -24,13 +18,6 @@ enum BillboardRedraw {
 enum BillboardResourceValue {
     BILLBOARD_RESOURCE_MODEL_RES = 0,
     BILLBOARD_RESOURCE_TEXTURE,
-};
-
-enum BillboardState {
-    BILLBOARD_STATE_INACTIVE = 0,
-    BILLBOARD_STATE_INITIALIZED,
-    BILLBOARD_STATE_VRAM_TRANSFER,
-    BILLBOARD_STATE_ACTIVE,
 };
 
 static BillboardList *FindFirstFreeBillboardList(void);
@@ -155,7 +142,7 @@ BillboardList *BillboardList_New(const BillboardListParams *params)
     BillboardList *list = FindFirstFreeBillboardList();
 
     if (list == NULL) {
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         return NULL;
     }
 
@@ -182,7 +169,7 @@ BillboardList *BillboardList_New(const BillboardListParams *params)
 BOOL BillboardList_Delete(BillboardList *list)
 {
     if (list == NULL) {
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         return FALSE;
     }
 

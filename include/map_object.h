@@ -4,28 +4,39 @@
 #include <nitro/fx/fx.h>
 
 #include "constants/field/map.h"
+#include "constants/fieldmap.h"
 #include "constants/map_object.h"
 #include "generated/movement_actions.h"
 
-#include "struct_decls/struct_02061830_decl.h"
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
+#include "struct_decls/map_object_manager.h"
 
 #include "field/field_system_decl.h"
 #include "functypes/funcptr_020EDF0C.h"
 #include "functypes/funcptr_020EDF0C_1.h"
 #include "functypes/funcptr_020EDF0C_2.h"
-#include "overlay005/funcptr_ov5_021FB0F0.h"
-#include "overlay005/funcptr_ov5_021FB0F0_1.h"
-#include "overlay005/funcptr_ov5_021FB0F0_2.h"
-#include "overlay005/funcptr_ov5_021FB0F0_3.h"
-#include "overlay005/funcptr_ov5_021FB0F0_4.h"
 #include "overlay005/struct_ov5_021ED0A4.h"
 
 #include "map_header_data.h"
 #include "narc.h"
 #include "sys_task_manager.h"
 
-#define MAP_OBJECT_COORD_TO_FX32(coord) ((coord << 4) * FX32_ONE) + (MAP_OBJECT_TILE_SIZE >> 1)
+#define MAP_OBJECT_COORD_CENTER_TO_FX32(coord) (((coord) << 4) * FX32_ONE) + (MAP_OBJECT_TILE_SIZE >> 1)
+#define MAP_OBJECT_COORD_EDGE_TO_FX32(coord)   (((coord) << 4) * FX32_ONE)
+
+typedef void (*UnkFuncPtr_ov5_021FB0F0)(MapObject *);
+typedef void (*UnkFuncPtr_ov5_021FB0F0_1)(MapObject *);
+typedef void (*UnkFuncPtr_ov5_021FB0F0_2)(MapObject *);
+typedef void (*UnkFuncPtr_ov5_021FB0F0_3)(MapObject *);
+typedef void (*UnkFuncPtr_ov5_021FB0F0_4)(MapObject *);
+
+typedef struct {
+    UnkFuncPtr_ov5_021FB0F0 unk_00;
+    UnkFuncPtr_ov5_021FB0F0_1 unk_04;
+    UnkFuncPtr_ov5_021FB0F0_2 unk_08;
+    UnkFuncPtr_ov5_021FB0F0_3 unk_0C;
+    UnkFuncPtr_ov5_021FB0F0_4 unk_10;
+} UnkStruct_ov5_021FB0F0;
 
 typedef struct MapObjectSave {
     u32 status;
@@ -59,10 +70,10 @@ typedef struct MapObjectSave {
 
 MapObjectManager *MapObjectMan_New(FieldSystem *fieldSystem, int maxObjs, int taskBasePriority);
 void MapObjectMan_Delete(MapObjectManager *mapObjMan);
-void sub_0206184C(MapObjectManager *mapObjMan, int mapID, int param2, int objEventCount, const ObjectEvent *objectEvent);
-MapObject *MapObjectMan_AddMapObjectFromHeader(const MapObjectManager *mapObjMan, const ObjectEvent *objectEvent, int mapID);
-MapObject *MapObjectMan_AddMapObject(const MapObjectManager *mapObjMan, int x, int z, int initialDir, int graphicsID, int movementType, int mapID);
-MapObject *MapObjectMan_AddMapObjectFromLocalID(const MapObjectManager *mapObjMan, int param1, int objEventCount, int mapID, const ObjectEvent *objectEvent);
+void sub_0206184C(MapObjectManager *mapObjMan, enum MapHeaderID oldMapHeaderID, enum MapHeaderID newMapHeaderID, int objEventCount, const ObjectEvent *objectEvent);
+MapObject *MapObjectMan_AddMapObjectFromHeader(const MapObjectManager *mapObjMan, const ObjectEvent *objectEvent, enum MapHeaderID mapHeaderID);
+MapObject *MapObjectMan_AddMapObject(const MapObjectManager *mapObjMan, int x, int z, int initialDir, int graphicsID, int movementType, enum MapHeaderID mapHeaderID);
+MapObject *MapObjectMan_AddMapObjectFromLocalID(const MapObjectManager *mapObjMan, int param1, int objEventCount, enum MapHeaderID mapHeaderID, const ObjectEvent *objectEvent);
 void sub_02061AB4(MapObject *mapObj, int graphicsID);
 void sub_02061AD4(MapObject *mapObj, int param1);
 void MapObject_Delete(MapObject *mapObj);
@@ -73,14 +84,14 @@ void sub_02061BF0(MapObjectManager *mapObjMan);
 void sub_02061C48(MapObjectManager *mapObjMan);
 void MapObjectMan_SaveAll(FieldSystem *fieldSystem, const MapObjectManager *mapObjMan, MapObjectSave *mapObjSave, int param3);
 void MapObjectMan_LoadAllObjects(const MapObjectManager *mapObjMan, MapObjectSave *mapObjSave, int size);
-void sub_02062068(const MapObjectManager *mapObjMan, int param1, int param2, const ObjectEvent *objectEvent);
+void sub_02062068(const MapObjectManager *mapObjMan, enum MapHeaderID mapHeaderID, u32 numObjectEvents, const ObjectEvent *objectEvent);
 MapObject *MapObjMan_LocalMapObjByIndex(const MapObjectManager *mapObjMan, int index);
 MapObject *MapObjMan_GetLocalMapObjByMovementType(const MapObjectManager *mapObjMan, int movementType);
 BOOL MapObjectMan_FindObjectWithStatus(const MapObjectManager *mapObjMan, MapObject **mapObj, int *startIdx, u32 status);
 int MapObject_HasNoScript(const MapObject *mapObj);
 int MapObject_CalculateTaskPriority(const MapObject *mapObj, int priority);
-int sub_02062764(const MapObject *mapObj, int param1, int param2);
-int sub_020627B4(const MapObject *mapObj, int param1, int param2, int param3);
+int sub_02062764(const MapObject *mapObj, int param1, enum MapHeaderID param2);
+int sub_020627B4(const MapObject *mapObj, int param1, int param2, enum MapHeaderID param3);
 void MapObjectMan_SetMaxObjects(MapObjectManager *mapObjMan, int maxObjs);
 int MapObjectMan_GetMaxObjects(const MapObjectManager *mapObjMan);
 void MapObjectMan_SetStatusFlagOn(MapObjectManager *mapObjMan, u32 flag);
@@ -110,8 +121,8 @@ void sub_020628F8(MapObject *mapObj, u32 param1);
 u32 sub_02062904(const MapObject *mapObj, u32 param1);
 void MapObject_SetLocalID(MapObject *mapObj, u32 localID);
 u32 MapObject_GetLocalID(const MapObject *mapObj);
-void MapObject_SetMapID(MapObject *mapObj, int mapID);
-int MapObject_GetMapID(const MapObject *mapObj);
+void MapObject_SetMapHeaderID(MapObject *mapObj, enum MapHeaderID mapHeaderID);
+enum MapHeaderID MapObject_GetMapHeaderID(const MapObject *mapObj);
 void MapObject_SetGraphicsID(MapObject *mapObj, u32 graphicsID);
 u32 MapObject_GetGraphicsID(const MapObject *mapObj);
 u32 MapObject_GetEffectiveGraphicsID(const MapObject *mapObj);
@@ -216,8 +227,8 @@ void sub_02062EAC(MapObject *mapObj, int param1);
 int sub_02062EC8(const MapObject *mapObj);
 void MapObject_SetFlagDoNotSinkIntoTerrain(MapObject *mapObj, BOOL flag);
 int MapObject_CheckFlagDoNotSinkIntoTerrain(const MapObject *mapObj);
-void sub_02062F14(MapObject *mapObj, int param1);
-int sub_02062F30(const MapObject *mapObj);
+void MapObject_SetElevatedBridgeStatus(MapObject *mapObj, BOOL isOnBridge);
+int MapObject_IsStatusOnElevatedBridge(const MapObject *mapObj);
 void sub_02062F48(MapObject *mapObj, int param1);
 int sub_02062F64(const MapObject *mapObj);
 int sub_02062F7C(const MapObject *mapObj);

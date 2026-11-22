@@ -7,13 +7,10 @@
 
 #include "constants/graphics.h"
 
-#include "struct_decls/struct_02030EC4_decl.h"
-
 #include "overlay066/ov66_0222DDF0.h"
 #include "overlay066/ov66_02231428.h"
 #include "overlay066/ov66_022324F0.h"
 #include "overlay066/struct_ov66_0222DFF8_decl.h"
-#include "overlay066/struct_ov66_0222E71C_decl.h"
 #include "overlay066/struct_ov66_0222E908.h"
 #include "overlay066/struct_ov66_02231374.h"
 #include "overlay068/struct_ov68_0225DC74.h"
@@ -28,6 +25,7 @@
 #include "menu.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "pltt_transfer.h"
 #include "render_oam.h"
@@ -45,9 +43,8 @@
 #include "system.h"
 #include "text.h"
 #include "trainer_info.h"
-#include "unk_02030EA4.h"
-#include "unk_020393C8.h"
 #include "vram_transfer.h"
+#include "wifi_plaza_question_data.h"
 
 typedef struct {
     u32 unk_00;
@@ -102,7 +99,7 @@ typedef struct {
     StringTemplate *unk_24;
     String *unk_28;
     String *unk_2C;
-    UnkStruct_ov66_0222DFF8 *unk_30;
+    WiFiPlazaSystem *unk_30;
 } UnkStruct_ov68_0225CB70;
 
 typedef struct {
@@ -129,7 +126,7 @@ static void ov68_0225C9A0(UnkStruct_ov68_0225C91C *param0, Options *options, enu
 static void ov68_0225CA8C(UnkStruct_ov68_0225C91C *param0);
 static void ov68_0225CAB4(UnkStruct_ov68_0225C91C *param0, enum HeapID heapID);
 static void ov68_0225CB44(UnkStruct_ov68_0225C91C *param0);
-static void ov68_0225CB70(UnkStruct_ov68_0225CB70 *param0, UnkStruct_ov66_0222DFF8 *param1, enum HeapID heapID);
+static void ov68_0225CB70(UnkStruct_ov68_0225CB70 *param0, WiFiPlazaSystem *param1, enum HeapID heapID);
 static void ov68_0225CBC0(UnkStruct_ov68_0225CB70 *param0);
 static String *ov68_0225CBEC(UnkStruct_ov68_0225CB70 *param0, u32 param1, u32 param2);
 static String *ov68_0225CC18(UnkStruct_ov68_0225CB70 *param0, u32 param1);
@@ -141,7 +138,7 @@ static String *ov68_0225DC40(const UnkStruct_ov68_0225DB8C *param0, UnkStruct_ov
 static String *ov68_0225DC58(const UnkStruct_ov68_0225DB8C *param0, UnkStruct_ov68_0225CB70 *param1, u32 param2);
 static void ov68_0225DC74(UnkStruct_ov68_0225DC74 *param0);
 static u32 ov68_0225DCA4(const UnkStruct_ov68_0225DC74 *param0, u32 param1, u32 param2);
-static void ov68_0225DCCC(UnkStruct_ov68_0225DC74 *param0, const UnkStruct_ov66_0222DFF8 *param1);
+static void ov68_0225DCCC(UnkStruct_ov68_0225DC74 *param0, const WiFiPlazaSystem *param1);
 static void ov68_0225CCA8(UnkUnion_ov68_0225CCA8 *param0, UnkStruct_ov68_0225CB70 *param1, UnkStruct_ov68_0225C91C *param2, UnkStruct_ov66_02231374 *param3, u32 param4);
 static BOOL ov68_0225CCB4(UnkUnion_ov68_0225CCA8 *param0, UnkStruct_ov68_0225CB70 *param1, UnkStruct_ov68_0225C91C *param2, UnkStruct_ov68_0225D128 *param3, UnkStruct_ov66_02231374 *param4, enum HeapID heapID);
 static void ov68_0225CCC8(UnkUnion_ov68_0225CCA8 *param0, UnkStruct_ov68_0225CB70 *param1, UnkStruct_ov68_0225C91C *param2);
@@ -470,7 +467,7 @@ static void ov68_0225C9A0(UnkStruct_ov68_0225C91C *param0, Options *options, enu
         Bg_ClearTilemap(param0->unk_00, Unk_ov68_0225DD68[i]);
     }
 
-    Font_LoadScreenIndicatorsPalette(0, 4 * 0x20, heapID);
+    Font_LoadScreenIndicatorsPalette(PAL_LOAD_MAIN_BG, PLTT_OFFSET(4), heapID);
 
     LoadMessageBoxGraphics(param0->unk_00, BG_LAYER_MAIN_1, 1, 5, Options_Frame(options), heapID);
     LoadStandardWindowGraphics(param0->unk_00, BG_LAYER_MAIN_1, 1 + (18 + 12), 6, 0, heapID);
@@ -513,7 +510,7 @@ static void ov68_0225CAB4(UnkStruct_ov68_0225C91C *param0, enum HeapID heapID)
         param0->unk_194[v0] = SpriteResourceCollection_New(32, v0, heapID);
     }
 
-    sub_02039734();
+    NetworkIcon_Init();
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
 }
@@ -533,7 +530,7 @@ static void ov68_0225CB44(UnkStruct_ov68_0225C91C *param0)
     RenderOam_Free();
 }
 
-static void ov68_0225CB70(UnkStruct_ov68_0225CB70 *param0, UnkStruct_ov66_0222DFF8 *param1, enum HeapID heapID)
+static void ov68_0225CB70(UnkStruct_ov68_0225CB70 *param0, WiFiPlazaSystem *param1, enum HeapID heapID)
 {
     int v0;
     static const v1[9] = {
@@ -613,7 +610,7 @@ static String *ov68_0225CC44(UnkStruct_ov68_0225CB70 *param0, u32 param1, u32 pa
 static void ov68_0225CC78(UnkStruct_ov68_0225CB70 *param0, u32 param1, enum HeapID heapID)
 {
     TrainerInfo *v0 = TrainerInfo_New(heapID);
-    const UnkStruct_ov66_0222E71C *v1 = ov66_0222E3BC(param0->unk_30);
+    const WiFiPlazaProfile *v1 = ov66_0222E3BC(param0->unk_30);
 
     ov66_0222E640(v1, v0, heapID);
     StringTemplate_SetPlayerName(param0->unk_24, param1, v0);
@@ -744,19 +741,19 @@ static BOOL ov68_0225CE48(UnkStruct_ov68_0225D0F8 *param0, UnkStruct_ov68_0225CB
         break;
     case 5:
         if (gSystem.pressedKeys & PAD_BUTTON_A) {
-            Sound_PlayEffect(SEQ_SE_CONFIRM);
+            Sound_PlayEffect(SE_CONFIRM_sseq_3);
             param0->unk_28++;
             break;
         }
 
         if (gSystem.pressedKeys & PAD_KEY_UP) {
             if ((param0->unk_10 - 1) >= 0) {
-                Sound_PlayEffect(SEQ_SE_DP_SELECT78);
+                Sound_PlayEffect(SEQ_SE_DP_SELECT78_sseq);
                 param0->unk_10--;
             }
         } else if (gSystem.pressedKeys & PAD_KEY_DOWN) {
             if ((param0->unk_10 + 1) < 3) {
-                Sound_PlayEffect(SEQ_SE_DP_SELECT78);
+                Sound_PlayEffect(SEQ_SE_DP_SELECT78_sseq);
                 param0->unk_10++;
             }
         }
@@ -772,7 +769,7 @@ static BOOL ov68_0225CE48(UnkStruct_ov68_0225D0F8 *param0, UnkStruct_ov68_0225CB
 
         ov68_0225D218(param3, v1);
         ov68_0225D284(param3);
-        Sound_PlayEffect(SEQ_SE_PL_BREC80);
+        Sound_PlayEffect(SEQ_SE_PL_BREC80_sseq);
         param0->unk_28 = 7;
         break;
     case 7: {
@@ -780,7 +777,7 @@ static BOOL ov68_0225CE48(UnkStruct_ov68_0225D0F8 *param0, UnkStruct_ov68_0225CB
         v3 = ov66_02233434();
 
         if (v3 != UnkEnum_ov66_02233434_01) {
-            Sound_PlayEffect(SEQ_SE_DP_BUTTON9);
+            Sound_PlayEffect(SEQ_SE_DP_BUTTON9_sseq);
             ov68_0225D2A0(param3);
 
             v1 = ov68_0225CBEC(param1, 0, 97);
@@ -811,7 +808,7 @@ static BOOL ov68_0225CE48(UnkStruct_ov68_0225D0F8 *param0, UnkStruct_ov68_0225CB
         }
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 
@@ -1078,7 +1075,7 @@ static BOOL ov68_0225D478(UnkStruct_ov68_0225D388 *param0, UnkStruct_ov68_0225CB
         break;
     case 4: {
         UnkStruct_ov66_0222E908 v2;
-        const UnkStruct_ov66_0222E71C *v3;
+        const WiFiPlazaProfile *v3;
         BOOL v4;
 
         v3 = ov66_0222E3BC(param4->unk_04);
@@ -1088,7 +1085,7 @@ static BOOL ov68_0225D478(UnkStruct_ov68_0225D388 *param0, UnkStruct_ov68_0225CB
         ov68_0225D8F0(param0, &param0->unk_88, param1, param2, &v2, heapID, TEXT_COLOR(9, 10, 0), TEXT_COLOR(13, 14, 0), v4);
         ov68_0225DA30(param0, &param0->unk_C8, param2, 1);
 
-        Sound_PlayEffect(SEQ_SE_PL_PINPON2);
+        Sound_PlayEffect(SEQ_SE_PL_PINPON2_sseq);
     }
 
         param0->unk_60 = 5;
@@ -1193,17 +1190,17 @@ static BOOL ov68_0225D478(UnkStruct_ov68_0225D388 *param0, UnkStruct_ov68_0225CB
         break;
     case 17: {
         UnkStruct_ov66_0222E908 v7;
-        WiFiQuestions *v8;
+        WiFiPlazaQuestion *savedWiFiPlazaQuestion;
         BOOL v9;
 
-        v8 = SaveData_GetWiFiQuestions(param4->saveData);
-        v7.unk_00 = sub_02030ED0(v8);
-        v7.unk_04 = sub_02030ED4(v8);
+        savedWiFiPlazaQuestion = SaveData_GetWiFiPlazaQuestion(param4->saveData);
+        v7.questionNumber = WiFiPlazaQuestion_GetQuestionNumber(savedWiFiPlazaQuestion);
+        v7.selectedAnswer = WiFiPlazaQuestion_GetSelectedAnswer(savedWiFiPlazaQuestion);
         v9 = ov66_0222E924(param4->unk_04, ov66_0222E338(param4->unk_04));
 
         ov68_0225D8F0(param0, &param0->unk_A8, param1, param2, &v7, heapID, TEXT_COLOR(11, 12, 0), TEXT_COLOR(15, 14, 0), v9);
         ov68_0225DA30(param0, &param0->unk_DC, param2, 2);
-        Sound_PlayEffect(SEQ_SE_PL_PINPON2);
+        Sound_PlayEffect(SEQ_SE_PL_PINPON2_sseq);
     }
         param0->unk_60 = 18;
         break;
@@ -1236,7 +1233,7 @@ static BOOL ov68_0225D478(UnkStruct_ov68_0225D388 *param0, UnkStruct_ov68_0225CB
         }
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 
@@ -1294,7 +1291,7 @@ static void ov68_0225D8F0(UnkStruct_ov68_0225D388 *param0, const UnkStruct_ov68_
     v0 = ov68_0225DC58(param1, param2, 2);
     Text_AddPrinterWithParamsAndColor(&param0->unk_00[1], FONT_MESSAGE, v0, 0, 48, TEXT_SPEED_NO_TRANSFER, param6, NULL);
 
-    if ((param4->unk_00 == param1->unk_04) && (param4->unk_04 < 3)) {
+    if ((param4->questionNumber == param1->unk_04) && (param4->selectedAnswer < 3)) {
         s32 v1;
         s32 v2;
         TextColor v3;
@@ -1313,7 +1310,7 @@ static void ov68_0225D8F0(UnkStruct_ov68_0225D388 *param0, const UnkStruct_ov68_
 
         Text_AddPrinterWithParamsAndColor(&param0->unk_00[5], FONT_MESSAGE, v0, v2, 0, TEXT_SPEED_NO_TRANSFER, v3, NULL);
 
-        v0 = ov68_0225DC58(param1, param2, param4->unk_04);
+        v0 = ov68_0225DC58(param1, param2, param4->selectedAnswer);
         v1 = Font_CalcStringWidth(FONT_MESSAGE, v0, 0);
         v2 = (((13 * 8) - v1) / 2);
 
@@ -1496,9 +1493,9 @@ static u32 ov68_0225DCA4(const UnkStruct_ov68_0225DC74 *param0, u32 param1, u32 
     return (u32)(((u64)(v0 * v1)) / param0->unk_0C);
 }
 
-static void ov68_0225DCCC(UnkStruct_ov68_0225DC74 *param0, const UnkStruct_ov66_0222DFF8 *param1)
+static void ov68_0225DCCC(UnkStruct_ov68_0225DC74 *param0, const WiFiPlazaSystem *param1)
 {
-    const UnkStruct_ov66_0222E71C *v0;
+    const WiFiPlazaProfile *v0;
     UnkStruct_ov66_0222E908 v1;
     int v2;
     u32 language;
@@ -1510,12 +1507,12 @@ static void ov68_0225DCCC(UnkStruct_ov68_0225DC74 *param0, const UnkStruct_ov66_
         v0 = ov66_0222E374(param1, v2);
 
         if (v0 != NULL) {
-            language = ov66_0222E850(v0);
+            language = WiFiPlazaProfile_GetLanguage(v0);
             ov66_0222E908(v0, &v1);
             v4 = ov66_022335C0(UnkEnum_ov66_022335C0_00, language);
 
-            if ((v4 == 1) && (v1.unk_04 < 3)) {
-                param0->unk_00[v1.unk_04]++;
+            if ((v4 == 1) && (v1.selectedAnswer < 3)) {
+                param0->unk_00[v1.selectedAnswer]++;
                 param0->unk_0C++;
             }
         }

@@ -4,7 +4,7 @@
 #include <nitro/os.h>
 #include <string.h>
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "field/field_system.h"
 #include "overlay005/ov5_021ECC20.h"
@@ -42,19 +42,19 @@ static void ov5_021E135C(UnkStruct_ov5_021E135C *param0)
         break;
     }
 
-    Player_SetDir(param0->fieldSystem->playerAvatar, param0->unk_10);
+    PlayerAvatar_TryFace(param0->fieldSystem->playerAvatar, param0->unk_10);
 }
 
 static void ov5_021E139C(SysTask *param0, void *param1)
 {
     UnkStruct_ov5_021E135C *v0 = param1;
-    MapObject *v1 = Player_MapObject(v0->fieldSystem->playerAvatar);
+    MapObject *v1 = PlayerAvatar_GetMapObject(v0->fieldSystem->playerAvatar);
     VecFx32 v2;
 
     switch (v0->unk_08) {
     case 0:
         v0->unk_08 = 1;
-        Sound_PlayEffect(SEQ_SE_DP_TELE2);
+        Sound_PlayEffect(SEQ_SE_DP_TELE2_sseq);
     case 1:
         if (v0->unk_0C % 2) {
             ov5_021E135C(v0);
@@ -81,7 +81,7 @@ static void ov5_021E139C(SysTask *param0, void *param1)
 static void ov5_021E1470(SysTask *param0, void *param1)
 {
     UnkStruct_ov5_021E135C *v0 = param1;
-    MapObject *v1 = Player_MapObject(v0->fieldSystem->playerAvatar);
+    MapObject *v1 = PlayerAvatar_GetMapObject(v0->fieldSystem->playerAvatar);
     VecFx32 v2;
     int v3;
 
@@ -95,7 +95,7 @@ static void ov5_021E1470(SysTask *param0, void *param1)
         MapObject_Draw(v1);
     }
 
-        Sound_PlayEffect(SEQ_SE_DP_TELE2);
+        Sound_PlayEffect(SEQ_SE_DP_TELE2_sseq);
         v0->unk_08 = 1;
     case 1:
         if (v0->unk_0C % 2) {
@@ -118,7 +118,7 @@ static void ov5_021E1470(SysTask *param0, void *param1)
         break;
     case 2:
         if (IsScreenFadeDone()) {
-            Player_SetDir(v0->fieldSystem->playerAvatar, 1);
+            PlayerAvatar_TryFace(v0->fieldSystem->playerAvatar, 1);
             *v0->unk_04 = 1;
             Heap_Free(v0);
             SysTask_Done(param0);
@@ -135,7 +135,7 @@ void FieldSystem_StartWarpAnimation(FieldSystem *fieldSystem, BOOL param1, BOOL 
 
     v0->fieldSystem = fieldSystem;
     v0->unk_04 = param2;
-    v0->unk_10 = PlayerAvatar_GetDir(fieldSystem->playerAvatar);
+    v0->unk_10 = PlayerAvatar_GetFacingDir(fieldSystem->playerAvatar);
 
     if (param1) {
         SysTask_Start(ov5_021E139C, v0, 100);

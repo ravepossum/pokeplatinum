@@ -3,8 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_0205E884_decl.h"
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "overlay005/field_effect_manager.h"
 
@@ -15,6 +14,8 @@
 #include "overworld_anim_manager.h"
 #include "player_avatar.h"
 #include "simple3d.h"
+
+#include "res/graphics/field_effects/field_effects.naix"
 
 typedef struct {
     FieldEffectManager *unk_00;
@@ -68,7 +69,7 @@ void ov5_021F61D8(void *param0)
 
 static void ov5_021F61E8(UnkStruct_021F61E8 *param0)
 {
-    FieldEffectManager_LoadModel(param0->unk_00, &param0->unk_04, 0, 80, 0);
+    FieldEffectManager_LoadModel(param0->unk_00, &param0->unk_04, 0, exit_arrow_nsbmd, 0);
     Simple3D_CreateRenderObject(&param0->unk_18, &param0->unk_04);
 }
 
@@ -85,7 +86,7 @@ void ov5_021F6218(PlayerAvatar *playerAvatar)
     MapObject *v4;
     VecFx32 v5 = { 0, 0, 0 };
 
-    v4 = Player_MapObject(playerAvatar);
+    v4 = PlayerAvatar_GetMapObject(playerAvatar);
     v3 = MapObject_GetFieldEffectManager(v4);
 
     v2.unk_00 = v3;
@@ -105,11 +106,11 @@ static int ov5_021F6264(OverworldAnimManager *param0, void *param1)
     v0 = param1;
     v2 = OverworldAnimManager_GetUserData(param0);
     v0->unk_24 = *v2;
-    v1 = Player_MapObject(v2->playerAvatar);
+    v1 = PlayerAvatar_GetMapObject(v2->playerAvatar);
 
     v0->unk_04 = -1;
     v0->unk_14 = MapObject_GetLocalID(v1);
-    v0->unk_18 = MapObject_GetMapID(v1);
+    v0->unk_18 = MapObject_GetMapHeaderID(v1);
 
     return 1;
 }
@@ -124,7 +125,7 @@ static void ov5_021F62A0(OverworldAnimManager *param0, void *param1)
     int v0;
     UnkStruct_021F6264 *v1 = param1;
     PlayerAvatar *playerAvatar = v1->unk_24.playerAvatar;
-    MapObject *v3 = Player_MapObject(playerAvatar);
+    MapObject *v3 = PlayerAvatar_GetMapObject(playerAvatar);
 
     if (sub_02062764(v3, v1->unk_14, v1->unk_18) == 0) {
         FieldEffectManager_FinishAnimManager(param0);
@@ -137,7 +138,7 @@ static void ov5_021F62A0(OverworldAnimManager *param0, void *param1)
     v1->unk_04 = ov5_021F6414(v1->unk_08);
     v1->unk_00 = 0;
 
-    if ((v1->unk_04 == -1) || (v1->unk_04 != PlayerAvatar_GetDir(playerAvatar))) {
+    if ((v1->unk_04 == -1) || (v1->unk_04 != PlayerAvatar_GetFacingDir(playerAvatar))) {
         v1->unk_1C = 0;
         v1->unk_20 = 0;
         v1->unk_00 = 1;

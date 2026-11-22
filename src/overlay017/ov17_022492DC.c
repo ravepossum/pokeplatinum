@@ -6,12 +6,12 @@
 #include "struct_decls/font_oam.h"
 #include "struct_decls/struct_02012744_decl.h"
 #include "struct_defs/struct_020127E8.h"
-#include "struct_defs/struct_02095C48.h"
 
 #include "overlay017/struct_ov17_0224A1EC.h"
 
 #include "bg_window.h"
 #include "char_transfer.h"
+#include "contest.h"
 #include "font.h"
 #include "graphics.h"
 #include "heap.h"
@@ -26,6 +26,8 @@
 #include "touch_screen.h"
 #include "unk_02012744.h"
 #include "unk_02094EDC.h"
+
+#include "res/text/bank/contest_dance_competition.h"
 
 typedef struct {
     s32 unk_00;
@@ -82,7 +84,7 @@ typedef struct {
 } UnkStruct_ov17_02249BC4;
 
 typedef struct UnkStruct_ov17_022492DC_t {
-    UnkStruct_02095C48 *unk_00;
+    Contest *unk_00;
     UnkStruct_ov17_0224A1EC *unk_04;
     void *unk_08;
     SysTask *unk_0C;
@@ -296,7 +298,7 @@ void ov17_02249358(BgConfig *param0)
     }
 }
 
-void *ov17_02249380(UnkStruct_02095C48 *param0, UnkStruct_ov17_0224A1EC *param1)
+void *ov17_02249380(Contest *param0, UnkStruct_ov17_0224A1EC *param1)
 {
     UnkStruct_ov17_022492DC *v0 = ov17_022492DC();
 
@@ -355,19 +357,19 @@ static void ov17_022493DC(UnkStruct_ov17_022492DC *param0)
     MI_CpuCopy32(v0->pRawData, param0->unk_C4[2], 6 * 12 * 0x20 * 3);
     Heap_Free(v2);
 
-    v2 = Graphics_GetScrnData(NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 7, 1, &v1, HEAP_ID_23);
+    v2 = Graphics_GetScrnData(NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 7, TRUE, &v1, HEAP_ID_23);
     MI_CpuCopy32(v1->rawData, param0->unk_D0[0], 0x800);
     Heap_Free(v2);
 
-    v2 = Graphics_GetScrnData(NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 8, 1, &v1, HEAP_ID_23);
+    v2 = Graphics_GetScrnData(NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 8, TRUE, &v1, HEAP_ID_23);
     MI_CpuCopy32(v1->rawData, param0->unk_D0[1], 0x800);
     Heap_Free(v2);
 
-    v2 = Graphics_GetScrnData(NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 17, 1, &v1, HEAP_ID_23);
+    v2 = Graphics_GetScrnData(NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 17, TRUE, &v1, HEAP_ID_23);
     MI_CpuCopy32(v1->rawData, param0->unk_D0[2], 0x800);
     Heap_Free(v2);
 
-    v2 = Graphics_GetScrnData(NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 28, 1, &v1, HEAP_ID_23);
+    v2 = Graphics_GetScrnData(NARC_INDEX_CONTEST__GRAPHIC__CONTEST_BG, 28, TRUE, &v1, HEAP_ID_23);
     MI_CpuCopy32(v1->rawData, param0->unk_D0[3], 0x800);
     Heap_Free(v2);
 
@@ -428,7 +430,7 @@ void ov17_02249640(UnkStruct_ov17_022492DC *param0, int param1, int param2, void
     }
 
     if ((v0->unk_02 != 0xffff) && ((param2 == 1) || (v0->unk_02 != v1->unk_02))) {
-        PaletteData_LoadBuffer(param0->unk_04->unk_90, param0->unk_E0[v0->unk_02], 1, 0, 0x200);
+        PaletteData_LoadBuffer(param0->unk_04->unk_90, param0->unk_E0[v0->unk_02], PLTTBUF_SUB_BG, 0, PALETTE_SIZE_BYTES * 16);
     }
 
     for (v2 = 0; v2 < 4; v2++) {
@@ -514,18 +516,18 @@ static void ov17_02249828(UnkStruct_ov17_022492DC *param0)
 {
     String *v0, *v1;
     u32 v2, v3;
-    MessageLoader *v4 = MessageLoader_Init(MSG_LOADER_LOAD_ON_DEMAND, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_CONTEST_TEXT, HEAP_ID_23);
-    v2 = sub_02095848(param0->unk_04->unk_00->contestRank, param0->unk_04->unk_00->unk_111, param0->unk_00->isLinkContest);
-    v3 = sub_020958C4(param0->unk_04->unk_00->contestType, param0->unk_04->unk_00->unk_111);
-    v0 = MessageLoader_GetNewString(v4, v2);
-    v1 = MessageLoader_GetNewString(v4, v3);
+    MessageLoader *contestTextMessageLoader = MessageLoader_Init(MSG_LOADER_LOAD_ON_DEMAND, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_CONTEST_TEXT, HEAP_ID_23);
+    v2 = Contest_GetContestRankTitleMessageID(param0->unk_04->unk_00->contestRank, param0->unk_04->unk_00->competitionType, param0->unk_00->isLinkContest);
+    v3 = Contest_GetFullContestTypeMessageID(param0->unk_04->unk_00->contestType, param0->unk_04->unk_00->competitionType);
+    v0 = MessageLoader_GetNewString(contestTextMessageLoader, v2);
+    v1 = MessageLoader_GetNewString(contestTextMessageLoader, v3);
 
     ov17_02249BC4(param0, &param0->unk_1C[0], v0, FONT_SYSTEM, TEXT_COLOR(1, 2, 0), 0, 33003, 128, 8 * 0x10 - 1, 1);
     ov17_02249BC4(param0, &param0->unk_1C[1], v1, FONT_SYSTEM, TEXT_COLOR(1, 2, 0), 0, 33003, 128, 8 * 0x14 - 1, 1);
 
     String_Free(v0);
     String_Free(v1);
-    MessageLoader_Free(v4);
+    MessageLoader_Free(contestTextMessageLoader);
 }
 
 static void ov17_022498E8(UnkStruct_ov17_022492DC *param0, int param1, int param2)
@@ -535,18 +537,18 @@ static void ov17_022498E8(UnkStruct_ov17_022492DC *param0, int param1, int param
 
 static void ov17_022498F4(UnkStruct_ov17_022492DC *param0)
 {
-    String *v0, *v1, *v2, *v3;
-    MessageLoader *v4 = param0->unk_04->unk_84;
+    String *v0;
+    MessageLoader *danceMessageLoader = param0->unk_04->danceMessageLoader;
 
-    if (param0->unk_04->unk_A14[param0->unk_04->unk_00->unk_113] == 1) {
-        v0 = MessageLoader_GetNewString(v4, 0);
+    if (param0->unk_04->unk_A14[param0->unk_04->unk_00->playerContestantID] == 1) {
+        v0 = MessageLoader_GetNewString(danceMessageLoader, DanceCompetition_Text_Jump);
     } else {
-        v0 = MessageLoader_GetNewString(v4, 1);
+        v0 = MessageLoader_GetNewString(danceMessageLoader, DanceCompetition_Text_Up);
     }
 
-    v1 = MessageLoader_GetNewString(v4, 2);
-    v2 = MessageLoader_GetNewString(v4, 3);
-    v3 = MessageLoader_GetNewString(v4, 4);
+    String *v1 = MessageLoader_GetNewString(danceMessageLoader, DanceCompetition_Text_Front);
+    String *v2 = MessageLoader_GetNewString(danceMessageLoader, DanceCompetition_Text_Left);
+    String *v3 = MessageLoader_GetNewString(danceMessageLoader, DanceCompetition_Text_Right);
 
     ov17_02249BC4(param0, &param0->unk_1C[2], v0, FONT_SUBSCREEN, TEXT_COLOR(1, 1, 0xb), 0, 33003, 128, 24, 1);
     ov17_02249BC4(param0, &param0->unk_1C[3], v1, FONT_SUBSCREEN, TEXT_COLOR(1, 1, 0xb), 0, 33003, 128, 120, 1);
@@ -929,5 +931,5 @@ static void ov17_0224A0C8(SysTask *param0, void *param1)
 
 void ov17_0224A0E0(UnkStruct_ov17_022492DC *param0, u16 param1, u8 param2)
 {
-    PaletteData_Blend(param0->unk_04->unk_90, 1, 0 * 16, 16 * 4, param2, param1);
+    PaletteData_Blend(param0->unk_04->unk_90, PLTTBUF_SUB_BG, 0 * 16, 16 * 4, param2, param1);
 }

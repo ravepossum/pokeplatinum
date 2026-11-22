@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "field/field_system.h"
 #include "overlay005/field_effect_manager.h"
@@ -12,6 +12,8 @@
 #include "map_object.h"
 #include "map_object_move.h"
 #include "overworld_anim_manager.h"
+
+#include "res/graphics/field_effects/field_effects.naix"
 
 typedef struct {
     u32 unk_00;
@@ -70,17 +72,17 @@ void ov5_021F34B8(FieldEffectManager *param0)
 
 static void ov5_021F34D0(UnkStruct_ov5_021F34D0 *param0)
 {
-    ov5_021DF9E0(param0->unk_04, 6, 88);
-    ov5_021DFA14(param0->unk_04, 6, 175);
-    ov5_021DFA3C(param0->unk_04, 7, 7, 1);
+    ov5_021DF9E0(param0->unk_04, 6, dust_puff_down_nsbmd);
+    ov5_021DFA14(param0->unk_04, 6, dust_puff_bin);
+    ov5_021DFA3C(param0->unk_04, 7, dust_puff_nsbtx, 1);
     ov5_021DF864(param0->unk_04, 8, 6, 6, 7, 0, Unk_ov5_022005D8);
 }
 
 static void ov5_021F3518(UnkStruct_ov5_021F34D0 *param0)
 {
-    ov5_021DF9E0(param0->unk_04, 12, 159);
-    ov5_021DF9E0(param0->unk_04, 13, 157);
-    ov5_021DF9E0(param0->unk_04, 14, 158);
+    ov5_021DF9E0(param0->unk_04, 12, dust_puff_left_nsbmd);
+    ov5_021DF9E0(param0->unk_04, 13, dust_puff_right_nsbmd);
+    ov5_021DF9E0(param0->unk_04, 14, dust_puff_up_nsbmd);
 
     ov5_021DF864(param0->unk_04, 14, 12, 6, 7, 0, Unk_ov5_022005D8);
     ov5_021DF864(param0->unk_04, 15, 13, 6, 7, 0, Unk_ov5_022005D8);
@@ -185,13 +187,13 @@ static int ov5_021F36F4(OverworldAnimManager *param0, void *param1)
 
     v2->unk_10 = *v3;
     v2->unk_04 = MapObject_GetLocalID(v2->unk_10.unk_0C);
-    v2->unk_08 = MapObject_GetMapID(v2->unk_10.unk_0C);
+    v2->unk_08 = MapObject_GetMapHeaderID(v2->unk_10.unk_0C);
 
     OverworldAnimManager_GetPosition(param0, &v1);
 
     {
         u32 v4[4] = { 8, 14, 15, 16 };
-        int v5 = OverworldAnimManager_GetID(param0);
+        int v5 = OverworldAnimManager_GetUserInt(param0);
 
         v2->unk_20 = ov5_021DF84C(v2->unk_10.unk_04, v4[v5], &v1);
     }

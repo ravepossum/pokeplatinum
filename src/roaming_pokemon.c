@@ -3,8 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/fieldmap.h"
 #include "constants/species.h"
-#include "generated/map_headers.h"
 
 #include "struct_defs/special_encounter.h"
 
@@ -277,7 +277,7 @@ void RoamingPokemon_ActivateSlot(SaveData *saveData, const u8 slot)
         level = 60;
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         return;
     }
 

@@ -15,6 +15,7 @@
 
 #include "comm_player_manager.h"
 #include "communication_system.h"
+#include "coordinates.h"
 #include "field_system.h"
 #include "game_records.h"
 #include "heap.h"
@@ -158,7 +159,7 @@ void Spheres_AdvanceBuriedSphereSparkleTimer(void)
     }
 }
 
-static Coordinates *Spheres_GetCoordinatesOfBuriedSphereAtOrderedIndex(Coordinates *coordinates, int index)
+static CoordinatesU16 *Spheres_GetCoordinatesOfBuriedSphereAtOrderedIndex(CoordinatesU16 *coordinates, int index)
 {
     if (spheresEnv->buriedSpheresByCoordinates[index] == NULL) {
         return NULL;
@@ -172,7 +173,7 @@ static Coordinates *Spheres_GetCoordinatesOfBuriedSphereAtOrderedIndex(Coordinat
 
 static void Spheres_AddBuriedSphereToCoordinatesOrdering(BuriedSphere *sphere)
 {
-    Coordinates coordinates = {
+    CoordinatesU16 coordinates = {
         .x = sphere->x,
         .z = sphere->z
     };
@@ -221,7 +222,7 @@ static BuriedSphere *Spheres_Dummy(BuriedSphere *sphere)
 
 static BuriedSphere *Spheres_GetBuriedSphereAtCoordinates(int x, int z)
 {
-    Coordinates coordinates = {
+    CoordinatesU16 coordinates = {
         .x = x,
         .z = z
     };
@@ -253,7 +254,7 @@ void Spheres_ProcessRetrieveBuriedSphereRequest(int unused, int unused2, void *d
 
             if (UndergroundInventory_TryAddSphere(sphere->type, sphere->initialSize + sphere->growth)) {
                 spheresEnv->retrievedSpheres[curNetID] = sphere->type;
-                Sound_PlayEffect(SEQ_SE_DP_PIRORIRO2);
+                Sound_PlayEffect(SEQ_SE_DP_PIRORIRO2_sseq);
                 numberToPrint = MAX_SPHERE_SIZE;
 
                 if (sphere->initialSize + sphere->growth < MAX_SPHERE_SIZE) {
@@ -286,7 +287,7 @@ void TouchRadarSearch_Init(TouchRadarSearchContext *ctx, int radius)
     ctx->iterator = 0;
 }
 
-BOOL TouchRadarSearch_GetNextCoords(TouchRadarSearchContext *ctx, TouchRadarCoordinates *out)
+BOOL TouchRadarSearch_GetNextCoords(TouchRadarSearchContext *ctx, CoordinatesS16 *out)
 {
     int i;
     int iterator = ctx->iterator;
@@ -380,7 +381,7 @@ void Spheres_TryBurySphere(enum SphereType sphereType, int sphereSize, int x, in
         UndergroundTextPrinter_PrintText(UndergroundMan_GetCommonTextPrinter(), UndergroundCommon_Text_SphereWasBuried, FALSE, NULL);
         UndergroundMenu_RemoveSelectedSphere(sphereType);
 
-        Sound_PlayEffect(SEQ_SE_DP_SUTYA);
+        Sound_PlayEffect(SEQ_SE_PL_SUTYA2_sseq_2);
         SystemFlag_SetSphereAcquired(SaveData_GetVarsFlags(spheresEnv->fieldSystem->saveData));
         GameRecords_IncrementRecordValue(SaveData_GetGameRecords(spheresEnv->fieldSystem->saveData), RECORD_SPHERES_BURIED);
 
@@ -525,7 +526,7 @@ static void SphereRadar_TimerTask(SysTask *sysTask, void *data)
     ctx->timer++;
 
     if (ctx->timer > MAX_BURIED_SPHERES) {
-        Sound_PlayEffect(SEQ_SE_PL_UG_006);
+        Sound_PlayEffect(SEQ_SE_PL_UG_006_sseq);
         ctx->timer = 0;
     }
 }

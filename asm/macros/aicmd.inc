@@ -1,186 +1,188 @@
+#include "data/scripts/aicmd.h"
+
     .equ FALSE, 0
     .equ TRUE, 1
 
-    .macro IfRandomLessThan i, jump
-    .long 0
+    .macro IfRandomLessThan i:req, jump:req
+    .long AICMD_IFRANDOMLESSTHAN
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfRandomGreaterThan i, jump
-    .long 1
+    .macro IfRandomGreaterThan i:req, jump:req
+    .long AICMD_IFRANDOMGREATERTHAN
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfRandomEqualTo i, jump
-    .long 2
+    .macro IfRandomEqualTo i:req, jump:req
+    .long AICMD_IFRANDOMEQUALTO
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfRandomNotEqualTo i, jump
-    .long 3
+    .macro IfRandomNotEqualTo i:req, jump:req
+    .long AICMD_IFRANDOMNOTEQUALTO
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro AddToMoveScore i
-    .long 4
+    .macro AddToMoveScore i:req
+    .long AICMD_ADDTOMOVESCORE
     .long \i
     .endm
 
-    .macro IfHPPercentLessThan battler, i, jump
-    .long 5
+    .macro IfHPPercentLessThan battler:req, i:req, jump:req
+    .long AICMD_IFHPPERCENTLESSTHAN
     .long \battler
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfHPPercentGreaterThan battler, i, jump
-    .long 6
+    .macro IfHPPercentGreaterThan battler:req, i:req, jump:req
+    .long AICMD_IFHPPERCENTGREATERTHAN
     .long \battler
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfHPPercentEqualTo battler, i, jump
-    .long 7
+    .macro IfHPPercentEqualTo battler:req, i:req, jump:req
+    .long AICMD_IFHPPERCENTEQUALTO
     .long \battler
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfHPPercentNotEqualTo battler, i, jump
-    .long 8
+    .macro IfHPPercentNotEqualTo battler:req, i:req, jump:req
+    .long AICMD_IFHPPERCENTNOTEQUALTO
     .long \battler
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfStatus battler, status, jump
-    .long 9
+    .macro IfStatus battler:req, status:req, jump:req
+    .long AICMD_IFSTATUS
     .long \battler
     .long \status
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfNotStatus battler, status, jump
-    .long 10
+    .macro IfNotStatus battler:req, status:req, jump:req
+    .long AICMD_IFNOTSTATUS
     .long \battler
     .long \status
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfVolatileStatus battler, volatile_status, jump
-    .long 11
+    .macro IfVolatileStatus battler:req, volatile_status:req, jump:req
+    .long AICMD_IFVOLATILESTATUS
     .long \battler
     .long \volatile_status
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfNotVolatileStatus battler, volatile_status, jump
-    .long 12
+    .macro IfNotVolatileStatus battler:req, volatile_status:req, jump:req
+    .long AICMD_IFNOTVOLATILESTATUS
     .long \battler
     .long \volatile_status
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfMoveEffect battler, move_effects, jump
-    .long 13
+    .macro IfMoveEffect battler:req, move_effects:req, jump:req
+    .long AICMD_IFMOVEEFFECT
     .long \battler
     .long \move_effects
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfNotMoveEffect battler, move_effects, jump
-    .long 14
+    .macro IfNotMoveEffect battler:req, move_effects:req, jump:req
+    .long AICMD_IFNOTMOVEEFFECT
     .long \battler
     .long \move_effects
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfSideCondition battler, side_conditions, jump
-    .long 15
+    .macro IfSideCondition battler:req, side_conditions:req, jump:req
+    .long AICMD_IFSIDECONDITION
     .long \battler
     .long \side_conditions
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfNotSideCondition battler, side_conditions, jump
-    .long 16
+    .macro IfNotSideCondition battler:req, side_conditions:req, jump:req
+    .long AICMD_IFNOTSIDECONDITION
     .long \battler
     .long \side_conditions
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfLoadedLessThan loaded_val, jump
-    .long 17
+    .macro IfLoadedLessThan loaded_val:req, jump:req
+    .long AICMD_IFLOADEDLESSTHAN
     .long \loaded_val
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfLoadedGreaterThan loaded_val, jump
-    .long 18
+    .macro IfLoadedGreaterThan loaded_val:req, jump:req
+    .long AICMD_IFLOADEDGREATERTHAN
     .long \loaded_val
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfLoadedEqualTo loaded_val, jump
-    .long 19
+    .macro IfLoadedEqualTo loaded_val:req, jump:req
+    .long AICMD_IFLOADEDEQUALTO
     .long \loaded_val
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfLoadedNotEqualTo loaded_val, jump
-    .long 20
+    .macro IfLoadedNotEqualTo loaded_val:req, jump:req
+    .long AICMD_IFLOADEDNOTEQUALTO
     .long \loaded_val
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfLoadedMask loaded_val, jump
-    .long 21
+    .macro IfLoadedMask loaded_val:req, jump:req
+    .long AICMD_IFLOADEDMASK
     .long \loaded_val
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfLoadedNotMask loaded_val, jump
-    .long 22
+    .macro IfLoadedNotMask loaded_val:req, jump:req
+    .long AICMD_IFLOADEDNOTMASK
     .long \loaded_val
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfMoveEqualTo move, jump
-    .long 23
+    .macro IfMoveEqualTo move:req, jump:req
+    .long AICMD_IFMOVEEQUALTO
     .long \move
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfMoveNotEqualTo move, jump
-    .long 24
+    .macro IfMoveNotEqualTo move:req, jump:req
+    .long AICMD_IFMOVENOTEQUALTO
     .long \move
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfLoadedinTable table, jump
-    .long 25
+    .macro IfLoadedInTable table:req, jump:req
+    .long AICMD_IFLOADEDINTABLE
     .long (\table-.) / 4 - 2
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfLoadedNotinTable table, jump
-    .long 26
+    .macro IfLoadedNotInTable table:req, jump:req
+    .long AICMD_IFLOADEDNOTINTABLE
     .long (\table-.) / 4 - 2
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfAttackerHasDamagingMoves jump
-    .long 27
+    .macro IfAttackerHasDamagingMoves jump:req
+    .long AICMD_IFATTACKERHASDAMAGINGMOVES
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfAttackerHasNoDamagingMoves jump
-    .long 28
+    .macro IfAttackerHasNoDamagingMoves jump:req
+    .long AICMD_IFATTACKERHASNODAMAGINGMOVES
     .long (\jump-.) / 4 - 1
     .endm
 
@@ -188,8 +190,8 @@
     .long 29
     .endm
 
-    .macro LoadTypeFrom load_type_target
-    .long 30
+    .macro LoadTypeFrom load_type_target:req
+    .long AICMD_LOADTYPEFROM
     .long \load_type_target
     .endm
 
@@ -197,42 +199,42 @@
     .long 31
     .endm
 
-    .macro FlagMoveDamageScore bool
-    .long 32
+    .macro FlagMoveDamageScore bool:req
+    .long AICMD_FLAGMOVEDAMAGESCORE
     .long \bool
     .endm
 
-    .macro LoadBattlerPreviousMove battler
-    .long 33
+    .macro LoadBattlerPreviousMove battler:req
+    .long AICMD_LOADBATTLERPREVIOUSMOVE
     .long \battler
     .endm
 
-    .macro IfTempEqualTo loaded_val, jump
-    .long 34
+    .macro IfTempEqualTo loaded_val:req, jump:req
+    .long AICMD_IFTEMPEQUALTO
     .long \loaded_val
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfTempNotEqualTo loaded_val, jump
-    .long 35
+    .macro IfTempNotEqualTo loaded_val:req, jump:req
+    .long AICMD_IFTEMPNOTEQUALTO
     .long \loaded_val
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfSpeedCompareEqualTo cmp, jump
-    .long 36
+    .macro IfSpeedCompareEqualTo cmp:req, jump:req
+    .long AICMD_IFSPEEDCOMPAREEQUALTO
     .long \cmp
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfSpeedCompareNotEqualTo cmp, jump
-    .long 37
+    .macro IfSpeedCompareNotEqualTo cmp:req, jump:req
+    .long AICMD_IFSPEEDCOMPARENOTEQUALTO
     .long \cmp
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro CountAlivePartyBattlers battler
-    .long 38
+    .macro CountAlivePartyBattlers battler:req
+    .long AICMD_COUNTALIVEPARTYBATTLERS
     .long \battler
     .endm
 
@@ -244,8 +246,8 @@
     .long 40
     .endm
 
-    .macro LoadBattlerAbility battler
-    .long 41
+    .macro LoadBattlerAbility battler:req
+    .long AICMD_LOADBATTLERABILITY
     .long \battler
     .endm
 
@@ -253,21 +255,21 @@
     .long 42
     .endm
 
-    .macro IfMoveEffectivenessEquals modifier, jump
-    .long 43
+    .macro IfMoveEffectivenessEquals modifier:req, jump:req
+    .long AICMD_IFMOVEEFFECTIVENESSEQUALS
     .long \modifier
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfPartyMemberStatus battler, pokemon_status, jump
-    .long 44
+    .macro IfPartyMemberStatus battler:req, pokemon_status:req, jump:req
+    .long AICMD_IFPARTYMEMBERSTATUS
     .long \battler
     .long \pokemon_status
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfPartyMemberNotStatus battler, pokemon_status, jump
-    .long 45
+    .macro IfPartyMemberNotStatus battler:req, pokemon_status:req, jump:req
+    .long AICMD_IFPARTYMEMBERNOTSTATUS
     .long \battler
     .long \pokemon_status
     .long (\jump-.) / 4 - 1
@@ -277,99 +279,99 @@
     .long 46
     .endm
 
-    .macro IfCurrentMoveEffectEqualTo battle_effect, jump
-    .long 47
+    .macro IfCurrentMoveEffectEqualTo battle_effect:req, jump:req
+    .long AICMD_IFCURRENTMOVEEFFECTEQUALTO
     .long \battle_effect
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfCurrentMoveEffectNotEqualTo battle_effect, jump
-    .long 48
+    .macro IfCurrentMoveEffectNotEqualTo battle_effect:req, jump:req
+    .long AICMD_IFCURRENTMOVEEFFECTNOTEQUALTO
     .long \battle_effect
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfStatStageLessThan battler, stat, i, jump
-    .long 49
+    .macro IfStatStageLessThan battler:req, stat:req, i:req, jump:req
+    .long AICMD_IFSTATSTAGELESSTHAN
     .long \battler
     .long \stat
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfStatStageGreaterThan battler, stat, i, jump
-    .long 50
+    .macro IfStatStageGreaterThan battler:req, stat:req, i:req, jump:req
+    .long AICMD_IFSTATSTAGEGREATERTHAN
     .long \battler
     .long \stat
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfStatStageEqualTo battler, stat, i, jump
-    .long 51
+    .macro IfStatStageEqualTo battler:req, stat:req, i:req, jump:req
+    .long AICMD_IFSTATSTAGEEQUALTO
     .long \battler
     .long \stat
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfStatStageNotEqualTo battler, stat, i, jump
-    .long 52
+    .macro IfStatStageNotEqualTo battler:req, stat:req, i:req, jump:req
+    .long AICMD_IFSTATSTAGENOTEQUALTO
     .long \battler
     .long \stat
     .long \i
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfCurrentMoveKills roll_damage, jump
-    .long 53
+    .macro IfCurrentMoveKills roll_damage:req, jump:req
+    .long AICMD_IFCURRENTMOVEKILLS
     .long \roll_damage
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfCurrentMoveDoesNotKill roll_damage, jump
-    .long 54
+    .macro IfCurrentMoveDoesNotKill roll_damage:req, jump:req
+    .long AICMD_IFCURRENTMOVEDOESNOTKILL
     .long \roll_damage
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfMoveKnown battler, move, jump
-    .long 55
+    .macro IfMoveKnown battler:req, move:req, jump:req
+    .long AICMD_IFMOVEKNOWN
     .long \battler
     .long \move
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfMoveNotKnown battler, move, jump
-    .long 56
+    .macro IfMoveNotKnown battler:req, move:req, jump:req
+    .long AICMD_IFMOVENOTKNOWN
     .long \battler
     .long \move
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfMoveEffectKnown battler, battle_effect, jump
-    .long 57
+    .macro IfMoveEffectKnown battler:req, battle_effect:req, jump:req
+    .long AICMD_IFMOVEEFFECTKNOWN
     .long \battler
     .long \battle_effect
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfMoveEffectNotKnown battler, battle_effect, jump
-    .long 58
+    .macro IfMoveEffectNotKnown battler:req, battle_effect:req, jump:req
+    .long AICMD_IFMOVEEFFECTNOTKNOWN
     .long \battler
     .long \battle_effect
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfBattlerUnderEffect battler, check_effect, jump
-    .long 59
+    .macro IfBattlerUnderEffect battler:req, check_effect:req, jump:req
+    .long AICMD_IFBATTLERUNDEREFFECT
     .long \battler
     .long \check_effect
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfCurrentMoveMatchesEffect check_effect, jump
-    .long 60
+    .macro IfCurrentMoveMatchesEffect check_effect:req, jump:req
+    .long AICMD_IFCURRENTMOVEMATCHESEFFECT
     .long \check_effect
     .long (\jump-.) / 4 - 1
     .endm
@@ -378,8 +380,8 @@
     .long 61
     .endm
 
-    .macro Dummy3E i
-    .long 62
+    .macro Dummy3E i:req
+    .long AICMD_DUMMY3E
     .long \i
     .endm
 
@@ -387,28 +389,28 @@
     .long 63
     .endm
 
-    .macro LoadHeldItem battler
-    .long 64
+    .macro LoadHeldItem battler:req
+    .long AICMD_LOADHELDITEM
     .long \battler
     .endm
 
-    .macro LoadHeldItemEffect battler
-    .long 65
+    .macro LoadHeldItemEffect battler:req
+    .long AICMD_LOADHELDITEMEFFECT
     .long \battler
     .endm
 
-    .macro LoadGender battler
-    .long 66
+    .macro LoadGender battler:req
+    .long AICMD_LOADGENDER
     .long \battler
     .endm
 
-    .macro LoadIsFirstTurnInBattle battler
-    .long 67
+    .macro LoadIsFirstTurnInBattle battler:req
+    .long AICMD_LOADISFIRSTTURNINBATTLE
     .long \battler
     .endm
 
-    .macro LoadStockpileCount battler
-    .long 68
+    .macro LoadStockpileCount battler:req
+    .long AICMD_LOADSTOCKPILECOUNT
     .long \battler
     .endm
 
@@ -416,8 +418,8 @@
     .long 69
     .endm
 
-    .macro LoadRecycleItem battler
-    .long 70
+    .macro LoadRecycleItem battler:req
+    .long AICMD_LOADRECYCLEITEM
     .long \battler
     .endm
 
@@ -433,18 +435,18 @@
     .long 73
     .endm
 
-    .macro LoadProtectChain battler
-    .long 74
+    .macro LoadProtectChain battler:req
+    .long AICMD_LOADPROTECTCHAIN
     .long \battler
     .endm
 
-    .macro PushAndGoTo jump
-    .long 75
+    .macro PushAndGoTo jump:req
+    .long AICMD_PUSHANDGOTO
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro GoTo jump
-    .long 76
+    .macro GoTo jump:req
+    .long AICMD_GOTO
     .long (\jump-.) / 4 - 1
     .endm
 
@@ -452,78 +454,78 @@
     .long 77
     .endm
 
-    .macro IfLevel check_level, jump
-    .long 78
+    .macro IfLevel check_level:req, jump:req
+    .long AICMD_IFLEVEL
     .long \check_level
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfTargetIsTaunted jump
-    .long 79
+    .macro IfTargetIsTaunted jump:req
+    .long AICMD_IFTARGETISTAUNTED
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfTargetIsNotTaunted jump
-    .long 80
+    .macro IfTargetIsNotTaunted jump:req
+    .long AICMD_IFTARGETISNOTTAUNTED
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfTargetIsPartner jump
-    .long 81
+    .macro IfTargetIsPartner jump:req
+    .long AICMD_IFTARGETISPARTNER
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro FlagBattlerIsType battler, type
-    .long 82
+    .macro FlagBattlerIsType battler:req, type:req
+    .long AICMD_FLAGBATTLERISTYPE
     .long \battler
     .long \type
     .endm
 
-    .macro CheckBattlerAbility battler, ability
-    .long 83
+    .macro CheckBattlerAbility battler:req, ability:req
+    .long AICMD_CHECKBATTLERABILITY
     .long \battler
     .long \ability
     .endm
 
-    .macro IfActivatedFlashFire battler, jump
-    .long 84
+    .macro IfActivatedFlashFire battler:req, jump:req
+    .long AICMD_IFACTIVATEDFLASHFIRE
     .long \battler
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfHeldItemEqualTo battler, item, jump
-    .long 85
+    .macro IfHeldItemEqualTo battler:req, item:req, jump:req
+    .long AICMD_IFHELDITEMEQUALTO
     .long \battler
     .long \item
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfFieldConditionsMask field_conditions, jump
-    .long 86
+    .macro IfFieldConditionsMask field_conditions:req, jump:req
+    .long AICMD_IFFIELDCONDITIONSMASK
     .long \field_conditions
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro LoadSpikesLayers battler, side_conditions
-    .long 87
+    .macro LoadSpikesLayers battler:req, side_conditions:req
+    .long AICMD_LOADSPIKESLAYERS
     .long \battler
     .long \side_conditions
     .endm
 
-    .macro IfAnyPartyMemberIsWounded battler, jump
-    .long 88
+    .macro IfAnyPartyMemberIsWounded battler:req, jump:req
+    .long AICMD_IFANYPARTYMEMBERISWOUNDED
     .long \battler
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfAnyPartyMemberUsedPP battler, jump
-    .long 89
+    .macro IfAnyPartyMemberUsedPP battler:req, jump:req
+    .long AICMD_IFANYPARTYMEMBERUSEDPP
     .long \battler
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro LoadFlingPower battler
-    .long 90
+    .macro LoadFlingPower battler:req
+    .long AICMD_LOADFLINGPOWER
     .long \battler
     .endm
 
@@ -531,8 +533,8 @@
     .long 91
     .endm
 
-    .macro IfCanUseLastResort battler, jump
-    .long 92
+    .macro IfCanUseLastResort battler:req, jump:req
+    .long AICMD_IFCANUSELASTRESORT
     .long \battler
     .long (\jump-.) / 4 - 1
     .endm
@@ -545,94 +547,94 @@
     .long 94
     .endm
 
-    .macro LoadBattlerSpeedRank battler
-    .long 95
+    .macro LoadBattlerSpeedRank battler:req
+    .long AICMD_LOADBATTLERSPEEDRANK
     .long \battler
     .endm
 
-    .macro LoadBattlerTurnCount battler
-    .long 96
+    .macro LoadBattlerTurnCount battler:req
+    .long AICMD_LOADBATTLERTURNCOUNT
     .long \battler
     .endm
 
-    .macro IfPartyMemberDealsMoreDamage roll_damage, jump
-    .long 97
+    .macro IfPartyMemberDealsMoreDamage roll_damage:req, jump:req
+    .long AICMD_IFPARTYMEMBERDEALSMOREDAMAGE
     .long \roll_damage
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfHasSuperEffectiveMove jump
-    .long 98
+    .macro IfHasSuperEffectiveMove jump:req
+    .long AICMD_IFHASSUPEREFFECTIVEMOVE
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfBattlerDealsMoreDamage battler, roll_damage, jump
-    .long 99
+    .macro IfBattlerDealsMoreDamage battler:req, roll_damage:req, jump:req
+    .long AICMD_IFBATTLERDEALSMOREDAMAGE
     .long \battler
     .long \roll_damage
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro SumPositiveStatStages battler
-    .long 100
+    .macro SumPositiveStatStages battler:req
+    .long AICMD_SUMPOSITIVESTATSTAGES
     .long \battler
     .endm
 
-    .macro DiffStatStages battler, battle_stat
-    .long 101
-    .long \battler
-    .long \battle_stat
-    .endm
-
-    .macro IfBattlerHasHigherStat battler, battle_stat, jump
-    .long 102
+    .macro DiffStatStages battler:req, battle_stat:req
+    .long AICMD_DIFFSTATSTAGES
     .long \battler
     .long \battle_stat
-    .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfBattlerHasLowerStat battler, battle_stat, jump
-    .long 103
+    .macro IfBattlerHasHigherStat battler:req, battle_stat:req, jump:req
+    .long AICMD_IFBATTLERHASHIGHERSTAT
     .long \battler
     .long \battle_stat
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfBattlerHasEqualStat battler, battle_stat, jump
-    .long 104
+    .macro IfBattlerHasLowerStat battler:req, battle_stat:req, jump:req
+    .long AICMD_IFBATTLERHASLOWERSTAT
     .long \battler
     .long \battle_stat
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro CheckIfHighestDamageWithPartner roll_damage
-    .long 105
+    .macro IfBattlerHasEqualStat battler:req, battle_stat:req, jump:req
+    .long AICMD_IFBATTLERHASEQUALSTAT
+    .long \battler
+    .long \battle_stat
+    .long (\jump-.) / 4 - 1
+    .endm
+
+    .macro CheckIfHighestDamageWithPartner roll_damage:req
+    .long AICMD_CHECKIFHIGHESTDAMAGEWITHPARTNER
     .long \roll_damage
     .endm
 
-    .macro IfBattlerFainted battler, jump
-    .long 106
+    .macro IfBattlerFainted battler:req, jump:req
+    .long AICMD_IFBATTLERFAINTED
     .long \battler
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro IfBattlerNotFainted battler, jump
-    .long 107
+    .macro IfBattlerNotFainted battler:req, jump:req
+    .long AICMD_IFBATTLERNOTFAINTED
     .long \battler
     .long (\jump-.) / 4 - 1
     .endm
 
-    .macro LoadAbility battler
-    .long 108
+    .macro LoadAbility battler:req
+    .long AICMD_LOADABILITY
     .long \battler
     .endm
 
     .equ TABLE_END, 0xFFFFFFFF
 
-    .macro TableEntry entry
+    .macro TableEntry entry:req
     .long \entry
     .endm
 
-    .macro LabelDistance dst, src
+    .macro LabelDistance dst:req, src:req
     .long (\dst-\src) / 4
     .endm

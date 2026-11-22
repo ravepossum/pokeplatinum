@@ -8,8 +8,6 @@
 #include "generated/pal_park_land_area.h"
 #include "generated/trainer_score_events.h"
 
-#include "struct_decls/struct_02024440_decl.h"
-
 #include "field/field_system.h"
 #include "savedata/save_table.h"
 
@@ -19,10 +17,10 @@
 #include "inlines.h"
 #include "map_tile_behavior.h"
 #include "narc.h"
+#include "pal_park_transfers.h"
 #include "pokemon.h"
 #include "rtc.h"
 #include "terrain_collision_manager.h"
-#include "unk_0202EEC0.h"
 
 #define PAL_PARK_AREA_NONE     0
 #define POINTS_LOST_PER_SECOND 2

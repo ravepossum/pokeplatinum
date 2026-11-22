@@ -21,14 +21,12 @@
 #include "generated/species_data_params.h"
 
 #include "struct_defs/chatot_cry.h"
-#include "struct_defs/mail.h"
 #include "struct_defs/seal_case.h"
 #include "struct_defs/species_sprite_data.h"
 #include "struct_defs/sprite_animation_frame.h"
 #include "struct_defs/struct_02078B40.h"
 
-#include "overlay005/struct_ov5_021DE5D0.h"
-
+#include "ball_seal_info.h"
 #include "charcode_util.h"
 #include "flags.h"
 #include "heap.h"
@@ -53,8 +51,10 @@
 #include "trainer_data.h"
 #include "trainer_info.h"
 #include "unk_02017038.h"
-#include "unk_0202C9F4.h"
 #include "unk_02092494.h"
+
+#include "res/pokemon/regional_pokedex_size.h"
+#include "res/trainers/classes/trbgra.naix"
 
 #define FATEFUL_ENCOUNTER_LOCATION 3002
 
@@ -243,6 +243,15 @@ enum PokemonDataBlockID {
     DATA_BLOCK_D
 };
 
+enum TrainerClassFilesTypes {
+    TCFT_TILES = 0,
+    TCFT_PALETTE,
+    TCFT_CELLS,
+    TCFT_ANIMS,
+    TCFT_SCAN,
+    TRAINER_CLASS_NUM_FILETYPES,
+};
+
 static void sub_02073E18(BoxPokemon *boxMon, int monSpecies, int monLevel, int monIVs, BOOL useMonPersonalityParam, u32 monPersonality, int monOTIDSource, u32 monOTID);
 static u32 Pokemon_GetDataInternal(Pokemon *mon, enum PokemonDataParam param, void *dest);
 static u32 BoxPokemon_GetDataInternal(BoxPokemon *boxMon, enum PokemonDataParam param, void *dest);
@@ -256,8 +265,8 @@ static u32 Pokemon_GetExpRateBaseExpAt(enum ExpRate monExpRate, int monLevel);
 static u16 Pokemon_GetNatureStatValue(u8 monNature, u16 monStatValue, u8 statType);
 static u8 BoxPokemon_IsShiny(BoxPokemon *boxMon);
 static inline BOOL Pokemon_InlineIsPersonalityShiny(u32 monOTID, u32 monPersonality);
-static void BuildPokemonSpriteTemplateDP(PokemonSpriteTemplate *spriteTemplate, u16 monSpecies, u8 monGender, u8 param3, u8 monShininess, u8 monForm, u32 monPersonality);
-static u8 LoadPokemonDPSpriteHeight(u16 monSpecies, u8 monGender, u8 param2, u8 monForm, u32 monPersonality);
+static void BuildPokemonSpriteTemplateDP(PokemonSpriteTemplate *spriteTemplate, u16 species, u8 gender, u8 face, u8 shiny, u8 form, u32 personality);
+static u8 LoadPokemonDPSpriteHeight(u16 species, u8 gender, u8 face, u8 form, u32 personality);
 static void BoxPokemon_SetDefaultMoves(BoxPokemon *boxMon);
 static u16 BoxPokemon_AddMove(BoxPokemon *boxMon, u16 moveID);
 static void BoxPokemon_ReplaceMove(BoxPokemon *boxMon, u16 moveID);
@@ -266,19 +275,19 @@ static BOOL Pokemon_HasMove(Pokemon *mon, u16 moveID);
 static s8 BoxPokemon_GetFlavorAffinity(BoxPokemon *boxMon, enum Flavor flavor);
 static BOOL IsBoxPokemonInfectedWithPokerus(BoxPokemon *boxMon);
 static BOOL BoxPokemonHasCuredPokerus(BoxPokemon *boxMon);
-static void InitializeBoxPokemonAfterCapture(BoxPokemon *boxMon, TrainerInfo *trainerInfo, int monPokeball, int metLocation, int metTerrain, enum HeapID heapID);
-static void PostCaptureBoxPokemonProcessing(BoxPokemon *boxMon, TrainerInfo *param1, int monPokeball, int param3, int param4, int param5);
+static void InitializeBoxPokemonAfterCapture(BoxPokemon *boxMon, TrainerInfo *trainer, int monPokeball, int metLocation, int metTerrain, enum HeapID heapID);
+static void PostCaptureBoxPokemonProcessing(BoxPokemon *boxMon, TrainerInfo *trainer, int monPokeball, int metLocation, int metTerrain, int heapID);
 static BOOL CanBoxPokemonLearnTM(BoxPokemon *boxMon, u8 tmID);
 static void BoxPokemon_CalcAbility(BoxPokemon *boxMon);
 static void SpeciesData_LoadSpecies(int monSpecies, SpeciesData *speciesData);
 static void SpeciesData_LoadForm(int monSpecies, int monForm, SpeciesData *speciesData);
-static void LoadSpeciesEvolutions(int monSpecies, SpeciesEvolution speciesEvolution[MAX_EVOLUTIONS]);
+static void LoadSpeciesEvolutions(int monSpecies, SpeciesEvolution speciesEvolutions[MAX_EVOLUTIONS]);
 static void Pokemon_EncryptData(void *data, u32 bytes, u32 seed);
 static void Pokemon_DecryptData(void *data, u32 bytes, u32 seed);
 static u16 Pokemon_GetDataChecksum(void *data, u32 bytes);
 static void *BoxPokemon_GetDataBlock(BoxPokemon *boxMon, u32 personality, enum PokemonDataBlockID dataBlockID);
 static int Pokemon_GetFormNarcIndex(int monSpecies, int monForm);
-static inline int Pokemon_Face(int num);
+static inline int Pokemon_Face(int clientType);
 
 void Pokemon_Init(Pokemon *mon)
 {
@@ -510,7 +519,7 @@ void sub_02074088(Pokemon *mon, u16 monSpecies, u8 monLevel, u8 monIVs, u8 gende
     Pokemon_InitWith(mon, monSpecies, monLevel, monIVs, TRUE, monPersonality, OTID_NOT_SET, 0);
 }
 
-u32 sub_02074128(u16 monSpecies, u8 param1, u8 param2)
+u32 sub_02074128(u16 monSpecies, u8 gender, u8 param2)
 {
     u8 monGenderChance = SpeciesData_GetSpeciesValue(monSpecies, SPECIES_DATA_GENDER_RATIO);
 
@@ -522,8 +531,7 @@ u32 sub_02074128(u16 monSpecies, u8 param1, u8 param2)
         result = param2;
         break;
     default:
-        // TODO gender enum value?
-        if (param1 == 0) {
+        if (gender == GENDER_MALE) {
             result = 25 * ((monGenderChance / 25) + 1);
             result += param2;
         } else {
@@ -1199,7 +1207,7 @@ static u32 BoxPokemon_GetDataInternal(BoxPokemon *boxMon, enum PokemonDataParam 
             | (monDataBlockB->spDefIV << 25);
         break;
 
-    case MON_DATA_NO_PRINT_GENDER:
+    case MON_DATA_PRINT_GENDER:
         if ((monDataBlockA->species == SPECIES_NIDORAN_F || monDataBlockA->species == SPECIES_NIDORAN_M)
             && monDataBlockB->hasNickname == FALSE) {
             result = FALSE;
@@ -1765,7 +1773,7 @@ static void BoxPokemon_SetDataInternal(BoxPokemon *boxMon, enum PokemonDataParam
         monDataBlockB->spDefIV = (*u32Value >> 25) & 0x1F;
         break;
 
-    case MON_DATA_NO_PRINT_GENDER:
+    case MON_DATA_PRINT_GENDER:
     case MON_DATA_TYPE_1:
     case MON_DATA_TYPE_2:
         break;
@@ -1825,7 +1833,7 @@ static void Pokemon_IncreaseDataInternal(Pokemon *mon, enum PokemonDataParam par
     case MON_DATA_SP_ATK:
     case MON_DATA_SP_DEF:
     case MON_DATA_MAIL:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     default:
         BoxPokemon_IncreaseDataInternal(&mon->box, param, value);
@@ -2117,12 +2125,12 @@ static void BoxPokemon_IncreaseDataInternal(BoxPokemon *boxMon, enum PokemonData
     case MON_DATA_MET_TERRAIN:
     case MON_DATA_UNUSED_159:
     case MON_DATA_COMBINED_IVS:
-    case MON_DATA_NO_PRINT_GENDER:
+    case MON_DATA_PRINT_GENDER:
     case MON_DATA_TYPE_1:
     case MON_DATA_TYPE_2:
     case MON_DATA_SPECIES_NAME:
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 }
@@ -3372,27 +3380,27 @@ static u8 LoadPokemonDPSpriteHeight(u16 species, u8 gender, u8 face, u8 form, u3
     return result;
 }
 
-void sub_0207697C(PokemonSpriteTemplate *param0, u16 param1)
+void SpriteSystem_SetTrainerFrontSpriteTemplate(PokemonSpriteTemplate *spriteTemplate, u16 param1)
 {
-    param0->narcID = 60;
-    param0->character = param1 * 2;
-    param0->palette = param1 * 2 + 1;
-    param0->spindaSpots = 0;
-    param0->dummy = 0;
-    param0->personality = 0;
+    spriteTemplate->narcID = NARC_INDEX_POKETOOL__TRGRA__TRFGRA;
+    spriteTemplate->character = param1 * 2;
+    spriteTemplate->palette = param1 * 2 + 1;
+    spriteTemplate->spindaSpots = 0;
+    spriteTemplate->dummy = 0;
+    spriteTemplate->personality = 0;
 }
 
-static const SpriteTemplate Unk_020F05E4 = {
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    NNS_G2D_VRAM_TYPE_2DMAIN,
-    { 0x4E2F, 0x4E2A, 0x4E27, 0x4E27, 0xffffffff, 0xffffffff },
-    0x2,
-    0x1
+static const SpriteTemplate sSpriteTemplateTrainer = {
+    .x = 0,
+    .y = 0,
+    .z = 0,
+    .animIdx = 0,
+    .priority = 0,
+    .plttIdx = 0,
+    .vramType = NNS_G2D_VRAM_TYPE_2DMAIN,
+    .resources = { 0x4E2F, 0x4E2A, 0x4E27, 0x4E27, 0xffffffff, 0xffffffff },
+    .bgPriority = 2,
+    .vramTransfer = TRUE,
 };
 
 static const int Unk_020F0588[] = {
@@ -3404,66 +3412,64 @@ static const int Unk_020F0588[] = {
     0x1
 };
 
-ManagedSprite *sub_02076994(SpriteSystem *param0, SpriteManager *param1, PaletteData *param2, int param3, int param4, int param5, int param6, int param7, enum HeapID heapID)
+ManagedSprite *SpriteSystem_NewManagedSpriteTrainer(SpriteSystem *spriteSys, SpriteManager *spriteMan, PaletteData *paletteData, int x, int y, enum TrainerClass trainerClass, int face, int battlerType, enum HeapID heapID)
 {
-    SpriteTemplate v0;
-    ManagedSprite *v1;
+    SpriteTemplate spriteTemplate;
+    ManagedSprite *managedSprite;
     NARC *narc;
-    UnkStruct_ov5_021DE5D0 v3;
-    int v4 = 1;
+    TrainerClassGraphicIndex trainerClassGraphicIndex;
+    int paletteIdx = 1;
 
-    sub_02076AAC(param5, param6, &v3);
+    SpriteSystem_SetTrainerClassGraphicsIndex(trainerClass, face, &trainerClassGraphicIndex);
 
-    // TODO enum values?
-    if (param5 == 102) {
-        v4 = 2;
+    if (trainerClass == TRAINER_CLASS_CASTLE_VALET) {
+        paletteIdx = 2;
     }
 
-    narc = NARC_ctor(v3.narcID, heapID);
+    narc = NARC_ctor(trainerClassGraphicIndex.narcID, heapID);
 
-    SpriteSystem_LoadCharResObjFromOpenNarc(param0, param1, narc, v3.unk_04, FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, 20015 + param7);
-    SpriteSystem_LoadPaletteBufferFromOpenNarc(param2, PLTTBUF_MAIN_OBJ, param0, param1, narc, v3.unk_08, FALSE, v4, NNS_G2D_VRAM_TYPE_2DMAIN, 20010 + param7);
-    SpriteSystem_LoadCellResObjFromOpenNarc(param0, param1, narc, v3.unk_0C, FALSE, 20007 + param7);
-    SpriteSystem_LoadAnimResObjFromOpenNarc(param0, param1, narc, v3.unk_10, FALSE, 20007 + param7);
+    SpriteSystem_LoadCharResObjFromOpenNarc(spriteSys, spriteMan, narc, trainerClassGraphicIndex.tiles, FALSE, NNS_G2D_VRAM_TYPE_2DMAIN, 20015 + battlerType);
+    SpriteSystem_LoadPaletteBufferFromOpenNarc(paletteData, PLTTBUF_MAIN_OBJ, spriteSys, spriteMan, narc, trainerClassGraphicIndex.palette, FALSE, paletteIdx, NNS_G2D_VRAM_TYPE_2DMAIN, 20010 + battlerType);
+    SpriteSystem_LoadCellResObjFromOpenNarc(spriteSys, spriteMan, narc, trainerClassGraphicIndex.cells, FALSE, 20007 + battlerType);
+    SpriteSystem_LoadAnimResObjFromOpenNarc(spriteSys, spriteMan, narc, trainerClassGraphicIndex.anims, FALSE, 20007 + battlerType);
     NARC_dtor(narc);
 
-    v0 = Unk_020F05E4;
+    spriteTemplate = sSpriteTemplateTrainer;
 
     // TODO enum values?
-    v0.resources[0] = 20015 + param7;
-    v0.resources[1] = 20010 + param7;
-    v0.resources[2] = 20007 + param7;
-    v0.resources[3] = 20007 + param7;
-    v0.priority = Unk_020F0588[param7];
+    spriteTemplate.resources[0] = 20015 + battlerType;
+    spriteTemplate.resources[1] = 20010 + battlerType;
+    spriteTemplate.resources[2] = 20007 + battlerType;
+    spriteTemplate.resources[3] = 20007 + battlerType;
+    spriteTemplate.priority = Unk_020F0588[battlerType];
 
-    v1 = SpriteSystem_NewSprite(param0, param1, &v0);
+    managedSprite = SpriteSystem_NewSprite(spriteSys, spriteMan, &spriteTemplate);
 
-    Sprite_SetExplicitPaletteOffsetAutoAdjust(v1->sprite, 0);
-    ManagedSprite_SetPositionXY(v1, param3, param4);
-    ManagedSprite_TickFrame(v1);
-    ManagedSprite_SetAnimateFlag(v1, 1);
+    Sprite_SetExplicitPaletteOffsetAutoAdjust(managedSprite->sprite, 0);
+    ManagedSprite_SetPositionXY(managedSprite, x, y);
+    ManagedSprite_TickFrame(managedSprite);
+    ManagedSprite_SetAnimateFlag(managedSprite, TRUE);
 
-    return v1;
+    return managedSprite;
 }
 
-void sub_02076AAC(int param0, int param1, UnkStruct_ov5_021DE5D0 *param2)
+void SpriteSystem_SetTrainerClassGraphicsIndex(enum TrainerClass trainerClass, int face, TrainerClassGraphicIndex *trainerClassGraphicIndex)
 {
-    // TODO enum values?
-    if (param1 == 2) {
-        param2->narcID = NARC_INDEX_POKETOOL__TRGRA__TRFGRA;
-        param2->unk_04 = 0 + param0 * 5;
-        param2->unk_08 = 1 + param0 * 5;
-        param2->unk_0C = 2 + param0 * 5;
-        param2->unk_10 = 3 + param0 * 5;
-        param2->unk_14 = 4 + param0 * 5;
+    if (face == FACE_FRONT) {
+        trainerClassGraphicIndex->narcID = NARC_INDEX_POKETOOL__TRGRA__TRFGRA;
+        trainerClassGraphicIndex->tiles = TCFT_TILES + trainerClass * TRAINER_CLASS_NUM_FILETYPES;
+        trainerClassGraphicIndex->palette = TCFT_PALETTE + trainerClass * TRAINER_CLASS_NUM_FILETYPES;
+        trainerClassGraphicIndex->cells = TCFT_CELLS + trainerClass * TRAINER_CLASS_NUM_FILETYPES;
+        trainerClassGraphicIndex->anims = TCFT_ANIMS + trainerClass * TRAINER_CLASS_NUM_FILETYPES;
+        trainerClassGraphicIndex->scan = TCFT_SCAN + trainerClass * TRAINER_CLASS_NUM_FILETYPES;
     } else {
-        param2->narcID = NARC_INDEX_POKETOOL__TRGRA__TRBGRA;
-        param0 = sub_020788D0(param0);
-        param2->unk_04 = 0 + param0 * 5;
-        param2->unk_08 = 1 + param0 * 5;
-        param2->unk_0C = 2 + param0 * 5;
-        param2->unk_10 = 3 + param0 * 5;
-        param2->unk_14 = 4 + param0 * 5;
+        trainerClassGraphicIndex->narcID = NARC_INDEX_POKETOOL__TRGRA__TRBGRA;
+        trainerClass = SpriteSystem_TrainerClassBackSpriteIndex(trainerClass);
+        trainerClassGraphicIndex->tiles = TCFT_TILES + trainerClass * TRAINER_CLASS_NUM_FILETYPES;
+        trainerClassGraphicIndex->palette = TCFT_PALETTE + trainerClass * TRAINER_CLASS_NUM_FILETYPES;
+        trainerClassGraphicIndex->cells = TCFT_CELLS + trainerClass * TRAINER_CLASS_NUM_FILETYPES;
+        trainerClassGraphicIndex->anims = TCFT_ANIMS + trainerClass * TRAINER_CLASS_NUM_FILETYPES;
+        trainerClassGraphicIndex->scan = TCFT_SCAN + trainerClass * TRAINER_CLASS_NUM_FILETYPES;
     }
 }
 
@@ -4082,7 +4088,7 @@ u16 Pokemon_NationalDexNumber(u16 sinnohDexNumber)
 {
     u16 result = 0;
 
-    if (sinnohDexNumber <= SINNOH_DEX_COUNT) {
+    if (sinnohDexNumber <= REGIONAL_DEX_COUNT) {
         NARC_ReadFromMemberByIndexPair(&result, NARC_INDEX_POKETOOL__SHINZUKAN, 0, sinnohDexNumber * 2, 2);
     }
 
@@ -4092,19 +4098,16 @@ u16 Pokemon_NationalDexNumber(u16 sinnohDexNumber)
 void Pokemon_Copy(Pokemon *src, Pokemon *dest)
 {
     *dest = *src;
-    return;
 }
 
 void BoxPokemon_Copy(BoxPokemon *src, BoxPokemon *dest)
 {
     *dest = *src;
-    return;
 }
 
 void BoxPokemon_FromPokemon(Pokemon *src, BoxPokemon *dest)
 {
     *dest = src->box;
-    return;
 }
 
 s8 Pokemon_GetFlavorAffinity(Pokemon *mon, enum Flavor flavor)
@@ -4154,9 +4157,9 @@ void Pokemon_ApplyPokerus(Party *party)
 
             if (Pokemon_GetValue(mon, MON_DATA_SPECIES, NULL) && Pokemon_GetValue(mon, MON_DATA_IS_EGG, NULL) == FALSE) {
                 break;
-            } else {
-                partySlot = currentPartyCount;
             }
+
+            partySlot = currentPartyCount;
         } while (partySlot == currentPartyCount);
 
         if (Pokemon_HasPokerus(party, FlagIndex(partySlot)) == 0) {
@@ -4654,14 +4657,14 @@ static void InitializeBoxPokemonAfterCapture(BoxPokemon *boxMon, TrainerInfo *tr
     BoxPokemon_SetValue(boxMon, MON_DATA_MET_TERRAIN, &metTerrain);
 }
 
-void Pokemon_UpdateAfterCatch(Pokemon *mon, TrainerInfo *param1, int monPokeball, int param3, int param4, int param5)
+void Pokemon_UpdateAfterCatch(Pokemon *mon, TrainerInfo *trainer, int monPokeball, int metLocation, int metTerrain, int heapID)
 {
-    PostCaptureBoxPokemonProcessing(&mon->box, param1, monPokeball, param3, param4, param5);
+    PostCaptureBoxPokemonProcessing(&mon->box, trainer, monPokeball, metLocation, metTerrain, heapID);
 }
 
-static void PostCaptureBoxPokemonProcessing(BoxPokemon *boxMon, TrainerInfo *param1, int monPokeball, int param3, int param4, int param5)
+static void PostCaptureBoxPokemonProcessing(BoxPokemon *boxMon, TrainerInfo *trainer, int monPokeball, int metLocation, int metTerrain, int heapID)
 {
-    InitializeBoxPokemonAfterCapture(boxMon, param1, monPokeball, param3, param4, param5);
+    InitializeBoxPokemonAfterCapture(boxMon, trainer, monPokeball, metLocation, metTerrain, heapID);
 }
 
 static const u16 sHeldItemChance[][2] = {
@@ -5059,37 +5062,37 @@ BOOL sub_0207884C(BoxPokemon *boxMon, TrainerInfo *param1, enum HeapID heapID)
     return v6;
 }
 
-int sub_020788D0(int param0)
+// Mapping to Back Sprites order. Returns player if not otherwise defined
+int SpriteSystem_TrainerClassBackSpriteIndex(enum TrainerClass trainerClass)
 {
-    // TODO enum values?
-    switch (param0) {
-    case 0:
-    case 1:
+    switch (trainerClass) {
+    case TRAINER_CLASS_PLAYER_MALE:
+    case TRAINER_CLASS_PLAYER_FEMALE:
         break;
-    case 63:
-        param0 = 2;
+    case TRAINER_CLASS_RIVAL:
+        trainerClass = rival_back_NCGR / TRAINER_CLASS_NUM_FILETYPES;
         break;
-    case 90:
-    case 91:
-    case 92:
-    case 93:
-    case 94:
-        param0 = 3 + (param0 - 90);
+    case TRAINER_CLASS_TRAINER_CHERYL:
+    case TRAINER_CLASS_TRAINER_RILEY:
+    case TRAINER_CLASS_TRAINER_MARLEY:
+    case TRAINER_CLASS_TRAINER_BUCK:
+    case TRAINER_CLASS_TRAINER_MIRA:
+        trainerClass = trainer_cheryl_back_NCGR / TRAINER_CLASS_NUM_FILETYPES + trainerClass - TRAINER_CLASS_TRAINER_CHERYL;
         break;
-    case 103:
-    case 104:
-        param0 = 8 + (param0 - 103);
+    case TRAINER_CLASS_DP_PLAYER_MALE_2:
+    case TRAINER_CLASS_DP_PLAYER_FEMALE_2:
+        trainerClass = dp_player_male_back_NCGR / TRAINER_CLASS_NUM_FILETYPES + trainerClass - TRAINER_CLASS_DP_PLAYER_MALE_2;
         break;
     default:
-        if (TrainerClass_Gender(param0) == 1) {
-            param0 = 1;
+        if (TrainerClass_Gender(trainerClass) == GENDER_FEMALE) {
+            trainerClass = player_female_back_NCGR / TRAINER_CLASS_NUM_FILETYPES;
         } else {
-            param0 = 0;
+            trainerClass = player_male_back_NCGR / TRAINER_CLASS_NUM_FILETYPES;
         }
         break;
     }
 
-    return param0;
+    return trainerClass;
 }
 
 void Pokemon_ClearBallCapsuleData(Pokemon *mon)

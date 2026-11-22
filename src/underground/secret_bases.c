@@ -27,9 +27,11 @@
 #include "underground/traps.h"
 
 #include "bg_window.h"
+#include "comm_manager.h"
 #include "comm_player_manager.h"
 #include "communication_information.h"
 #include "communication_system.h"
+#include "coordinates.h"
 #include "field_map_change.h"
 #include "field_system.h"
 #include "field_task.h"
@@ -44,6 +46,7 @@
 #include "menu.h"
 #include "message.h"
 #include "player_avatar.h"
+#include "player_move.h"
 #include "render_window.h"
 #include "savedata.h"
 #include "screen_fade.h"
@@ -57,12 +60,10 @@
 #include "terrain_collision_manager.h"
 #include "trainer_info.h"
 #include "underground.h"
-#include "unk_02030EE0.h"
 #include "unk_02033200.h"
-#include "unk_020366A0.h"
-#include "unk_0205F180.h"
 #include "unk_020655F4.h"
 #include "vars_flags.h"
+#include "wireless_manager.h"
 
 #include "res/field/props/models/prop_models.naix"
 #include "res/graphics/trap_effects/trap_effects.naix"
@@ -228,7 +229,7 @@ typedef struct BaseTransitionContext {
     SysTask *sysTask;
     int state;
     int subState;
-    int mapID;
+    enum MapHeaderID mapHeaderID;
     int warpID;
     int x;
     int z;
@@ -1018,7 +1019,7 @@ static void SecretBases_StartExitBasePromptTask(FieldSystem *fieldSystem, int x,
     ctx->z = z;
     ctx->netID = netID;
     ctx->baseOwnerNetID = baseOwnerNetID;
-    ctx->mapID = MAP_HEADER_UNDERGROUND;
+    ctx->mapHeaderID = MAP_HEADER_UNDERGROUND;
     ctx->dir = dir;
     ctx->fieldSystem = fieldSystem;
     ctx->sysTask = SysTask_Start(SecretBases_ExitBasePromptTask, ctx, 100);
@@ -1041,9 +1042,9 @@ static BaseTransitionContext *BaseTransitionContext_New(FieldSystem *fieldSystem
         ctx->netID = netID;
         ctx->baseOwnerNetID = baseOwnerNetID;
 
-        GF_ASSERT(fieldSystem->location->mapId == MAP_HEADER_UNDERGROUND);
+        GF_ASSERT(fieldSystem->location->mapHeaderID == MAP_HEADER_UNDERGROUND);
 
-        ctx->mapID = MAP_HEADER_UNDERGROUND;
+        ctx->mapHeaderID = MAP_HEADER_UNDERGROUND;
         ctx->dir = dir;
     }
 
@@ -1247,7 +1248,7 @@ static void SecretBases_StartEnterBasePromptTask(FieldSystem *fieldSystem, int x
     ctx->z = z;
     ctx->netID = netID;
     ctx->baseOwnerNetID = baseOwnerNetID;
-    ctx->mapID = MAP_HEADER_UNDERGROUND;
+    ctx->mapHeaderID = MAP_HEADER_UNDERGROUND;
     ctx->dir = dir;
     ctx->fieldSystem = fieldSystem;
     ctx->timer = 0;
@@ -1513,8 +1514,8 @@ static void SecretBases_DrawBaseEntrancesTask(SysTask *unused, void *unused1)
         return;
     }
 
-    int playerX = Player_GetXPos(secretBasesEnv->fieldSystem->playerAvatar);
-    int playerZ = Player_GetZPos(secretBasesEnv->fieldSystem->playerAvatar);
+    int playerX = PlayerAvatar_GetXPos(secretBasesEnv->fieldSystem->playerAvatar);
+    int playerZ = PlayerAvatar_GetZPos(secretBasesEnv->fieldSystem->playerAvatar);
 
     if (UndergroundMan_AreCoordinatesInSecretBase(playerX, playerZ)) {
         return;
@@ -1633,7 +1634,7 @@ static BOOL SecretBases_MoveToFromSecretBaseTask(FieldTask *task)
         FinishScreenFade();
         StartScreenFade(FADE_SUB_THEN_MAIN, FADE_TYPE_CIRCLE_OUT, FADE_TYPE_TOP_HALF_CIRCLE_OUT, COLOR_BLACK, 6, 1, HEAP_ID_FIELD1);
         UndergroundTopScreen_EndTask(fieldSystem->ugTopScreenCtx);
-        Sound_PlayEffect(SEQ_SE_DP_KAIDAN2);
+        Sound_PlayEffect(SEQ_SE_DP_KAIDAN2_sseq);
         ctx->state++;
         break;
     case MOVE_STATE_WAIT_FOR_FADE_OUT:
@@ -1650,7 +1651,7 @@ static BOOL SecretBases_MoveToFromSecretBaseTask(FieldTask *task)
         break;
     case MOVE_STATE_UPDATE_LOCATION:
         Location nextLocation;
-        nextLocation.mapId = ctx->mapID;
+        nextLocation.mapHeaderID = ctx->mapHeaderID;
         nextLocation.warpId = ctx->warpID;
         nextLocation.x = ctx->x;
         nextLocation.z = ctx->z;
@@ -1715,10 +1716,10 @@ static BOOL SecretBases_MoveToFromSecretBaseTask(FieldTask *task)
         break;
     case MOVE_STATE_BLOCK_ENTRANCE:
         CommPlayerMan_ForceDir();
-        PlayerAvatar_SetAnimationCode(fieldSystem->playerAvatar, MovementAction_TurnActionTowardsDir(DIR_SOUTH, MOVEMENT_ACTION_WALK_ON_SPOT_FAST_NORTH), 1);
+        PlayerAvatar_SetMapObjMovement(fieldSystem->playerAvatar, MovementAction_TurnActionTowardsDir(DIR_SOUTH, MOVEMENT_ACTION_WALK_ON_SPOT_FAST_NORTH), 1);
         CommPlayer_SetDir(DIR_SOUTH);
         UndergroundTextPrinter_PrintText(UndergroundMan_GetCommonTextPrinter(), UndergroundCommon_Text_BlockedEntranceToDecorate, FALSE, NULL);
-        Sound_PlayEffect(SEQ_SE_DP_DOOR);
+        Sound_PlayEffect(SEQ_SE_DP_DOOR_sseq);
         ctx->state = MOVE_STATE_FACE_NORTH_AND_END_AFTER_TEXT;
         break;
     case MOVE_STATE_FACE_NORTH_AND_END_AFTER_TEXT:
@@ -1799,9 +1800,9 @@ static void SecretBases_DiggerDrillTask(SysTask *sysTask, void *data)
 
         CommPlayerMan_PauseFieldSystem();
         UndergroundTextPrinter_SetUndergroundTrapName(UndergroundMan_GetCommonTextPrinter(), TRAP_DIGGER_DRILL);
-        Sound_PlayEffect(SEQ_SE_DP_DORIRU);
+        Sound_PlayEffect(SEQ_SE_DP_DORIRU_sseq);
 
-        ov5_021F58FC(Player_MapObject(fieldSystem->playerAvatar), 0, 0, 0);
+        ov5_021F58FC(PlayerAvatar_GetMapObject(fieldSystem->playerAvatar), 0, 0, 0);
         UndergroundTextPrinter_PrintText(UndergroundMan_GetCommonTextPrinter(), UndergroundCommon_Text_ItemWasUsed, FALSE, NULL);
 
         ctx->state = DRILL_STATE_WAIT;
@@ -1819,7 +1820,7 @@ static void SecretBases_DiggerDrillTask(SysTask *sysTask, void *data)
     case DRILL_STATE_CREATE_ENTRANCE: {
         int x = CommPlayer_GetXInFrontOfPlayer(CommSys_CurNetId());
         int z = CommPlayer_GetZInFrontOfPlayer(CommSys_CurNetId());
-        int dir = CommPlayer_GetOppositeDir(PlayerAvatar_GetDir(fieldSystem->playerAvatar));
+        int dir = CommPlayer_GetOppositeDir(PlayerAvatar_GetFacingDir(fieldSystem->playerAvatar));
 
         UndergroundTextPrinter_PrintText(UndergroundMan_GetCommonTextPrinter(), UndergroundCommon_Text_DiscoveredCavern, FALSE, NULL);
         SecretBases_SetBaseEntrancePropLocation(x, z, dir, NETID_CURRENT_PLAYER_BASE);
@@ -2303,7 +2304,7 @@ static enum Good SecretBases_GetGoodWithCollisionAtCoordinates(SecretBase *secre
     return UG_GOOD_NONE;
 }
 
-BOOL SecretBases_CheckForInteractableGood(int netID, Coordinates *coordinates)
+BOOL SecretBases_CheckForInteractableGood(int netID, CoordinatesU16 *coordinates)
 {
     int x = coordinates->x;
     int z = coordinates->z;
@@ -2391,7 +2392,7 @@ static void SecretBases_FlagRankUpTask(SysTask *sysTask, void *data)
     case FLAG_RANK_UP_STATE_PRINT_FLAG_REGISTERED:
         CommPlayerMan_PauseFieldSystem();
         UndergroundTextPrinter_PrintText(UndergroundMan_GetCaptureFlagTextPrinter(), UndergroundCaptureFlag_Text_ObtainedFlagWasRegistered, FALSE, NULL);
-        Sound_PlayEffect(SEQ_SE_DP_PIRORIRO2);
+        Sound_PlayEffect(SEQ_SE_DP_PIRORIRO2_sseq);
         ctx->state = FLAG_RANK_UP_STATE_PRINT_RANK_UP;
         break;
     case FLAG_RANK_UP_STATE_PRINT_RANK_UP:
@@ -2758,16 +2759,16 @@ void SecretBases_SetEntranceGraphicsEnabled(BOOL enabled)
 
 static void ov23_0224DC08(void)
 {
-    sub_02032174(TRUE);
-    sub_02032138(TRUE);
-    sub_02036814(TRUE);
+    WirelessManager_SetPauseClientConnection(TRUE);
+    WirelessManager_SetPauseConnection(TRUE);
+    CommManager_SetPauseUnderground(TRUE);
     sub_020340FC();
 }
 
 static void ov23_0224DC24(void)
 {
-    sub_02032174(FALSE);
-    sub_02032138(FALSE);
-    sub_02036814(FALSE);
+    WirelessManager_SetPauseClientConnection(FALSE);
+    WirelessManager_SetPauseConnection(FALSE);
+    CommManager_SetPauseUnderground(FALSE);
     sub_020340FC();
 }

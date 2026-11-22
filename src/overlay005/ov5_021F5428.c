@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "overlay005/field_effect_manager.h"
 
@@ -11,6 +11,8 @@
 #include "map_object.h"
 #include "overworld_anim_manager.h"
 #include "simple3d.h"
+
+#include "res/graphics/field_effects/field_effects.naix"
 
 typedef struct {
     int unk_00;
@@ -64,7 +66,7 @@ void ov5_021F5444(void *param0)
 
 static void ov5_021F5454(UnkStruct_ov5_021F5454 *param0)
 {
-    FieldEffectManager_LoadModel(param0->unk_08, &param0->unk_0C, 0, 24, 0);
+    FieldEffectManager_LoadModel(param0->unk_08, &param0->unk_0C, 0, ug_ok_nsbmd, 0);
     Simple3D_CreateRenderObject(&param0->unk_20, &param0->unk_0C);
 }
 
@@ -107,7 +109,7 @@ static int ov5_021F54C4(OverworldAnimManager *param0, void *param1)
 
     v0->unk_34 = *v1;
     v0->unk_08 = MapObject_GetLocalID(v0->unk_34.unk_08);
-    v0->unk_0C = MapObject_GetMapID(v0->unk_34.unk_08);
+    v0->unk_0C = MapObject_GetMapHeaderID(v0->unk_34.unk_08);
     v0->unk_24.y = (FX32_ONE * 6);
 
     MapObject_GetPosPtr(v0->unk_34.unk_08, &v2);

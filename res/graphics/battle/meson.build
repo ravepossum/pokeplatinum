@@ -1,4 +1,5 @@
 subdir('moves')
+subdir('particles')
 
 battle_sprites = []
 base_directory = meson.current_source_dir()
@@ -14,7 +15,7 @@ subdir('type_icons')
 
 battle_sprites_narc = custom_target(
   'sprites.narc',
-  output: [ 'sprites.narc', 'sprites.naix' ],
+  output: [ 'sprites.narc', 'sprites.naix', 'sprites.recs' ],
   input: battle_sprites,
 
   command: [

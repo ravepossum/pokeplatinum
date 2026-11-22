@@ -4,11 +4,11 @@
 
 #include "communication_system.h"
 #include "gx_layers.h"
+#include "network_icon.h"
 #include "poffin_sprite.h"
 #include "render_oam.h"
 #include "sprite.h"
 #include "sprite_system.h"
-#include "unk_020393C8.h"
 #include "vram_transfer.h"
 
 void PoffinManager_InitSpriteSystem(PoffinManager *param0);
@@ -61,7 +61,7 @@ void PoffinManager_InitSpriteSystem(PoffinManager *app)
     app->poffinSpriteMan = PoffinSpriteManager_New(app->heapID, 1, 1, NNS_G2D_VRAM_TYPE_2DMAIN, 0);
 
     if (CommSys_IsInitialized()) {
-        sub_02039734();
+        NetworkIcon_Init();
     }
 
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, TRUE);

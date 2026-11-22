@@ -3,8 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/string.h"
 #include "generated/size_contest_results.h"
-#include "generated/string_padding_mode.h"
 
 #include "field/field_system.h"
 
@@ -15,7 +15,7 @@
 #include "string_gf.h"
 #include "string_template.h"
 #include "system_vars.h"
-#include "tv_episode_segment.h"
+#include "tv_segment.h"
 #include "vars_flags.h"
 
 #define MM_TO_TENTH_OF_INCH(length) (((length * 1000) / 254 + 5) / 10)
@@ -124,7 +124,7 @@ u8 SizeContest_CalcResultForPartyMon(FieldSystem *fieldSystem, u16 partySlot)
         return SIZE_CONTEST_SAME_SIZE;
     } else {
         if (newSizeInches > recordSizeInches) {
-            sub_0206DC6C(fieldSystem, newSize, mon);
+            TVSegment_Save_RecordsPokemonSize(fieldSystem, newSize, mon);
             return SIZE_CONTEST_LARGER;
         } else {
             return SIZE_CONTEST_SMALLER;

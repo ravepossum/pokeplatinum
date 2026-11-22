@@ -3,13 +3,13 @@
 
 #include "constants/savedata/save_table.h"
 
-#include "struct_decls/struct_02024440_decl.h"
-#include "struct_decls/struct_020308A0_decl.h"
-#include "struct_defs/struct_0202440C.h"
-#include "struct_defs/struct_0202F264.h"
+#include "struct_defs/battle_recording.h"
+#include "struct_defs/tv.h"
 
+#include "battle_hall_win_records.h"
 #include "hall_of_fame_entries.h"
 #include "mystery_gift.h"
+#include "pal_park_transfers.h"
 #include "pc_boxes.h"
 #include "savedata.h"
 
@@ -96,7 +96,7 @@ int SaveData_SaveHallOfFame(SaveData *saveData, HallOfFame *hof);
  * @param recNum        Which recording slot to load.
  * @return Address of the allocated BattleRecording data.
  */
-BattleRecording *SaveData_BattleRecording(SaveData *saveData, enum HeapID heapID, int *resultCode, int recNum);
+BattleRecording *SaveData_GetBattleRecording(SaveData *saveData, enum HeapID heapID, int *resultCode, int recNum);
 
 /**
  * @brief Saves a mirror of the given BattleRecording data into the extended save.
@@ -109,14 +109,14 @@ BattleRecording *SaveData_BattleRecording(SaveData *saveData, enum HeapID heapID
 int SaveData_SaveBattleRecording(SaveData *saveData, BattleRecording *rec, int recNum);
 
 /**
- * @brief Loads the BattleFrontierStage sector from the extended save data.
+ * @brief Loads the BattleFrontierHallWinRecords sector from the extended save data.
  *
  * @param saveData      The save data.
  * @param heapID        Heap on which to allocate the BattleRecording sector.
  * @param resultCode    Load-result opcode output.
- * @return Address of the allocated BattleFrontierStage data.
+ * @return Address of the allocated BattleHallWinRecords data.
  */
-BattleFrontierStage *SaveData_BattleFrontierStage(SaveData *saveData, enum HeapID heapID, int *resultCode);
+BattleHallWinRecords *SaveData_BattleHallWinRecords(SaveData *saveData, enum HeapID heapID, int *resultCode);
 
 /**
  * @brief Saves a mirror of the given BattleRecording data into the extended save.
@@ -125,6 +125,6 @@ BattleFrontierStage *SaveData_BattleFrontierStage(SaveData *saveData, enum HeapI
  * @param frontier      The battle frontier data to save.
  * @return Save-result opcode.
  */
-int SaveData_SaveBattleFrontierStage(SaveData *saveData, BattleFrontierStage *frontier);
+int SaveData_SaveBattleHallWinRecords(SaveData *saveData, BattleHallWinRecords *records);
 
 #endif // POKEPLATINUM_SAVEDATA_LOAD_HELPERS_H

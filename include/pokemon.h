@@ -7,14 +7,13 @@
 #include "constants/forms.h"
 #include "constants/pokemon.h"
 #include "constants/sound.h"
+#include "generated/trainer_classes.h"
 
 #include "struct_decls/struct_02078B40_decl.h"
 #include "struct_defs/chatot_cry.h"
 #include "struct_defs/pokemon.h"
 #include "struct_defs/species.h"
 #include "struct_defs/sprite_animation_frame.h"
-
-#include "overlay005/struct_ov5_021DE5D0.h"
 
 #include "narc.h"
 #include "palette.h"
@@ -55,6 +54,15 @@ enum EvolutionClass {
     EVO_CLASS_UNUSED_02,
     EVO_CLASS_BY_ITEM,
 };
+
+typedef struct TrainerClassGraphicIndex {
+    enum NarcID narcID;
+    int tiles;
+    int palette;
+    int cells;
+    int anims;
+    int scan;
+} TrainerClassGraphicIndex;
 
 /**
  * @brief Zeros out a Pokemon data structure, then encrypts the result
@@ -121,8 +129,8 @@ BOOL BoxPokemon_ExitDecryptionContext(BoxPokemon *boxMon, BOOL encrypt);
 
 void Pokemon_InitWith(Pokemon *mon, int monSpecies, int monLevel, int monIVs, BOOL useMonPersonalityParam, u32 monPersonality, int monOTIDSource, u32 monOTID);
 void sub_02074044(Pokemon *mon, u16 monSpecies, u8 monLevel, u8 monIVs, u8 monNature);
-void sub_02074088(Pokemon *mon, u16 monSpecies, u8 monLevel, u8 monIVs, u8 param4, u8 param5, u8 param6);
-u32 sub_02074128(u16 monSpecies, u8 param1, u8 param2);
+void sub_02074088(Pokemon *mon, u16 monSpecies, u8 monLevel, u8 monIVs, u8 gender, u8 param5, u8 param6);
+u32 sub_02074128(u16 monSpecies, u8 gender, u8 param2);
 void Pokemon_InitAndCalcStats(Pokemon *mon, u16 monSpecies, u8 monLevel, u32 monCombinedIVs, u32 monPersonality);
 
 /**
@@ -433,7 +441,7 @@ void Pokemon_BuildSpriteTemplateDP(PokemonSpriteTemplate *spriteTemplate, Pokemo
  * @param face           Which face of the Pokemon the player sees
  * @param preferDP       If TRUE, prefer sprites from Diamond/Pearl over Platinum
  */
-void BoxPokemon_BuildSpriteTemplate(PokemonSpriteTemplate *spriteTemplate, BoxPokemon *boxMon, u8 face, BOOL preferDP);
+void BoxPokemon_BuildSpriteTemplate(PokemonSpriteTemplate *spriteTemplate, BoxPokemon *mon, u8 face, BOOL preferDP);
 
 /**
  * @brief Build a PokemonSpriteTemplate for a Pokemon sprite according to the input
@@ -497,9 +505,9 @@ u8 BoxPokemon_SpriteYOffset(BoxPokemon *boxMon, u8 face, BOOL preferDP);
  * @return Y-offset applied to the sprite-face on display
  */
 u8 LoadPokemonSpriteYOffset(u16 species, u8 gender, u8 face, u8 form, u32 personality);
-void sub_0207697C(PokemonSpriteTemplate *param0, u16 param1);
-ManagedSprite *sub_02076994(SpriteSystem *param0, SpriteManager *param1, PaletteData *param2, int param3, int param4, int param5, int param6, int param7, enum HeapID heapID);
-void sub_02076AAC(int param0, int param1, UnkStruct_ov5_021DE5D0 *param2);
+void SpriteSystem_SetTrainerFrontSpriteTemplate(PokemonSpriteTemplate *spriteTemplate, u16 param1);
+ManagedSprite *SpriteSystem_NewManagedSpriteTrainer(SpriteSystem *spriteSys, SpriteManager *spriteMan, PaletteData *paletteData, int x, int y, enum TrainerClass trainerClass, int face, int battlerType, enum HeapID heapID);
+void SpriteSystem_SetTrainerClassGraphicsIndex(enum TrainerClass trainerClass, int face, TrainerClassGraphicIndex *trainerClassGraphicIndex);
 
 /**
  * @brief Returns the size in bytes of a Pokemon struct as a u32
@@ -668,7 +676,7 @@ int Pokemon_LoadLevelUpMoveIdsOf(int monSpecies, int monForm, u16 *monLevelUpMov
 
 void Pokemon_ApplyPokerus(Party *party);
 u8 Pokemon_HasPokerus(Party *party, u8 param1);
-void Party_UpdatePokerusStatus(Party *party, s32 param1);
+void Party_UpdatePokerusStatus(Party *party, s32 daysPassed);
 void Pokemon_ValidatePokerus(Party *party);
 BOOL Pokemon_InfectedWithPokerus(Pokemon *mon);
 BOOL Pokemon_HasCuredPokerus(Pokemon *mon);
@@ -810,7 +818,7 @@ void PlayCryWithParams(ChatotCry *chatotCry, enum PokemonCryMod cryMod, u16 spec
  *
  * @param chatotCry             Chatot cry data from the save block. Only used
  *                              if the Pokemon itself is Chatot.
- * @param crymod                Modification to apply to the Pokemon's cry.
+ * @param cryMod                Modification to apply to the Pokemon's cry.
  * @param species
  * @param form
  * @param pan
@@ -819,10 +827,10 @@ void PlayCryWithParams(ChatotCry *chatotCry, enum PokemonCryMod cryMod, u16 spec
  * @param heapID
  * @param delay                 Number of frames until playback will begin.
  */
-void Species_PlayDelayedCry(ChatotCry *chatotCry, enum PokemonCryMod crymod, u16 species, int form, int pan, int volume, int forceDefaultChatot, enum HeapID heapID, u8 delay);
+void Species_PlayDelayedCry(ChatotCry *chatotCry, enum PokemonCryMod cryMod, u16 species, int form, int pan, int volume, int forceDefaultChatot, enum HeapID heapID, u8 delay);
 BOOL Pokemon_PlayCry(Pokemon *mon);
 void Pokemon_SetCatchData(Pokemon *mon, TrainerInfo *trainerInfo, int monPokeball, int metLocation, int metTerrain, enum HeapID heapID);
-void Pokemon_UpdateAfterCatch(Pokemon *mon, TrainerInfo *param1, int monPokeball, int param3, int param4, int param5);
+void Pokemon_UpdateAfterCatch(Pokemon *mon, TrainerInfo *trainer, int monPokeball, int metLocation, int metTerrain, int heapID);
 void Pokemon_GiveHeldItem(Pokemon *mon, u32 battleType, int itemRates);
 BOOL Pokemon_CanLearnTM(Pokemon *mon, u8 tmID);
 BOOL CanPokemonFormLearnTM(u16 monSpecies, int monForm, u8 tmID);
@@ -840,7 +848,7 @@ BOOL Pokemon_IsOnBattleFrontierBanlist(u16 species);
 u16 Pokemon_GetBattleFrontierBanlistEntry(u8 index);
 BOOL Pokemon_IsBannedFromBattleFrontier(Pokemon *mon);
 BOOL sub_0207884C(BoxPokemon *boxMon, TrainerInfo *param1, enum HeapID heapID);
-int sub_020788D0(int param0);
+int SpriteSystem_TrainerClassBackSpriteIndex(enum TrainerClass trainerClass);
 void Pokemon_ClearBallCapsuleData(Pokemon *mon);
 void BoxPokemon_RestorePP(BoxPokemon *boxMon);
 
