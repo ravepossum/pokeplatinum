@@ -1,7 +1,9 @@
 #ifndef POKEPLATINUM_FIELD_MOVE_TASKS_H
 #define POKEPLATINUM_FIELD_MOVE_TASKS_H
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "constants/fieldmap.h"
+
+#include "struct_decls/map_object.h"
 
 #include "field/field_system_decl.h"
 
@@ -9,7 +11,7 @@
 #include "pokemon.h"
 
 typedef struct FieldMoveContext {
-    u32 mapId;
+    enum MapHeaderID mapHeaderID;
     FieldSystem *fieldSystem;
     MapObject *mapObj;
     u16 usableMoves;
@@ -23,7 +25,7 @@ typedef struct FieldMovePokemon {
 
 enum FieldMoveList {
     FIELD_MOVE_CUT,
-    FIELD_MOVE_FLY, // unused
+    FIELD_MOVE_FLY,
     FIELD_MOVE_SURF,
     FIELD_MOVE_STRENGTH,
     FIELD_MOVE_DEFOG,
@@ -31,6 +33,13 @@ enum FieldMoveList {
     FIELD_MOVE_WATERFALL,
     FIELD_MOVE_ROCK_CLIMB,
     FIELD_MOVE_FLASH,
+    FIELD_MOVE_TELEPORT,
+    FIELD_MOVE_DIG,
+    FIELD_MOVE_SWEET_SCENT,
+    FIELD_MOVE_CHATTER,
+    FIELD_MOVE_MILK_DRINK,
+    FIELD_MOVE_SOFTBOILED,
+    FIELD_MOVE_MAX
 };
 
 enum FieldMoveError {

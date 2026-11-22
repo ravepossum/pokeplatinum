@@ -6,9 +6,9 @@
 
 #include "struct_defs/struct_02089438.h"
 
-#include "game_opening/const_ov77_021D742C.h"
+#include "applications/title_screen.h"
+#include "gts_application/networking.h"
 #include "overlay065/ov65_0222DCE0.h"
-#include "overlay094/networking.h"
 #include "overlay098/ov98_022471C8.h"
 #include "overlay098/ov98_022499C8.h"
 #include "overlay098/struct_ov98_02246E88.h"
@@ -18,6 +18,7 @@
 #include "game_overlay.h"
 #include "heap.h"
 #include "main.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "save_player.h"
 #include "sound.h"
@@ -27,7 +28,6 @@
 #include "unk_02030CE8.h"
 #include "unk_02033200.h"
 #include "unk_02038FFC.h"
-#include "unk_020393C8.h"
 #include "unk_020890F4.h"
 #include "vars_flags.h"
 #include "wifi_overlays.h"
@@ -36,7 +36,7 @@
 
 FS_EXTERN_OVERLAY(overlay65);
 FS_EXTERN_OVERLAY(game_opening);
-FS_EXTERN_OVERLAY(overlay94);
+FS_EXTERN_OVERLAY(gts_application);
 FS_EXTERN_OVERLAY(overlay98);
 
 typedef void *(*UnkFuncPtr_ov98_02249B4C)(UnkStruct_ov98_02246E88 *);
@@ -99,7 +99,7 @@ int ov98_02246C20(ApplicationManager *appMan, int *param1)
     UnkStruct_ov98_02246E88 *v0;
 
     Heap_Create(HEAP_ID_APPLICATION, HEAP_ID_108, 0x28000);
-    Heap_Create(HEAP_ID_SYSTEM, HEAP_ID_91, 0x300);
+    Heap_Create(HEAP_ID_SYSTEM, HEAP_ID_NETWORK_ICON, HEAP_SIZE_NETWORK_ICON);
 
     v0 = ApplicationManager_NewData(appMan, sizeof(UnkStruct_ov98_02246E88), HEAP_ID_108);
     MI_CpuClear8(v0, sizeof(UnkStruct_ov98_02246E88));
@@ -107,7 +107,7 @@ int ov98_02246C20(ApplicationManager *appMan, int *param1)
     v0->options = SaveData_GetOptions(v0->saveData);
     v0->unk_114 = String_Init(100, HEAP_ID_108);
     v0->unk_118 = String_Init(100, HEAP_ID_108);
-    Sound_SetSceneAndPlayBGM(SOUND_SCENE_17, SEQ_WIFILOBBY, 1);
+    Sound_SetSceneAndPlayBGM(SOUND_SCENE_17, SEQ_WIFILOBBY_sseq, 1);
     v0->unk_8C = 0;
 
     return 1;
@@ -179,7 +179,7 @@ int ov98_02246DC0(ApplicationManager *appMan, int *param1)
     String_Free(v0->unk_114);
     ApplicationManager_FreeData(appMan);
     Heap_Destroy(HEAP_ID_108);
-    Heap_Destroy(HEAP_ID_91);
+    Heap_Destroy(HEAP_ID_NETWORK_ICON);
     EnqueueApplication(FS_OVERLAY_ID(game_opening), &gTitleScreenAppTemplate);
 
     return 1;
@@ -188,7 +188,7 @@ int ov98_02246DC0(ApplicationManager *appMan, int *param1)
 static void ov98_02246E08(UnkStruct_ov98_02246E88 *param0)
 {
     if (param0->unk_80 == 0) {
-        Overlay_LoadByID(FS_OVERLAY_ID(overlay94), 2);
+        Overlay_LoadByID(FS_OVERLAY_ID(gts_application), 2);
 
         param0->unk_0C = Heap_Alloc(HEAP_ID_108, 0x20000 + 32);
         param0->unk_10 = NNS_FndCreateExpHeap((void *)(((u32)param0->unk_0C + 31) / 32 * 32), 0x20000);
@@ -209,7 +209,7 @@ static void ov98_02246E54(UnkStruct_ov98_02246E88 *param0)
         Overlay_UnloadHttpOverlay();
         Overlay_UnloadWFCOverlay();
         WirelessDriver_Shutdown();
-        Overlay_UnloadByID(FS_OVERLAY_ID(overlay94));
+        Overlay_UnloadByID(FS_OVERLAY_ID(gts_application));
 
         param0->unk_80 = 0;
     }

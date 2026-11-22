@@ -21,17 +21,17 @@
 #include "overlay115/struct_ov115_02265AD0.h"
 #include "overlay115/struct_ov115_02265AD4.h"
 
+#include "comm_manager.h"
 #include "communication_information.h"
 #include "communication_system.h"
 #include "graphics.h"
 #include "heap.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "screen_fade.h"
 #include "system.h"
 #include "unk_020363E8.h"
-#include "unk_020366A0.h"
-#include "unk_020393C8.h"
 #include "vram_transfer.h"
 
 typedef struct UnkStruct_ov115_0226095C_t {
@@ -106,7 +106,7 @@ int ov115_0226048C(ApplicationManager *appMan, int *param1)
         case 2:
             ov115_02260B44(v0, v1);
             return 1;
-            GF_ASSERT(0);
+            GF_ASSERT(FALSE);
             return 1;
         }
 
@@ -159,7 +159,7 @@ int ov115_0226048C(ApplicationManager *appMan, int *param1)
         }
 
         v0->unk_34 = ov115_02260CEC(HEAP_ID_99, (30 * 40), v0->unk_74, v0->unk_46, &v0->unk_48);
-        sub_02039734();
+        NetworkIcon_Init();
 
         if (v1->unk_38) {
             NintendoWFC_StartVoiceChat(HEAP_ID_99);
@@ -182,7 +182,7 @@ int ov115_0226048C(ApplicationManager *appMan, int *param1)
                 v4.unk_01 = 0;
                 break;
             default:
-                GF_ASSERT(0);
+                GF_ASSERT(FALSE);
                 break;
             }
 
@@ -379,7 +379,7 @@ int ov115_022608E4(ApplicationManager *appMan, int *param1)
 
         ApplicationManager_FreeData(appMan);
         Heap_Destroy(HEAP_ID_99);
-        CommMan_SetErrorHandling(0, 1);
+        CommManager_SetErrorHandling(0, 1);
 
         if (v2 == 1) {
             return 1;

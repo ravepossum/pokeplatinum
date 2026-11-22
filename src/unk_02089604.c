@@ -6,6 +6,7 @@
 #include "struct_defs/struct_02089688.h"
 
 #include "heap.h"
+#include "network_icon.h"
 #include "palette.h"
 #include "screen_fade.h"
 #include "sound_playback.h"
@@ -14,7 +15,6 @@
 #include "system.h"
 #include "touch_screen.h"
 #include "touch_screen_actions.h"
-#include "unk_020393C8.h"
 #include "unk_0208A3F4.h"
 
 void sub_02089604(UnkStruct_02089688 *param0, int param1)
@@ -120,10 +120,10 @@ BOOL sub_02089820(UnkStruct_02089688 *param0)
 
     if (param0->unk_3B8.unk_30 != 0) {
         NNSG2dPaletteData *v0;
-        void *v1 = sub_020394A8(HEAP_ID_101);
+        void *v1 = NetworkIcon_GetPalette(HEAP_ID_101);
 
         NNS_G2dGetUnpackedPaletteData(v1, &v0);
-        PaletteData_LoadBuffer(param0->unk_2EC.unk_10, v0->pRawData, 0x1 | 0x2, 0xe0, 0x20);
+        PaletteData_LoadBuffer(param0->unk_2EC.unk_10, v0->pRawData, PLTTBUF_SUB_OBJ, PLTT_DEST(14), PALETTE_SIZE_BYTES);
         Heap_Free(v1);
     }
 
@@ -597,20 +597,20 @@ void sub_0208A180(u32 param0, enum TouchScreenButtonState param1, void *param2)
                 v0->unk_3AC.unk_04 = v0->unk_00[param0].unk_04;
             }
 
-            Sound_PlayEffect(SEQ_SE_DP_BUTTON3);
+            Sound_PlayEffect(SEQ_SE_DP_BUTTON3_sseq);
         } else {
             if (param0 == 26) {
                 v0->unk_214[1].unk_14.unk_00 = 0;
                 v0->unk_214[1].unk_14.unk_02 = 2;
-                Sound_PlayEffect(SEQ_SE_DP_BUTTON3);
+                Sound_PlayEffect(SEQ_SE_DP_BUTTON3_sseq);
             } else if (param0 == 27) {
                 v0->unk_214[1].unk_14.unk_00 = 3;
                 v0->unk_214[1].unk_14.unk_02 = 2;
-                Sound_PlayEffect(SEQ_SE_DP_PIRORIRO);
+                Sound_PlayEffect(SEQ_SE_DP_PIRORIRO_sseq);
             } else {
                 v0->unk_214[1].unk_14.unk_00 = (param0 - 16) % 5;
                 v0->unk_214[1].unk_14.unk_02 = (param0 - 16) / 5;
-                Sound_PlayEffect(SEQ_SE_DP_BUTTON3);
+                Sound_PlayEffect(SEQ_SE_DP_BUTTON3_sseq);
             }
 
             if ((param0 >= 16) && (param0 <= 25)) {

@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_defs/struct_02039A58.h"
+#include "struct_defs/comm_cmd_table.h"
 
 #include "underground/manager.h"
 #include "underground/mining.h"
@@ -17,16 +17,16 @@
 
 #include "comm_player_manager.h"
 #include "field_comm_manager.h"
-#include "trainer_card.h"
+#include "scrcmd_battle_arcade.h"
+#include "scrcmd_battle_castle.h"
+#include "scrcmd_battle_hall.h"
+#include "trainer_case.h"
 #include "trainer_info.h"
+#include "union_room.h"
 #include "unk_02032798.h"
-#include "unk_0204FA34.h"
-#include "unk_0205001C.h"
-#include "unk_02050548.h"
 #include "unk_0205A0D8.h"
-#include "unk_0205B33C.h"
 
-static int CommPacketSizeOf_TrainerCard(void);
+static int CommPacketSizeOf_TrainerCase(void);
 static int sub_02099548(void);
 static int sub_0209954C(void);
 
@@ -72,7 +72,7 @@ static const CommCmdTable Unk_020F68A4[] = {
     { Traps_ProcessTriggeredTrapBits, CommPacketSizeOf_NetId, NULL },
     { Traps_QueueSendTrapRadarResults, CommPacketSizeOf_Nothing, NULL },
     { Traps_ReceiveTrapRadarResults, CommPacketSizeOf_TrapRadarResult, NULL },
-    { UndergroundMan_ProcessTouchInput, CommPacketSizeOf_Coordinates, NULL },
+    { UndergroundMan_ProcessTouchInput, CommPacketSizeOf_CoordinatesU16, NULL },
     { UndergroundMan_ProcessTouchRadarTrapResults, CommPacketSizeOf_Variable, NULL },
     { UndergroundMan_ProcessTouchRadarMiningSpotResults, CommPacketSizeOf_Variable, NULL }, // 50
     { Traps_ProcessDisengagedTrap, CommPacketSizeOf_TriggeredTrap, NULL },
@@ -112,24 +112,24 @@ static const CommCmdTable Unk_020F68A4[] = {
     { UndergroundPlayer_ProcessFlagEvent, CommPacketSizeOf_FlagEvent, NULL },
     { SecretBases_ProcessBaseCreateRequest, CommPacketSizeOf_NetId, NULL },
     { SecretBases_ProcessBaseCreateEvent, CommPacketSizeOf_SecretBaseCreateEvent, NULL },
-    { sub_02059EAC, CommPacketSizeOf_TrainerCard, sub_02059EBC },
+    { FieldCommManager_SetTrainerCaseCopiedFlag, CommPacketSizeOf_TrainerCase, FieldCommManager_GetTrainerCase },
     { UndergroundPC_ProcessTakeFlagAttempt, CommPacketSizeOf_PCInteraction, NULL },
     { UndergroundPC_ProcessTakenFlag, CommPacketSizeOf_PCInteraction, NULL }, // 90
     { UndergroundPlayer_ProcessHeldFlagOwnerInfo, CommPacketSizeOf_TrainerInfo, NULL },
     { UndergroundPlayer_ProcessHeldFlagOwnerInfoServer, CommPacketSizeOf_HeldFlagInfo, UndergroundPlayer_GetHeldFlagInfoBuffer },
     { UndergroundPlayer_ProcessHeldFlagOwnerInfoAck, CommPacketSizeOf_NetId, NULL },
     { sub_02059180, CommPacketSizeOf_NetId, NULL },
-    { sub_02059D0C, CommPacketSizeOf_NetId, NULL }, // 95
+    { FieldCommManager_UpdateBattleRoomMovement, CommPacketSizeOf_NetId, NULL }, // 95
     { SecretBases_ProcessFlagRankUp, CommPacketSizeOf_NetId, NULL },
     { SecretBases_ProcessFlagRankUpEvent, CommPacketSizeOf_FlagRankUpEvent, NULL },
-    { sub_0205B988, TrainerInfo_Size, NULL },
-    { sub_0205B9AC, CommPacketSizeOf_NetId, NULL },
-    { sub_0205B98C, CommPacketSizeOf_NetId, NULL },
-    { sub_0205BA6C, CommPacketSizeOf_NetId, NULL },
-    { sub_0205B990, CommPacketSizeOf_Nothing, NULL },
-    { sub_0205B9C4, CommPacketSizeOf_NetId, NULL },
-    { sub_0205B9E0, CommPacketSizeOf_Nothing, NULL },
-    { sub_0205BA08, CommPacketSizeOf_TrainerCard, sub_0205BA5C },
+    { Dummy_0205B988, TrainerInfo_Size, NULL }, // no sender
+    { UnionRoom_RecvActivityProposal, CommPacketSizeOf_NetId, NULL },
+    { Dummy_0205B98C, CommPacketSizeOf_NetId, NULL }, // no sender
+    { UnionRoom_RecvPartySelectionResult, CommPacketSizeOf_NetId, NULL },
+    { UnionRoom_RecvRestart, CommPacketSizeOf_Nothing, NULL },
+    { UnionRoom_RecvActivityAnswer, CommPacketSizeOf_NetId, NULL },
+    { UnionRoom_RecvChatEnded, CommPacketSizeOf_Nothing, NULL },
+    { UnionRoom_RecvTrainerCase, CommPacketSizeOf_TrainerCase, UnionRoom_GetTrainerCaseRecvBuffer },
     { sub_0205B0C0, sub_0205B0E4, sub_0205B0F4 },
     { sub_0205B110, CommPacketSizeOf_NetId, NULL },
     { sub_02099510, CommPacketSizeOf_NetId, NULL },
@@ -157,8 +157,8 @@ static const CommCmdTable Unk_020F68A4[] = {
     { sub_02099510, sub_02099504, NULL },
     { sub_02099510, sub_02099508, NULL },
     { BattleHall_ProcessSelectedSpeciesMsg, CommPacketSizeOf_Variable, NULL },
-    { sub_0205001C, CommPacketSizeOf_Variable, NULL },
-    { sub_02050548, CommPacketSizeOf_Variable, NULL }
+    { BattleCastle_ProcessSpeciesCheckMsg, CommPacketSizeOf_Variable, NULL },
+    { BattleArcade_ProcessSpeciesCheckMsg, CommPacketSizeOf_Variable, NULL }
 };
 
 void sub_02099510(int param0, int param1, void *param2, void *param3)
@@ -172,9 +172,9 @@ void CommFieldCmd_Init(void *param0)
     CommCmd_Init(Unk_020F68A4, v0, param0);
 }
 
-static int CommPacketSizeOf_TrainerCard(void)
+static int CommPacketSizeOf_TrainerCase(void)
 {
-    return sizeof(TrainerCard);
+    return sizeof(TrainerCase);
 }
 
 int sub_02099530(void)

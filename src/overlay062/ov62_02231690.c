@@ -3,13 +3,13 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/geonet_globe.h"
 #include "constants/graphics.h"
 #include "constants/narc.h"
-#include "generated/string_padding_mode.h"
+#include "constants/string.h"
 
 #include "struct_decls/struct_0202F298_decl.h"
 #include "struct_decls/struct_0202F41C_decl.h"
-#include "struct_defs/sentence.h"
 #include "struct_defs/struct_02030A80.h"
 #include "struct_defs/struct_0208B878.h"
 #include "struct_defs/struct_0208C06C.h"
@@ -32,6 +32,7 @@
 #include "overlay062/struct_ov62_02248CDC.h"
 
 #include "bg_window.h"
+#include "easy_chat_sentence.h"
 #include "enums.h"
 #include "font.h"
 #include "game_records.h"
@@ -40,6 +41,7 @@
 #include "heap.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "palette.h"
 #include "pokemon_icon.h"
 #include "pokemon_sprite.h"
@@ -54,10 +56,8 @@
 #include "text.h"
 #include "touch_screen.h"
 #include "unk_02012744.h"
-#include "unk_02014A84.h"
 #include "unk_0202F1D4.h"
 #include "unk_02030A80.h"
-#include "unk_020393C8.h"
 #include "unk_0208B284.h"
 
 static void ov62_022349E4(String *param0, enum HeapID heapID);
@@ -152,7 +152,7 @@ int ov62_02231710(UnkStruct_0208C06C *param0, int param1)
         return v3[v4];
     }
 
-    GF_ASSERT(0);
+    GF_ASSERT(FALSE);
 
     return v0[0];
 }
@@ -164,10 +164,10 @@ void ov62_022317CC(UnkStruct_0208C06C *param0, int param1)
     SpriteManager *v2 = param0->unk_14.unk_08;
     NARC *v3 = param0->unk_14.unk_00;
 
-    PaletteData_LoadBufferFromFileStart(v0, 162, ov62_02231710(param0, 3), 102, 0, 0x20 * (8 + 1), 0);
-    PaletteData_LoadBufferFromFileStart(v0, 162, ov62_02231710(param0, 3), 102, 1, 0x20 * (8 + 1), 0);
-    PaletteData_LoadBufferFromFileStart(v0, 162, ov62_02231710(param0, 0), 102, 0, 0x20, 14 * 16);
-    PaletteData_LoadBufferFromFileStart(v0, 162, ov62_02231710(param0, 0), 102, 1, 0x20, 14 * 16);
+    PaletteData_LoadBufferFromFileStart(v0, NARC_INDEX_RESOURCE__ENG__BATT_REC__BATT_REC_GRA, ov62_02231710(param0, 3), HEAP_ID_102, PLTTBUF_MAIN_BG, PALETTE_SIZE_BYTES * (8 + 1), PLTT_DEST(0));
+    PaletteData_LoadBufferFromFileStart(v0, NARC_INDEX_RESOURCE__ENG__BATT_REC__BATT_REC_GRA, ov62_02231710(param0, 3), HEAP_ID_102, PLTTBUF_SUB_BG, PALETTE_SIZE_BYTES * (8 + 1), PLTT_DEST(0));
+    PaletteData_LoadBufferFromFileStart(v0, NARC_INDEX_RESOURCE__ENG__BATT_REC__BATT_REC_GRA, ov62_02231710(param0, 0), HEAP_ID_102, PLTTBUF_MAIN_BG, PALETTE_SIZE_BYTES, PLTT_DEST(14));
+    PaletteData_LoadBufferFromFileStart(v0, NARC_INDEX_RESOURCE__ENG__BATT_REC__BATT_REC_GRA, ov62_02231710(param0, 0), HEAP_ID_102, PLTTBUF_SUB_BG, PALETTE_SIZE_BYTES, PLTT_DEST(14));
     sub_0208B63C(param0->unk_6F0, param0->unk_14.unk_48);
     sub_0208B63C(param0->unk_6F0, param0->unk_14.unk_48);
     SpriteManager_UnloadPlttObjById(v2, 9999);
@@ -178,10 +178,10 @@ void ov62_022317CC(UnkStruct_0208C06C *param0, int param1)
 
 void ov62_022318E8(UnkStruct_0208C06C *param0)
 {
-    PaletteData_BlendMulti(param0->unk_14.unk_14, 2, 0xFFFF, 0, param0->unk_14.unk_44);
-    PaletteData_BlendMulti(param0->unk_14.unk_14, 0, 0xFFFF, 0, param0->unk_14.unk_44);
-    PaletteData_BlendMulti(param0->unk_14.unk_14, 3, 0xFFFF, 0, param0->unk_14.unk_44);
-    PaletteData_BlendMulti(param0->unk_14.unk_14, 1, 0xFFFF, 0, param0->unk_14.unk_44);
+    PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_MAIN_OBJ, 0xFFFF, 0, param0->unk_14.unk_44);
+    PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_MAIN_BG, 0xFFFF, 0, param0->unk_14.unk_44);
+    PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, 0xFFFF, 0, param0->unk_14.unk_44);
+    PaletteData_BlendMulti(param0->unk_14.unk_14, PLTTBUF_SUB_BG, 0xFFFF, 0, param0->unk_14.unk_44);
 }
 
 u16 *ov62_Pokedex_Alphabetical(enum HeapID heapID, int unused, int *pokedexLength)
@@ -461,12 +461,12 @@ static void ov62_02231C78(UnkStruct_ov62_022323B8 *param0, UnkStruct_0208C06C *p
             String_Free(v8);
 
             {
-                int v13 = sub_02030BFC(v11);
-                int v14 = sub_02030C08(v11);
+                int country = sub_02030BFC(v11);
+                int region = sub_02030C08(v11);
 
                 v10 = &param0->unk_0C[4];
                 Window_FillTilemap(v10, 0x00);
-                if (v13 == 0) {
+                if (country == 0) {
                     v8 = MessageLoader_GetNewString(param1->unk_14.unk_34, 21);
 
                     Text_AddPrinterWithParamsAndColor(v10, FONT_SYSTEM, v8, 0, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(15, 13, 0), NULL);
@@ -475,19 +475,19 @@ static void ov62_02231C78(UnkStruct_ov62_022323B8 *param0, UnkStruct_0208C06C *p
                 } else {
                     v8 = String_Init(255, HEAP_ID_102);
                     v6 = MessageLoader_GetNewString(param1->unk_14.unk_34, 22);
-                    StringTemplate_SetCountryName(v9, 0, v13);
+                    StringTemplate_SetCountryName(v9, 0, country);
                     StringTemplate_Format(v9, v8, v6);
 
                     Text_AddPrinterWithParamsAndColor(v10, FONT_SYSTEM, v8, 0, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(15, 13, 0), NULL);
                     Window_ScheduleCopyToVRAM(v10);
                     String_Free(v8);
                     String_Free(v6);
-                    if (v14 != 0) {
+                    if (region != 0) {
                         v10 = &param0->unk_0C[5];
                         Window_FillTilemap(v10, 0x00);
                         v8 = String_Init(255, HEAP_ID_102);
                         v6 = MessageLoader_GetNewString(param1->unk_14.unk_34, 23);
-                        StringTemplate_SetCityName(v9, 0, v13, v14);
+                        StringTemplate_SetRegionName(v9, 0, country, region);
                         StringTemplate_Format(v9, v8, v6);
 
                         Text_AddPrinterWithParamsAndColor(v10, FONT_SYSTEM, v8, 4, 0, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(15, 13, 0), NULL);
@@ -510,13 +510,13 @@ static void ov62_02231C78(UnkStruct_ov62_022323B8 *param0, UnkStruct_0208C06C *p
             String_Free(v8);
 
             {
-                Sentence v15;
+                EasyChatSentence v15;
 
                 v10 = &param0->unk_0C[7];
 
                 v8 = sub_02030C28(v11, &v15, HEAP_ID_102);
                 if (v8 == NULL) {
-                    v8 = sub_02014B34(&v15, HEAP_ID_102);
+                    v8 = EasyChatSentence_ToString(&v15, HEAP_ID_102);
                 }
 
                 Window_FillTilemap(v10, 0x00);
@@ -666,7 +666,7 @@ int ov62_02232234(int param0, int param1)
     int v0 = param0;
 
     if ((param0 > 16) || (param0 < 0)) {
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         v0 = 0;
     }
 
@@ -767,25 +767,25 @@ static void ov62_022323CC(UnkStruct_ov62_02233310 *param0, UnkStruct_0208C06C *p
     String *v1;
     StringTemplate *v2;
     Window *v3;
-    int v4 = sub_02030BFC(param1->unk_88C[0]);
-    int v5 = sub_02030C08(param1->unk_88C[0]);
+    int country = sub_02030BFC(param1->unk_88C[0]);
+    int region = sub_02030C08(param1->unk_88C[0]);
 
     v3 = &param0->unk_18;
 
-    if ((v4 == 0) && (v5 == 0)) {
+    if ((country == COUNTRY_NONE) && (region == 0)) {
         v0 = MessageLoader_GetNewString(param1->unk_14.unk_34, 125);
     } else {
         v2 = ov62_02231690(HEAP_ID_102);
 
-        if (v5 != 0) {
+        if (region != 0) {
             v0 = String_Init(255, HEAP_ID_102);
             v1 = MessageLoader_GetNewString(param1->unk_14.unk_34, 23);
-            StringTemplate_SetCityName(v2, 0, v4, v5);
+            StringTemplate_SetRegionName(v2, 0, country, region);
             StringTemplate_Format(v2, v0, v1);
         } else {
             v0 = String_Init(255, HEAP_ID_102);
             v1 = MessageLoader_GetNewString(param1->unk_14.unk_34, 22);
-            StringTemplate_SetCountryName(v2, 0, v4);
+            StringTemplate_SetCountryName(v2, 0, country);
             StringTemplate_Format(v2, v0, v1);
         }
 
@@ -1333,13 +1333,13 @@ void ov62_022331C8(UnkStruct_ov62_02233310 *param0, s16 param1)
         if (param0->unk_38.unk_00 > 0) {
             param0->unk_38.unk_00--;
             v1 = 0;
-            Sound_PlayEffect(SEQ_SE_PL_BUTTON);
+            Sound_PlayEffect(SEQ_SE_PL_BUTTON_sseq);
         }
     } else if (param1 > 0) {
         if (param0->unk_38.unk_00 < param0->unk_04 - 1) {
             param0->unk_38.unk_00++;
             v1 = 1;
-            Sound_PlayEffect(SEQ_SE_PL_BUTTON);
+            Sound_PlayEffect(SEQ_SE_PL_BUTTON_sseq);
         }
     }
 
@@ -1374,7 +1374,7 @@ void ov62_022331C8(UnkStruct_ov62_02233310 *param0, s16 param1)
     }
 
     if (v0 < 0) {
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
     }
 
     if (v1 != 0xFF) {
@@ -1416,7 +1416,7 @@ void ov62_022332AC(UnkStruct_ov62_02233310 *param0, s16 param1)
     }
 
     if (v0 != param0->unk_08) {
-        Sound_PlayEffect(SEQ_SE_PL_BUTTON);
+        Sound_PlayEffect(SEQ_SE_PL_BUTTON_sseq);
     }
 
     ov62_02233454(param0);
@@ -1704,7 +1704,7 @@ void ov62_0223371C(UnkStruct_0208C06C *param0)
 {
     int v0;
 
-    sub_0202F1F8(param0->saveData, HEAP_ID_119, &v0);
+    BattleRecording_New(param0->saveData, HEAP_ID_119, &v0);
 
     {
         UnkStruct_02030A80 *v1 = (UnkStruct_02030A80 *)(&param0->unk_8B4.unk_00->unk_00);
@@ -1719,7 +1719,7 @@ static void ov62_02233750(SysTask *param0, void *param1)
     UnkStruct_ov62_02233750 *v0 = param1;
 
     ov62_0222F824(v0->unk_00);
-    sub_02039720();
+    NetworkIcon_Update();
     v0->unk_04 = 1;
     SysTask_Done(param0);
 }
@@ -1852,8 +1852,8 @@ void ov62_022338A8(UnkStruct_0208C06C *param0)
             }
             break;
         }
-        if (sub_0202F250() == 1) {
-            sub_0202F22C();
+        if (BattleRecording_Exists() == 1) {
+            BattleRecording_Free();
         }
     }
 }
@@ -2485,14 +2485,14 @@ static void ov62_02234440(UnkStruct_0208C06C *param0)
     } else {
         param0->unk_41D8.unk_00 = 0;
         sub_0208B9E0(param0->unk_41D8.unk_08, 0);
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
     }
 }
 
 void ov62_02234520(UnkStruct_0208C06C *param0)
 {
     ov62_02234440(param0);
-    Sound_PlayEffect(SEQ_SE_PL_BREC57);
+    Sound_PlayEffect(SEQ_SE_PL_BREC57_sseq);
 }
 
 BOOL ov62_02234534(UnkStruct_0208C06C *param0)
@@ -2582,7 +2582,7 @@ int ov62_022345B8(UnkStruct_0208C06C *param0, int param1, int param2, int param3
                 v0 = 258;
                 break;
             default:
-                GF_ASSERT(0);
+                GF_ASSERT(FALSE);
                 break;
             }
             break;
@@ -2619,7 +2619,7 @@ int ov62_022345B8(UnkStruct_0208C06C *param0, int param1, int param2, int param3
                 v0 = 268;
                 break;
             default:
-                GF_ASSERT(0);
+                GF_ASSERT(FALSE);
                 break;
             }
             break;
@@ -2646,7 +2646,7 @@ int ov62_022345B8(UnkStruct_0208C06C *param0, int param1, int param2, int param3
                     v0 = 199;
                     break;
                 default:
-                    GF_ASSERT(0);
+                    GF_ASSERT(FALSE);
                     break;
                 }
                 break;
@@ -2665,7 +2665,7 @@ int ov62_022345B8(UnkStruct_0208C06C *param0, int param1, int param2, int param3
                     v0 = 203;
                     break;
                 default:
-                    GF_ASSERT(0);
+                    GF_ASSERT(FALSE);
                     break;
                 }
                 break;
@@ -2693,7 +2693,7 @@ int ov62_022345B8(UnkStruct_0208C06C *param0, int param1, int param2, int param3
                     v0 = 210;
                     break;
                 default:
-                    GF_ASSERT(0);
+                    GF_ASSERT(FALSE);
                     break;
                 }
                 break;
@@ -2712,7 +2712,7 @@ int ov62_022345B8(UnkStruct_0208C06C *param0, int param1, int param2, int param3
                     v0 = 214;
                     break;
                 default:
-                    GF_ASSERT(0);
+                    GF_ASSERT(FALSE);
                     break;
                 }
                 break;
@@ -2728,7 +2728,7 @@ int ov62_022345B8(UnkStruct_0208C06C *param0, int param1, int param2, int param3
                     v0 = 217;
                     break;
                 default:
-                    GF_ASSERT(0);
+                    GF_ASSERT(FALSE);
                     break;
                 }
                 break;
@@ -2753,7 +2753,7 @@ int ov62_022345B8(UnkStruct_0208C06C *param0, int param1, int param2, int param3
                     v0 = 223;
                     break;
                 default:
-                    GF_ASSERT(0);
+                    GF_ASSERT(FALSE);
                     break;
                 }
                 break;
@@ -2784,7 +2784,7 @@ int ov62_022345B8(UnkStruct_0208C06C *param0, int param1, int param2, int param3
                     v0 = 231;
                     break;
                 default:
-                    GF_ASSERT(0);
+                    GF_ASSERT(FALSE);
                     break;
                 }
                 break;
@@ -2803,7 +2803,7 @@ int ov62_022345B8(UnkStruct_0208C06C *param0, int param1, int param2, int param3
                     v0 = 235;
                     break;
                 default:
-                    GF_ASSERT(0);
+                    GF_ASSERT(FALSE);
                     break;
                 }
                 break;
@@ -2822,12 +2822,12 @@ int ov62_022345B8(UnkStruct_0208C06C *param0, int param1, int param2, int param3
                     v0 = 239;
                     break;
                 default:
-                    GF_ASSERT(0);
+                    GF_ASSERT(FALSE);
                     break;
                 }
                 break;
             default:
-                GF_ASSERT(0);
+                GF_ASSERT(FALSE);
                 break;
             }
         } break;

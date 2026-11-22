@@ -2,14 +2,16 @@
 
 #include <string.h>
 
+#include "constants/string.h"
 #include "generated/items.h"
-#include "generated/string_padding_mode.h"
 #include "generated/text_banks.h"
 
 #include "struct_defs/image_clips.h"
 #include "struct_defs/seal_case.h"
 
 #include "bag.h"
+#include "ball_seal_info.h"
+#include "battle_tower_save.h"
 #include "coins.h"
 #include "heap.h"
 #include "message.h"
@@ -19,8 +21,6 @@
 #include "string_template.h"
 #include "trainer_info.h"
 #include "unk_020298BC.h"
-#include "unk_0202C9F4.h"
-#include "unk_0202D05C.h"
 
 #include "res/text/bank/bag.h"
 #include "res/text/bank/common_strings.h"
@@ -136,7 +136,7 @@ static u32 GetNumBackdrops(SaveData *saveData)
 
 static u32 GetNumBattlePoints(SaveData *saveData)
 {
-    return BattlePoints_ApplyFuncAndGet(sub_0202D750(saveData), 0, BATTLE_POINTS_FUNC_NONE);
+    return WifiBattleTowerRecord_UpdateBattlePoints(SaveData_GetWifiBattleTowerRecord(saveData), 0, BATTLE_POINTS_FUNC_NONE);
 }
 
 BOOL BagContext_FormatUsageMessage(SaveData *saveData, String *dstString, u16 item, enum HeapID heapID)

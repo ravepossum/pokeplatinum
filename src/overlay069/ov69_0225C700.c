@@ -3,20 +3,19 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/geonet_globe.h"
 #include "constants/graphics.h"
+#include "constants/versions.h"
 
-#include "struct_decls/struct_02015920_decl.h"
-#include "struct_defs/struct_02015958.h"
+#include "struct_defs/place_record.h"
 #include "struct_defs/wi_fi_history.h"
 
-#include "global/pm_version.h"
 #include "overlay066/ov66_0222DDF0.h"
 #include "overlay066/ov66_02231428.h"
 #include "overlay066/struct_ov66_02230F50.h"
 #include "overlay066/struct_ov66_02231428.h"
 #include "overlay066/struct_ov66_02231560.h"
 #include "overlay069/struct_ov69_0225C980.h"
-#include "overlay092/struct_ov92_021D1530.h"
 
 #include "bg_window.h"
 #include "camera.h"
@@ -25,12 +24,14 @@
 #include "font.h"
 #include "g3d_pipeline.h"
 #include "game_options.h"
+#include "geonet_locations.h"
 #include "graphics.h"
 #include "gx_layers.h"
 #include "heap.h"
 #include "math_util.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "pltt_transfer.h"
 #include "render_oam.h"
@@ -49,20 +50,18 @@
 #include "sys_task_manager.h"
 #include "system.h"
 #include "text.h"
-#include "unk_02015920.h"
 #include "unk_0202419C.h"
-#include "unk_0202C858.h"
-#include "unk_020393C8.h"
-#include "unk_020996D0.h"
 #include "vram_transfer.h"
+#include "wifi_history_save_data.h"
+#include "yes_no_touch_menu.h"
 
 typedef struct {
     s16 unk_00;
     s16 unk_02;
     MtxFx33 unk_04;
     u16 unk_28;
-    u16 unk_2A;
-    u16 unk_2C;
+    u16 country;
+    u16 region;
 } UnkStruct_ov69_0225CA7C_sub1_sub1;
 
 typedef struct {
@@ -136,8 +135,8 @@ typedef struct {
 
 typedef struct {
     u32 unk_00;
-    u32 unk_04;
-    u32 unk_08;
+    u32 country;
+    u32 region;
 } UnkStruct_ov69_0225E0C0;
 
 typedef struct {
@@ -231,7 +230,7 @@ typedef struct {
     u32 unk_08;
     String *unk_0C;
     Window unk_10;
-    UnkStruct_02015920 *unk_20;
+    YesNoTouchMenu *unk_20;
 } UnkStruct_ov69_0225DDC8;
 
 typedef struct {
@@ -247,8 +246,8 @@ typedef struct {
     UnkStruct_ov69_0225DA74 unk_04;
     WiFiHistory *wiFiHistory;
     Options *options;
-    int unk_14;
-    int unk_18;
+    int country;
+    int region;
     UnkStruct_ov66_02231428 unk_1C;
     UnkStruct_ov69_0225D35C unk_20;
     UnkStruct_ov69_0225EF54 unk_1CC;
@@ -260,7 +259,7 @@ typedef struct {
     UnkStruct_ov69_0225DDC8 unk_BF64;
 } UnkStruct_ov69_0225CE64;
 
-static void ov69_0225CA7C(UnkStruct_ov69_0225CA7C *param0, u32 param1, s16 param2, s16 param3, u16 param4, u16 param5, const UnkStruct_ov66_02231560 *param6);
+static void ov69_0225CA7C(UnkStruct_ov69_0225CA7C *param0, u32 param1, s16 param2, s16 param3, u16 country, u16 region, const UnkStruct_ov66_02231560 *param6);
 static void ov69_0225CAF4(MtxFx33 *param0, const VecFx32 *param1);
 static void ov69_0225CB6C(MtxFx33 *param0, const VecFx32 *param1);
 static void ov69_0225CBE4(int param0, int param1, int *param2, int *param3, int *param4, int *param5);
@@ -276,7 +275,7 @@ static BOOL ov69_0225D088(const UnkStruct_ov69_0225CE64 *param0, UnkStruct_ov69_
 static u32 ov69_0225D0D8(const UnkStruct_ov69_0225CE64 *param0);
 static u32 ov69_0225D194(const VecFx32 *param0, const VecFx32 *param1);
 static u32 ov69_0225D1E0(const UnkStruct_ov69_0225CE64 *param0, u32 param1, UnkStruct_ov66_02231428 param2);
-static BOOL ov69_0225D268(UnkStruct_ov69_0225CE64 *param0, u8 param1, u8 param2);
+static BOOL ov69_0225D268(UnkStruct_ov69_0225CE64 *param0, u8 country, u8 region);
 static void ov69_0225D2A8(UnkStruct_ov69_0225CE64 *param0, const UnkStruct_ov66_02230F50 *param1);
 static void ov69_0225D318(UnkStruct_ov69_0225D35C *param0, Options *options, u32 heapID);
 static void ov69_0225D35C(UnkStruct_ov69_0225D35C *param0);
@@ -299,9 +298,9 @@ static void ov69_0225D790(UnkStruct_ov69_0225D71C *param0, const VecFx32 *param1
 static void ov69_0225D7A0(UnkStruct_ov69_0225CA7C *param0, const UnkStruct_ov66_02231560 *param1, UnkStruct_ov69_0225D35C *param2, UnkStruct_ov69_0225DA74 param3, u32 heapID);
 static void ov69_0225D838(UnkStruct_ov69_0225CA7C *param0);
 static void ov69_0225D854(UnkStruct_ov69_0225CA7C *param0, const UnkStruct_ov69_0225D71C *param1);
-static u32 ov69_0225D91C(const UnkStruct_ov66_02231560 *param0, u16 param1, u16 param2);
-static u32 ov69_0225D984(const UnkStruct_ov69_0225CA7C *param0, u16 param1, u16 param2, VecFx32 *param3);
-static u32 ov69_0225D9C4(const UnkStruct_ov69_0225CA7C *param0, u16 param1, u16 param2);
+static u32 ov69_0225D91C(const UnkStruct_ov66_02231560 *param0, u16 country, u16 region);
+static u32 ov69_0225D984(const UnkStruct_ov69_0225CA7C *param0, u16 country, u16 region, VecFx32 *param3);
+static u32 ov69_0225D9C4(const UnkStruct_ov69_0225CA7C *param0, u16 country, u16 region);
 static void ov69_0225D9F0(const UnkStruct_ov69_0225CA7C *param0, VecFx32 *param1, int param2);
 static u32 ov69_0225DA1C(const UnkStruct_ov69_0225CA7C *param0, int param1);
 static u32 ov69_0225DA38(const UnkStruct_ov69_0225CA7C *param0, int param1);
@@ -384,8 +383,8 @@ static u16 ov69_0225EF04(u32 param0);
 static void ov69_0225EF1C(UnkStruct_ov69_0225EF54 *param0, u32 heapID);
 static void ov69_0225EF54(UnkStruct_ov69_0225EF54 *param0);
 static String *ov69_0225EF74(UnkStruct_ov69_0225EF54 *param0, u32 param1);
-static String *ov69_0225EF90(UnkStruct_ov69_0225EF54 *param0, u32 param1);
-static String *ov69_0225EFB8(UnkStruct_ov69_0225EF54 *param0, u32 param1, u32 param2);
+static String *ov69_0225EF90(UnkStruct_ov69_0225EF54 *param0, u32 country);
+static String *ov69_0225EFB8(UnkStruct_ov69_0225EF54 *param0, u32 country, u32 region);
 static void ov69_0225EF84(UnkStruct_ov69_0225EF54 *param0, u32 param1, String *param2);
 static u32 ov69_0225EFEC(const UnkStruct_ov66_02231560 *param0);
 
@@ -621,7 +620,7 @@ static const UnkStruct_ov69_0225ECF0 Unk_ov69_0225F1E0[12][3] = {
     },
 };
 
-static const UnkStruct_02015958 Unk_ov69_0225F074 = {
+static const YesNoTouchMenuParams Unk_ov69_0225F074 = {
     NULL,
     0x1,
     0xA0,
@@ -679,8 +678,8 @@ int ov69_0225C700(ApplicationManager *appMan, int *param1)
 
     v0->wiFiHistory = SaveData_WiFiHistory(v1->saveData);
     v0->options = SaveData_GetOptions(v1->saveData);
-    v0->unk_14 = WiFiHistory_GetCountry(v0->wiFiHistory);
-    v0->unk_18 = WiFiHistory_GetRegion(v0->wiFiHistory);
+    v0->country = WiFiHistory_GetCountry(v0->wiFiHistory);
+    v0->region = WiFiHistory_GetRegion(v0->wiFiHistory);
     v0->unk_1C = v1->unk_08;
 
     ov69_0225D2A8(v0, v1);
@@ -788,19 +787,19 @@ static void ov69_0225C980(UnkStruct_ov69_0225CA7C *param0, const UnkStruct_ov66_
 
     {
         void *v1;
-        UnkStruct_ov92_021D1530 *v2;
+        PlaceRecord *v2;
         u32 v3;
-        int v4, v5;
+        int country, v5;
 
         v1 = LoadMemberFromOpenNARC_OutFileSize(v0, 18, 0, heapID, 0, &v3);
-        v2 = (UnkStruct_ov92_021D1530 *)v1;
+        v2 = (PlaceRecord *)v1;
         v5 = v3 / 6;
 
         v2++;
 
-        for (v4 = 1; v4 < v5; v4++) {
-            if (v2->unk_00 != 2) {
-                ov69_0225CA7C(param0, param0->unk_00.unk_00, v2->unk_02, v2->unk_04, v4, 0, param1);
+        for (country = 1; country < v5; country++) {
+            if (v2->type != 2) {
+                ov69_0225CA7C(param0, param0->unk_00.unk_00, v2->x, v2->y, country, 0, param1);
                 param0->unk_00.unk_00++;
             }
 
@@ -816,10 +815,10 @@ static void ov69_0225C980(UnkStruct_ov69_0225CA7C *param0, const UnkStruct_ov66_
         int v10, v11, v12, v13;
 
         v12 = 1;
-        v11 = sub_020996D0();
+        v11 = GeonetLocations_GetLocationListCount();
 
         while (v12 < v11) {
-            v9 = sub_02099764(v12);
+            v9 = GeonetLocations_GetNarcMemberIndex(v12);
             v6 = LoadMemberFromOpenNARC_OutFileSize(v0, v9, 0, heapID, 0, &v8);
             v7 = (UnkStruct_ov69_0225C980 *)v6;
             v13 = v8 / 4;
@@ -827,7 +826,7 @@ static void ov69_0225C980(UnkStruct_ov69_0225CA7C *param0, const UnkStruct_ov66_
             v7++;
 
             for (v10 = 1; v10 < v13; v10++) {
-                ov69_0225CA7C(param0, param0->unk_00.unk_00, v7->unk_00, v7->unk_02, sub_02099748(v12), v10, param1);
+                ov69_0225CA7C(param0, param0->unk_00.unk_00, v7->unk_00, v7->unk_02, GeonetLocations_GetCountry(v12), v10, param1);
                 param0->unk_00.unk_00++;
                 v7++;
             }
@@ -840,7 +839,7 @@ static void ov69_0225C980(UnkStruct_ov69_0225CA7C *param0, const UnkStruct_ov66_
     NARC_dtor(v0);
 }
 
-static void ov69_0225CA7C(UnkStruct_ov69_0225CA7C *param0, u32 param1, s16 param2, s16 param3, u16 param4, u16 param5, const UnkStruct_ov66_02231560 *param6)
+static void ov69_0225CA7C(UnkStruct_ov69_0225CA7C *param0, u32 param1, s16 param2, s16 param3, u16 country, u16 region, const UnkStruct_ov66_02231560 *param6)
 {
     MtxFx33 v0 = { FX32_ONE, 0, 0, 0, FX32_ONE, 0, 0, 0, FX32_ONE };
     VecFx32 v1;
@@ -857,11 +856,11 @@ static void ov69_0225CA7C(UnkStruct_ov69_0225CA7C *param0, u32 param1, s16 param
     param0->unk_00.unk_04[param1].unk_04 = v0;
 
     if (param6 != NULL) {
-        param0->unk_00.unk_04[param1].unk_28 = ov69_0225D91C(param6, param4, param5);
+        param0->unk_00.unk_04[param1].unk_28 = ov69_0225D91C(param6, country, region);
     }
 
-    param0->unk_00.unk_04[param1].unk_2A = param4;
-    param0->unk_00.unk_04[param1].unk_2C = param5;
+    param0->unk_00.unk_04[param1].country = country;
+    param0->unk_00.unk_04[param1].region = region;
 }
 
 static void ov69_0225CAF4(MtxFx33 *param0, const VecFx32 *param1)
@@ -1084,21 +1083,21 @@ static BOOL ov69_0225CE64(UnkStruct_ov69_0225CE64 *param0)
         v1 = ov69_0225DE40(&param0->unk_BF64);
 
         switch (v1) {
-        case 0:
+        case YES_NO_TOUCH_MENU_NOTHING_CHOSEN:
             break;
-        case 2:
+        case YES_NO_TOUCH_MENU_NO:
             ov69_0225E0A0(&param0->unk_BC70);
             ov69_0225DEA0(&param0->unk_BF64);
             ov69_0225DD44(&param0->unk_BC44);
             param0->unk_00 = 0;
             break;
         default:
-        case 1:
+        case YES_NO_TOUCH_MENU_YES:
             return 1;
         }
     } break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 
@@ -1140,7 +1139,7 @@ static u32 ov69_0225CF9C(UnkStruct_ov69_0225CE64 *param0)
     ov69_0225DC54(&param0->unk_BC44);
 
     if (param0->unk_BC44.unk_00 & PAD_BUTTON_B) {
-        Sound_PlayEffect(SEQ_SE_DP_DECIDE);
+        Sound_PlayEffect(SEQ_SE_DP_DECIDE_sseq);
         return 2;
     } else {
         if (gSystem.pressedKeys & PAD_BUTTON_X) {
@@ -1158,8 +1157,8 @@ static u32 ov69_0225CF9C(UnkStruct_ov69_0225CE64 *param0)
                         if (v1 == 0) {
                             (void)0;
                         } else {
-                            ov69_0225D268(param0, v2.unk_04, v2.unk_08);
-                            Sound_PlayEffect(SEQ_SE_PL_TIMER04);
+                            ov69_0225D268(param0, v2.country, v2.region);
+                            Sound_PlayEffect(SEQ_SE_PL_TIMER04_sseq);
                         }
                     }
                 }
@@ -1177,7 +1176,7 @@ static void ov69_0225D030(UnkStruct_ov69_0225CE64 *param0, const UnkStruct_ov66_
     int v0;
     int v1;
     int v2;
-    BOOL v3 = ov69_0225D268(param0, param0->unk_14, param0->unk_18);
+    BOOL v3 = ov69_0225D268(param0, param0->country, param0->region);
 
     if (v3 == 0) {
         v0 = ov69_0225EFEC(param1->unk_00);
@@ -1203,8 +1202,8 @@ static BOOL ov69_0225D088(const UnkStruct_ov69_0225CE64 *param0, UnkStruct_ov69_
     }
 
     param1->unk_00 = ov69_0225D1E0(param0, v0, param0->unk_1C);
-    param1->unk_04 = ov69_0225DA38(&param0->unk_288, v0);
-    param1->unk_08 = ov69_0225DA54(&param0->unk_288, v0);
+    param1->country = ov69_0225DA38(&param0->unk_288, v0);
+    param1->region = ov69_0225DA54(&param0->unk_288, v0);
 
     return 1;
 }
@@ -1287,7 +1286,7 @@ static u32 ov69_0225D1E0(const UnkStruct_ov69_0225CE64 *param0, u32 param1, UnkS
     int v4;
 
     v0 = param2.unk_00_val2_unk_00 - 4;
-    v4 = ov69_0225D9C4(&param0->unk_288, 219, 3);
+    v4 = ov69_0225D9C4(&param0->unk_288, COUNTRY_UNITED_KINGDOM, REGION_UNITED_KINGDOM_GREATER_LONDON);
 
     GF_ASSERT(v4 < ov69_0225DA70(&param0->unk_288));
 
@@ -1308,11 +1307,11 @@ static u32 ov69_0225D1E0(const UnkStruct_ov69_0225CE64 *param0, u32 param1, UnkS
     return v0;
 }
 
-static BOOL ov69_0225D268(UnkStruct_ov69_0225CE64 *param0, u8 param1, u8 param2)
+static BOOL ov69_0225D268(UnkStruct_ov69_0225CE64 *param0, u8 country, u8 region)
 {
     VecFx32 v0;
     VecFx32 v1;
-    u32 v2 = ov69_0225D984(&param0->unk_288, param1, param2, &v0);
+    u32 v2 = ov69_0225D984(&param0->unk_288, country, region, &v0);
 
     if (v2 != 3) {
         ov69_0225D780(&param0->unk_1DC, &v1);
@@ -1331,7 +1330,7 @@ static void ov69_0225D2A8(UnkStruct_ov69_0225CE64 *param0, const UnkStruct_ov66_
     param0->unk_04.unk_00_1 = 0;
     param0->unk_04.unk_00_0 = 0;
 
-    if (gGameLanguage == JAPANESE) {
+    if (gGameLanguage == LANGUAGE_JAPANESE) {
         param0->unk_04.unk_00_1 = 1;
     } else {
         param0->unk_04.unk_00_1 = 0;
@@ -1408,8 +1407,8 @@ static void ov69_0225D3A4(UnkStruct_ov69_0225D35C *param0, Options *options, u32
     Graphics_LoadTilesToBgLayerFromOpenNARC(param0->unk_1A8, 4, param0->unk_00, 6, 0, 0, 0, heapID);
     Graphics_LoadTilemapToBgLayerFromOpenNARC(param0->unk_1A8, 18, param0->unk_00, 7, 0, 0, 0, heapID);
 
-    Font_LoadScreenIndicatorsPalette(0, 1 * 0x20, heapID);
-    Font_LoadScreenIndicatorsPalette(4, 11 * 0x20, heapID);
+    Font_LoadScreenIndicatorsPalette(PAL_LOAD_MAIN_BG, PLTT_OFFSET(1), heapID);
+    Font_LoadScreenIndicatorsPalette(PAL_LOAD_SUB_BG, PLTT_OFFSET(11), heapID);
     LoadStandardWindowGraphics(param0->unk_00, BG_LAYER_MAIN_1, 1 + (18 + 12), 0, 0, heapID);
     LoadStandardWindowGraphics(param0->unk_00, BG_LAYER_MAIN_1, 1 + (18 + 12), 0, 0, heapID);
 
@@ -1458,7 +1457,7 @@ static void ov69_0225D53C(UnkStruct_ov69_0225D35C *param0, u32 heapID)
         param0->unk_194[i] = SpriteResourceCollection_New(32, i, heapID);
     }
 
-    sub_02039734();
+    NetworkIcon_Init();
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_OBJ, 1);
     GXLayers_EngineBToggleLayers(GX_PLANEMASK_OBJ, 1);
 }
@@ -1613,22 +1612,22 @@ static void ov69_0225D854(UnkStruct_ov69_0225CA7C *param0, const UnkStruct_ov69_
     }
 }
 
-static u32 ov69_0225D91C(const UnkStruct_ov66_02231560 *param0, u16 param1, u16 param2)
+static u32 ov69_0225D91C(const UnkStruct_ov66_02231560 *param0, u16 country, u16 region)
 {
     int v0;
     BOOL v1;
     BOOL v2;
-    u8 v3, v4;
+    u8 country2, region2;
 
     for (v0 = 0; v0 < 50; v0++) {
         v2 = ov66_0223164C(param0, v0);
 
         if (v2) {
             v1 = ov66_02231624(param0, v0);
-            v3 = ov66_022315D8(param0, v0);
-            v4 = ov66_022315FC(param0, v0);
+            country2 = ov66_022315D8(param0, v0);
+            region2 = ov66_022315FC(param0, v0);
 
-            if ((v3 == param1) && (v4 == param2)) {
+            if ((country2 == country) && (region2 == region)) {
                 if (v1 == 1) {
                     return 1;
                 }
@@ -1641,12 +1640,12 @@ static u32 ov69_0225D91C(const UnkStruct_ov66_02231560 *param0, u16 param1, u16 
     return 3;
 }
 
-static u32 ov69_0225D984(const UnkStruct_ov69_0225CA7C *param0, u16 param1, u16 param2, VecFx32 *param3)
+static u32 ov69_0225D984(const UnkStruct_ov69_0225CA7C *param0, u16 country, u16 region, VecFx32 *param3)
 {
     u32 v0 = 3;
     int v1;
     int v2 = ov69_0225DA70(param0);
-    v1 = ov69_0225D9C4(param0, param1, param2);
+    v1 = ov69_0225D9C4(param0, country, region);
 
     if (v1 < v2) {
         v0 = ov69_0225DA1C(param0, v1);
@@ -1657,13 +1656,13 @@ static u32 ov69_0225D984(const UnkStruct_ov69_0225CA7C *param0, u16 param1, u16 
     return v0;
 }
 
-static u32 ov69_0225D9C4(const UnkStruct_ov69_0225CA7C *param0, u16 param1, u16 param2)
+static u32 ov69_0225D9C4(const UnkStruct_ov69_0225CA7C *param0, u16 country, u16 region)
 {
-    int v0;
+    int i;
 
-    for (v0 = 0; v0 < param0->unk_00.unk_00; v0++) {
-        if ((param0->unk_00.unk_04[v0].unk_2A == param1) && (param0->unk_00.unk_04[v0].unk_2C == param2)) {
-            return v0;
+    for (i = 0; i < param0->unk_00.unk_00; i++) {
+        if ((param0->unk_00.unk_04[i].country == country) && (param0->unk_00.unk_04[i].region == region)) {
+            return i;
         }
     }
 
@@ -1688,13 +1687,13 @@ static u32 ov69_0225DA1C(const UnkStruct_ov69_0225CA7C *param0, int param1)
 static u32 ov69_0225DA38(const UnkStruct_ov69_0225CA7C *param0, int param1)
 {
     GF_ASSERT(param1 < param0->unk_00.unk_00);
-    return param0->unk_00.unk_04[param1].unk_2A;
+    return param0->unk_00.unk_04[param1].country;
 }
 
 static u32 ov69_0225DA54(const UnkStruct_ov69_0225CA7C *param0, int param1)
 {
     GF_ASSERT(param1 < param0->unk_00.unk_00);
-    return param0->unk_00.unk_04[param1].unk_2C;
+    return param0->unk_00.unk_04[param1].region;
 }
 
 static u32 ov69_0225DA70(const UnkStruct_ov69_0225CA7C *param0)
@@ -1736,10 +1735,10 @@ static void ov69_0225DB00(UnkStruct_ov69_0225DAEC *param0)
 {
     if (param0->unk_10 == 0) {
         param0->unk_10 = 1;
-        Sound_PlayEffect(SEQ_SE_PL_TIMER03);
+        Sound_PlayEffect(SEQ_SE_PL_TIMER03_sseq);
     } else {
         param0->unk_10 = 0;
-        Sound_PlayEffect(SEQ_SE_PL_TIMER03);
+        Sound_PlayEffect(SEQ_SE_PL_TIMER03_sseq);
     }
 
     param0->unk_12 = 1;
@@ -1910,7 +1909,7 @@ static void ov69_0225DD60(UnkStruct_ov69_0225DDC8 *param0, UnkStruct_ov69_0225D3
 
     ov69_0225EF84(param2, 5, param0->unk_0C);
 
-    param0->unk_20 = sub_02015920(heapID);
+    param0->unk_20 = YesNoTouchMenu_New(heapID);
 }
 
 static void ov69_0225DDC8(UnkStruct_ov69_0225DDC8 *param0)
@@ -1920,7 +1919,7 @@ static void ov69_0225DDC8(UnkStruct_ov69_0225DDC8 *param0)
     }
 
     String_Free(param0->unk_0C);
-    sub_02015938(param0->unk_20);
+    YesNoTouchMenu_Free(param0->unk_20);
     Window_Remove(&param0->unk_10);
 }
 
@@ -1943,16 +1942,16 @@ static u32 ov69_0225DE40(UnkStruct_ov69_0225DDC8 *param0)
         v0 = 0;
 
         if (Text_IsPrinterActive(param0->unk_04) == 0) {
-            UnkStruct_02015958 v1;
+            YesNoTouchMenuParams v1;
 
             v1 = Unk_ov69_0225F074;
-            v1.unk_00 = Window_GetBgConfig(&param0->unk_10);
-            sub_02015958(param0->unk_20, &v1);
+            v1.bgConfig = Window_GetBgConfig(&param0->unk_10);
+            YesNoTouchMenu_InitWithParams(param0->unk_20, &v1);
             param0->unk_00++;
         }
         break;
     case 1:
-        v0 = sub_020159FC(param0->unk_20);
+        v0 = YesNoTouchMenu_ProcessInput(param0->unk_20);
         break;
     }
 
@@ -1961,7 +1960,7 @@ static u32 ov69_0225DE40(UnkStruct_ov69_0225DDC8 *param0)
 
 static void ov69_0225DEA0(UnkStruct_ov69_0225DDC8 *param0)
 {
-    sub_02015A54(param0->unk_20);
+    YesNoTouchMenu_Reset(param0->unk_20);
     Window_EraseMessageBox(&param0->unk_10, 1);
     Window_ClearAndScheduleCopyToVRAM(&param0->unk_10);
 }
@@ -2101,7 +2100,7 @@ static BOOL ov69_0225E0F8(const UnkStruct_ov69_0225E084 *param0, const UnkStruct
             return 0;
         }
 
-        if ((v1.unk_04 == param1->unk_04) && (v1.unk_08 == param1->unk_08)) {
+        if ((v1.country == param1->country) && (v1.region == param1->region)) {
             return 1;
         }
     }
@@ -2442,12 +2441,12 @@ static void ov69_0225E644(UnkStruct_ov69_0225E084 *param0, u32 param1, const Unk
     }
 
     {
-        v0 = ov69_0225EF90(param3, param2->unk_04);
+        v0 = ov69_0225EF90(param3, param2->country);
         Text_AddPrinterWithParamsAndColor(v1, FONT_MESSAGE, v0, 0, 16, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(1, 2, 0), NULL);
     }
 
     {
-        v0 = ov69_0225EFB8(param3, param2->unk_04, param2->unk_08);
+        v0 = ov69_0225EFB8(param3, param2->country, param2->region);
         Text_AddPrinterWithParamsAndColor(v1, FONT_MESSAGE, v0, 0, 32, TEXT_SPEED_NO_TRANSFER, TEXT_COLOR(1, 2, 0), NULL);
     }
 }
@@ -2683,7 +2682,7 @@ static void ov69_0225EC08(UnkStruct_ov69_0225EB60 *param0, UnkStruct_ov69_0225E4
             v0 = ov69_0225EC70(param0, param0->unk_30, param1);
 
             if (v0 == 1) {
-                Sound_PlayEffect(SEQ_SE_PL_TOKEI3);
+                Sound_PlayEffect(SEQ_SE_PL_TOKEI3_sseq);
             }
         }
 
@@ -2888,20 +2887,20 @@ static void ov69_0225EF84(UnkStruct_ov69_0225EF54 *param0, u32 param1, String *p
     MessageLoader_GetString(param0->unk_00, param1, param2);
 }
 
-static String *ov69_0225EF90(UnkStruct_ov69_0225EF54 *param0, u32 param1)
+static String *ov69_0225EF90(UnkStruct_ov69_0225EF54 *param0, u32 country)
 {
     MessageLoader_GetString(param0->unk_00, 3, param0->unk_0C);
-    StringTemplate_SetCountryName(param0->unk_04, 0, param1);
+    StringTemplate_SetCountryName(param0->unk_04, 0, country);
     StringTemplate_Format(param0->unk_04, param0->unk_08, param0->unk_0C);
 
     return param0->unk_08;
 }
 
-static String *ov69_0225EFB8(UnkStruct_ov69_0225EF54 *param0, u32 param1, u32 param2)
+static String *ov69_0225EFB8(UnkStruct_ov69_0225EF54 *param0, u32 country, u32 region)
 {
     StringTemplate_ClearArgs(param0->unk_04);
     MessageLoader_GetString(param0->unk_00, 3, param0->unk_0C);
-    StringTemplate_SetCityName(param0->unk_04, 0, param1, param2);
+    StringTemplate_SetRegionName(param0->unk_04, 0, country, region);
     StringTemplate_Format(param0->unk_04, param0->unk_08, param0->unk_0C);
 
     return param0->unk_08;

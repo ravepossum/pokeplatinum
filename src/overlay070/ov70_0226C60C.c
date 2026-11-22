@@ -23,7 +23,7 @@
 
 typedef struct UnkStruct_ov70_0226C6F8_t {
     UnkStruct_ov70_0225DEE8 *unk_00;
-    UnkStruct_ov66_0222DFF8 *unk_04;
+    WiFiPlazaSystem *unk_04;
     UnkStruct_ov70_02261E10 *unk_08;
     UnkStruct_ov70_0225CA20 *unk_0C;
     UnkStruct_ov70_0226C39C *unk_10;
@@ -178,7 +178,7 @@ static u32 ov70_0226C81C(PPW_LOBBY_TIME_EVENT param0)
     case PPW_LOBBY_TIME_EVENT_NEON_A5:
         return param0 - PPW_LOBBY_TIME_EVENT_NEON_A0;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 
@@ -194,7 +194,7 @@ static u32 ov70_0226C848(PPW_LOBBY_TIME_EVENT param0)
     case PPW_LOBBY_TIME_EVENT_NEON_B3:
         return param0 - PPW_LOBBY_TIME_EVENT_NEON_B0;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 
@@ -210,7 +210,7 @@ static u32 ov70_0226C87C(PPW_LOBBY_TIME_EVENT param0)
     case PPW_LOBBY_TIME_EVENT_NEON_C3:
         return param0 - PPW_LOBBY_TIME_EVENT_NEON_C0;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 

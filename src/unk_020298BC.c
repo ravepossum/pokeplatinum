@@ -6,9 +6,9 @@
 #include "constants/accessories.h"
 #include "constants/charcode.h"
 #include "generated/backdrops.h"
+#include "generated/pokemon_contest_types.h"
 
 #include "struct_defs/image_clips.h"
-#include "struct_defs/sentence.h"
 #include "struct_defs/struct_020298D8.h"
 
 #include "overlay022/ov22_02259098.h"
@@ -16,13 +16,13 @@
 #include "overlay061/struct_ov61_0222AE80.h"
 #include "overlay061/struct_ov61_0222AE80_sub2.h"
 
+#include "easy_chat_sentence.h"
 #include "heap.h"
 #include "inlines.h"
 #include "pokemon.h"
 #include "savedata.h"
 #include "software_sprite.h"
 #include "string_gf.h"
-#include "unk_02014A84.h"
 
 #define PHOTO_EMPTY_MAGIC (0x1234) // Photo is initialized but without proper data.
 #define PHOTO_FULL_MAGIC  (0x2345) // Photo has data written to it
@@ -310,12 +310,12 @@ DressUpPhoto *ImageClips_GetDressUpPhoto(ImageClips *imageClips, int slot)
     return &imageClips->savedPhotos[slot];
 }
 
-UnkStruct_02029C88 *sub_02029CD0(ImageClips *imageClips, int param1)
+UnkStruct_02029C88 *sub_02029CD0(ImageClips *imageClips, int contestType)
 {
-    GF_ASSERT(param1 < 5);
-    GF_ASSERT(inline_02029CD0(&imageClips->unk_4C8[param1]));
+    GF_ASSERT(contestType < CONTEST_TYPE_MAX);
+    GF_ASSERT(inline_02029CD0(&imageClips->unk_4C8[contestType]));
 
-    return &imageClips->unk_4C8[param1];
+    return &imageClips->unk_4C8[contestType];
 }
 
 FashionCase *ImageClips_GetFashionCase(ImageClips *imageClips)
@@ -541,8 +541,8 @@ void DressUpPhoto_SetTitle(DressUpPhoto *photo, u16 word)
 {
     GF_ASSERT(DressUpPhoto_IsValid(photo));
 
-    sub_02014A84(&photo->title);
-    Sentence_SetWord(&photo->title, 0, word);
+    EasyChatSentence_Init(&photo->title);
+    EasyChatSentence_SetWord(&photo->title, 0, word);
 }
 
 void DressUpPhoto_Copy(DressUpPhoto *dest, const DressUpPhoto *src)
@@ -606,7 +606,7 @@ u8 sub_0202A1DC(const DressUpPhoto *photo)
 
 u16 DressUpPhoto_GetTitleWord(const DressUpPhoto *photo)
 {
-    return Sentence_GetWord(&photo->title, 0);
+    return EasyChatSentence_GetWord(&photo->title, 0);
 }
 
 u8 DressUpPhoto_GetLanguage(const DressUpPhoto *photo)
@@ -667,10 +667,10 @@ void sub_0202A35C(UnkStruct_02029C88 *param0, u8 param1)
     param0->unk_94 = param1;
 }
 
-void sub_0202A378(UnkStruct_02029C88 *param0, u32 param1)
+void sub_0202A378(UnkStruct_02029C88 *param0, enum PokemonContestRank contestRank)
 {
     GF_ASSERT(inline_02029CD0(param0));
-    param0->unk_04 = param1;
+    param0->unk_04 = contestRank;
 }
 
 void sub_0202A390(UnkStruct_02029C88 *param0, const UnkStruct_02029C88 *param1)
@@ -977,7 +977,7 @@ void sub_0202A824(const UnkStruct_ov61_0222AE80 *param0, DressUpPhoto *photo)
     photo->photoMon.form = param0->unk_04.form;
 
     photo->unk_3C = param0->unk_24;
-    photo->title = *((Sentence *)(&param0->title));
+    photo->title = *((EasyChatSentence *)(&param0->title));
 
     for (i = 0; i < (11 - 1); i++) {
         photo->accessories[i] = *((PhotoAccessory *)(&param0->unk_30[i]));

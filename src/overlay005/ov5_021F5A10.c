@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "field/field_system.h"
 #include "overlay005/field_effect_manager.h"
@@ -13,6 +13,8 @@
 #include "map_object.h"
 #include "overworld_anim_manager.h"
 #include "sound_playback.h"
+
+#include "res/graphics/field_effects/field_effects.naix"
 
 void include_unk_ov5_02200B98(void);
 
@@ -136,9 +138,9 @@ static void ov5_021F5AB4(UnkStruct_ov5_021F5A34 *param0)
 {
     if (param0->unk_04 == 0) {
         param0->unk_04 = 1;
-        ov5_021DF9E0(param0->unk_08, 1, 85);
-        ov5_021DFA14(param0->unk_08, 1, 170);
-        ov5_021DFA3C(param0->unk_08, 1, 4, 1);
+        ov5_021DF9E0(param0->unk_08, 1, trainer_see_nsbmd);
+        ov5_021DFA14(param0->unk_08, 1, tall_grass_trainer_see_rematch_icon_bin);
+        ov5_021DFA3C(param0->unk_08, 1, trainer_see_nsbtx, 1);
         ov5_021DF864(param0->unk_08, 1, 1, 1, 1, 0, Unk_ov5_02200BC0);
     }
 }
@@ -147,9 +149,9 @@ static void ov5_021F5B00(UnkStruct_ov5_021F5A34 *param0)
 {
     if (param0->unk_05 == 0) {
         param0->unk_05 = 1;
-        ov5_021DF9E0(param0->unk_08, 10, 108);
-        ov5_021DFA14(param0->unk_08, 10, 170);
-        ov5_021DFA3C(param0->unk_08, 11, 13, 1);
+        ov5_021DF9E0(param0->unk_08, 10, rematch_icon_nsbmd);
+        ov5_021DFA14(param0->unk_08, 10, tall_grass_trainer_see_rematch_icon_bin);
+        ov5_021DFA3C(param0->unk_08, 11, rematch_icon_nsbtx, 1);
         ov5_021DF864(param0->unk_08, 12, 10, 10, 11, 0, Unk_ov5_02200BC0);
     }
 }
@@ -272,8 +274,8 @@ static int ov5_021F5C70(OverworldAnimManager *param0, void *param1)
     v1->unk_40 = ov5_021F5C18(v1->unk_30.unk_04, v1->unk_30.unk_00, &v0, v1->unk_30.unk_08->unk_06);
     ov5_021F5A7C(v1->unk_30.unk_08, v1->unk_30.unk_00);
 
-    if (OverworldAnimManager_GetID(param0) == 1) {
-        Sound_PlayEffect(SEQ_SE_DP_DECIDE);
+    if (OverworldAnimManager_GetUserInt(param0) == 1) {
+        Sound_PlayEffect(SEQ_SE_DP_DECIDE_sseq);
     }
 
     return 1;
@@ -381,7 +383,7 @@ static int ov5_021F5DE4(OverworldAnimManager *param0, void *param1)
 
     v1->unk_30 = *v2;
     v1->unk_08 = MapObject_GetLocalID(v1->unk_30.unk_0C);
-    v1->unk_0C = MapObject_GetMapID(v1->unk_30.unk_0C);
+    v1->unk_0C = MapObject_GetMapHeaderID(v1->unk_30.unk_0C);
     v1->unk_24.y = (FX32_ONE * 6);
 
     ov5_021F5BF0(v1->unk_30.unk_08, v1->unk_30.unk_00);
@@ -390,8 +392,8 @@ static int ov5_021F5DE4(OverworldAnimManager *param0, void *param1)
     v1->unk_40 = ov5_021F5C18(v1->unk_30.unk_04, v1->unk_30.unk_00, &v0, v1->unk_30.unk_08->unk_06);
     ov5_021F5A7C(v1->unk_30.unk_08, v1->unk_30.unk_00);
 
-    if (OverworldAnimManager_GetID(param0) == 1) {
-        Sound_PlayEffect(SEQ_SE_DP_DECIDE);
+    if (OverworldAnimManager_GetUserInt(param0) == 1) {
+        Sound_PlayEffect(SEQ_SE_DP_DECIDE_sseq);
     }
 
     return 1;
@@ -450,7 +452,7 @@ static int ov5_021F5EE0(OverworldAnimManager *param0, void *param1)
 
     v1->unk_30 = *v2;
     v1->unk_08 = MapObject_GetLocalID(v1->unk_30.unk_0C);
-    v1->unk_0C = MapObject_GetMapID(v1->unk_30.unk_0C);
+    v1->unk_0C = MapObject_GetMapHeaderID(v1->unk_30.unk_0C);
     v1->unk_24.y = (FX32_ONE * 6);
     v1->unk_10 = 1;
 
@@ -489,8 +491,8 @@ static void ov5_021F5F24(OverworldAnimManager *param0, void *param1)
         Billboard_SetDrawFlag(v0->unk_40, 1);
         v0->unk_10 = 0;
 
-        if (OverworldAnimManager_GetID(param0) == 1) {
-            Sound_PlayEffect(SEQ_SE_DP_DECIDE);
+        if (OverworldAnimManager_GetUserInt(param0) == 1) {
+            Sound_PlayEffect(SEQ_SE_DP_DECIDE_sseq);
         }
 
         v0->unk_00++;

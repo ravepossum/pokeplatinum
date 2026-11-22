@@ -109,9 +109,9 @@ void ov17_02251D6C(UnkStruct_ov17_0224FCA0 *param0)
 
     v0.unk_00 = Unk_ov17_02254D18;
     v0.unk_04 = NELEMS(Unk_ov17_02254D18);
-    v0.unk_06 = param0->unk_00->unk_00.unk_113;
+    v0.playerContestantID = param0->unk_00->unk_00.playerContestantID;
     v0.unk_08 = param0->unk_00->unk_00.unk_10C;
-    v0.unk_07 = param0->unk_00->isLinkContest;
+    v0.isLinkContest = param0->unk_00->isLinkContest;
 
     ov17_0224F18C(&param0->unk_85C, &v0);
 }
@@ -391,7 +391,7 @@ static void ov17_02252224(UnkStruct_ov17_0224F30C *param0, void *param1, const U
     v2->unk_0C = param0;
     v2->unk_11 = v1->unk_00;
     v2->unk_14 = v1->unk_08;
-    v2->unk_1A = v1->unk_0E;
+    v2->announcerMessagesID = v1->announcerMessagesID;
     v2->unk_1D = v1->unk_11;
     v2->unk_1C = v1->unk_10;
     v2->unk_1B = v1->unk_0F;
@@ -405,13 +405,13 @@ static void ov17_0225228C(SysTask *param0, void *param1)
 
     switch (v0->unk_10) {
     case 0:
-        if (v0->unk_1A != 0) {
+        if (v0->announcerMessagesID != 0) {
             if (v0->unk_1D == 0) {
                 Window_DrawMessageBoxWithScrollCursor(&v0->unk_00->unk_10.unk_24[0], 1, 1, 14);
                 Bg_ScheduleTilemapTransfer(v0->unk_00->unk_10.unk_20, 1);
             }
 
-            ov17_02250968(v0->unk_00, v0->unk_1A, &v0->unk_14);
+            ov17_02250968(v0->unk_00, v0->announcerMessagesID, &v0->unk_14);
             v0->unk_10++;
         } else {
             v0->unk_10 = 100;
@@ -481,7 +481,7 @@ static void ov17_022523AC(SysTask *param0, void *param1)
         break;
     case 2:
         StartScreenFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, COLOR_BLACK, 6, 1, HEAP_ID_24);
-        Sound_StopBGM(SEQ_CONTEST_DRESSING_ROOM, 30);
+        Sound_StopBGM(CONTEST_DRESSING_ROOM_sseq, 30);
         v0->unk_10++;
         break;
     case 3:
@@ -522,7 +522,7 @@ static void ov17_022523AC(SysTask *param0, void *param1)
         break;
     case 6:
         if (IsScreenFadeDone() == TRUE) {
-            Sound_PlayBGM(SEQ_CO_KEKKA);
+            Sound_PlayBGM(SEQ_CO_KEKKA_sseq);
             v0->unk_10++;
         }
         break;
@@ -616,7 +616,7 @@ static void ov17_02252620(UnkStruct_ov17_0224F30C *param0, void *param1, const U
     v2->unk_00 = v0;
     v2->unk_04 = *param2;
     v2->unk_0C = param0;
-    v2->unk_11 = v1->unk_02;
+    v2->winningContestantID = v1->winningContestantID;
 
     SysTask_Start(ov17_0225266C, v2, 30000);
 }
@@ -629,8 +629,8 @@ static void ov17_0225266C(SysTask *param0, void *param1)
     case 0:
         ov17_02250FE4(v0->unk_00);
         ov17_02251598(v0->unk_00, 0, &v0->unk_12);
-        Sound_PlayBGM(SEQ_CO_FANFA);
-        Sound_PlayEffect(SEQ_SE_DP_CON_007);
+        Sound_PlayBGM(SEQ_CO_FANFA_sseq);
+        Sound_PlayEffect(SEQ_SE_DP_CON_007_sseq);
         v0->unk_10++;
         break;
     case 1:
@@ -639,7 +639,7 @@ static void ov17_0225266C(SysTask *param0, void *param1)
         }
         break;
     case 2:
-        ov17_02251718(v0->unk_00, v0->unk_11, 0, &v0->unk_13);
+        ov17_02251718(v0->unk_00, v0->winningContestantID, 0, &v0->unk_13);
         v0->unk_10++;
         break;
     case 3:
@@ -648,16 +648,14 @@ static void ov17_0225266C(SysTask *param0, void *param1)
         }
         break;
     case 4: {
-        int v1, v2;
-
-        v1 = Pokemon_GetValue(v0->unk_00->unk_10.unk_00->unk_00[v0->unk_11], MON_DATA_SPECIES, NULL);
-        v2 = Pokemon_GetValue(v0->unk_00->unk_10.unk_00->unk_00[v0->unk_11], MON_DATA_FORM, NULL);
-        PlayCryWithParams(v0->unk_00->unk_00->unk_14C[v0->unk_11], 0, v1, v2, 0, 127, NULL, 24);
+        int species = Pokemon_GetValue(v0->unk_00->unk_10.unk_00->contestMons[v0->winningContestantID], MON_DATA_SPECIES, NULL);
+        int form = Pokemon_GetValue(v0->unk_00->unk_10.unk_00->contestMons[v0->winningContestantID], MON_DATA_FORM, NULL);
+        PlayCryWithParams(v0->unk_00->unk_00->chatotCry[v0->winningContestantID], POKECRY_NORMAL, species, form, 0, 127, NULL, HEAP_ID_24);
     }
         v0->unk_10++;
         break;
     case 5:
-        if (Sound_IsPokemonCryPlaying() == 0) {
+        if (Sound_IsPokemonCryPlaying() == FALSE) {
             v0->unk_10++;
         }
         break;
@@ -716,7 +714,7 @@ static void ov17_022527AC(UnkStruct_ov17_0224F30C *param0, void *param1, const U
         }
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 
@@ -730,7 +728,7 @@ static void ov17_02252858(SysTask *param0, void *param1)
 
     switch (v0->unk_10) {
     case 0:
-        Sound_PlayEffect(SEQ_SE_DP_CON_033);
+        Sound_PlayEffect(SEQ_SE_DP_CON_033_sseq);
         v0->unk_10++;
         break;
     case 1:
@@ -744,7 +742,7 @@ static void ov17_02252858(SysTask *param0, void *param1)
     case 2:
         for (v1 = 0; v1 < 4; v1++) {
             if (v0->unk_14[v1] > 0) {
-                Sound_PlayEffect(SEQ_SE_DP_CON_034);
+                Sound_PlayEffect(SEQ_SE_PL_CON_034_sseq_1);
                 break;
             }
         }
@@ -778,7 +776,7 @@ static void ov17_02252858(SysTask *param0, void *param1)
     case 4:
         for (v1 = 0; v1 < 4; v1++) {
             if (v0->unk_14[v1] > 0) {
-                Sound_PlayEffect(SEQ_SE_DP_CON_032);
+                Sound_PlayEffect(SEQ_SE_DP_CON_032_sseq);
                 break;
             }
         }
@@ -822,7 +820,7 @@ static void ov17_022529C8(SysTask *param0, void *param1)
     switch (v0->unk_10) {
     case 0:
         BrightnessController_StartTransition(90, 16, 0, (GX_BLEND_PLANEMASK_BG0 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BD), BRIGHTNESS_BOTH_SCREENS);
-        Sound_StopBGM(SEQ_CO_FANFA, 90);
+        Sound_StopBGM(SEQ_CO_FANFA_sseq, 90);
         v0->unk_10++;
         break;
     case 1:

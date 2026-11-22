@@ -1,16 +1,18 @@
 #ifndef POKEPLATINUM_UNK_020363E8_H
 #define POKEPLATINUM_UNK_020363E8_H
 
-void CommTool_Init(int param0);
+#include "constants/heap.h"
+
+void CommTool_Init(enum HeapID heapID);
 void CommTool_Delete(void);
 BOOL CommTool_IsInitialized(void);
 void CommCmd_16(int param0, int param1, void *param2, void *param3);
 void CommCmd_18(int param0, int param1, void *param2, void *param3);
 void CommCmd_17(int param0, int param1, void *param2, void *param3);
-void CommTiming_StartSync(u8 param0);
+void CommTiming_StartSync(u8 syncNo);
 void sub_0203650C(void);
-BOOL CommTiming_IsSyncState(u8 param0);
-int sub_02036564(int param0);
+BOOL CommTiming_IsSyncState(u8 syncState);
+int CommTool_GetSyncNo(int netId);
 void sub_02036574(int param0, int param1, void *param2, void *param3);
 int sub_02036590(void);
 void sub_02036594(u8 param0, u8 param1);

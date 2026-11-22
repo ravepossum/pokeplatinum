@@ -10,7 +10,7 @@
 #include "generated/text_banks.h"
 
 #include "struct_defs/clear_game_player_info.h"
-#include "struct_defs/struct_0203E234.h"
+#include "struct_defs/hall_of_fame_display_data.h"
 
 #include "field/field_system.h"
 #include "savedata/save_table.h"
@@ -133,7 +133,7 @@ static BOOL FieldTask_DoClearGameSequence(FieldTask *task)
     } break;
     case 5:
         if (ClearGame_FieldMessageFinishedPrinting(clearGameStruct)) {
-            Sound_PlayEffect(SEQ_SE_DP_SAVE);
+            Sound_PlayEffect(SEQ_SE_DP_SAVE_sseq);
             clearGameStruct->delay = 18;
             (*state)++;
         }
@@ -152,7 +152,7 @@ static BOOL FieldTask_DoClearGameSequence(FieldTask *task)
     case 8:
         if (IsScreenFadeDone()) {
             ClearGame_FreeStringRemoveWindowFreeTilemapBuffer(fieldSystem, clearGameStruct);
-            sub_0203E274(fieldSystem, &(clearGameStruct->playerInfo));
+            FieldSystem_StartEndCredits(fieldSystem, &(clearGameStruct->playerInfo));
             (*state)++;
         }
         break;

@@ -5,8 +5,6 @@
 
 #include "constants/charcode.h"
 
-#include "struct_decls/struct_0205E884_decl.h"
-
 #include "field/field_system.h"
 #include "underground/manager.h"
 #include "underground/struct_underground_top_screen_context_decl.h"
@@ -27,9 +25,9 @@
 #include "sprite_transfer.h"
 #include "sprite_util.h"
 #include "string_gf.h"
+#include "sys_task_extensions.h"
 #include "sys_task_manager.h"
 #include "text.h"
-#include "unk_0200679C.h"
 
 #include "res/graphics/trap_effects/trap_effects.naix"
 #include "res/graphics/underground_top_screen/underground_top_screen.naix"
@@ -73,11 +71,6 @@ typedef struct MessageQueue {
     charcode_t tempStringChars[TEMP_STRING_SIZE];
 } MessageQueue;
 
-typedef struct PlayerCoordinates {
-    int x;
-    int z;
-} PlayerCoordinates;
-
 typedef struct PlayerMarkerData {
     int x;
     int z;
@@ -93,7 +86,7 @@ typedef struct OtherMarkerData {
 
 struct UndergroundTopScreenContext_t {
     int state;
-    PlayerCoordinates playerCoords[MAX_CONNECTED_PLAYERS];
+    CoordinatesInt playerCoords[MAX_CONNECTED_PLAYERS];
     PlayerMarkerData playerMarkers[MAX_CONNECTED_PLAYERS];
     OtherMarkerData otherMarkers[MAX_RADAR_BLIPS + 1];
     FieldSystem *parent;
@@ -116,8 +109,8 @@ static int positionsDummy[MAX_CONNECTED_PLAYERS][2];
 
 static void UndergroundTopScreen_InitBackgrounds(BgConfig *bgConfig, Window *window);
 static void UndergroundMap_InitSpriteResources(UndergroundTopScreenContext *ctx);
-static void UndergroundMap_FetchPlayerPositions(PlayerAvatar *const playerAvatar, PlayerCoordinates playerCoords[], PlayerMarkerData markerData[]);
-static void UndergroundMap_InitPlayerPositions(PlayerCoordinates playerCoords[], PlayerMarkerData markerData[]);
+static void UndergroundMap_FetchPlayerPositions(PlayerAvatar *const playerAvatar, CoordinatesInt playerCoords[], PlayerMarkerData markerData[]);
+static void UndergroundMap_InitPlayerPositions(CoordinatesInt playerCoords[], PlayerMarkerData markerData[]);
 static void UndergroundMap_DrawPlayerMarkers(PlayerMarkerData markerData[], Sprite *sprites[]);
 static void UndergroundTopScreen_FreeBackgrounds(BgConfig *bgConfig);
 static void UndergroundTopScreen_HandleMessageQueue(BgConfig *unused, Window *window, int *printerID, int *state, int *timer, MessageQueue *queue);
@@ -253,7 +246,7 @@ static void UndergroundTopScreen_Task(SysTask *sysTask, void *data)
     }
 }
 
-static void UndergroundMap_InitPlayerPositions(PlayerCoordinates playerCoords[], PlayerMarkerData markerData[])
+static void UndergroundMap_InitPlayerPositions(CoordinatesInt playerCoords[], PlayerMarkerData markerData[])
 {
     for (int netID = 0; netID < MAX_CONNECTED_PLAYERS; netID++) {
         playerCoords[netID].x = 0;
@@ -267,7 +260,7 @@ static void UndergroundMap_InitPlayerPositions(PlayerCoordinates playerCoords[],
     }
 }
 
-static void UndergroundMap_FetchPlayerPositions(PlayerAvatar *const playerAvatar, PlayerCoordinates playerCoords[], PlayerMarkerData markerData[])
+static void UndergroundMap_FetchPlayerPositions(PlayerAvatar *const playerAvatar, CoordinatesInt playerCoords[], PlayerMarkerData markerData[])
 {
     for (int netID = 0; netID < MAX_CONNECTED_PLAYERS; netID++) {
         playerCoords[netID].x = CommPlayer_GetXIfActive(netID);
@@ -276,8 +269,8 @@ static void UndergroundMap_FetchPlayerPositions(PlayerAvatar *const playerAvatar
 
     if (CommSys_IsInitialized()) {
         if (!CommSys_IsPlayerConnected(CommSys_CurNetId())) {
-            playerCoords[0].x = Player_GetXPos(playerAvatar);
-            playerCoords[0].z = Player_GetZPos(playerAvatar);
+            playerCoords[0].x = PlayerAvatar_GetXPos(playerAvatar);
+            playerCoords[0].z = PlayerAvatar_GetZPos(playerAvatar);
         } else {
             int xTemp = playerCoords[0].x;
             int zTemp = playerCoords[0].z;
@@ -535,7 +528,7 @@ static void MessageQueue_Init(MessageQueue *queue)
     queue->currentIndex = 0;
     queue->tempString = String_Init(50 * 2, HEAP_ID_FIELD1);
 
-    for (int i = 0; i < (int)NELEMS(queue->tempStringLines); i++) {
+    for (int i = 0; i < SNELEMS(queue->tempStringLines); i++) {
         queue->tempStringLines[i] = String_Init(TEMP_STRING_SIZE, HEAP_ID_FIELD1);
     }
 }
@@ -548,7 +541,7 @@ static void MessageQueue_Free(MessageQueue *queue)
 
     String_Free(queue->tempString);
 
-    for (int i = 0; i < (int)NELEMS(queue->tempStringLines); i++) {
+    for (int i = 0; i < SNELEMS(queue->tempStringLines); i++) {
         String_Free(queue->tempStringLines[i]);
     }
 }
@@ -570,7 +563,7 @@ static int MessageQueue_SplitMessage(MessageQueue *queue, String *message)
         i++;
     }
 
-    GF_ASSERT(newlineCount < (int)NELEMS(queue->tempStringLines));
+    GF_ASSERT(newlineCount < SNELEMS(queue->tempStringLines));
 
     if (newlineCount == 0) {
         String_Copy(queue->tempStringLines[0], message);

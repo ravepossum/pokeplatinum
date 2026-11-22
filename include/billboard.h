@@ -9,6 +9,12 @@
 #include "billboard_gfx_sequence.h"
 #include "billboard_vram_transfer.h"
 
+enum BillboardAnimType {
+    BILLBOARD_ANIM_TYPE_LOOP = 0,
+    BILLBOARD_ANIM_TYPE_ONESHOT,
+    BILLBOARD_ANIM_TYPE_TABLE_END, // used as the anim type for the dummy entry at the end of anim tables
+};
+
 typedef struct Billboard Billboard;
 typedef struct BillboardList BillboardList;
 typedef void (*BillboardCallback)(Billboard *, void *);
@@ -85,6 +91,13 @@ typedef struct UnkStruct_ov5_021ED110 {
     u32 unk_00;
     BillboardResources *unk_04;
 } UnkStruct_ov5_021ED110;
+
+enum BillboardState {
+    BILLBOARD_STATE_INACTIVE = 0,
+    BILLBOARD_STATE_INITIALIZED,
+    BILLBOARD_STATE_VRAM_TRANSFER,
+    BILLBOARD_STATE_ACTIVE,
+};
 
 void Billboard_Reset(Billboard *billboard);
 void BillboardLists_Create(int count, enum HeapID heapID);

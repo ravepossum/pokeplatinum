@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "constants/battle.h"
+#include "constants/field/script_ranges.h"
 
 #include "struct_defs/radar_chain_records.h"
 
@@ -12,6 +13,7 @@
 #include "overlay006/radar_chain_records.h"
 
 #include "bag.h"
+#include "field_bgm.h"
 #include "field_task.h"
 #include "gfx_box_test.h"
 #include "heap.h"
@@ -26,7 +28,6 @@
 #include "sound_playback.h"
 #include "special_encounter.h"
 #include "terrain_collision_manager.h"
-#include "unk_020553DC.h"
 
 typedef struct {
     int x;
@@ -102,7 +103,7 @@ BOOL RadarSpawnPatches(FieldSystem *fieldSystem, const int param1, const int par
         8
     };
 
-    const VecFx32 *v8 = PlayerAvatar_PosVector(fieldSystem->playerAvatar);
+    const VecFx32 *v8 = PlayerAvatar_GetPos(fieldSystem->playerAvatar);
     v7 = 0;
 
     for (u8 patchRing = 0; patchRing < NUM_GRASS_PATCHES; patchRing++) {
@@ -136,7 +137,7 @@ BOOL RadarSpawnPatches(FieldSystem *fieldSystem, const int param1, const int par
 
     if (v7 == 0) {
         RadarChain_Clear(chain);
-        Sound_TryFadeOutToBGM(fieldSystem, Sound_GetOverrideBGM(fieldSystem, fieldSystem->location->mapId), 1);
+        FieldBGM_TryFadeOut(fieldSystem, FieldBGM_GetEffective(fieldSystem, fieldSystem->location->mapHeaderID), 1);
     } else {
         chain->active = TRUE;
     }
@@ -289,7 +290,7 @@ void PokeRadar_ClearIfAllOutOfView(FieldSystem *fieldSystem)
 
     if (inactiveRadarRings == 4) {
         RadarChain_Clear(fieldSystem->chain);
-        Sound_TryFadeOutToBGM(fieldSystem, Sound_GetOverrideBGM(fieldSystem, fieldSystem->location->mapId), 1);
+        FieldBGM_TryFadeOut(fieldSystem, FieldBGM_GetEffective(fieldSystem, fieldSystem->location->mapHeaderID), 1);
     }
 }
 
@@ -320,7 +321,7 @@ static BOOL CheckTileIsGrass(FieldSystem *fieldSystem, const fx32 param1, const 
         int v5 = v0 / 32;
         int v6 = v1 / 32;
         int v4 = MapMatrix_GetMapHeaderIDAtCoords(fieldSystem->mapMatrix, v5, v6);
-        if (fieldSystem->location->mapId != v4) {
+        if (fieldSystem->location->mapHeaderID != v4) {
             patch->active = FALSE;
             return FALSE;
         }
@@ -430,8 +431,8 @@ BOOL RefreshRadarChain(FieldTask *taskMan)
             *v1 = 4;
         } else {
             *v2 = 0;
-            int v3 = Player_GetXPos(fieldSystem->playerAvatar);
-            int v4 = Player_GetZPos(fieldSystem->playerAvatar);
+            int v3 = PlayerAvatar_GetXPos(fieldSystem->playerAvatar);
+            int v4 = PlayerAvatar_GetZPos(fieldSystem->playerAvatar);
             RadarSpawnPatches(fieldSystem, v3, v4, fieldSystem->chain);
             if (fieldSystem->chain->active) {
                 SetupGrassPatches(fieldSystem, 0x1, fieldSystem->chain);
@@ -443,7 +444,7 @@ BOOL RefreshRadarChain(FieldTask *taskMan)
         }
         break;
     case 1:
-        Sound_PlayBGM(SEQ_POKERADAR);
+        Sound_PlayBGM(SEQ_KUSAGASA_sseq);
         *v1 = 2;
         break;
     case 2:

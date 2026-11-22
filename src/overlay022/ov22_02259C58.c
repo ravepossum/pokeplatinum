@@ -123,7 +123,7 @@ void ov22_02259D2C(UnkStruct_ov22_02259D2C *param0, int param1, int param2)
             if (param2 == 0) {
                 ov22_02259DB0(v1);
 
-                Sound_PlayEffect(SEQ_SE_DP_PASO);
+                Sound_PlayEffect(SEQ_SE_DP_PASO_sseq);
             } else if (param2 == 2) {
                 ov22_02259D98(v1);
             } else {
@@ -291,7 +291,7 @@ static void ov22_0225A02C(u32 param0, enum TouchScreenButtonState param1, void *
         }
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 }

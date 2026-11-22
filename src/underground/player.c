@@ -6,7 +6,7 @@
 
 #include "generated/trainer_score_events.h"
 
-#include "struct_defs/struct_02057B48.h"
+#include "struct_defs/comm_player_location.h"
 
 #include "field/field_system.h"
 #include "overlay005/ov5_021F50BC.h"
@@ -37,7 +37,7 @@
 #include "system_flags.h"
 #include "system_vars.h"
 #include "trainer_info.h"
-#include "tv_episode_segment.h"
+#include "tv_segment.h"
 #include "underground.h"
 #include "vars_flags.h"
 
@@ -391,8 +391,8 @@ static void UndergroundPlayer_HandleCurrentPlayerLosingFlag(FlagEvent *event, BO
         UndergroundTextPrinter_PrintText(UndergroundMan_GetCaptureFlagTextPrinter(), UndergroundCaptureFlag_Text_PlayerTookBackTheFlag, TRUE, UndergroundPlayer_LostFlagTextCallback);
     }
 
-    Sound_FadeOutAndPlayBGM(4, SEQ_TANKOU, 60, 0, 0xFF, NULL);
-    Sound_PlayEffect(SEQ_SE_DP_CARD10);
+    Sound_FadeOutAndPlayBGM(4, SEQ_TANKOU_sseq, 60, 0, 0xFF, NULL);
+    Sound_PlayEffect(SEQ_SE_DP_CARD10_sseq);
 }
 
 void UndergroundPlayer_ProcessFlagEvent(int unused0, int unused1, void *data, void *unused3)
@@ -410,7 +410,7 @@ void UndergroundPlayer_ProcessFlagEvent(int unused0, int unused1, void *data, vo
             if (event->netID == CommSys_CurNetId()) {
                 CommPlayerMan_PauseFieldSystem();
                 UndergroundTextPrinter_PrintText(UndergroundMan_GetCaptureFlagTextPrinter(), UndergroundCaptureFlag_Text_DiscardedFlag, TRUE, UndergroundPlayer_ResumeFieldSystemCallback2);
-                Sound_FadeOutAndPlayBGM(4, SEQ_TANKOU, 60, 0, 0xFF, NULL);
+                Sound_FadeOutAndPlayBGM(4, SEQ_TANKOU_sseq, 60, 0, 0xFF, NULL);
             }
         }
         break;
@@ -435,7 +435,7 @@ void UndergroundPlayer_ProcessFlagEvent(int unused0, int unused1, void *data, vo
                 UndergroundRecord_IncrementFlagsRecovered(undergroundRecord);
                 CommPlayerMan_PauseFieldSystem();
                 UndergroundTextPrinter_PrintText(UndergroundMan_GetCaptureFlagTextPrinter(), UndergroundCaptureFlag_Text_YouTookBackTheFlag, TRUE, UndergroundPlayer_ResumeFieldSystemCallback);
-                Sound_PlayEffect(SEQ_SE_DP_UG_021);
+                Sound_PlayEffect(SEQ_SE_DP_UG_021_sseq);
             } else if (event->targetNetID == CommSys_CurNetId()) {
                 UndergroundPlayer_HandleCurrentPlayerLosingFlag(event, FALSE, undergroundRecord);
             }
@@ -447,8 +447,8 @@ void UndergroundPlayer_ProcessFlagEvent(int unused0, int unused1, void *data, vo
                 CommPlayerMan_PauseFieldSystemWithContextBit(PAUSE_BIT_STOLE_FLAG);
                 UndergroundTextPrinter_SetPlayerNameIndex0(UndergroundMan_GetCaptureFlagTextPrinter(), CommInfo_TrainerInfo(event->targetNetID));
                 UndergroundTextPrinter_PrintText(UndergroundMan_GetCaptureFlagTextPrinter(), UndergroundCaptureFlag_Text_TookAFlagFromPlayer, TRUE, UndergroundPlayer_StealFlagTextCallback);
-                Sound_PlayBGM(SEQ_HATANIGE);
-                Sound_PlayEffect(SEQ_SE_DP_UG_021);
+                Sound_PlayBGM(SEQ_HATANIGE_sseq);
+                Sound_PlayEffect(SEQ_SE_DP_UG_021_sseq);
             } else if (event->targetNetID == CommSys_CurNetId()) {
                 UndergroundPlayer_HandleCurrentPlayerLosingFlag(event, TRUE, undergroundRecord);
             }
@@ -480,7 +480,7 @@ void UndergroundPlayer_ProcessFlagEvent(int unused0, int unused1, void *data, vo
             SystemFlag_SetDeliveredStolenFlag(SaveData_GetVarsFlags(commPlayerMan->fieldSystem->saveData));
 
             if (commPlayerMan->heldFlagOwnerInfo[event->netID]) {
-                FieldSystem_SaveTVEpisodeSegment_CaptureTheFlagDigest_TakeFlag(commPlayerMan->fieldSystem, commPlayerMan->heldFlagOwnerInfo[event->netID]);
+                TVSegment_Save_CaptureTheFlagDigest_TakeFlag(commPlayerMan->fieldSystem, commPlayerMan->heldFlagOwnerInfo[event->netID]);
 
                 if (commPlayerMan->flagsRegisteredInCurrentSession != USHRT_MAX) {
                     commPlayerMan->flagsRegisteredInCurrentSession++;
@@ -488,7 +488,7 @@ void UndergroundPlayer_ProcessFlagEvent(int unused0, int unused1, void *data, vo
             }
 
             CommPlayerMan_PauseFieldSystem();
-            Sound_PlayEffect(SEQ_SE_DP_UG_027);
+            Sound_PlayEffect(SEQ_SE_DP_UG_027_sseq);
 
             if (prevFlagRank == UndergroundRecord_GetFlagRank(undergroundRecord)) {
                 UndergroundTextPrinter_PrintText(UndergroundMan_GetCaptureFlagTextPrinter(), UndergroundCaptureFlag_Text_ObtainedFlagWasRegistered, TRUE, UndergroundPlayer_ResumeFieldSystemCallback);
@@ -496,12 +496,12 @@ void UndergroundPlayer_ProcessFlagEvent(int unused0, int unused1, void *data, vo
                 CommSys_SendDataFixedSize(96, &prevFlagRank);
             }
 
-            Sound_FadeOutAndPlayBGM(4, SEQ_TANKOU, 60, 0, 0xFF, NULL);
+            Sound_FadeOutAndPlayBGM(4, SEQ_TANKOU_sseq, 60, 0, 0xFF, NULL);
         }
 
         if (commPlayerMan->heldFlagOwnerInfo[event->netID]) {
             if (TrainerInfo_Equals(commPlayerMan->heldFlagOwnerInfo[event->netID], CommInfo_TrainerInfo(CommSys_CurNetId())) == TRUE) {
-                FieldSystem_SaveTVEpisodeSegment_CaptureTheFlagDigest_LoseFlag(commPlayerMan->fieldSystem, CommInfo_TrainerInfo(event->netID));
+                TVSegment_Save_CaptureTheFlagDigest_LoseFlag(commPlayerMan->fieldSystem, CommInfo_TrainerInfo(event->netID));
             }
         }
 
@@ -746,7 +746,7 @@ void UndergroundPlayer_MoveToFromSecretBaseClient(int netID, int x, int z, int d
     playerLocation->dir = dir;
 
     if (commPlayerMan->playerAvatar[netID]) {
-        sub_0205ECE0(commPlayerMan->playerAvatar[netID], x, z, dir);
+        PlayerAvatar_SetPosDirFromCoords(commPlayerMan->playerAvatar[netID], x, z, dir);
     }
 
     if (!commPlayerMan->isDisabled) {
@@ -834,19 +834,19 @@ void UndergroundPlayer_HandleEmoteDisplay(int netID)
             switch (commPlayerMan->emote[netID]) {
             case EMOTE_OK:
                 if (commPlayerMan->animManager[netID] == NULL) {
-                    commPlayerMan->animManager[netID] = ov5_021F5488(Player_MapObject(commPlayerMan->playerAvatar[netID]));
+                    commPlayerMan->animManager[netID] = ov5_021F5488(PlayerAvatar_GetMapObject(commPlayerMan->playerAvatar[netID]));
                 }
 
                 commPlayerMan->emote[netID] = EMOTE_NONE;
                 break;
             case EMOTE_EXCLAMATION:
                 if (commPlayerMan->animManager[netID] == NULL) {
-                    commPlayerMan->animManager[netID] = ov5_021F52E4(Player_MapObject(commPlayerMan->playerAvatar[netID]));
+                    commPlayerMan->animManager[netID] = ov5_021F52E4(PlayerAvatar_GetMapObject(commPlayerMan->playerAvatar[netID]));
                 }
                 break;
             case EMOTE_FLAG:
                 if (commPlayerMan->animManager[netID] == NULL) {
-                    commPlayerMan->animManager[netID] = ov5_021F511C(Player_MapObject(commPlayerMan->playerAvatar[netID]));
+                    commPlayerMan->animManager[netID] = ov5_021F511C(PlayerAvatar_GetMapObject(commPlayerMan->playerAvatar[netID]));
                 }
                 break;
             case EMOTE_NONE:

@@ -3,22 +3,22 @@
 
 #include "constants/ball_capsule.h"
 
-typedef struct {
+typedef struct BallSeal {
     u8 type;
     u8 x;
     u8 y;
 } BallSeal;
 
-typedef struct {
+typedef struct BallCapsule {
     BallSeal seals[SEALS_PER_CAPSULE];
 } BallCapsule;
 
-typedef struct {
+typedef struct SealCounts {
     u8 count[SEAL_ID_MAX - 1];
 } SealCounts;
 
-typedef struct {
-    BallCapsule capsules[TOTAL_CAPSULES];
+typedef struct SealCase {
+    BallCapsule capsules[CAPSULE_NUM];
     SealCounts seals;
 } SealCase;
 

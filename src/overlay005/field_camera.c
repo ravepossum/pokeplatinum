@@ -1,13 +1,11 @@
 #include "overlay005/field_camera.h"
 
 #include <nitro.h>
-#include <string.h>
 
 #include "field/field_system.h"
 
 #include "camera.h"
-
-#define F32_DEG_TO_IDX(__deg) FX_DEG_TO_IDX(FX32_CONST(__deg))
+#include "math_util.h"
 
 // History size must be greater than the delay, so we add 1 to the delay to get the minimum acceptable size.
 #define FIELD_CAMERA_DELAY        6
@@ -161,7 +159,7 @@ static const CameraSettings sCameraTypes[] = {
     },
 };
 
-void FieldCamera_Create(const VecFx32 *_target, FieldSystem *fieldSystem, const enum CameraType configID, const BOOL withHistory)
+void FieldCamera_Create(const VecFx32 *_target, FieldSystem *fieldSystem, enum CameraType configID, BOOL withHistory)
 {
     const VecFx32 *target = _target;
     const CameraSettings *config = &sCameraTypes[configID];

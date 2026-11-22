@@ -13,11 +13,11 @@
 #include "heap.h"
 #include "party.h"
 #include "pokemon.h"
+#include "save_catchrecords.h"
 #include "save_player.h"
 #include "savedata.h"
 #include "trainer_info.h"
 #include "unk_02017038.h"
-#include "unk_0202F180.h"
 
 BOOL Pokemon_CanBattle(Pokemon *mon)
 {
@@ -138,7 +138,7 @@ Pokemon *Party_FindFirstEligibleBattler(const Party *party)
     return NULL;
 }
 
-Pokemon *Party_FindFirstHatchedMon(const Party *party)
+Pokemon *Party_FindFirstNonEggMon(const Party *party)
 {
     u16 i;
     u16 partyCount = Party_GetCurrentCount(party);

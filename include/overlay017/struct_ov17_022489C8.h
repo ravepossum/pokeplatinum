@@ -7,10 +7,10 @@
 #include "pokemon.h"
 
 typedef struct {
-    UnkStruct_ov12_02236030 unk_00;
-    UnkStruct_ov12_02235FE0 *unk_0C;
-    Pokemon *unk_10;
-    u8 unk_14;
+    BallCapsuleConfig unk_00;
+    BallCapsuleSealEffect *unk_0C;
+    Pokemon *mon;
+    u8 state;
     u8 unk_15;
 } UnkStruct_ov17_022489C8;
 

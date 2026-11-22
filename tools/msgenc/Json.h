@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "rapidjson/document.h"
-
 #include "MessagesConverter.h"
 
 #define JSON_KEY_NOT_DEFINED -1
@@ -22,7 +20,6 @@ class Json {
 
     char row_no_buf[_row_no_buf_ndigit + 1] = {0};
     string filename;
-    rapidjson::Document doc;
     vector<string> id_strings;
     vector<string> messages;
 

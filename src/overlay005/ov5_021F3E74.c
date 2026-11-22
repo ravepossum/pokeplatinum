@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "field/field_system.h"
 #include "overlay005/field_effect_manager.h"
@@ -12,6 +12,8 @@
 #include "map_object.h"
 #include "map_object_move.h"
 #include "overworld_anim_manager.h"
+
+#include "res/graphics/field_effects/field_effects.naix"
 
 typedef struct {
     FieldEffectManager *unk_00;
@@ -58,9 +60,9 @@ void ov5_021F3E90(void *param0)
 
 static void ov5_021F3EA0(UnkStruct_ov5_021F3EA0 *param0)
 {
-    ov5_021DF9E0(param0->unk_00, 9, 107);
-    ov5_021DFA14(param0->unk_00, 9, 180);
-    ov5_021DFA3C(param0->unk_00, 10, 12, 1);
+    ov5_021DF9E0(param0->unk_00, 9, ninja_appear_smoke_nsbmd);
+    ov5_021DFA14(param0->unk_00, 9, ninja_appear_smoke_bin);
+    ov5_021DFA3C(param0->unk_00, 10, ninja_appear_smoke_nsbtx, 1);
 
     ov5_021DF864(param0->unk_00, 11, 9, 9, 10, 0, Unk_ov5_022006B0);
 }
@@ -106,7 +108,7 @@ static int ov5_021F3F74(OverworldAnimManager *param0, void *param1)
 
     v1->unk_10 = *v2;
     v1->unk_04 = MapObject_GetLocalID(v1->unk_10.unk_0C);
-    v1->unk_08 = MapObject_GetMapID(v1->unk_10.unk_0C);
+    v1->unk_08 = MapObject_GetMapHeaderID(v1->unk_10.unk_0C);
 
     OverworldAnimManager_GetPosition(param0, &v0);
 

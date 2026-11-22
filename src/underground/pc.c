@@ -26,6 +26,7 @@
 #include "comm_player_manager.h"
 #include "communication_information.h"
 #include "communication_system.h"
+#include "coordinates.h"
 #include "field_system.h"
 #include "field_task.h"
 #include "heap.h"
@@ -142,7 +143,7 @@ static const WindowTemplate sYesNoWindowTemplate = {
     .baseTile = BASE_TILE_YES_NO_MENU
 };
 
-int UndergroundPC_GetPCOwnerNetIDAtCoordinates(Coordinates *coordinates, int dir)
+int UndergroundPC_GetPCOwnerNetIDAtCoordinates(CoordinatesU16 *coordinates, int dir)
 {
     int netID;
     int x = coordinates->x;
@@ -176,7 +177,7 @@ int UndergroundPC_GetPCOwnerNetIDAtCoordinates(Coordinates *coordinates, int dir
     return NETID_NONE;
 }
 
-BOOL UndergroundPC_TryUsePC(int netID, Coordinates *coordinates)
+BOOL UndergroundPC_TryUsePC(int netID, CoordinatesU16 *coordinates)
 {
     int pcNetID = UndergroundPC_GetPCOwnerNetIDAtCoordinates(coordinates, CommPlayer_DirServer(netID));
 
@@ -227,7 +228,7 @@ void UndergroundPC_ProcessPCInteraction(int unused0, int unused1, void *data, vo
 
     if (pcInteraction->playerNetID == CommSys_CurNetId()) {
         if (pcInteraction->pcNetID == CommSys_CurNetId()) {
-            Sound_PlayEffect(SEQ_SE_DP_PC_ON);
+            Sound_PlayEffect(SEQ_SE_DP_PC_ON_sseq);
             CommPlayerMan_PauseFieldSystem();
             UndergroundPC_OpenPCMenu(fieldSystem);
         } else {
@@ -317,7 +318,7 @@ static BOOL UndergroundPC_HandleMenu(SysTask *sysTask, void *data)
     case MENU_NOTHING_CHOSEN:
         return FALSE;
     case MENU_CANCEL:
-        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGOFF_sseq);
         menu->state = UG_PC_MENU_STATE_EXIT;
         break;
     case UG_PC_MENU_OPTION_DECORATE:
@@ -335,19 +336,19 @@ static BOOL UndergroundPC_HandleMenu(SysTask *sysTask, void *data)
         }
         break;
     case UG_PC_MENU_OPTION_USE_RADAR:
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         menu->state = UG_PC_MENU_STATE_INIT_RADAR_MENU;
         break;
     case UG_PC_MENU_OPTION_CHECK_FLAGS:
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         menu->state = UG_PC_MENU_STATE_INIT_CHECK_FLAGS;
         break;
     case UG_PC_MENU_OPTION_STORE_GOODS:
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         menu->state = UG_PC_MENU_STATE_INIT_STORE_GOODS;
         break;
     case UG_PC_MENU_OPTION_RECEIVE_GOODS:
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         menu->state = UG_PC_MENU_STATE_INIT_WITHDRAW_GOODS;
         break;
     default:
@@ -459,7 +460,7 @@ static BOOL UndergroundPC_HandleRadarMenu(SysTask *sysTask, void *data)
     case MENU_NOTHING_CHOSEN:
         return FALSE;
     case MENU_CANCEL:
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         menu->state = UG_PC_MENU_STATE_INIT;
         break;
     case RADAR_MENU_OPTION_TREASURE:
@@ -598,8 +599,8 @@ static void UndergroundPC_MoveCamera(BOOL isDecorating, FieldSystem *fieldSystem
     VecFx32 delta;
 
     delta.y = 0;
-    delta.x = 15 * MAP_OBJECT_TILE_SIZE - Player_GetXPos(fieldSystem->playerAvatar) * MAP_OBJECT_TILE_SIZE;
-    delta.z = 17 * MAP_OBJECT_TILE_SIZE - Player_GetZPos(fieldSystem->playerAvatar) * MAP_OBJECT_TILE_SIZE;
+    delta.x = 15 * MAP_OBJECT_TILE_SIZE - PlayerAvatar_GetXPos(fieldSystem->playerAvatar) * MAP_OBJECT_TILE_SIZE;
+    delta.z = 17 * MAP_OBJECT_TILE_SIZE - PlayerAvatar_GetZPos(fieldSystem->playerAvatar) * MAP_OBJECT_TILE_SIZE;
 
     if (!isDecorating) {
         delta.x = -delta.x;
@@ -616,7 +617,7 @@ static BOOL UndergroundPC_DecorateTask(FieldTask *task)
 
     switch (ctx->state) {
     case DECORATE_STATE_FADE:
-        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN);
+        Sound_PlayEffect(SEQ_SE_DP_PC_LOGIN_sseq);
         StartScreenFade(FADE_SUB_THEN_MAIN, FADE_TYPE_BRIGHTNESS_OUT, FADE_TYPE_BRIGHTNESS_OUT, COLOR_BLACK, 6, 1, HEAP_ID_FIELD1);
         ctx->state = DECORATE_STATE_UPDATE_CAMERA;
         break;
@@ -940,7 +941,7 @@ void UndergroundPC_ProcessTakenFlag(int unused0, int unused1, void *data, void *
     if (CommSys_CurNetId() == pcInteraction->playerNetID) {
         UndergroundTextPrinter_SetPlayerNameIndex0(UndergroundMan_GetCaptureFlagTextPrinter(), CommInfo_TrainerInfo(pcInteraction->pcNetID));
         UndergroundTextPrinter_PrintText(UndergroundMan_GetCaptureFlagTextPrinter(), UndergroundCaptureFlag_Text_YouObtainedFlag, TRUE, UndergroundPC_ResumeFieldSystem);
-        Sound_PlayBGM(SEQ_HATANIGE);
+        Sound_PlayBGM(SEQ_HATANIGE_sseq);
     }
 
     UndergroundPlayer_TryTakeFlagFromBase(pcInteraction->playerNetID, pcInteraction->pcNetID);
@@ -953,6 +954,6 @@ static void UndergroundPC_UpdateCursorPos(UndergroundMenu *menu)
     ListMenu_CalcTrueCursorPos(menu->listMenu, &menu->listMenuPos);
 
     if (prevPos != menu->listMenuPos) {
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
     }
 }

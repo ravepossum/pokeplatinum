@@ -4,8 +4,6 @@
 #include "generated/first_arrival_to_zones.h"
 #include "generated/town_map_description_flag_types.h"
 
-#include "struct_decls/struct_0203A790_decl.h"
-
 #include "applications/town_map/main.h"
 #include "field/field_system.h"
 
@@ -89,13 +87,13 @@ void TownMapContext_Init(FieldSystem *fieldSystem, TownMapContext *ctx, enum Tow
 
     memset(ctx, 0, sizeof(TownMapContext));
 
-    playerX = Player_GetXPos(fieldSystem->playerAvatar);
-    playerZ = Player_GetZPos(fieldSystem->playerAvatar);
+    playerX = PlayerAvatar_GetXPos(fieldSystem->playerAvatar);
+    playerZ = PlayerAvatar_GetZPos(fieldSystem->playerAvatar);
 
     int j = NELEMS(sDistWorldMapOffsets) - 1;
     Location *playerLocation = FieldOverworldState_GetPlayerLocation(fieldState);
 
-    currentMap = playerLocation->mapId;
+    currentMap = playerLocation->mapHeaderID;
 
     while (j >= 0) {
         if (currentMap == sDistWorldMapOffsets[j].mapHeader) {

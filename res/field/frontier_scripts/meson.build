@@ -9,23 +9,28 @@ fr_script_narc = custom_target('fr_script.narc',
         'fr_script.naix',
     ],
     input: [
-        script_bin_gen.process(files(
-            'frontier_scripts_battle_castle.s',
-            'frontier_scripts_battle_factory.s',
-            'frontier_scripts_battle_hall.s',
-            'frontier_scripts_battle_arcade.s',
-        ), extra_args: ['--out-dir', fr_script_private_dir]),
+        script_bin_gen.process(
+            files(
+                'frontier_scripts_battle_castle.s',
+                'frontier_scripts_battle_factory.s',
+                'frontier_scripts_battle_hall.s',
+                'frontier_scripts_battle_arcade.s',
+                'frontier_scripts_battle_tower_corridor.s',
+                'frontier_scripts_battle_tower_corridor_multi.s',
+                'frontier_scripts_battle_tower_battle_room.s',
+                'frontier_scripts_battle_tower_multi_battle_room.s',
+                'frontier_scripts_wfc_facility_selector.s',
+            ),
+            extra_args: ['--out-dir', fr_script_private_dir],
+            depends: [
+                frontier_particles_narc,
+                text_banks,
+            ],
+        ),
         copy_gen.process(files(
             'frontier_scripts_unused_04.bin',
             'frontier_scripts_unused_05.bin',
         )),
-        script_bin_gen.process(files(
-            'frontier_scripts_battle_tower_corridor.s',
-            'frontier_scripts_battle_tower_corridor_multi.s',
-            'frontier_scripts_battle_tower_battle_room.s',
-            'frontier_scripts_battle_tower_multi_battle_room.s',
-            'frontier_scripts_unknown_10.s',
-        ), extra_args: ['--out-dir', fr_script_private_dir]),
     ],
     command: [
         nitroarc_exe,

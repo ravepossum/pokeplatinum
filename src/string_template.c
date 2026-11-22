@@ -16,7 +16,9 @@
 #include "global/utility.h"
 
 #include "charcode.h"
+#include "easy_chat_words.h"
 #include "enums.h"
+#include "geonet_locations.h"
 #include "heap.h"
 #include "message.h"
 #include "pc_boxes.h"
@@ -27,9 +29,7 @@
 #include "savedata_misc.h"
 #include "string_gf.h"
 #include "trainer_info.h"
-#include "unk_02014D38.h"
 #include "unk_02017038.h"
-#include "unk_020996D0.h"
 
 #include "res/text/bank/common_strings.h"
 #include "res/text/bank/menu_entries.h"
@@ -407,11 +407,11 @@ void StringTemplate_SetGenderMarker(StringTemplate *template, u32 idx, enum Gend
 
     switch (gender) {
     case GENDER_MALE:
-        MessageLoader_GetString(loader, pl_msg_00000213_00068, template->templateBuf);
+        MessageLoader_GetString(loader, CommonStrings_Text_GenderSymbolMale, template->templateBuf);
         break;
 
     case GENDER_FEMALE:
-        MessageLoader_GetString(loader, pl_msg_00000213_00069, template->templateBuf);
+        MessageLoader_GetString(loader, CommonStrings_Text_GenderSymbolFemale, template->templateBuf);
         break;
 
     default:
@@ -443,17 +443,17 @@ void StringTemplate_SetCountryName(StringTemplate *template, u32 idx, u32 countr
     SetArgFromArchive(template, idx, country, TEXT_BANK_COUNTRY_NAMES);
 }
 
-void StringTemplate_SetCityName(StringTemplate *template, u32 idx, u32 country, u32 city)
+void StringTemplate_SetRegionName(StringTemplate *template, u32 idx, u32 country, u32 region)
 {
-    u32 bankID = sub_02099720(country);
-    if (bankID && city) {
-        SetArgFromArchive(template, idx, city, bankID);
+    u32 bankID = GeonetLocations_GetBankIDFromCountry(country);
+    if (bankID != 0 && region != 0) {
+        SetArgFromArchive(template, idx, region, bankID);
     }
 }
 
-void StringTemplate_SetCustomMessageWord(StringTemplate *template, u32 idx, u16 customMessageWord)
+void StringTemplate_SetEasyChatWord(StringTemplate *template, u32 idx, u16 word)
 {
-    sub_02014DB8(customMessageWord, template->templateBuf);
+    EasyChatWord_ToString(word, template->templateBuf);
     SetStringTemplateArg(template, idx, template->templateBuf, NULL);
 }
 
@@ -522,15 +522,13 @@ void StringTemplate_SetContestBackdropName(StringTemplate *template, u32 idx, u3
     SetArgFromArchive(template, idx, backdrop, TEXT_BANK_CONTEST_BACKDROP_NAMES);
 }
 
-void StringTemplate_SetUnionGroupName(StringTemplate *template, SaveData *saveData, int groupID, int idx, int nameType)
+void StringTemplate_SetUnionGroupName(StringTemplate *template, SaveData *saveData, int groupID, int idx, enum RecordMixedRNGName nameType)
 {
-    int gender, language;
-    String *groupName;
     RecordMixedRNG *group = SaveData_GetRecordMixedRNG(saveData);
 
-    gender = RecordMixedRNG_GetEntryGender(group, groupID);
-    language = RecordMixedRNG_GetEntryLanguage(group, groupID);
-    groupName = String_Init(64, HEAP_ID_FIELD1);
+    int gender = RecordMixedRNG_GetEntryGender(group, groupID);
+    int language = RecordMixedRNG_GetEntryLanguage(group, groupID);
+    String *groupName = String_Init(64, HEAP_ID_FIELD1);
 
     String_CopyChars(groupName, RecordMixedRNG_GetEntryName(group, groupID, nameType));
     StringTemplate_SetString(template, idx, groupName, gender, 1, language);

@@ -24,6 +24,7 @@
 #include "overlay062/struct_ov62_0223D518_sub1_sub1.h"
 #include "overlay062/struct_ov62_02241130.h"
 
+#include "comm_manager.h"
 #include "gds.h"
 #include "heap.h"
 #include "message.h"
@@ -34,7 +35,6 @@
 #include "string_template.h"
 #include "system.h"
 #include "unk_0202F1D4.h"
-#include "unk_020366A0.h"
 
 typedef int (*UnkFuncPtr_ov61_0222E48C)(UnkStruct_ov62_022349A8 *, UnkStruct_ov61_0222B138 *);
 
@@ -136,7 +136,7 @@ static int ov61_0222B14C(UnkStruct_ov62_022349A8 *param0, UnkStruct_ov61_0222B13
     DWC_ClearError();
     DWC_CleanupInet();
 
-    sub_0203848C();
+    CommManager_EndGlobalWifi();
     param0->unk_3C8 = 0;
 
     return 1;
@@ -275,7 +275,7 @@ int ov61_0222B338(UnkStruct_ov62_022349A8 *param0, UnkStruct_02030A80 *param1)
     return 1;
 }
 
-int ov61_0222B394(UnkStruct_ov62_022349A8 *param0, u16 param1, u8 param2, u8 param3, u8 param4)
+int ov61_0222B394(UnkStruct_ov62_022349A8 *param0, u16 param1, u8 param2, u8 country, u8 region)
 {
     if (ov61_0222BBBC(param0) == 0) {
         return 0;
@@ -285,8 +285,8 @@ int ov61_0222B394(UnkStruct_ov62_022349A8 *param0, u16 param1, u8 param2, u8 par
 
     param0->unk_190.unk_00_val5.unk_00 = param1;
     param0->unk_190.unk_00_val5.unk_02 = param2;
-    param0->unk_190.unk_00_val5.unk_03 = param3;
-    param0->unk_190.unk_00_val5.unk_04 = param4;
+    param0->unk_190.unk_00_val5.country = country;
+    param0->unk_190.unk_00_val5.region = region;
     param0->unk_190.unk_00_val5.unk_08 = 0x140;
     param0->unk_3F0 = 0;
     param0->unk_3E8 = 23001;
@@ -304,8 +304,8 @@ int ov61_0222B3EC(UnkStruct_ov62_022349A8 *param0)
 
     param0->unk_190.unk_00_val5.unk_00 = 0xffff;
     param0->unk_190.unk_00_val5.unk_02 = UnkEnum_0202F510_37;
-    param0->unk_190.unk_00_val5.unk_03 = 0xff;
-    param0->unk_190.unk_00_val5.unk_04 = 0xff;
+    param0->unk_190.unk_00_val5.country = 0xff;
+    param0->unk_190.unk_00_val5.region = 0xff;
     param0->unk_190.unk_00_val5.unk_08 = 0x140;
     param0->unk_3F0 = 0;
     param0->unk_3E8 = 23001;
@@ -323,8 +323,8 @@ int ov61_0222B44C(UnkStruct_ov62_022349A8 *param0)
 
     param0->unk_190.unk_00_val5.unk_00 = 0xffff;
     param0->unk_190.unk_00_val5.unk_02 = 0xff;
-    param0->unk_190.unk_00_val5.unk_03 = 0xff;
-    param0->unk_190.unk_00_val5.unk_04 = 0xff;
+    param0->unk_190.unk_00_val5.country = 0xff;
+    param0->unk_190.unk_00_val5.region = 0xff;
     param0->unk_190.unk_00_val5.unk_08 = 0x140;
     param0->unk_3F0 = 0;
     param0->unk_3E8 = 23001;
@@ -535,7 +535,7 @@ static int ov61_0222B6D8(UnkStruct_ov62_022349A8 *param0)
         }
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 

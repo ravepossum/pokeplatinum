@@ -4,22 +4,20 @@
 
 #include "generated/catching_show_points_category.h"
 
-#include "struct_decls/struct_02024440_decl.h"
-
 #include "savedata/save_table.h"
 
 #include "catching_show.h"
 #include "field_script_context.h"
 #include "heap.h"
 #include "inlines.h"
+#include "pal_park_transfers.h"
 #include "pc_boxes.h"
 #include "pokedex.h"
 #include "pokemon.h"
+#include "save_catchrecords.h"
 #include "save_player.h"
 #include "system_flags.h"
 #include "trainer_info.h"
-#include "unk_0202EEC0.h"
-#include "unk_0202F180.h"
 #include "unk_02092494.h"
 #include "vars_flags.h"
 
@@ -35,7 +33,7 @@ BOOL ScrCmd_SetClearInCatchingShowFlag(ScriptContext *ctx)
         SystemFlag_ClearInPalPark(varsFlags);
         CatchingShow_End(ctx->fieldSystem);
     } else {
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
     }
 
     return FALSE;

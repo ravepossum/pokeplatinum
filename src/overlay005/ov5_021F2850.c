@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "field/field_system.h"
 #include "overlay005/field_effect_manager.h"
@@ -14,6 +14,8 @@
 #include "overworld_anim_manager.h"
 #include "simple3d.h"
 #include "sys_task_manager.h"
+
+#include "res/graphics/field_effects/field_effects.naix"
 
 typedef struct {
     int unk_00;
@@ -81,7 +83,7 @@ static void ov5_021F287C(UnkStruct_ov5_021F2874 *param0)
 static void ov5_021F288C(UnkStruct_ov5_021F2874 *param0)
 {
     if (param0->unk_04 == 0) {
-        FieldEffectManager_LoadModel(param0->unk_10, &param0->unk_14, 0, 82, 1);
+        FieldEffectManager_LoadModel(param0->unk_10, &param0->unk_14, 0, rock_climb_mount_nsbmd, 1);
         Simple3D_CreateRenderObject(&param0->unk_28, &param0->unk_14);
         param0->unk_04 = 1;
     }
@@ -150,7 +152,7 @@ static int ov5_021F2980(OverworldAnimManager *param0, void *param1)
 
     v0->unk_10 = *v1;
     v0->unk_04 = v1->unk_00;
-    v0->unk_0C = OverworldAnimManager_GetID(param0);
+    v0->unk_0C = OverworldAnimManager_GetUserInt(param0);
 
     ov5_021F28D4(v0->unk_10.unk_0C);
     ov5_021F2874(v0->unk_10.unk_0C);

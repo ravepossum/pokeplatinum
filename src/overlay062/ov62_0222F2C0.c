@@ -18,6 +18,7 @@
 #include "heap.h"
 #include "message.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "palette.h"
 #include "pokemon_sprite.h"
 #include "render_text.h"
@@ -32,7 +33,6 @@
 #include "unk_02012744.h"
 #include "unk_0202419C.h"
 #include "unk_020298BC.h"
-#include "unk_020393C8.h"
 #include "unk_0208B284.h"
 #include "unk_0208BA78.h"
 #include "unk_0208C010.h"
@@ -59,11 +59,11 @@ void ov62_0222F2C0(UnkStruct_0208C06C *param0)
 
     NNS_G2dSetupSoftwareSpriteCamera();
 
-    PaletteData_SetAutoTransparent(param0->unk_14.unk_14, 1);
-    PaletteData_AllocBuffer(param0->unk_14.unk_14, 0, 0x200, HEAP_ID_102);
-    PaletteData_AllocBuffer(param0->unk_14.unk_14, 1, 0x200, HEAP_ID_102);
-    PaletteData_AllocBuffer(param0->unk_14.unk_14, 2, 0x200, HEAP_ID_102);
-    PaletteData_AllocBuffer(param0->unk_14.unk_14, 3, 0x200, HEAP_ID_102);
+    PaletteData_SetAutoTransparent(param0->unk_14.unk_14, TRUE);
+    PaletteData_AllocBuffer(param0->unk_14.unk_14, PLTTBUF_MAIN_BG, PALETTE_SIZE_BYTES * 16, HEAP_ID_102);
+    PaletteData_AllocBuffer(param0->unk_14.unk_14, PLTTBUF_SUB_BG, PALETTE_SIZE_BYTES * 16, HEAP_ID_102);
+    PaletteData_AllocBuffer(param0->unk_14.unk_14, PLTTBUF_MAIN_OBJ, PALETTE_SIZE_BYTES * 16, HEAP_ID_102);
+    PaletteData_AllocBuffer(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ, PALETTE_SIZE_BYTES * 16, HEAP_ID_102);
     ov62_0222F670(param0->unk_14.unk_10);
     ov62_0222F848(param0);
 
@@ -85,16 +85,16 @@ void ov62_0222F2C0(UnkStruct_0208C06C *param0)
         ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DMAIN);
         ReserveVramForWirelessIconChars(NNS_G2D_VRAM_TYPE_2DSUB, GX_OBJVRAMMODE_CHAR_1D_128K);
         ReserveSlotsForWirelessIconPalette(NNS_G2D_VRAM_TYPE_2DSUB);
-        sub_02039734();
-        sub_020397C8(1, HEAP_ID_102);
+        NetworkIcon_Init();
+        NetworkIcon_CreateOnSubScreen(1, HEAP_ID_102);
 
         {
             NNSG2dPaletteData *v0;
-            void *v1 = sub_020394A8(HEAP_ID_102);
+            void *v1 = NetworkIcon_GetPalette(HEAP_ID_102);
 
             NNS_G2dGetUnpackedPaletteData(v1, &v0);
-            PaletteData_LoadBuffer(param0->unk_14.unk_14, v0->pRawData, 2, 14 * 16, 32);
-            PaletteData_LoadBuffer(param0->unk_14.unk_14, v0->pRawData, 3, 14 * 16, 32);
+            PaletteData_LoadBuffer(param0->unk_14.unk_14, v0->pRawData, PLTTBUF_MAIN_OBJ, PLTT_DEST(14), PALETTE_SIZE_BYTES);
+            PaletteData_LoadBuffer(param0->unk_14.unk_14, v0->pRawData, PLTTBUF_SUB_OBJ, PLTT_DEST(14), PALETTE_SIZE_BYTES);
             Heap_Free(v1);
         }
     }
@@ -153,10 +153,10 @@ void ov62_0222F514(UnkStruct_0208C06C *param0)
     Bg_FreeTilemapBuffer(param0->unk_14.unk_10, 6);
     Bg_FreeTilemapBuffer(param0->unk_14.unk_10, 7);
     Heap_Free(param0->unk_14.unk_10);
-    PaletteData_FreeBuffer(param0->unk_14.unk_14, 0);
-    PaletteData_FreeBuffer(param0->unk_14.unk_14, 1);
-    PaletteData_FreeBuffer(param0->unk_14.unk_14, 2);
-    PaletteData_FreeBuffer(param0->unk_14.unk_14, 3);
+    PaletteData_FreeBuffer(param0->unk_14.unk_14, PLTTBUF_MAIN_BG);
+    PaletteData_FreeBuffer(param0->unk_14.unk_14, PLTTBUF_SUB_BG);
+    PaletteData_FreeBuffer(param0->unk_14.unk_14, PLTTBUF_MAIN_OBJ);
+    PaletteData_FreeBuffer(param0->unk_14.unk_14, PLTTBUF_SUB_OBJ);
     PaletteData_Free(param0->unk_14.unk_14);
 
     if (param0->unk_00 == 0) {
@@ -414,7 +414,7 @@ void ov62_0222F834(UnkStruct_0208C06C *param0)
 
 static void ov62_0222F848(UnkStruct_0208C06C *param0)
 {
-    param0->unk_14.unk_04 = SpriteSystem_Alloc(102);
+    param0->unk_14.unk_04 = SpriteSystem_Alloc(HEAP_ID_102);
     {
         const RenderOamTemplate v0 = {
             0,
@@ -726,9 +726,9 @@ BOOL ov62_0222FD3C(UnkStruct_0208C06C *param0)
     }
 
     if (v1 == 0) {
-        Sound_PlayEffect(SEQ_SE_PL_BREC58);
+        Sound_PlayEffect(SEQ_SE_PL_BREC58_sseq);
     } else {
-        Sound_PlayEffect(SEQ_SE_PL_BREC57);
+        Sound_PlayEffect(SEQ_SE_PL_BREC57_sseq);
     }
 
     return v1;
@@ -846,7 +846,7 @@ void ov62_02230060(UnkStruct_0208C06C *param0)
     } else {
         if (param0->unk_534.unk_1A4 != 0) {
             param0->unk_534.unk_1A4 = 0;
-            GF_ASSERT(0);
+            GF_ASSERT(FALSE);
         }
     }
 

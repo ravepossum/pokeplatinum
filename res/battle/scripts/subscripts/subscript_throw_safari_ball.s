@@ -4,7 +4,7 @@
 _000:
     CompareVarToValue OPCODE_FLAG_SET, BTLVAR_BATTLE_TYPE, BATTLE_TYPE_PAL_PARK, _015
     // {0} used one {1}!
-    PrintMessage BattleStrings_Text_TrainerUsedOneItem, TAG_TRNAME_ITEM, BTLSCR_ATTACKER, BTLSCR_MSG_TEMP
+    PrintMessage BattleStrings_Text_PlayerUsedOneItem, TAG_TRNAME_ITEM, BTLSCR_ATTACKER, BTLSCR_MSG_TEMP
     Wait 
     ThrowPokeball BTLSCR_PLAYER, BTLSCR_THROW_SAFARI_BALL
     GoTo _023
@@ -20,7 +20,7 @@ _023:
     WaitCatchMonTask 
     CompareVarToValue OPCODE_FLAG_SET, BTLVAR_RESULT_MASK, BATTLE_RESULT_CAPTURED_MON, _051
     CompareVarToValue OPCODE_NEQ, BTLVAR_NUM_SAFARI_BALLS, 0, _051
-    PlaySound BTLSCR_ATTACKER, SEQ_SE_DP_PINPON
+    PlaySound BTLSCR_ATTACKER, SEQ_SE_DP_PINPON_sseq
     // Announcer: You’re out of Safari Balls! Game over!
     PrintMessage BattleStrings_Text_YoureOutOfSafariBallsGameOver, TAG_NONE
     Wait 

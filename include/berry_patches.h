@@ -18,6 +18,7 @@ enum SoilMoisture {
     SOIL_VERY_DRY = 0,
     SOIL_DRY,
     SOIL_MOIST,
+    SOIL_COUNT,
 };
 
 typedef struct BerryPatch {
@@ -36,7 +37,7 @@ typedef struct BerryPatch {
 typedef struct BerryGrowthData {
     u8 stageDuration;
     u8 moistureDrainRate;
-    u8 yieldCategory;
+    u8 baseYield;
 } BerryGrowthData;
 
 void BerryPatches_Clear(BerryPatch *patches);

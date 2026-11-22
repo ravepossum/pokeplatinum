@@ -5,10 +5,9 @@
 
 #include "constants/species.h"
 
-#include "struct_decls/struct_0202D060_decl.h"
-#include "struct_decls/struct_0202D750_decl.h"
 #include "struct_defs/battle_frontier.h"
 #include "struct_defs/struct_0206BC70.h"
+#include "struct_defs/wifi_battle_tower_data.h"
 
 #include "applications/party_menu/defs.h"
 #include "applications/party_menu/main.h"
@@ -16,6 +15,9 @@
 #include "field/field_system.h"
 
 #include "bag.h"
+#include "battle_frontier_save.h"
+#include "battle_tower_save.h"
+#include "battle_tower_trainers.h"
 #include "communication_system.h"
 #include "dexmode_checker.h"
 #include "field_system.h"
@@ -23,32 +25,29 @@
 #include "heap.h"
 #include "party.h"
 #include "record_mixed_rng.h"
+#include "ribbon_save_data.h"
 #include "save_player.h"
 #include "savedata.h"
 #include "script_manager.h"
 #include "underground.h"
-#include "unk_0202D05C.h"
-#include "unk_0202D778.h"
-#include "unk_0203061C.h"
 #include "unk_020363E8.h"
 #include "unk_02038FFC.h"
 #include "unk_0203D1B8.h"
-#include "unk_0204AEE8.h"
 
 #include "constdata/const_020F410C.h"
 
-typedef struct {
-    int unk_00;
-    int unk_04;
-    u8 unk_08;
-    u8 unk_09;
-    u8 unk_0A;
-    u8 unk_0B;
-    u8 unk_0C;
-    u8 unk_0D;
-    u8 unk_0E[6];
-    void **unk_14;
-} UnkStruct_0206B9D8;
+typedef struct BattleTowerSelectPokemonTask {
+    int success;
+    int subTask;
+    u8 partyMenuMode;
+    u8 summaryMode;
+    u8 minSelectionSpots;
+    u8 maxSelectionSpots;
+    u8 reqLevel;
+    u8 selectedMonSlot;
+    u8 selectedSlots[6];
+    void **partyMenu;
+} BattleTowerSelectPokemonTask;
 
 typedef struct {
     int unk_00;
@@ -65,174 +64,176 @@ typedef struct {
     u16 unk_02;
 } UnkStruct_0206BD88;
 
-static int sub_0206B9D8(UnkStruct_0206B9D8 *param0, FieldSystem *fieldSystem, enum HeapID heapID)
+enum BattleTowerSelectionSubTask {
+    SUBTASK_OPEN_PARTY_MENU,
+    SUBTASK_PROCESS_PARTY_MENU,
+    SUBTASK_OPEN_MON_SUMMARY,
+    SUBTASK_PROCESS_MON_SUMMARY,
+    SUBTASK_END_TASK,
+};
+
+static int SubTask_SetupPartyMenu(BattleTowerSelectPokemonTask *taskEnv, FieldSystem *fieldSystem, enum HeapID heapID)
 {
-    u8 v0;
-    SaveData *saveData;
     PartyMenu *partyMenu = Heap_AllocAtEnd(heapID, sizeof(PartyMenu));
 
-    saveData = fieldSystem->saveData;
+    SaveData *saveData = fieldSystem->saveData;
     MI_CpuClear8(partyMenu, sizeof(PartyMenu));
 
     partyMenu->options = SaveData_GetOptions(saveData);
     partyMenu->party = SaveData_GetParty(saveData);
     partyMenu->bag = SaveData_GetBag(saveData);
     partyMenu->type = PARTY_MENU_TYPE_BASIC;
-    partyMenu->mode = param0->unk_08;
-    partyMenu->minSelectionSlots = param0->unk_0A;
-    partyMenu->maxSelectionSlots = param0->unk_0B;
-    partyMenu->reqLevel = param0->unk_0C;
-    partyMenu->selectedMonSlot = param0->unk_0D;
+    partyMenu->mode = taskEnv->partyMenuMode;
+    partyMenu->minSelectionSlots = taskEnv->minSelectionSpots;
+    partyMenu->maxSelectionSlots = taskEnv->maxSelectionSpots;
+    partyMenu->reqLevel = taskEnv->reqLevel;
+    partyMenu->selectedMonSlot = taskEnv->selectedMonSlot;
 
-    for (v0 = 0; v0 < 6; v0++) {
-        partyMenu->selectionOrder[v0] = param0->unk_0E[v0];
+    for (u8 i = 0; i < MAX_PARTY_SIZE; i++) {
+        partyMenu->selectionOrder[i] = taskEnv->selectedSlots[i];
     }
 
     FieldSystem_StartChildProcess(fieldSystem, &gPokemonPartyAppTemplate, partyMenu);
 
-    *(param0->unk_14) = partyMenu;
-    return 1;
+    *taskEnv->partyMenu = partyMenu;
+    return SUBTASK_PROCESS_PARTY_MENU;
 }
 
-static int sub_0206BA84(UnkStruct_0206B9D8 *param0, FieldSystem *fieldSystem)
+static int SubTask_ProcessPartyMenu(BattleTowerSelectPokemonTask *taskEnv, FieldSystem *fieldSystem)
 {
-    int v0;
-    PartyMenu *partyMenu;
-
     if (FieldSystem_IsRunningApplication(fieldSystem)) {
-        return 1;
+        return SUBTASK_PROCESS_PARTY_MENU;
     }
 
-    partyMenu = *(param0->unk_14);
+    PartyMenu *partyMenu = *taskEnv->partyMenu;
 
     switch (partyMenu->selectedMonSlot) {
-    case 7:
-        param0->unk_00 = 0;
-        return 4;
-    case 6:
-        param0->unk_00 = 1;
-        return 4;
+    case PARTY_MENU_SLOT_CANCEL:
+        taskEnv->success = FALSE;
+        return SUBTASK_END_TASK;
+    case MAX_PARTY_SIZE:
+        taskEnv->success = TRUE;
+        return SUBTASK_END_TASK;
     default:
         break;
     }
 
-    MI_CpuCopy8(partyMenu->selectionOrder, param0->unk_0E, 6);
-    param0->unk_0D = partyMenu->selectedMonSlot;
+    MI_CpuCopy8(partyMenu->selectionOrder, taskEnv->selectedSlots, 6);
+    taskEnv->selectedMonSlot = partyMenu->selectedMonSlot;
     Heap_Free(partyMenu);
-    *(param0->unk_14) = NULL;
+    *taskEnv->partyMenu = NULL;
 
-    return 2;
+    return SUBTASK_OPEN_MON_SUMMARY;
 }
 
-static int sub_0206BAE0(UnkStruct_0206B9D8 *param0, FieldSystem *fieldSystem, enum HeapID heapID)
+static int SubTask_SetupMonSummary(BattleTowerSelectPokemonTask *taskEnv, FieldSystem *fieldSystem, enum HeapID heapID)
 {
-    PokemonSummary *v0;
-    SaveData *saveData;
-    static const u8 v2[] = {
-        0, 1, 2, 4, 3, 5, 6, 7, 8
+    static const u8 visiblePages[] = {
+        SUMMARY_PAGE_INFO,
+        SUMMARY_PAGE_MEMO,
+        SUMMARY_PAGE_SKILLS,
+        SUMMARY_PAGE_CONDITION,
+        SUMMARY_PAGE_BATTLE_MOVES,
+        SUMMARY_PAGE_CONTEST_MOVES,
+        SUMMARY_PAGE_RIBBONS,
+        SUMMARY_PAGE_EXIT,
+        SUMMARY_PAGE_MAX,
     };
 
-    saveData = fieldSystem->saveData;
-    v0 = Heap_AllocAtEnd(heapID, sizeof(PokemonSummary));
-    MI_CpuClear8(v0, sizeof(PokemonSummary));
+    SaveData *saveData = fieldSystem->saveData;
+    PokemonSummary *monSummary = Heap_AllocAtEnd(heapID, sizeof(PokemonSummary));
+    MI_CpuClear8(monSummary, sizeof(PokemonSummary));
 
-    v0->options = SaveData_GetOptions(saveData);
-    v0->monData = SaveData_GetParty(saveData);
-    v0->dexMode = SaveData_GetDexMode(saveData);
-    v0->showContest = PokemonSummaryScreen_ShowContestData(saveData);
-    v0->dataType = SUMMARY_DATA_PARTY_MON;
-    v0->monIndex = param0->unk_0D;
-    v0->monMax = Party_GetCurrentCount(v0->monData);
-    v0->move = 0;
-    v0->mode = param0->unk_09;
-    v0->specialRibbons = SaveData_GetRibbons(saveData);
+    monSummary->options = SaveData_GetOptions(saveData);
+    monSummary->monData = SaveData_GetParty(saveData);
+    monSummary->dexMode = SaveData_GetDexMode(saveData);
+    monSummary->showContest = PokemonSummaryScreen_ShowContestData(saveData);
+    monSummary->dataType = SUMMARY_DATA_PARTY_MON;
+    monSummary->monIndex = taskEnv->selectedMonSlot;
+    monSummary->monMax = Party_GetCurrentCount(monSummary->monData);
+    monSummary->move = 0;
+    monSummary->mode = taskEnv->summaryMode;
+    monSummary->specialRibbons = SaveData_GetRibbons(saveData);
 
-    PokemonSummaryScreen_FlagVisiblePages(v0, v2);
-    PokemonSummaryScreen_SetPlayerProfile(v0, SaveData_GetTrainerInfo(saveData));
-    FieldSystem_StartChildProcess(fieldSystem, &gPokemonSummaryScreenApp, v0);
-    *(param0->unk_14) = v0;
+    PokemonSummaryScreen_FlagVisiblePages(monSummary, visiblePages);
+    PokemonSummaryScreen_SetPlayerProfile(monSummary, SaveData_GetTrainerInfo(saveData));
+    FieldSystem_StartChildProcess(fieldSystem, &gPokemonSummaryScreenApp, monSummary);
+    *taskEnv->partyMenu = monSummary;
 
-    return 3;
+    return SUBTASK_PROCESS_MON_SUMMARY;
 }
 
-static int sub_0206BB6C(UnkStruct_0206B9D8 *param0, FieldSystem *fieldSystem)
+static int SubTask_ProcessMonSummary(BattleTowerSelectPokemonTask *taskEnv, FieldSystem *fieldSystem)
 {
-    PokemonSummary *v0;
-
     if (FieldSystem_IsRunningApplication(fieldSystem)) {
-        return 3;
+        return SUBTASK_PROCESS_MON_SUMMARY;
     }
 
-    v0 = *(param0->unk_14);
-    param0->unk_0D = v0->monIndex;
-    Heap_Free(v0);
-    *(param0->unk_14) = NULL;
+    PokemonSummary *monSummary = *taskEnv->partyMenu;
+    taskEnv->selectedMonSlot = monSummary->monIndex;
+    Heap_Free(monSummary);
+    *taskEnv->partyMenu = NULL;
 
-    return 0;
+    return SUBTASK_OPEN_PARTY_MENU;
 }
 
-static BOOL sub_0206BB94(FieldTask *param0)
+static BOOL BattleTowerSelectChallengersTask(FieldTask *task)
 {
-    FieldSystem *v0 = FieldTask_GetFieldSystem(param0);
-    UnkStruct_0206B9D8 *v1 = FieldTask_GetEnv(param0);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(task);
+    BattleTowerSelectPokemonTask *taskEnv = FieldTask_GetEnv(task);
 
-    switch (v1->unk_04) {
-    case 0:
-        v1->unk_04 = sub_0206B9D8(v1, v0, HEAP_ID_FIELD2);
+    switch (taskEnv->subTask) {
+    case SUBTASK_OPEN_PARTY_MENU:
+        taskEnv->subTask = SubTask_SetupPartyMenu(taskEnv, fieldSystem, HEAP_ID_FIELD2);
         break;
-    case 1:
-        v1->unk_04 = sub_0206BA84(v1, v0);
+    case SUBTASK_PROCESS_PARTY_MENU:
+        taskEnv->subTask = SubTask_ProcessPartyMenu(taskEnv, fieldSystem);
         break;
-    case 2:
-        v1->unk_04 = sub_0206BAE0(v1, v0, HEAP_ID_FIELD2);
+    case SUBTASK_OPEN_MON_SUMMARY:
+        taskEnv->subTask = SubTask_SetupMonSummary(taskEnv, fieldSystem, HEAP_ID_FIELD2);
         break;
-    case 3:
-        v1->unk_04 = sub_0206BB6C(v1, v0);
+    case SUBTASK_PROCESS_MON_SUMMARY:
+        taskEnv->subTask = SubTask_ProcessMonSummary(taskEnv, fieldSystem);
         break;
-    case 4:
-        Heap_Free(v1);
-        return 1;
+    case SUBTASK_END_TASK:
+        Heap_Free(taskEnv);
+        return TRUE;
     }
 
-    return 0;
+    return FALSE;
 }
 
-void sub_0206BBFC(FieldTask *param0, void **param1, u8 param2, u8 param3, u8 param4, u8 param5, u8 param6, u8 param7)
+void BattleTower_SelectPokemon(FieldTask *task, void **partyMenu, u8 partyMenuMode, u8 summaryMode, u8 minSpots, u8 maxSpots, u8 reqLevel, u8 selectedMonSlot)
 {
-    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
-    UnkStruct_0206B9D8 *v1 = Heap_Alloc(HEAP_ID_FIELD2, sizeof(UnkStruct_0206B9D8));
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(task);
+    BattleTowerSelectPokemonTask *taskEnv = Heap_Alloc(HEAP_ID_FIELD2, sizeof(BattleTowerSelectPokemonTask));
 
-    MI_CpuClear8(v1, sizeof(UnkStruct_0206B9D8));
+    MI_CpuClear8(taskEnv, sizeof(BattleTowerSelectPokemonTask));
 
-    v1->unk_08 = param2;
-    v1->unk_09 = param3;
-    v1->unk_0A = param4;
-    v1->unk_0B = param5;
-    v1->unk_0C = param6;
-    v1->unk_0D = param7;
-    v1->unk_14 = param1;
+    taskEnv->partyMenuMode = partyMenuMode;
+    taskEnv->summaryMode = summaryMode;
+    taskEnv->minSelectionSpots = minSpots;
+    taskEnv->maxSelectionSpots = maxSpots;
+    taskEnv->reqLevel = reqLevel;
+    taskEnv->selectedMonSlot = selectedMonSlot;
+    taskEnv->partyMenu = partyMenu;
 
-    FieldTask_InitCall(fieldSystem->task, sub_0206BB94, v1);
+    FieldTask_InitCall(fieldSystem->task, BattleTowerSelectChallengersTask, taskEnv);
 }
 
 static int sub_0206BC48(UnkStruct_0206BC48 *param0, FieldSystem *fieldSystem)
 {
-    SaveData *saveData;
-
     if (WiFiList_HasValidLogin(fieldSystem->saveData)) {
         param0->unk_08 = sub_0203E1AC(fieldSystem, param0->unk_12, param0->unk_14);
         return 1;
-    } else {
-        param0->unk_00 = 1;
-        return 2;
     }
+
+    param0->unk_00 = 1;
+    return 2;
 }
 
 static int sub_0206BC70(UnkStruct_0206BC48 *param0, FieldSystem *fieldSystem)
 {
-    u8 v0;
-    UnkStruct_0206BC70 *v1;
-
     if (FieldSystem_IsRunningApplication(fieldSystem)) {
         return 1;
     }
@@ -243,11 +244,10 @@ static int sub_0206BC70(UnkStruct_0206BC48 *param0, FieldSystem *fieldSystem)
     return 2;
 }
 
-static BOOL sub_0206BC94(FieldTask *param0)
+static BOOL sub_0206BC94(FieldTask *taskMan)
 {
-    u16 *v0;
-    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
-    UnkStruct_0206BC48 *v2 = FieldTask_GetEnv(param0);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(taskMan);
+    UnkStruct_0206BC48 *v2 = FieldTask_GetEnv(taskMan);
 
     switch (v2->unk_04) {
     case 0:
@@ -257,7 +257,7 @@ static BOOL sub_0206BC94(FieldTask *param0)
         v2->unk_04 = sub_0206BC70(v2, fieldSystem);
         break;
     case 2:
-        v0 = FieldSystem_GetVarPointer(fieldSystem, v2->unk_10);
+        u16 *v0 = FieldSystem_GetVarPointer(fieldSystem, v2->unk_10);
         *v0 = v2->unk_00;
         Heap_Free(v2);
         return 1;
@@ -266,9 +266,9 @@ static BOOL sub_0206BC94(FieldTask *param0)
     return 0;
 }
 
-void sub_0206BCE4(FieldTask *param0, u16 param1, u16 param2, u16 param3)
+void sub_0206BCE4(FieldTask *taskMan, u16 param1, u16 param2, u16 param3)
 {
-    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
+    FieldSystem *fieldSystem = FieldTask_GetFieldSystem(taskMan);
     UnkStruct_0206BC48 *v1 = Heap_Alloc(HEAP_ID_FIELD2, sizeof(UnkStruct_0206BC48));
 
     MI_CpuClear8(v1, sizeof(UnkStruct_0206BC48));
@@ -282,28 +282,26 @@ void sub_0206BCE4(FieldTask *param0, u16 param1, u16 param2, u16 param3)
 
 static BOOL sub_0206BD1C(FieldTask *param0)
 {
-    u16 *v0;
-    const void *v1;
     FieldSystem *fieldSystem = FieldTask_GetFieldSystem(param0);
     UnkStruct_0206BD88 *v3 = FieldTask_GetEnv(param0);
 
-    v1 = sub_0203664C(1 - CommSys_CurNetId());
+    const void *v1 = sub_0203664C(1 - CommSys_CurNetId());
 
     if (v1 == NULL) {
         return 0;
     }
 
-    v0 = FieldSystem_GetVarPointer(fieldSystem, v3->unk_02);
+    u16 *v0 = FieldSystem_GetVarPointer(fieldSystem, v3->unk_02);
 
     switch (v3->unk_00) {
     case 0:
-        *v0 = sub_0204AFC4(fieldSystem, v1);
+        *v0 = BattleTower_ReceivePlayerData(fieldSystem, v1);
         break;
     case 1:
-        *v0 = sub_0204B020(fieldSystem, v1);
+        *v0 = BattleTower_ReceiveTrainers(fieldSystem, v1);
         break;
     case 2:
-        *v0 = sub_0204B044(fieldSystem, v1);
+        *v0 = BattleTower_ReceiveShouldRetire(fieldSystem, v1);
     }
 
     Heap_Free(v3);
@@ -325,44 +323,38 @@ void sub_0206BD88(FieldTask *param0, u16 param1, u16 param2)
 
 u16 sub_0206BDBC(SaveData *saveData)
 {
-    BattleFrontier *frontier;
-    UnkStruct_0202D750 *v1;
-    Underground *v2;
-    u16 v3;
-    u8 v4, v5, v6, v7, v8, v9;
-
-    frontier = SaveData_GetBattleFrontier(saveData);
-    v3 = sub_02030698(frontier, 0, 0xff);
+    BattleFrontierSave *frontier = SaveData_GetBattleFrontier(saveData);
+    u16 v3 = BattleFrontierSave_GetStat(frontier, STAT_TOWER_RECORD_STREAK_SINGLE, 0xff);
 
     if (v3 < 20) {
         return 0;
     }
 
-    v1 = sub_0202D750(saveData);
-    v4 = sub_0202D414(v1, 13, 0);
-    v5 = sub_0202D414(v1, 0, 0);
-    v6 = sub_0202D414(v1, 1, 0);
-    v7 = sub_0202D414(v1, 14, 0);
-    v8 = sub_0202D414(v1, 2, 0);
-    v9 = sub_0202D414(v1, 3, 0);
+    WifiBattleTowerRecord *record = SaveData_GetWifiBattleTowerRecord(saveData);
+    u8 v4 = WifiBattleTowerRecord_UpdateBitFlag(record, 13, 0);
+    u8 v5 = WifiBattleTowerRecord_UpdateBitFlag(record, 0, 0);
+    u8 v6 = WifiBattleTowerRecord_UpdateBitFlag(record, 1, 0);
+    u8 v7 = WifiBattleTowerRecord_UpdateBitFlag(record, 14, 0);
+    u8 v8 = WifiBattleTowerRecord_UpdateBitFlag(record, 2, 0);
+    u8 v9 = WifiBattleTowerRecord_UpdateBitFlag(record, 3, 0);
 
     if (v4 && v5 && v6) {
         return 0;
     }
 
-    v2 = SaveData_GetUnderground(saveData);
+    Underground *v2 = SaveData_GetUnderground(saveData);
 
     if (!v4) {
         if (Underground_IsRoomForGoodsInPC(v2, 85)) {
-            sub_0202D414(v1, 13, 1);
+            WifiBattleTowerRecord_UpdateBitFlag(record, 13, 1);
             return 1;
-        } else {
-            if (!v7) {
-                sub_0202D414(v1, 14, 1);
-            }
-
-            return 4;
         }
+
+        if (!v7) {
+            WifiBattleTowerRecord_UpdateBitFlag(record, 14, 1);
+        }
+
+        return 4;
     }
 
     if (v3 < 50) {
@@ -371,54 +363,49 @@ u16 sub_0206BDBC(SaveData *saveData)
 
     if (!v5) {
         if (Underground_IsRoomForGoodsInPC(v2, 86)) {
-            sub_0202D414(v1, 0, 1);
+            WifiBattleTowerRecord_UpdateBitFlag(record, 0, 1);
             return 2;
-        } else {
-            if (!v8) {
-                sub_0202D414(v1, 2, 1);
-            }
-
-            return 4;
         }
-    }
 
-    if ((v3 < 100) || (v6)) {
-        return 0;
-    }
-
-    if (Underground_IsRoomForGoodsInPC(v2, 87)) {
-        sub_0202D414(v1, 1, 1);
-        return 3;
-    } else {
-        if (!v9) {
-            sub_0202D414(v1, 3, 1);
+        if (!v8) {
+            WifiBattleTowerRecord_UpdateBitFlag(record, 2, 1);
         }
 
         return 4;
     }
+
+    if ((v3 < 100) || v6) {
+        return 0;
+    }
+
+    if (Underground_IsRoomForGoodsInPC(v2, 87)) {
+        WifiBattleTowerRecord_UpdateBitFlag(record, 1, 1);
+        return 3;
+    }
+
+    if (!v9) {
+        WifiBattleTowerRecord_UpdateBitFlag(record, 3, 1);
+    }
+
+    return 4;
 }
 
 u16 sub_0206BF04(SaveData *saveData)
 {
-    BattleFrontier *frontier;
-    UnkStruct_0202D750 *v1;
-    u16 v2;
-    u8 v3, v4, v5, v6, v7, v8;
+    BattleFrontierSave *frontier = SaveData_GetBattleFrontier(saveData);
+    u16 frontierStats = BattleFrontierSave_GetStat(frontier, STAT_TOWER_RECORD_STREAK_SINGLE, 0xff);
 
-    frontier = SaveData_GetBattleFrontier(saveData);
-    v2 = sub_02030698(frontier, 0, 0xff);
-
-    if (v2 < 20) {
+    if (frontierStats < 20) {
         return 0;
     }
 
-    v1 = sub_0202D750(saveData);
-    v3 = sub_0202D414(v1, 13, 0);
-    v4 = sub_0202D414(v1, 0, 0);
-    v5 = sub_0202D414(v1, 1, 0);
-    v6 = sub_0202D414(v1, 14, 0);
-    v7 = sub_0202D414(v1, 2, 0);
-    v8 = sub_0202D414(v1, 3, 0);
+    WifiBattleTowerRecord *record = SaveData_GetWifiBattleTowerRecord(saveData);
+    u8 v3 = WifiBattleTowerRecord_UpdateBitFlag(record, 13, 0);
+    u8 v4 = WifiBattleTowerRecord_UpdateBitFlag(record, 0, 0);
+    u8 v5 = WifiBattleTowerRecord_UpdateBitFlag(record, 1, 0);
+    u8 v6 = WifiBattleTowerRecord_UpdateBitFlag(record, 14, 0);
+    u8 v7 = WifiBattleTowerRecord_UpdateBitFlag(record, 2, 0);
+    u8 v8 = WifiBattleTowerRecord_UpdateBitFlag(record, 3, 0);
 
     if (v3 && v4 && v5) {
         return 0;
@@ -432,7 +419,7 @@ u16 sub_0206BF04(SaveData *saveData)
         return 1;
     }
 
-    if (v2 < 50) {
+    if (frontierStats < 50) {
         return 0;
     }
 
@@ -444,7 +431,7 @@ u16 sub_0206BF04(SaveData *saveData)
         return 2;
     }
 
-    if (v2 < 100) {
+    if (frontierStats < 100) {
         return 0;
     }
 
@@ -459,65 +446,61 @@ u16 sub_0206BF04(SaveData *saveData)
     return 3;
 }
 
-u32 sub_0206BFF0(u32 param0)
+u32 BattleTower_RngNext(u32 rng)
 {
-    return param0 * 48828125L + 1;
+    return rng * 48828125L + 1;
 }
 
-u32 sub_0206BFFC(u32 param0)
+u32 BattleTower_RngNext2(u32 rng)
 {
-    return param0 * 1566083941 + 1;
+    return rng * 1566083941 + 1;
 }
 
 u32 sub_0206C008(SaveData *saveData)
 {
-    u32 v0 = RecordMixedRNG_GetRand(SaveData_GetRecordMixedRNG(saveData));
-    v0 = sub_0206BFFC(v0);
+    u32 rng = RecordMixedRNG_GetRand(SaveData_GetRecordMixedRNG(saveData));
+    rng = BattleTower_RngNext2(rng);
 
-    sub_0202D470(sub_0202D750(saveData), v0);
+    WifiBattleTowerRecord_SetRngState(SaveData_GetWifiBattleTowerRecord(saveData), rng);
 
-    return v0;
+    return rng;
 }
 
 u32 sub_0206C02C(SaveData *saveData)
 {
-    u32 v0, v1;
-    UnkStruct_0202D750 *v2 = sub_0202D750(saveData);
+    WifiBattleTowerRecord *record = SaveData_GetWifiBattleTowerRecord(saveData);
 
-    v1 = sub_0202D474(v2);
-    v1 = sub_0206BFFC(v1);
+    u32 v1 = BattleTower_RngNext2(WifiBattleTowerRecord_GetRngState(record));
 
-    sub_0202D470(v2, v1);
-    v0 = sub_0206BFF0(v1);
-    sub_0202D140(sub_0202D740(saveData), 10, &v0);
+    WifiBattleTowerRecord_SetRngState(record, v1);
+    u32 v0 = BattleTower_RngNext(v1);
+    BattleTowerSave_SetField(SaveData_GetBattleTowerSave(saveData), BT_WIFI_SAVE_FIELD_RNG_SEED, &v0);
 
     return v0;
 }
 
 u32 sub_0206C068(SaveData *saveData)
 {
-    int v0, v1;
-    u32 v2, v3;
-    UnkStruct_0202D750 *v4 = sub_0202D750(saveData);
-    UnkStruct_0202D060 *v5 = sub_0202D740(saveData);
+    WifiBattleTowerRecord *record = SaveData_GetWifiBattleTowerRecord(saveData);
+    BattleTowerSave *save = SaveData_GetBattleTowerSave(saveData);
 
-    v3 = sub_0202D474(v4);
-    v2 = sub_0206BFF0(v3);
-    v1 = sub_0202D3B4(v4, sub_0202D0BC(v5, 0, NULL), 0);
-    v1 *= 24;
+    int i;
+    u32 rng = BattleTower_RngNext(WifiBattleTowerRecord_GetRngState(record));
+    int round = WifiBattleTowerRecord_UpdateRoomNum(record, BattleTowerSave_GetField(save, BT_WIFI_SAVE_FIELD_CHALLENGE_MODE, NULL), 0);
+    round *= 24;
 
-    for (v0 = 0; v0 < v1; v0++) {
-        v2 = sub_0206BFF0(v2);
+    for (i = 0; i < round; i++) {
+        rng = BattleTower_RngNext(rng);
     }
 
-    sub_0202D140(sub_0202D740(saveData), 10, &v2);
+    BattleTowerSave_SetField(SaveData_GetBattleTowerSave(saveData), BT_WIFI_SAVE_FIELD_RNG_SEED, &rng);
 
-    return v2;
+    return rng;
 }
 
 BOOL FieldSystem_IsInBattleTowerSalon(FieldSystem *fieldSystem)
 {
-    if (fieldSystem->location->mapId == MAP_HEADER_BATTLE_TOWER_BATTLE_SALON) {
+    if (fieldSystem->location->mapHeaderID == MAP_HEADER_BATTLE_TOWER_BATTLE_SALON) {
         return TRUE;
     }
 

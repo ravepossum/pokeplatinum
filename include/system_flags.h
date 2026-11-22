@@ -1,14 +1,19 @@
 #ifndef POKEPLATINUM_SYSTEM_FLAGS_H
 #define POKEPLATINUM_SYSTEM_FLAGS_H
 
+#include "constants/fieldmap.h"
 #include "constants/savedata/vars_flags.h"
 #include "generated/first_arrival_to_zones.h"
-#include "generated/giratina_shadow_animations.h"
-#include "generated/map_headers.h"
 #include "generated/pokemon_contest_types.h"
-#include "generated/villa_furnitures.h"
+#include "generated/villa_furniture_type.h"
 
 #include "vars_flags.h"
+
+enum GiratinaShadowAnimation {
+    GIRATINA_SHADOW_ANIM_B4F_1 = 0,
+    GIRATINA_SHADOW_ANIM_B4F_2,
+    GIRATINA_SHADOW_ANIM_MAX,
+};
 
 enum HandleFlagOp {
     HANDLE_FLAG_CLEAR = 0,
@@ -38,7 +43,7 @@ void SystemFlag_SetDeliveredStolenFlag(VarsFlags *varsFlags);
 void SystemFlag_SetContestMaster(VarsFlags *varsFlags, enum PokemonContestType contestType);
 BOOL SystemFlag_CheckContestMaster(VarsFlags *varsFlags, enum PokemonContestType contestType);
 BOOL SystemFlag_CheckUnlockedVsSeekerLevel(VarsFlags *varsFlags, int level);
-u16 SystemFlag_GetAltMusicForHeader(VarsFlags *varsFlags, enum MapHeader mapHeader);
+u16 SystemFlag_GetAltMusicForHeader(VarsFlags *varsFlags, enum MapHeaderID mapHeader);
 void SystemFlag_SetCommunicationClubAccessible(VarsFlags *varsFlags);
 void SystemFlag_ClearCommunicationClubAccessible(VarsFlags *varsFlags);
 BOOL SystemFlag_CheckCommunicationClubAccessible(VarsFlags *varsFlags);
@@ -55,7 +60,7 @@ BOOL SystemFlag_CheckSafariGameActive(VarsFlags *varsFlags);
 void SystemFlag_SetInPalPark(VarsFlags *varsFlags);
 void SystemFlag_ClearInPalPark(VarsFlags *varsFlags);
 BOOL SystemFlag_CheckInPalPark(VarsFlags *varsFlags);
-void SystemFlag_CheckOnCyclingRoad(VarsFlags *varsFlags);
+void SystemFlag_ClearOnCyclingRoad(VarsFlags *varsFlags);
 BOOL SystemFlag_HandleStrengthActive(VarsFlags *varsFlags, enum HandleFlagOp op);
 void SystemFlag_SetFlashActive(VarsFlags *varsFlags);
 void SystemFlag_ClearFlashActive(VarsFlags *varsFlags);
@@ -67,7 +72,7 @@ BOOL SystemFlag_HandleForceBikingInGate(VarsFlags *varsFlags, enum HandleFlagOp 
 BOOL SystemFlag_HandleJournalAcquired(VarsFlags *varsFlags, enum HandleFlagOp op);
 BOOL SystemFlag_HandleFirstArrivalToZone(VarsFlags *varsFlags, enum HandleFlagOp op, u32 firstArrival);
 void SystemFlag_SetConnectedToWiFi(VarsFlags *varsFlags);
-BOOL SystemFlag_HandleOwnsVillaFurniture(VarsFlags *varsFlags, enum HandleFlagOp op, enum VillaFurniture furniture);
+BOOL SystemFlag_HandleOwnsVillaFurniture(VarsFlags *varsFlags, enum HandleFlagOp op, enum VillaFurnitureType furniture);
 void SystemFlag_ClearVillaVisitorInside(VarsFlags *varsFlags);
 void SystemFlag_ClearVillaVisitorOutside(VarsFlags *varsFlags);
 BOOL SystemFlag_HandleGiratinaAnimation(VarsFlags *varsFlags, enum HandleFlagOp op, enum GiratinaShadowAnimation anim);

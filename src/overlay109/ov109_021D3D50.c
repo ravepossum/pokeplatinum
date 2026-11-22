@@ -16,6 +16,7 @@
 #include "appearance.h"
 #include "bg_window.h"
 #include "char_transfer.h"
+#include "comm_manager.h"
 #include "communication_information.h"
 #include "communication_system.h"
 #include "font.h"
@@ -30,6 +31,7 @@
 #include "message.h"
 #include "message_util.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "pltt_transfer.h"
 #include "render_oam.h"
@@ -49,14 +51,12 @@
 #include "system.h"
 #include "text.h"
 #include "trainer_info.h"
-#include "unk_02030EE0.h"
+#include "union_room.h"
 #include "unk_020363E8.h"
-#include "unk_020366A0.h"
 #include "unk_02038ED4.h"
-#include "unk_020393C8.h"
-#include "unk_0205B33C.h"
 #include "unk_0209BDF8.h"
 #include "vram_transfer.h"
+#include "wireless_manager.h"
 
 static void ov109_021D40A8(void *param0);
 static void ov109_021D40D0(void);
@@ -205,14 +205,14 @@ int ov109_021D3D50(ApplicationManager *appMan, int *param1)
         ov109_021D45F4(v0);
         Sound_SetSceneAndPlayBGM(SOUND_SCENE_SUB_52, SEQ_NONE, 0);
         sub_0209BE50(v2->unk_34);
-        sub_020378B8();
-        sub_02037B58(3);
+        CommManager_SetState_SpinTrade();
+        CommManager_SetMaxNumConnections(3);
 
         if (CommSys_CurNetId() == 0) {
-            sub_0205BEA8(13);
+            UnionRoom_SetStatus(UR_STATUS_SPIN_TRADING);
         }
 
-        sub_02039734();
+        NetworkIcon_Init();
         v0->unk_30 = SysTask_ExecuteOnVBlank(ov109_021D4044, v0, 5);
         NARC_dtor(v1);
         (*param1)++;
@@ -230,7 +230,7 @@ int ov109_021D3EB0(ApplicationManager *appMan, int *param1)
     UnkStruct_ov109_021D5140 *v0 = ApplicationManager_Data(appMan);
 
     if ((CommSys_CurNetId() == 0) && (v0->unk_10->unk_30 != 0)) {
-        v0->unk_10->unk_30 &= sub_020318EC();
+        v0->unk_10->unk_30 &= WirelessManager_GetConnectedBitmap();
     }
 
     switch (v0->unk_00) {
@@ -561,8 +561,8 @@ static void ov109_021D4300(UnkStruct_ov109_021D5140 *param0, NARC *param1)
 
     Graphics_LoadPaletteFromOpenNARC(param1, 0, 0, 0, 16 * 16 * 2, HEAP_ID_95);
     Graphics_LoadPalette(NARC_INDEX_GRAPHIC__POKETCH, 12, 4, 0, 16 * 2, HEAP_ID_95);
-    Font_LoadScreenIndicatorsPalette(0, 13 * 0x20, HEAP_ID_95);
-    Font_LoadScreenIndicatorsPalette(4, 13 * 0x20, HEAP_ID_95);
+    Font_LoadScreenIndicatorsPalette(PAL_LOAD_MAIN_BG, PLTT_OFFSET(13), HEAP_ID_95);
+    Font_LoadScreenIndicatorsPalette(PAL_LOAD_SUB_BG, PLTT_OFFSET(13), HEAP_ID_95);
     Graphics_LoadTilesToBgLayer(NARC_INDEX_GRAPHIC__POKETCH, 10, v0, 6, 0, 0, 1, HEAP_ID_95);
     Graphics_LoadTilemapToBgLayer(NARC_INDEX_GRAPHIC__POKETCH, 11, v0, 6, 0, 0, 1, HEAP_ID_95);
     Graphics_LoadTilesToBgLayerFromOpenNARC(param1, 2, v0, 1, 0, 32 * 8 * 0x20, 1, HEAP_ID_95);
@@ -699,7 +699,7 @@ static void ov109_021D471C(UnkStruct_ov109_021D5140 *param0)
 
 static int ov109_021D474C(UnkStruct_ov109_021D5140 *param0, int param1)
 {
-    CommMan_SetErrorHandling(0, 1);
+    CommManager_SetErrorHandling(0, 1);
 
     if (CommSys_CurNetId() == 0) {
         if (CommSys_ConnectedCount() >= 2) {
@@ -741,7 +741,7 @@ static void ov109_021D47B8(UnkStruct_ov109_021D5140 *param0)
                 sub_0209BEBC(param0->unk_10, 7, &v0, 1);
                 ov109_021D5858(param0, 0);
             } else {
-                Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
+                Sound_PlayEffect(SEQ_SE_DP_CUSTOM06_sseq);
             }
         }
     } else if (gSystem.pressedKeys & PAD_BUTTON_B) {
@@ -750,7 +750,7 @@ static void ov109_021D47B8(UnkStruct_ov109_021D5140 *param0)
                 ov109_021D55A8(param0, 4, 0);
                 ov109_021D48EC(param0, 4);
             } else {
-                Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
+                Sound_PlayEffect(SEQ_SE_DP_CUSTOM06_sseq);
             }
         } else {
             if ((CommSys_ConnectedCount() == param0->unk_10->unk_2C) && (param0->unk_10->unk_30 == 0)) {
@@ -761,7 +761,7 @@ static void ov109_021D47B8(UnkStruct_ov109_021D5140 *param0)
                 sub_0209BEBC(param0->unk_10, 7, &v1, 1);
                 ov109_021D5858(param0, 0);
             } else {
-                Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
+                Sound_PlayEffect(SEQ_SE_DP_CUSTOM06_sseq);
             }
         }
     } else {
@@ -846,7 +846,7 @@ static int ov109_021D4980(UnkStruct_ov109_021D5140 *param0, int param1)
     if (CommSys_CurNetId()) {
         if (param0->unk_10->unk_28) {
             if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_KEY_UP | PAD_KEY_DOWN)) {
-                Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
+                Sound_PlayEffect(SEQ_SE_DP_CUSTOM06_sseq);
             }
 
             ov109_021D48D0(param0);
@@ -855,7 +855,7 @@ static int ov109_021D4980(UnkStruct_ov109_021D5140 *param0, int param1)
     } else {
         if (param0->unk_10->unk_30 != 0) {
             if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_KEY_UP | PAD_KEY_DOWN)) {
-                Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
+                Sound_PlayEffect(SEQ_SE_DP_CUSTOM06_sseq);
             }
 
             ov109_021D48D0(param0);
@@ -970,7 +970,7 @@ static int ov109_021D4B94(UnkStruct_ov109_021D5140 *param0, int param1)
 
     if ((ov109_021D548C() != param0->unk_10->unk_2C) || (param0->unk_10->unk_30 != 0)) {
         if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_KEY_UP | PAD_KEY_DOWN)) {
-            Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
+            Sound_PlayEffect(SEQ_SE_DP_CUSTOM06_sseq);
         }
 
         ov109_021D48D0(param0);
@@ -990,9 +990,9 @@ static int ov109_021D4B94(UnkStruct_ov109_021D5140 *param0, int param1)
             if (CommSys_CurNetId() == 0) {
                 param0->unk_3B8 = 24;
                 param0->unk_4AB6 = ov109_021D548C();
-                sub_0205BEA8(12);
+                UnionRoom_SetStatus(UR_STATUS_UNK_12);
             } else {
-                GF_ASSERT(0);
+                GF_ASSERT(FALSE);
             }
         }
 
@@ -1041,15 +1041,13 @@ static int ov109_021D4CA8(UnkStruct_ov109_021D5140 *param0, int param1)
 
 static int ov109_021D4CC8(UnkStruct_ov109_021D5140 *param0, int param1)
 {
-    void *journalEntryOnlineEvent;
-
     gSystem.inhibitReset = 1;
 
-    journalEntryOnlineEvent = JournalEntry_CreateEventMixedRecords(95);
-    JournalEntry_SaveData(param0->unk_0C->unk_14.unk_18, journalEntryOnlineEvent, JOURNAL_ONLINE_EVENT);
+    void *journalEntryOnlineEvent = JournalEntry_CreateEventMixedRecords(95);
+    JournalEntry_SaveData(param0->unk_0C->unk_14.journalEntry, journalEntryOnlineEvent, JOURNAL_ONLINE_EVENT);
 
     journalEntryOnlineEvent = JournalEntry_CreateEventMisc(95, ONLINE_EVENT_SPIN_TRADE);
-    JournalEntry_SaveData(param0->unk_0C->unk_14.unk_18, journalEntryOnlineEvent, JOURNAL_ONLINE_EVENT);
+    JournalEntry_SaveData(param0->unk_0C->unk_14.journalEntry, journalEntryOnlineEvent, JOURNAL_ONLINE_EVENT);
     GameRecords_IncrementTrainerScore(param0->unk_0C->unk_14.records, TRAINER_SCORE_EVENT_UNK_20);
     sub_02038ED4(&param0->unk_414);
     param0->unk_3B8 = 28;
@@ -1126,7 +1124,7 @@ static int ov109_021D4E28(UnkStruct_ov109_021D5140 *param0, int param1)
 
     if ((param0->unk_10->unk_2C != ov109_021D548C()) || (param0->unk_10->unk_30 != 0)) {
         if (gSystem.pressedKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_KEY_UP | PAD_KEY_DOWN)) {
-            Sound_PlayEffect(SEQ_SE_DP_CUSTOM06);
+            Sound_PlayEffect(SEQ_SE_DP_CUSTOM06_sseq);
         }
 
         ov109_021D48D0(param0);
@@ -1196,7 +1194,7 @@ static int ov109_021D4F4C(UnkStruct_ov109_021D5140 *param0, int param1)
 static int ov109_021D4F6C(UnkStruct_ov109_021D5140 *param0, int param1)
 {
     if (CommTiming_IsSyncState(202)) {
-        CommMan_SetErrorHandling(0, 0);
+        CommManager_SetErrorHandling(0, 0);
         StartScreenFade(FADE_BOTH_SCREENS, FADE_TYPE_CIRCLE_OUT, FADE_TYPE_CIRCLE_OUT, COLOR_BLACK, 16, 1, HEAP_ID_95);
         param1 = 3;
     }
@@ -1287,7 +1285,7 @@ static int ov109_021D5098(UnkStruct_ov109_021D5140 *param0, int param1)
 
 static int ov109_021D510C(UnkStruct_ov109_021D5140 *param0, int param1)
 {
-    sub_0205BEA8(12);
+    UnionRoom_SetStatus(UR_STATUS_UNK_12);
     StartScreenFade(FADE_BOTH_SCREENS, FADE_TYPE_CIRCLE_OUT, FADE_TYPE_CIRCLE_OUT, COLOR_BLACK, 16, 1, HEAP_ID_95);
 
     param0->unk_08 = 1;
@@ -1634,7 +1632,7 @@ static void ov109_021D5668(UnkStruct_ov109_021D5140 *param0)
     }
 
     if (v1) {
-        Sound_PlayEffect(SEQ_SE_DP_TELE2);
+        Sound_PlayEffect(SEQ_SE_DP_TELE2_sseq);
     }
 }
 
@@ -1684,7 +1682,7 @@ static void ov109_021D5858(UnkStruct_ov109_021D5140 *param0, int param1)
 {
     if (CommSys_CurNetId() == 0) {
         if (param1 == -1) {
-            sub_02037B58(1);
+            CommManager_SetMaxNumConnections(1);
         } else {
             int v0 = CommSys_ConnectedCount() + param1;
 
@@ -1692,7 +1690,7 @@ static void ov109_021D5858(UnkStruct_ov109_021D5140 *param0, int param1)
                 v0 = 5;
             }
 
-            sub_02037B58(v0);
+            CommManager_SetMaxNumConnections(v0);
         }
 
         if (param1 == -1) {
@@ -1724,7 +1722,7 @@ static int ov109_021D58AC(UnkStruct_ov109_021D5140 *param0, int param1)
 
     switch (v0) {
     case 1:
-        if ((CommSys_ConnectedCount() > 1) || (sub_020318EC() > 1)) {
+        if ((CommSys_ConnectedCount() > 1) || (WirelessManager_GetConnectedBitmap() > 1)) {
             return 1;
         }
 
@@ -1740,7 +1738,7 @@ static int ov109_021D58AC(UnkStruct_ov109_021D5140 *param0, int param1)
     case 2:
     case 3:
     case 4:
-        sub_0205BEA8(13);
+        UnionRoom_SetStatus(UR_STATUS_SPIN_TRADING);
 
         if (v0 < param0->unk_4AA8) {
             switch (param0->unk_4AB5) {
@@ -1756,7 +1754,7 @@ static int ov109_021D58AC(UnkStruct_ov109_021D5140 *param0, int param1)
         }
         break;
     case 5:
-        sub_0205BEA8(12);
+        UnionRoom_SetStatus(UR_STATUS_UNK_12);
         ov109_021D5858(param0, param1);
         break;
     }

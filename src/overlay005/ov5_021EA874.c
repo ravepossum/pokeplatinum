@@ -3,11 +3,12 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_0202B370_decl.h"
+#include "struct_decls/wi_fi_list.h"
 
 #include "field/field_system.h"
 
 #include "bag.h"
+#include "battle_frontier_save.h"
 #include "bg_window.h"
 #include "communication_information.h"
 #include "communication_system.h"
@@ -28,9 +29,8 @@
 #include "string_template.h"
 #include "text.h"
 #include "trainer_info.h"
-#include "unk_0202ACE0.h"
-#include "unk_0203061C.h"
 #include "unk_0203909C.h"
+#include "wifi_list.h"
 
 typedef struct {
     StringList *unk_00;
@@ -68,7 +68,7 @@ static BOOL ov5_021EA874(UnkStruct_ov5_021EAE78 *param0)
 
     param0->unk_8C = 0;
 
-    LoadMessageBoxGraphics(param0->fieldSystem->bgConfig, 3, (512 - (18 + 12)), 10, Options_Frame(SaveData_GetOptions(param0->saveData)), HEAP_ID_FIELD1);
+    LoadMessageBoxGraphics(param0->fieldSystem->bgConfig, 3, 512 - (18 + 12), 10, Options_Frame(SaveData_GetOptions(param0->saveData)), HEAP_ID_FIELD1);
     LoadStandardWindowGraphics(param0->fieldSystem->bgConfig, 3, 1024 - (18 + 12) - 9, 11, 0, HEAP_ID_FIELD1);
 
     param0->unk_48 = 1;
@@ -106,7 +106,7 @@ static BOOL ov5_021EA8F0(UnkStruct_ov5_021EAE78 *param0)
         WiFiList *v2 = SaveData_GetWiFiList(param0->saveData);
 
         for (v0 = 0; v0 < 32; v0++) {
-            if (!sub_0202AF78(v2, v0)) {
+            if (!WiFiList_IsValidFriendData(v2, v0)) {
                 sub_02039298(param0->saveData, param0->unk_8C, v0, HEAP_ID_FIELD1, 0);
                 break;
             }
@@ -149,7 +149,7 @@ static BOOL ov5_021EA9F8(UnkStruct_ov5_021EAE78 *param0)
         WiFiList *v4 = SaveData_GetWiFiList(param0->saveData);
 
         for (v2 = 0; v2 < 32; v2++) {
-            if (!sub_0202AF78(v4, v2)) {
+            if (!WiFiList_IsValidFriendData(v4, v2)) {
                 sub_02039298(param0->saveData, param0->unk_8C, v2, HEAP_ID_FIELD1, 0);
                 break;
             }
@@ -254,7 +254,7 @@ static BOOL ov5_021EAB58(UnkStruct_ov5_021EAE78 *param0)
 {
     WiFiList *v0 = SaveData_GetWiFiList(param0->saveData);
     ListMenuTemplate v1;
-    int v2 = sub_0202AF94(v0);
+    int v2 = WiFiList_GetValidFriendsCount(v0);
     int v3 = 5;
 
     param0->unk_00 = StringList_New(v2 + 1, HEAP_ID_FIELD1);
@@ -267,7 +267,7 @@ static BOOL ov5_021EAB58(UnkStruct_ov5_021EAE78 *param0)
         int v5 = 0;
 
         for (v5 = 0; v5 < 32; v5++) {
-            if (sub_0202AF78(v0, v5)) {
+            if (WiFiList_IsValidFriendData(v0, v5)) {
                 String_CopyChars(param0->unk_08, sub_0202AEF0(v0, v5));
                 StringList_AddFromString(param0->unk_00, param0->unk_08, v5);
             }
@@ -301,14 +301,14 @@ static BOOL ov5_021EAC44(UnkStruct_ov5_021EAE78 *param0)
     case 0xffffffff:
         return 0;
     case 0xfffffffe:
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         v0 = CommInfo_TrainerInfo(param0->unk_8C);
         StringTemplate_SetPlayerName(param0->unk_38, 0, v0);
         ov5_021EAE78(param0, 59);
         param0->unk_48 = 6;
         break;
     default:
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         param0->unk_90 = v1;
 
         WiFiList *v2 = SaveData_GetWiFiList(param0->saveData);
@@ -352,7 +352,7 @@ static BOOL ov5_021EAD38(UnkStruct_ov5_021EAE78 *param0)
     if (v4 == 0xffffffff) {
         return 0;
     } else if (v4 == 0) {
-        sub_02030788(SaveData_GetBattleFrontier(param0->saveData), param0->unk_90);
+        BattleFrontierSave_ClearFriendStatsAndShift(SaveData_GetBattleFrontier(param0->saveData), param0->unk_90);
         sub_0202AFD4(v0, param0->unk_90);
         sub_02039298(param0->saveData, param0->unk_8C, 32 - 1, HEAP_ID_FIELD1, 0);
         param0->unk_48 = 1;
@@ -441,7 +441,7 @@ static void ov5_021EAEE0(UnkStruct_ov5_021EAE78 *param0)
     MI_CpuClear8(param0, sizeof(UnkStruct_ov5_021EAE78));
 
     param0->unk_38 = StringTemplate_Default(HEAP_ID_FIELD1);
-    param0->unk_3C = MessageLoader_Init(MSG_LOADER_PRELOAD_ENTIRE_BANK, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_UNK_0675, HEAP_ID_FIELD1);
+    param0->unk_3C = MessageLoader_Init(MSG_LOADER_PRELOAD_ENTIRE_BANK, NARC_INDEX_MSGDATA__PL_MSG, TEXT_BANK_PAL_PAD, HEAP_ID_FIELD1);
     param0->unk_0C = String_Init(110, HEAP_ID_FIELD1);
     param0->unk_08 = String_Init(110, HEAP_ID_FIELD1);
 }
@@ -480,6 +480,6 @@ void ov5_021EAF50(FieldSystem *fieldSystem)
 static void ov5_021EAF90(ListMenu *param0, u32 param1, u8 param2)
 {
     if (param2 == 0) {
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
     }
 }

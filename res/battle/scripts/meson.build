@@ -1,6 +1,5 @@
 subdir('common_anims')
 subdir('effects')
-subdir('moves')
 subdir('subscripts')
 
 relative_build_dir = fs.relative_to(meson.current_build_dir(), meson.project_build_root())
@@ -20,7 +19,8 @@ be_seq_narc = custom_target(be_seq_target_name,
     output: be_seq_target_name,
     input: script_bin_gen.process(
         effect_script_files,
-        extra_args: ['--out-dir', be_seq_private_dir]
+        extra_args: ['--out-dir', be_seq_private_dir],
+        depends: [text_banks],
     ),
     command: [
         nitroarc_exe,
@@ -37,7 +37,11 @@ sub_seq_narc = custom_target(sub_seq_narc_name,
     ],
     input: script_bin_gen.process(
         subscript_files,
-        extra_args: ['--out-dir', sub_seq_private_dir]
+        extra_args: ['--out-dir', sub_seq_private_dir],
+        depends: [
+            text_banks,
+            pl_sound_data_sdat,
+        ],
     ),
     command: [
         nitroarc_exe,
@@ -52,12 +56,18 @@ sub_seq_narc = custom_target(sub_seq_narc_name,
 waza_seq_narc = custom_target(waza_seq_target_name,
     output: waza_seq_target_name,
     input: script_bin_gen.process(
-        move_script_files,
-        extra_args: ['--out-dir', waza_seq_private_dir]
+        move_script_srcs, # comes from `res/moves`
+        extra_args: [
+            '--out-dir', waza_seq_private_dir,
+            '--parent-dir',
+        ],
+        depends: [text_banks],
+        preserve_path_from: move_script_srcdir,
     ),
     command: [
         nitroarc_exe,
         '--create',
+        '--files-from', move_scripts_order,
         '--file', '@OUTPUT0@',
         '@PRIVATE_DIR@',
     ],

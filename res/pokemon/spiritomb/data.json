@@ -110,12 +110,11 @@
     "footprint": {
         "has": false,
         "size": "FOOTPRINT_LARGE",
-        "type": "FOOTPRINT_TYPE_SCARY",
-        "has_type": true
+        "type": "FOOTPRINT_TYPE_SCARY"
     },
     "pokedex_data": {
-        "height": 10,
-        "weight": 1080,
+        "height_inches": 39,
+        "weight_pounds": 238.1,
         "body_shape": "SHAPE_HEAD_BASE",
         "trainer_scale_f": 272,
         "pokemon_scale_f": 281,

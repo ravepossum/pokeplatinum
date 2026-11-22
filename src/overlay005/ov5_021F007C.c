@@ -3,6 +3,8 @@
 #include <nitro.h>
 #include <string.h>
 
+#include "constants/field/script_ranges.h"
+
 #include "field/field_system.h"
 #include "field/field_system_sub2_t.h"
 #include "overlay005/ov5_021D1A94.h"
@@ -67,7 +69,7 @@ static void ov5_021F007C(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSyste
 
     Bg_SetPriority(BG_LAYER_MAIN_2, 0);
     GXLayers_EngineAToggleLayers((GX_PLANEMASK_BG2), 1);
-    Sound_PlayEffect(SEQ_SE_DP_FW230);
+    Sound_PlayEffect(SEQ_SE_DP_FW230_sseq);
 }
 
 static void ov5_021F00BC(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSystem, void *param2)
@@ -104,7 +106,7 @@ static void ov5_021F00F0(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSyste
     }
 
     BlendPalettes(v1->unk_04->pRawData, v1->unk_08, 0x1, v1->unk_28.unk_00, (GX_RGB(31, 10, 23)));
-    Bg_LoadPalette(2, v1->unk_08, 32, 6 * 32);
+    Bg_LoadPalette(BG_LAYER_MAIN_2, v1->unk_08, PALETTE_SIZE_BYTES, PLTT_OFFSET(6));
 }
 
 static void ov5_021F013C(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSystem, void *param2)
@@ -120,7 +122,7 @@ static void ov5_021F013C(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSyste
 
     Bg_SetPriority(BG_LAYER_MAIN_2, 0);
     GXLayers_EngineAToggleLayers((GX_PLANEMASK_BG2), 1);
-    Sound_PlayEffect(SEQ_SE_DP_FW230);
+    Sound_PlayEffect(SEQ_SE_DP_FW230_sseq);
 }
 
 static void ov5_021F0188(UnkStruct_ov5_021D1BEC *param0, FieldSystem *fieldSystem, void *param2)
@@ -241,7 +243,7 @@ static void ov5_021F0260(BgConfig *param0)
     GXRgb v0 = (GX_RGB(31, 10, 23));
     u8 *v1;
 
-    Bg_LoadPalette(2, &v0, sizeof(short), (6 * 32) + 2);
+    Bg_LoadPalette(BG_LAYER_MAIN_2, &v0, sizeof(short), (6 * 32) + 2);
 
     v1 = Heap_Alloc(HEAP_ID_FIELD1, sizeof(u8) * 32);
     memset(v1, 0x11, sizeof(u8) * 32);
@@ -294,7 +296,7 @@ static void ov5_021F0310(FieldSystem *fieldSystem)
 
     G2_SetBG2Priority(3);
 
-    Bg_LoadPalette(2, &v0, 2, ((6 * 32) + 4));
+    Bg_LoadPalette(BG_LAYER_MAIN_2, &v0, 2, ((6 * 32) + 4));
     Bg_FillTilesRange(fieldSystem->bgConfig, 2, 2, 1, 2);
     Bg_FillTilemap(fieldSystem->bgConfig, 2, ((6 << 12) | 2));
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG2, 1);
@@ -310,7 +312,7 @@ static void ov5_021F0374(FieldSystem *fieldSystem)
 
     G2_SetBG3Priority(3);
 
-    Bg_LoadPalette(3, &v0, 2, ((6 * 32) + 4));
+    Bg_LoadPalette(BG_LAYER_MAIN_3, &v0, 2, ((6 * 32) + 4));
     Bg_FillTilesRange(fieldSystem->bgConfig, 3, 2, 1, 2);
     Bg_FillTilemap(fieldSystem->bgConfig, 3, ((6 << 12) | 2));
     GXLayers_EngineAToggleLayers(GX_PLANEMASK_BG3, 1);
@@ -467,14 +469,14 @@ BOOL ov5_021F0488(FieldTask *param0)
     case 3:
         v1->unk_0E--;
 
-        if (MapHeader_HasWildEncounters(fieldSystem->location->mapId)) {
+        if (MapHeader_HasWildEncounters(fieldSystem->location->mapHeaderID)) {
             if (v1->unk_0E < 0) {
                 {
                     u8 v3;
                     int v4, v5;
 
-                    v4 = Player_GetXPos(fieldSystem->playerAvatar);
-                    v5 = Player_GetZPos(fieldSystem->playerAvatar);
+                    v4 = PlayerAvatar_GetXPos(fieldSystem->playerAvatar);
+                    v5 = PlayerAvatar_GetZPos(fieldSystem->playerAvatar);
                     v3 = (u8)TerrainCollisionManager_GetTileBehavior(fieldSystem, v4, v5);
 
                     if (WildEncounters_TileHasEncounterRate(fieldSystem, v3)) {
@@ -553,7 +555,7 @@ BOOL ov5_021F0488(FieldTask *param0)
 
         return 1;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 

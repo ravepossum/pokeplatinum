@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "field/field_system.h"
 #include "overlay005/field_effect_manager.h"
@@ -14,6 +14,8 @@
 #include "simple3d.h"
 #include "sys_task.h"
 #include "sys_task_manager.h"
+
+#include "res/graphics/field_effects/field_effects.naix"
 
 typedef struct {
     int unk_00;
@@ -220,14 +222,14 @@ static int ov5_021F15B4(OverworldAnimManager *param0, void *param1)
     v1 = OverworldAnimManager_GetUserData(param0);
 
     v0->unk_14 = *v1;
-    v0->unk_10 = OverworldAnimManager_GetID(param0);
+    v0->unk_10 = OverworldAnimManager_GetUserInt(param0);
     v0->unk_00 = MapObject_GetGraphicsID(v0->unk_14.unk_08);
     v0->unk_04 = MapObject_GetLocalID(v0->unk_14.unk_08);
 
     if (sub_02062E94(v0->unk_14.unk_08) == 1) {
         v0->unk_08 = sub_02062C18(v0->unk_14.unk_08);
     } else {
-        v0->unk_08 = MapObject_GetMapID(v0->unk_14.unk_08);
+        v0->unk_08 = MapObject_GetMapHeaderID(v0->unk_14.unk_08);
     }
 
     return 1;
@@ -349,7 +351,7 @@ static void ov5_021F176C(OverworldAnimManager *param0, void *param1)
     }
 
     {
-        int v1 = OverworldAnimManager_GetID(param0);
+        int v1 = OverworldAnimManager_GetUserInt(param0);
         VecFx32 v2;
         Simple3DRenderObj *v3 = &v0->unk_14.unk_04->unk_64[v1];
 
@@ -386,7 +388,7 @@ static const fx32 Unk_ov5_02200284[] = {
 };
 
 static const int Unk_ov5_02200278[3] = {
-    0x11,
-    0x12,
-    0x13
+    shadow_nsbmd,
+    red_mark_nsbmd,
+    blue_mark_nsbmd
 };

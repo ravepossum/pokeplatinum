@@ -1,7 +1,7 @@
 #include "system_vars.h"
 
+#include "constants/fieldmap.h"
 #include "constants/savedata/vars_flags.h"
-#include "generated/map_headers.h"
 #include "generated/species.h"
 
 #include "field_overworld_state.h"
@@ -420,7 +420,7 @@ void SystemVars_UpdateVillaVisitor(SaveData *saveData)
     FieldOverworldState *fieldState = SaveData_GetFieldOverworldState(saveData);
     Location *location = FieldOverworldState_GetPlayerLocation(fieldState);
 
-    if (location->mapId != MAP_HEADER_RESORT_AREA && location->mapId != MAP_HEADER_VILLA) {
+    if (location->mapHeaderID != MAP_HEADER_RESORT_AREA && location->mapHeaderID != MAP_HEADER_VILLA) {
         SystemFlag_ClearVillaVisitorInside(varsFlags);
         SystemFlag_ClearVillaVisitorOutside(varsFlags);
         InitVillaVisitor(varsFlags, CalcVillaVisitorIndex(varsFlags));

@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "field/field_system.h"
 #include "overlay005/field_effect_manager.h"
@@ -13,6 +13,8 @@
 #include "overworld_anim_manager.h"
 #include "simple3d.h"
 #include "unk_02069BE0.h"
+
+#include "res/graphics/field_effects/field_effects.naix"
 
 typedef struct {
     FieldEffectManager *unk_00;
@@ -124,7 +126,7 @@ static int ov5_021F3E00(OverworldAnimManager *param0, void *param1)
 
     v0->unk_10 = *v1;
     v0->unk_08 = MapObject_GetLocalID(v2);
-    v0->unk_0C = MapObject_GetMapID(v2);
+    v0->unk_0C = MapObject_GetMapHeaderID(v2);
 
     return 1;
 }
@@ -169,8 +171,8 @@ static const OverworldAnimManagerFuncs Unk_ov5_02200688 = {
 };
 
 static const u32 Unk_ov5_02200678[4] = {
-    0x67,
-    0x68,
-    0x69,
-    0x6A
+    ninja_hide_snow_nsbmd,
+    ninja_hide_sand_nsbmd,
+    ninja_hide_swamp_nsbmd,
+    ninja_hide_grass_nsbmd
 };

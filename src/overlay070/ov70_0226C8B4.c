@@ -34,7 +34,7 @@ typedef struct {
 } UnkStruct_ov70_0226CBB4;
 
 typedef struct UnkStruct_ov70_0226C914_t {
-    const UnkStruct_ov66_0222DFF8 *unk_00;
+    const WiFiPlazaSystem *unk_00;
     UnkStruct_ov70_02261E10 *unk_04;
     u8 unk_08;
     u8 unk_09;
@@ -132,7 +132,7 @@ static const UnkStruct_ov70_0226E6FC Unk_ov70_0226E6FC[3] = {
     { 0x50, FX32_HALF }
 };
 
-UnkStruct_ov70_0226C914 *ov70_0226C8B4(const UnkStruct_ov66_0222DFF8 *param0, UnkStruct_ov70_02261E10 *param1, u32 heapID)
+UnkStruct_ov70_0226C914 *ov70_0226C8B4(const WiFiPlazaSystem *param0, UnkStruct_ov70_02261E10 *param1, u32 heapID)
 {
     UnkStruct_ov70_0226C914 *v0;
     u32 v1;
@@ -303,7 +303,7 @@ static void ov70_0226CAD4(UnkStruct_ov70_0226C914 *param0, u32 param1)
         if (Unk_ov70_0226E6FC[param0->unk_0C.val3.unk_00].unk_00 < param1) {
             ov70_0226278C(param0->unk_04, Unk_ov70_0226E6FC[param0->unk_0C.val3.unk_00].unk_04);
             ov70_022625D8(param0->unk_04, Unk_ov70_0226E6FC[param0->unk_0C.val3.unk_00].unk_04);
-            Sound_PlayEffect(SEQ_SE_PL_140_2);
+            Sound_PlayEffect(SEQ_SE_PL_140_2_sseq);
 
             param0->unk_0C.val3.unk_00++;
         }
@@ -391,7 +391,7 @@ static void ov70_0226CBB4(u32 param0, UnkStruct_ov70_0226CBB4 *param1)
         param1->unk_00 = Unk_ov70_0226E6C8;
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 }
@@ -399,7 +399,7 @@ static void ov70_0226CBB4(u32 param0, UnkStruct_ov70_0226CBB4 *param1)
 static void ov70_0226CC3C(UnkStruct_ov70_0226C914 *param0)
 {
     if (param0->unk_09 == 0) {
-        Sound_PlayEffect(SEQ_SE_PL_140_3);
+        Sound_PlayEffect(SEQ_SE_PL_140_3_sseq);
         param0->unk_09 = 1;
     }
 }

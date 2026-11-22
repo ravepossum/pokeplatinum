@@ -8,7 +8,10 @@
 
 typedef struct StringList {
     void *entry;
-    u32 index;
+    union {
+        u32 index;
+        void *callbackFunction;
+    };
 } StringList;
 
 StringList *StringList_New(u32 capacity, u32 heapID);

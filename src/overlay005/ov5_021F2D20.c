@@ -3,7 +3,7 @@
 #include <nitro.h>
 #include <string.h>
 
-#include "struct_decls/struct_02061AB4_decl.h"
+#include "struct_decls/map_object.h"
 
 #include "field/field_system.h"
 #include "overlay005/field_effect_manager.h"
@@ -12,6 +12,8 @@
 #include "map_object.h"
 #include "map_object_move.h"
 #include "overworld_anim_manager.h"
+
+#include "res/graphics/field_effects/field_effects.naix"
 
 typedef struct UnkStruct_ov5_021F2D20_t {
     FieldEffectManager *unk_00;
@@ -100,18 +102,18 @@ void ov5_021F2D3C(void *param0)
 
 static void ov5_021F2D4C(UnkStruct_ov5_021F2D20 *param0)
 {
-    ov5_021DF9E0(param0->unk_00, 0, 83);
-    ov5_021DF9E0(param0->unk_00, 5, 84);
+    ov5_021DF9E0(param0->unk_00, 0, tall_grass_nsbmd);
+    ov5_021DF9E0(param0->unk_00, 5, tall_grass_2_nsbmd);
 
-    ov5_021DFA14(param0->unk_00, 0, 170);
-    ov5_021DFA14(param0->unk_00, 3, 171);
-    ov5_021DFA14(param0->unk_00, 4, 172);
-    ov5_021DFA14(param0->unk_00, 5, 173);
+    ov5_021DFA14(param0->unk_00, 0, tall_grass_trainer_see_rematch_icon_bin);
+    ov5_021DFA14(param0->unk_00, 3, tall_grass_2_bin);
+    ov5_021DFA14(param0->unk_00, 4, tall_grass_3_bin);
+    ov5_021DFA14(param0->unk_00, 5, tall_grass_4_bin);
 
-    ov5_021DFA3C(param0->unk_00, 0, 0, 1);
-    ov5_021DFA3C(param0->unk_00, 4, 1, 1);
-    ov5_021DFA3C(param0->unk_00, 5, 2, 1);
-    ov5_021DFA3C(param0->unk_00, 6, 3, 1);
+    ov5_021DFA3C(param0->unk_00, 0, tall_grass_nsbtx, 1);
+    ov5_021DFA3C(param0->unk_00, 4, tall_grass_2_nsbtx, 1);
+    ov5_021DFA3C(param0->unk_00, 5, tall_grass_3_nsbtx, 1);
+    ov5_021DFA3C(param0->unk_00, 6, tall_grass_4_nsbtx, 1);
 
     ov5_021DF864(param0->unk_00, 0, 0, 0, 0, 0, Unk_ov5_02200540);
     ov5_021DF864(param0->unk_00, 5, 5, 3, 4, 0, Unk_ov5_02200558);
@@ -178,7 +180,7 @@ static int ov5_021F2F0C(OverworldAnimManager *param0, void *param1)
     v3->unk_18 = *v4;
     v3->unk_04 = MapObject_GetEffectiveGraphicsID(v3->unk_18.unk_18);
     v3->unk_08 = MapObject_GetLocalID(v3->unk_18.unk_18);
-    v3->unk_0C = MapObject_GetMapID(v3->unk_18.unk_18);
+    v3->unk_0C = MapObject_GetMapHeaderID(v3->unk_18.unk_18);
 
     v2.x = (((v3->unk_18.unk_00) << 4) * FX32_ONE);
     v2.z = (((v3->unk_18.unk_08) << 4) * FX32_ONE);
@@ -192,7 +194,7 @@ static int ov5_021F2F0C(OverworldAnimManager *param0, void *param1)
 
     v3->unk_34 = ov5_021DF84C(v3->unk_18.unk_10, 0, &v2);
 
-    if (OverworldAnimManager_GetID(param0) == 0) {
+    if (OverworldAnimManager_GetUserInt(param0) == 0) {
         v3->unk_00 = 1;
     }
 
@@ -415,7 +417,7 @@ static int ov5_021F31B4(OverworldAnimManager *param0, void *param1)
     v2 = param1;
     v3 = OverworldAnimManager_GetUserData(param0);
     v2->unk_10 = *v3;
-    v2->unk_0C = OverworldAnimManager_GetID(param0);
+    v2->unk_0C = OverworldAnimManager_GetUserInt(param0);
 
     v1.x = (((v2->unk_10.unk_00) << 4) * FX32_ONE) + ((16 * FX32_ONE) >> 1);
     v1.z = (((v2->unk_10.unk_04) << 4) * FX32_ONE) + ((((16 * FX32_ONE) >> 1) + (FX32_ONE * 6) + (FX32_ONE * 4)) / 2);

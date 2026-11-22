@@ -514,7 +514,7 @@ const UnkStruct_ov70_0225CC54 *ov70_0225CE7C(const UnkStruct_ov70_0225CA20 *para
         }
     }
 
-    GF_ASSERT(0);
+    GF_ASSERT(FALSE);
     return NULL;
 }
 
@@ -763,7 +763,7 @@ static UnkStruct_ov70_0225CC54 *ov70_0225D2C0(UnkStruct_ov70_0225CA20 *param0)
         }
     }
 
-    GF_ASSERT(0);
+    GF_ASSERT(FALSE);
     return &param0->unk_08[v0];
 }
 
@@ -904,7 +904,7 @@ static void ov70_0225D4CC(UnkStruct_ov70_0225CC54 *param0, UnkStruct_ov70_0225CA
         if (param0->unk_0C.val2.unk_10 == 0) {
             param0->unk_08++;
             param0->unk_0C.val2.unk_10 = 0;
-            Sound_PlayEffect(SEQ_SE_DP_TELE2);
+            Sound_PlayEffect(SEQ_SE_DP_TELE2_sseq);
         }
         break;
     case 2: {
@@ -941,7 +941,7 @@ static void ov70_0225D57C(UnkStruct_ov70_0225CC54 *param0, UnkStruct_ov70_0225CA
         param0->unk_0C.val2.unk_10 = 0;
         param0->unk_08++;
 
-        Sound_PlayEffect(SEQ_SE_DP_TELE2);
+        Sound_PlayEffect(SEQ_SE_DP_TELE2_sseq);
     case 1: {
         BOOL v0;
         VecFx32 v1;

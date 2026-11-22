@@ -19,9 +19,9 @@
 
 #include "heap.h"
 #include "math_util.h"
+#include "sys_task_extensions.h"
 #include "sys_task_manager.h"
 #include "touch_screen.h"
-#include "unk_0200679C.h"
 
 typedef struct {
     UnkStruct_ov22_02259560 *unk_00;
@@ -190,7 +190,7 @@ void ov22_022580A4(UnkStruct_ov22_02257F50 *param0, int param1, int param2)
         v0.unk_1C = 0;
         break;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 
@@ -689,7 +689,7 @@ static void ov22_022586C4(SysTask *param0, void *param1)
 
         return;
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         break;
     }
 

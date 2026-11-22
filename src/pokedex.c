@@ -27,12 +27,6 @@ static const u16 sExcludedMonsNational[] = {
 };
 static const u16 sExcludedMonsLocal[] = {};
 
-#define MAGIC_NUMBER          0xBEEFCAFE
-#define NUM_EXCLUDED_NATIONAL ((int)(sizeof(sExcludedMonsNational) / sizeof(u16)))
-#define NUM_EXCLUDED_LOCAL    0 //((int)(sizeof(sExcludedMonsLocal) / sizeof(u16)))
-#define NATIONAL_DEX_GOAL     (NATIONAL_DEX_COUNT - NUM_EXCLUDED_NATIONAL)
-#define LOCAL_DEX_GOAL        (SINNOH_DEX_COUNT - NUM_EXCLUDED_LOCAL)
-
 int Pokedex_SaveSize(void)
 {
     return sizeof(Pokedex);
@@ -806,9 +800,9 @@ BOOL Pokedex_NationalDexCompleted(const Pokedex *pokedexData)
 
 BOOL Pokedex_LocalDexCompleted(const Pokedex *pokedexData)
 {
-    u16 numCaught = Pokedex_NumCaught_Local(pokedexData);
+    u16 numSeen = Pokedex_NumSeen_Local(pokedexData);
 
-    if (numCaught >= LOCAL_DEX_GOAL) {
+    if (numSeen >= LOCAL_DEX_GOAL) {
         return TRUE;
     }
 
@@ -831,21 +825,21 @@ u16 Pokedex_NumCaught_National(const Pokedex *pokedexData)
     return numCaught;
 }
 
-u16 Pokedex_NumCaught_Local(const Pokedex *pokedexData)
+u16 Pokedex_NumSeen_Local(const Pokedex *pokedexData)
 {
     int species;
-    u16 numCaught = 0;
+    u16 numSeen = 0;
 
     for (species = 1; species <= NATIONAL_DEX_COUNT; species++) {
         if (Pokedex_HasSeenSpecies(pokedexData, species) == TRUE) {
             if (Pokemon_SinnohDexNumber(species) != 0
                 && CountsForDexCompletion_Local(species) == TRUE) {
-                numCaught++;
+                numSeen++;
             }
         }
     }
 
-    return numCaught;
+    return numSeen;
 }
 
 BOOL Pokedex_HasCaughtSpecies(const Pokedex *pokedex, u16 species)

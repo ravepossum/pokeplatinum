@@ -4,7 +4,6 @@
 #include "constants/pokemon.h"
 #include "generated/badges.h"
 #include "generated/genders.h"
-#include "generated/map_headers.h"
 #include "generated/poketch_apps.h"
 #include "generated/text_banks.h"
 #include "generated/vars_flags.h"

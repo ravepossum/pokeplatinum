@@ -33,6 +33,7 @@
 #include "vram_transfer.h"
 
 #include "res/graphics/poffin_case/poru_gra.naix"
+#include "res/graphics/sprite_templates/poffin_case.h"
 #include "res/text/bank/poffin_case.h"
 
 typedef enum PoffinManagerState {
@@ -264,14 +265,14 @@ static BOOL State_SelectPoffin(PoffinManager *app)
     }
 
     if (gSystem.pressedKeys & PAD_BUTTON_B) {
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         app->selectedPoffin = POFFIN_LIST_SENTINEL;
         app->givePoffin = FALSE;
         return TRUE;
     }
 
     if (gSystem.pressedKeys & PAD_BUTTON_A) {
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
 
         switch (menuSelection) {
         case MENU_NOTHING_CHOSEN:
@@ -305,7 +306,7 @@ static BOOL State_SelectAction(PoffinManager *app)
     u32 menuSelection = ListMenu_ProcessInput(app->actionMenu);
 
     if (gSystem.pressedKeys & PAD_BUTTON_B) {
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         PoffinManager_FreeActionMenu(app);
         PoffinCaseApp_UpdateListSprites(app, 0);
         app->state = STATE_SELECT_POFFIN;
@@ -313,7 +314,7 @@ static BOOL State_SelectAction(PoffinManager *app)
     }
 
     if (gSystem.pressedKeys & PAD_BUTTON_A) {
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
 
         switch (menuSelection) {
         case 0:
@@ -352,12 +353,12 @@ static BOOL State_ConfirmDeletePoffin(PoffinManager *app)
 {
     switch (Menu_ProcessInputAndHandleExit(app->yesNoMenu, app->heapID)) {
     case MENU_YES:
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         PoffinManager_ShowThrownOutMessage(app);
         app->state = STATE_DELETE_POFFIN;
         return FALSE;
     case MENU_CANCEL:
-        Sound_PlayEffect(SEQ_SE_CONFIRM);
+        Sound_PlayEffect(SE_CONFIRM_sseq_3);
         Window_EraseMessageBox(&app->windows[2], FALSE);
         app->state = STATE_INIT_ACTION_MENU;
         return FALSE;
@@ -705,18 +706,71 @@ static void FreeMessages(PoffinManager *app)
     Font_Free(FONT_SUBSCREEN);
 }
 
+enum {
+    SPRITE_TEMPLATE_LIST_0,
+    SPRITE_TEMPLATE_LIST_1,
+    SPRITE_TEMPLATE_LIST_2,
+    SPRITE_TEMPLATE_FLAVOR_ICON,
+    SPRITE_TEMPLATE_FLAVOR_BUTTON,
+};
+
+static const SpriteTemplateFromResourceHeader sSpriteTemplates[] = {
+    [SPRITE_TEMPLATE_LIST_0] = {
+        .resourceHeaderID = PoffinCase_Template_TopScreen,
+        .x = 105,
+        .y = 40,
+        .z = 0,
+        .animIdx = 0,
+        .priority = 1,
+        .plttIdx = 0,
+        .vramType = NNS_G2D_VRAM_TYPE_2DMAIN,
+    },
+    [SPRITE_TEMPLATE_LIST_1] = {
+        .resourceHeaderID = PoffinCase_Template_TopScreen,
+        .x = 80,
+        .y = 18,
+        .z = 0,
+        .animIdx = 1,
+        .priority = 2,
+        .plttIdx = 0,
+        .vramType = NNS_G2D_VRAM_TYPE_2DMAIN,
+    },
+    [SPRITE_TEMPLATE_LIST_2] = {
+        .resourceHeaderID = PoffinCase_Template_TopScreen,
+        .x = 80,
+        .y = 140,
+        .z = 0,
+        .animIdx = 2,
+        .priority = 2,
+        .plttIdx = 0,
+        .vramType = NNS_G2D_VRAM_TYPE_2DMAIN,
+    },
+    [SPRITE_TEMPLATE_FLAVOR_ICON] = {
+        .resourceHeaderID = PoffinCase_Template_TopScreen,
+        .x = 10,
+        .y = 100,
+        .z = 0,
+        .animIdx = 3,
+        .priority = 3,
+        .plttIdx = 1,
+        .vramType = NNS_G2D_VRAM_TYPE_2DMAIN,
+    },
+    [SPRITE_TEMPLATE_FLAVOR_BUTTON] = {
+        .resourceHeaderID = PoffinCase_Template_BottomScreen,
+        .x = 10,
+        .y = 100,
+        .z = 0,
+        .animIdx = 0,
+        .priority = 1,
+        .plttIdx = 2,
+        .vramType = NNS_G2D_VRAM_TYPE_2DSUB,
+    },
+};
+
 static void InitSprites(PoffinManager *app)
 {
-    static const SpriteTemplateFromResourceHeader templates[] = {
-        { 0, 105, 40, 0, 0, 1, 0, NNS_G2D_VRAM_TYPE_2DMAIN, 0, 0, 0, 0 },
-        { 0, 80, 18, 0, 1, 2, 0, NNS_G2D_VRAM_TYPE_2DMAIN, 0, 0, 0, 0 },
-        { 0, 80, 140, 0, 2, 2, 0, NNS_G2D_VRAM_TYPE_2DMAIN, 0, 0, 0, 0 },
-        { 0, 10, 100, 0, 3, 3, 1, NNS_G2D_VRAM_TYPE_2DMAIN, 0, 0, 0, 0 },
-        { 1, 10, 100, 0, 0, 1, 2, NNS_G2D_VRAM_TYPE_2DSUB, 0, 0, 0, 0 }
-    };
-
     for (int i = 0; i < NUM_LIST_SPRITES; i++) {
-        app->listSprites[i] = SpriteSystem_NewSpriteFromResourceHeader(app->spriteSys, app->spriteMan, &templates[i]);
+        app->listSprites[i] = SpriteSystem_NewSpriteFromResourceHeader(app->spriteSys, app->spriteMan, &sSpriteTemplates[i]);
         Sprite_SetDrawFlag(app->listSprites[i], TRUE);
     }
 
@@ -735,7 +789,7 @@ static void InitSprites(PoffinManager *app)
             [FLAVOR_SOUR] = { 26, 165 }
         };
 
-        app->flavorSprites[i] = SpriteSystem_NewSpriteFromResourceHeader(app->spriteSys, app->spriteMan, &templates[3]);
+        app->flavorSprites[i] = SpriteSystem_NewSpriteFromResourceHeader(app->spriteSys, app->spriteMan, &sSpriteTemplates[SPRITE_TEMPLATE_FLAVOR_ICON]);
 
         Sprite_SetDrawFlag(app->flavorSprites[i], TRUE);
         Sprite_SetAnim(app->flavorSprites[i], i + 3);
@@ -754,7 +808,7 @@ static void InitSprites(PoffinManager *app)
             [FLAVOR_MAX] = { 128, 116 }
         };
 
-        app->buttonSprites[i] = SpriteSystem_NewSpriteFromResourceHeader(app->spriteSys, app->spriteMan, &templates[4]);
+        app->buttonSprites[i] = SpriteSystem_NewSpriteFromResourceHeader(app->spriteSys, app->spriteMan, &sSpriteTemplates[SPRITE_TEMPLATE_FLAVOR_BUTTON]);
 
         Sprite_SetDrawFlag(app->buttonSprites[i], TRUE);
         Sprite_SetAnim(app->buttonSprites[i], i * 3);

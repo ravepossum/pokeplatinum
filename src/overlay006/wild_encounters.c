@@ -200,7 +200,7 @@ static void WildEncounters_ReplaceSwarmEncounters(FieldSystem *fieldSystem, cons
     if (SpecialEncounter_IsSwarmEnabled(specialEncounter)) {
         u32 swarmId = SpecialEncounter_GetDailyMon(specialEncounter, DAILY_SWARM);
 
-        if (fieldSystem->location->mapId == Swarm_GetMapId(swarmId)) {
+        if (fieldSystem->location->mapHeaderID == Swarm_GetMapId(swarmId)) {
             *radarSlot1 = encounterData->swarmEncounters[0];
             *radarSlot2 = encounterData->swarmEncounters[1];
         }
@@ -209,7 +209,7 @@ static void WildEncounters_ReplaceSwarmEncounters(FieldSystem *fieldSystem, cons
 
 static void WildEncounters_ReplaceTrophyGardenEncounters(FieldSystem *fieldSystem, const BOOL nationalDexObtained, int *trophySlot1, int *trophySlot2)
 {
-    if (MapHeader_IsTrophyGarden(fieldSystem->location->mapId)) {
+    if (MapHeader_IsTrophyGarden(fieldSystem->location->mapHeaderID)) {
         u16 index1, index2;
         SpecialEncounter_GetTrophyGardenMons(fieldSystem->saveData, &index1, &index2);
 
@@ -243,8 +243,8 @@ BOOL WildEncounters_TryWildEncounter(FieldSystem *fieldSystem)
     EncounterSlot encounterTable[MAX_GRASS_ENCOUNTERS];
     WildEncounters_FieldParams encounterFieldParams;
 
-    int playerX = Player_GetXPos(fieldSystem->playerAvatar);
-    int playerZ = Player_GetZPos(fieldSystem->playerAvatar);
+    int playerX = PlayerAvatar_GetXPos(fieldSystem->playerAvatar);
+    int playerZ = PlayerAvatar_GetZPos(fieldSystem->playerAvatar);
     tileBehavior = TerrainCollisionManager_GetTileBehavior(fieldSystem, playerX, playerZ);
 
     u8 encounterRate = GetTileEncounterRateAndType(fieldSystem, tileBehavior, &encounterType);
@@ -405,7 +405,7 @@ BOOL WildEncounters_TryFishingEncounter(FieldSystem *fieldSystem, enum Encounter
     FieldBattleDTO_Init(*battleParams, fieldSystem);
     FieldBattleDTO_SetWaterTerrain(*battleParams);
 
-    if (MapHeader_HasFeebasTiles(fieldSystem->location->mapId) && PlayerAvatar_IsFacingFeebasTile(fieldSystem)) {
+    if (MapHeader_HasFeebasTiles(fieldSystem->location->mapHeaderID) && PlayerAvatar_IsFacingFeebasTile(fieldSystem)) {
         int species;
         u8 maxLevel, minLevel;
 
@@ -460,8 +460,8 @@ BOOL WildEncounters_TrySweetScentEncounter(FieldSystem *fieldSystem, FieldTask *
     EncounterSlot encounterTable[MAX_GRASS_ENCOUNTERS];
     WildEncounters_FieldParams encounterFieldParams;
 
-    int playerX = Player_GetXPos(fieldSystem->playerAvatar);
-    int playerZ = Player_GetZPos(fieldSystem->playerAvatar);
+    int playerX = PlayerAvatar_GetXPos(fieldSystem->playerAvatar);
+    int playerZ = PlayerAvatar_GetZPos(fieldSystem->playerAvatar);
     u8 tileBehavior = TerrainCollisionManager_GetTileBehavior(fieldSystem, playerX, playerZ);
 
     u8 encounterRate = GetTileEncounterRateAndType(fieldSystem, tileBehavior, &encounterType);
@@ -571,8 +571,8 @@ BOOL WildEncounters_TryMudEncounter(FieldSystem *fieldSystem, FieldBattleDTO **b
 
     *battleParams = NULL;
 
-    int playerX = Player_GetXPos(fieldSystem->playerAvatar);
-    int playerZ = Player_GetZPos(fieldSystem->playerAvatar);
+    int playerX = PlayerAvatar_GetXPos(fieldSystem->playerAvatar);
+    int playerZ = PlayerAvatar_GetZPos(fieldSystem->playerAvatar);
     u8 tileBehavior = TerrainCollisionManager_GetTileBehavior(fieldSystem, playerX, playerZ);
 
     u8 encounterRate = GetTileEncounterRateAndType(fieldSystem, tileBehavior, &encounterType);
@@ -711,8 +711,8 @@ static BOOL TryGenerateGrassEncounter_WithRadar(FieldSystem *fieldSystem, Pokemo
 
         if (encounterSuccess) {
             {
-                int playerX = Player_GetXPos(fieldSystem->playerAvatar);
-                int playerZ = Player_GetZPos(fieldSystem->playerAvatar);
+                int playerX = PlayerAvatar_GetXPos(fieldSystem->playerAvatar);
+                int playerZ = PlayerAvatar_GetZPos(fieldSystem->playerAvatar);
 
                 RadarSpawnPatches(fieldSystem, playerX, playerZ, fieldSystem->chain);
             }
@@ -771,7 +771,7 @@ static BOOL ShouldGetRandomEncounter(FieldSystem *fieldSystem, const u32 encount
 
     if (TileBehavior_IsVeryTallGrass(tileBehavior)) {
         flatEncounterRate += 30;
-    } else if (PlayerAvatar_GetPlayerState(fieldSystem->playerAvatar) == PLAYER_STATE_CYCLING) {
+    } else if (PlayerAvatar_GetPlayerState(fieldSystem->playerAvatar) == PLAYER_AVATAR_CYCLING) {
         flatEncounterRate += 30;
     }
 
@@ -1396,7 +1396,7 @@ static void CreateWildSingleBattle(FieldSystem *fieldSystem, const BOOL safariGa
 static void WildEncounters_ReplaceGreatMarshDailyEncounters(FieldSystem *fieldSystem, const BOOL safariGameActive, const BOOL nationalDexObtained, EncounterSlot *encTable)
 {
     if (safariGameActive) {
-        ReplaceGreatMarshDailyEncounters(SpecialEncounter_GetDailyMon(SaveData_GetSpecialEncounters(fieldSystem->saveData), DAILY_MARSH), nationalDexObtained, fieldSystem->location->mapId, &encTable[6].species, &encTable[7].species);
+        ReplaceGreatMarshDailyEncounters(SpecialEncounter_GetDailyMon(SaveData_GetSpecialEncounters(fieldSystem->saveData), DAILY_MARSH), nationalDexObtained, fieldSystem->location->mapHeaderID, &encTable[6].species, &encTable[7].species);
     }
 }
 
@@ -1436,7 +1436,7 @@ static BOOL TryEncounterRoamer(FieldSystem *fieldSystem, Roamer **encounteredRoa
     for (u8 slot = 0; slot < ROAMING_SLOT_MAX; slot++) {
         int roamerMapId = RoamingPokemon_GetRouteFromId(SpecialEncounter_GetRoamerRouteIndex(speEnc, slot));
 
-        if (SpecialEncounter_IsRoamerActive(speEnc, slot) && roamerMapId == fieldSystem->location->mapId) {
+        if (SpecialEncounter_IsRoamerActive(speEnc, slot) && roamerMapId == fieldSystem->location->mapHeaderID) {
             roamers[numRoamersOnMap] = SpecialEncounter_GetRoamer(speEnc, slot);
             numRoamersOnMap++;
         }

@@ -23,8 +23,8 @@
 #include "sprite_system.h"
 #include "sprite_transfer.h"
 #include "sys_task.h"
+#include "sys_task_extensions.h"
 #include "sys_task_manager.h"
-#include "unk_0200679C.h"
 
 #include "res/graphics/signposts/field_board.naix"
 #include "res/graphics/windows/pl_winframe.naix"
@@ -766,21 +766,21 @@ static void SysTask_HandlePokemonPreview(SysTask *task, void *data)
     PokemonPreview *preview = data;
 
     switch (preview->state) {
-    case 1:
+    case PREVIEW_STATE_REMOVE:
         ErasePokemonPreviewWindow(preview);
         Sprite_DeleteAndFreeResources(preview->managedSprite);
         SpriteResourceManager_Cleanup(&preview->spriteManager);
         SysTask_FinishAndFreeParam(task);
         return;
 
-    case 2:
+    case PREVIEW_STATE_SET_ANIM:
         preview->state = 3;
         Sprite_SetAnim(preview->managedSprite->sprite, 1);
         break;
 
-    case 3:
+    case PREVIEW_STATE_WAIT_ANIM:
         if (Sprite_GetAnimFrame(preview->managedSprite->sprite) == 6) {
-            preview->state = 0;
+            preview->state = PREVIEW_STATE_WAIT;
         }
         break;
     }

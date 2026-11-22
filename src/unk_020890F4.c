@@ -14,6 +14,7 @@
 #include "gx_layers.h"
 #include "heap.h"
 #include "narc.h"
+#include "network_icon.h"
 #include "overlay_manager.h"
 #include "palette.h"
 #include "sprite_system.h"
@@ -21,7 +22,6 @@
 #include "system.h"
 #include "touch_pad.h"
 #include "touch_screen_actions.h"
-#include "unk_020393C8.h"
 #include "unk_02089604.h"
 #include "unk_0208A3F4.h"
 #include "vram_transfer.h"
@@ -63,11 +63,11 @@ static int sub_020890F4(ApplicationManager *appMan, int *param1)
     v0->unk_2EC.unk_0C = BgConfig_New(HEAP_ID_101);
     v0->unk_2EC.unk_10 = PaletteData_New(HEAP_ID_101);
 
-    PaletteData_SetAutoTransparent(v0->unk_2EC.unk_10, 1);
-    PaletteData_AllocBuffer(v0->unk_2EC.unk_10, 0, 0x200, HEAP_ID_101);
-    PaletteData_AllocBuffer(v0->unk_2EC.unk_10, 1, 0x200, HEAP_ID_101);
-    PaletteData_AllocBuffer(v0->unk_2EC.unk_10, 2, 0x200, HEAP_ID_101);
-    PaletteData_AllocBuffer(v0->unk_2EC.unk_10, 3, 0x200, HEAP_ID_101);
+    PaletteData_SetAutoTransparent(v0->unk_2EC.unk_10, TRUE);
+    PaletteData_AllocBuffer(v0->unk_2EC.unk_10, PLTTBUF_MAIN_BG, PALETTE_SIZE_BYTES * 16, HEAP_ID_101);
+    PaletteData_AllocBuffer(v0->unk_2EC.unk_10, PLTTBUF_SUB_BG, PALETTE_SIZE_BYTES * 16, HEAP_ID_101);
+    PaletteData_AllocBuffer(v0->unk_2EC.unk_10, PLTTBUF_MAIN_OBJ, PALETTE_SIZE_BYTES * 16, HEAP_ID_101);
+    PaletteData_AllocBuffer(v0->unk_2EC.unk_10, PLTTBUF_SUB_OBJ, PALETTE_SIZE_BYTES * 16, HEAP_ID_101);
     sub_0208945C(v0->unk_2EC.unk_0C);
     sub_0208A3F4(v0);
     sub_02089688(v0);
@@ -79,8 +79,8 @@ static int sub_020890F4(ApplicationManager *appMan, int *param1)
     }
 
     if (v0->unk_3B8.unk_30 != 0) {
-        sub_02039734();
-        sub_020397C8(1, HEAP_ID_101);
+        NetworkIcon_Init();
+        NetworkIcon_CreateOnSubScreen(1, HEAP_ID_101);
     }
 
     G2_SetBlendAlpha(GX_BLEND_PLANEMASK_NONE, GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG2, 15, 7);
@@ -129,10 +129,10 @@ static int sub_0208927C(ApplicationManager *appMan, int *param1)
     Bg_FreeTilemapBuffer(v0->unk_2EC.unk_0C, 6);
     Bg_FreeTilemapBuffer(v0->unk_2EC.unk_0C, 7);
     Heap_Free(v0->unk_2EC.unk_0C);
-    PaletteData_FreeBuffer(v0->unk_2EC.unk_10, 0);
-    PaletteData_FreeBuffer(v0->unk_2EC.unk_10, 1);
-    PaletteData_FreeBuffer(v0->unk_2EC.unk_10, 2);
-    PaletteData_FreeBuffer(v0->unk_2EC.unk_10, 3);
+    PaletteData_FreeBuffer(v0->unk_2EC.unk_10, PLTTBUF_MAIN_BG);
+    PaletteData_FreeBuffer(v0->unk_2EC.unk_10, PLTTBUF_SUB_BG);
+    PaletteData_FreeBuffer(v0->unk_2EC.unk_10, PLTTBUF_MAIN_OBJ);
+    PaletteData_FreeBuffer(v0->unk_2EC.unk_10, PLTTBUF_SUB_OBJ);
     PaletteData_Free(v0->unk_2EC.unk_10);
     NARC_dtor(v0->unk_2EC.unk_00);
 
